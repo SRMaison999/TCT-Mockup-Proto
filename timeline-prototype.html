@@ -340,7 +340,7 @@ body.sprintmode #scard{display:flex}
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 87</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 88</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
@@ -1355,7 +1355,7 @@ const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
 const OVAL_W = 60, HW = OVAL_W / 2;
 $('#trackband').setAttribute('stroke-width', OVAL_W);
 const PATHLEN = path.getTotalLength();
-let drag = null, dirty = true, railDirty = true, lastDetect = 0, lastTl = -1, lastG = null;
+let drag = null, dirty = true, ovalDirty = true, railDirty = true, lastDetect = 0, lastTl = -1, lastG = null;
 
 // a BIB chip with, in its corner, the rider's real number of finish-line crossings
 function chipN(r, n) { return `<span class="cw">${chip(r)}<span class="cn">${n}</span></span>`; }
@@ -1827,8 +1827,11 @@ document.addEventListener('pointerup', e => {
 });
 oval.addEventListener('pointerover', e => { const d = e.target.closest('.dot'); if (!d) return; S.hover = +d.dataset.bib; const row = document.querySelector('.trow[data-bib="' + S.hover + '"]'); document.querySelectorAll('.trow.hl').forEach(r => r.classList.remove('hl')); if (row) row.classList.add('hl'); });
 oval.addEventListener('pointerout', e => { if (e.target.closest('.dot')) { S.hover = null; document.querySelectorAll('.trow.hl').forEach(r => r.classList.remove('hl')); } });
-tlbody.addEventListener('pointerover', e => { const row = e.target.closest('.trow'); if (!row || !row.dataset.bib) return; S.hover = +row.dataset.bib; });
-tlbody.addEventListener('pointerout', e => { if (e.target.closest('.trow')) S.hover = null; });
+// the oval mirrors a hover from the timeline (stroke-width on the dot, inside renderOval); now that the oval is
+// not redrawn every frame while the race sits still, that mirror needs its own render — else it would wait for
+// the race to move again.
+tlbody.addEventListener('pointerover', e => { const row = e.target.closest('.trow'); if (!row || !row.dataset.bib) return; S.hover = +row.dataset.bib; ovalDirty = true; });
+tlbody.addEventListener('pointerout', e => { if (e.target.closest('.trow')) { S.hover = null; ovalDirty = true; } });
 function selectGroup(gi) {   // the group name selects all its riders; again, it deselects them
   const g = groupsNow()[gi]; if (!g) return;
   const all = g.bibs.every(b => S.selection.has(b));
@@ -1856,7 +1859,10 @@ function render() {
   // the timeline is rebuilt only when something changed, or once a second while the simulation runs, never during a drag
   spTick();   // sprints open on their lap, send live, close
   if (!drag && (dirty || (S.factor > 0 && S.t - lastTl >= 1))) { renderTimeline(G); renderCard(); renderLog(); lastTl = S.t; }
-  renderStrip(G); renderOval(G, M); syncArm();
+  // the strip and the oval only have something new to show while the race is actually advancing, on an operator
+  // action (dirty), or on a hover crossing from the timeline to the oval (ovalDirty) — not on every frame at rest
+  if (dirty || ovalDirty || (S.started && S.factor > 0 && !S.finished)) { renderStrip(G); renderOval(G, M); ovalDirty = false; }
+  syncArm();
   lastG = G;   // the rail reads the blocks from here: computeGroups has side effects and must not be called again (H11)
   if (railDirty && !$('#rail').hidden) { renderRail(); railDirty = false; }
   tickRail();
@@ -2607,7 +2613,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 87';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 88';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

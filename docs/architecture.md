@@ -101,7 +101,8 @@ Variables de module hors de `S` : `lastDetect` et `lastTl` (instants du dernier 
 de la dernière reconstruction de la timeline, remis à −1 par `reset()` : sans cela un
 Restart empêchait les propositions de réapparaître), `lastG` (les blocs de la dernière
 image, pour que rien n'ait à rappeler `computeGroups`), `lastFactor`, `REC` (les actes
-enregistrés), `simTab`, `simCols`, `railDirty`.
+enregistrés), `simTab`, `simCols`, `railDirty`, `ovalDirty` (un survol de ligne de la
+timeline demande un redessin de l'ovale même course à l'arrêt, §3).
 
 ## 3. Flux d'une image
 
@@ -120,8 +121,13 @@ enregistrés), `simTab`, `simCols`, `railDirty`.
      depuis le dernier appel, ce qui n'arrive qu'à l'arrêt. Si le nombre de propositions
      change, `G` est recalculé dans la même image.
    - `renderTimeline(G)` et `renderLog()` seulement si `dirty`, ou une fois par seconde en
-     simulation, **jamais pendant un glisser** ; `renderStrip` et `renderOval` à chaque
-     image.
+     simulation, **jamais pendant un glisser**.
+   - `renderStrip` et `renderOval` seulement si `dirty`, si `ovalDirty` (survol d'une ligne
+     de la timeline, qui met en relief le coureur sur l'ovale sans rien faire d'autre), ou
+     tant que la course avance (`S.started && S.factor > 0 && !S.finished`) — jamais à
+     l'arrêt sans raison : à 24 coureurs, redessiner l'ovale (ses trois files sans
+     chevauchement, §14) à chaque image même immobile coûtait cher pour rien (`pitfalls.md`
+     D14).
    - `spTick()` ouvre, envoie et ferme les sprints (§9).
 
 Toute action de l'opérateur met `dirty = true` puis appelle `render()`.

@@ -240,6 +240,16 @@ qui vidait un champ puis appelait `blur()` concluait à un bug de la page alors 
 allait bien. Retenu : `Entrée` valide par lui-même (`dataset.done` évite la double
 validation), et un test de saisie passe par un vrai événement.
 
+**D14. `renderOval` à chaque image, même immobile, ralentissait à 24 coureurs.** Contrairement
+à `detect` (D12, qui doit rester appelé à chaque pas), dessiner l'ovale est un travail
+d'affichage pur : il coûte plus cher à mesure que le nombre de coureurs grandit (chaque
+coureur place sa pastille en la comparant à toutes celles déjà placées, §14 d'`architecture.md`),
+et était refait 20 fois par seconde que la course avance ou non. Retenu (build 88) :
+`renderStrip`/`renderOval` ne redessinent que si `dirty`, si `ovalDirty`, ou tant que la
+course avance (`S.started && S.factor > 0 && !S.finished`) ; **ne pas réutiliser `dirty`
+pour le survol timeline → ovale**, car cela redéclenchait aussi la reconstruction complète de
+la timeline à chaque passage de souris — d'où le fanion séparé `ovalDirty`.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été
