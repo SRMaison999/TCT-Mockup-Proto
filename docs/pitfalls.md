@@ -266,6 +266,14 @@ d'interroger le SVG en direct. **Ne pas revenir à `path.getPointAtLength()` dan
 dans une boucle appelée par image** : c'est exactement ce qui rendait l'ovale coûteux à mesure
 que le nombre de coureurs grandissait.
 
+**D16. `serve.js` ne connaissait pas le type `.css`.** En sortant le style dans
+`styles.css` (build 90), le serveur local le servait en `application/octet-stream` (son
+repli par défaut pour toute extension qu'il ne reconnaît pas) — un navigateur strict refuse
+d'appliquer une feuille de style sous ce type, et la page apparaîtrait sans aucun style, sans
+erreur bien visible. Retenu : `serve.js` sert `.css` en `text/css`. **Tout nouveau fichier
+statique extrait du prototype (un autre `.js`, une image, …) doit vérifier que `serve.js` lui
+donne le bon type** avant de le charger par balise.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été

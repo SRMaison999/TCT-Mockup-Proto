@@ -5,8 +5,18 @@
 dans `mesures.md`. L'index « quelle règle, codée où, quel statut » est
 `cas-de-course.md`.
 
-Un seul fichier (**build 74**) : CSS, HTML, puis un script dans une fermeture immédiate.
-Aucune dépendance. Tout l'état vit dans l'objet `S`, recréé par `reset()`.
+**Trois fichiers statiques, chargés par balise, sans empaquetage** (`styles.css` et
+`flags.js` extraits à la build 90, pour que le HTML reste maniable) :
+- `styles.css` : tout le CSS, repris sans changement.
+- `flags.js` : les drapeaux SVG des nations (`FLAGS`, `flag()`, et leurs sept helpers
+  `fv`/`fh`/`fb`/`fd`/`ft`/`fstar`/`fu`) — une donnée pure, sans dépendance, chargée avant
+  le script principal pour que `flag()` existe quand celui-ci en a besoin.
+- `timeline-prototype.html` : le HTML, puis le script principal dans une fermeture
+  immédiate. C'est le seul des trois à contenir l'état et la logique de la course.
+
+Les trois partagent la portée globale du navigateur (aucun module ES, aucun `import`) :
+l'ordre des balises `<script>` est ce qui garantit que `flags.js` s'exécute avant le script
+principal. Tout l'état de la course vit dans l'objet `S`, recréé par `reset()`.
 
 **Le harnais de test.** Le script expose
 
