@@ -332,6 +332,9 @@ Si l'opérateur voulait le rang dans la liste, c'est une ligne à changer.
 ✅ **« PLAYING RACE *x* » s'écrit d'une seule taille, en majuscules** (build 80). Le numéro
 était à 14 px contre 11 px pour les mots : il dépassait de la ligne.
 
+✅ **Les drapeaux couvrent 205 nations** (build 87), contre 16 jusque-là. Un code NOC inconnu
+garde le rectangle gris.
+
 ✅ **Les réglages du simulateur sont gardés** (build 86) : liste de départ, piste et appairage
 des transpondeurs. Ils survivent à *New* et au rechargement de la page.
 

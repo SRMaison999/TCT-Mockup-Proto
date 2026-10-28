@@ -1014,3 +1014,10 @@ Ce que cela fixe :
 
 Les trois se retrouvent dans la course suivante, et au rechargement de la page. Les valeurs
 écrites dans le fichier ne servent plus que la toute première fois.
+
+**28 octobre 2026 — les drapeaux des nations.** Mot pour mot :
+
+> quand on ajoute des coureurs de nations nouvelles, leur emojis de drapeaux n'existent pas.
+> il faut donc en créer une liste beaucoup plus importante
+
+29. **Toute nation que l'opérateur entre a son drapeau.** La liste en couvre 205.

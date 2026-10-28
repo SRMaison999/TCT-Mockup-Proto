@@ -807,3 +807,11 @@ d'être ajouté, et refuse deux fois le même numéro.
 `saveTpIfSetup()` n'enregistre l'appairage que si la course n'a pas commencé : ce que
 l'opérateur change avant le départ est un réglage, ce qu'il change pendant est un fait de
 cette course.
+
+**Les drapeaux (build 87).** Ils restent dessinés en SVG dans le fichier : les emoji de
+drapeaux ne s'affichent pas sous Windows, et la raison n'a pas changé. Huit fonctions —
+`fv`, `fh`, `fb`, `fd`, `fn`, `ft`, `fstar`, `fu` — écrivent les bandes, les disques, les
+croix nordiques, les triangles de guindant, les étoiles et le pavillon du Commonwealth, de
+sorte qu'une nation tienne sur une ligne. Les bandes et les croix sont exactes ; un emblème —
+aigle, armoiries, cèdre — est ramené à une forme de la bonne couleur au bon endroit.
+`flag(noc)` rend le rectangle gris pour un code inconnu, comme avant.

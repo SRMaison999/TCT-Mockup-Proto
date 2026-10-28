@@ -1036,3 +1036,29 @@ dossard-là. **Le chemin exact qui y mène n'a pas été reproduit à la demande
 supprime la chute, elle n'a pas été vérifiée sur le cas qui l'a provoquée.
 
 **La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
+
+---
+
+## 25. Les drapeaux, build 87
+
+Mesuré le 28 octobre 2026.
+
+| | Avant | Après |
+|---|---|---|
+| Nations dessinées | **16** | **205** |
+| Codes en double | aucun | **aucun** |
+| Drapeaux ne couvrant pas tout leur cadre | — | **aucun** |
+
+Les 205 ont été regardés un par un sur une planche. Deux étaient à refaire : **KOR**, dont le
+taegeuk ne se dessinait pas du tout, et **GUM**, pour la même raison — les deux étaient
+tracés avec des arcs. Ils sont refaits avec des formes simples.
+
+**Une nation entrée à la main sort bien son drapeau**, vérifié sur cinq codes qui n'existaient
+pas avant — NOR, MAR, RSA, VIE, CAN — et sur un code inventé :
+
+| Code entré | Ce qui s'affiche |
+|---|---|
+| NOR · MAR · RSA · VIE · CAN | **le drapeau de la nation** |
+| XXX | le rectangle gris, comme avant |
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.

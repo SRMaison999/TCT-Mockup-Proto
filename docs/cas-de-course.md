@@ -39,6 +39,7 @@ silencieusement optimiste.
 | 25 | **La place des boutons de la barre** | `regles-operateur.md` §16 | la ligne du transport et la ligne de l'horloge | `mesures.md` §22 | **Conforme**, corrigé build 81. Replay et New sur la ligne de l'horloge ; plus aucun chevauchement |
 | 26 | **Trier la liste des coureurs** | `travaux.md` §6b | `simSort`, `sortedRiders()`, `[data-sort]` | `mesures.md` §23 · `architecture.md` §18 | **Conforme**, codé build 83. BIB, Nat et Name ; un second clic inverse |
 | 27 | **Les réglages gardés d'une course à l'autre** | `regles-operateur.md` §16 | `saveSetup()`, `loadSetup()`, `TPMAP`, `tct.sim.setup` | `mesures.md` §24 · `architecture.md` §19 | **Conforme**, codé build 86. Liste de départ, piste et appairage ; *New* et rechargement vérifiés |
+| 28 | **Le drapeau d'une nation entrée à la main** | `regles-operateur.md` §16 | `FLAGS`, `flag()` | `mesures.md` §25 | **Conforme**, codé build 87. 205 nations ; code inconnu = rectangle gris |
 | 19 | **Renommer et effacer une course** | `regles-operateur.md` §16 | le gabarit d'une ligne de l'onglet Files, `renaming`, `delArmed`, `commitRename()`, `saveRaces()` | `mesures.md` §16 | **Conforme**, codé build 75. Renommage sur place, effacement en deux clics, les deux tiennent au rechargement |
 
 ---
