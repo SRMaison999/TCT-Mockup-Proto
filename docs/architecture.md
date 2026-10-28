@@ -55,6 +55,29 @@ Les tape switches reposent sur cette séparation et la tiennent **par la structu
 bande de contact produit ; qui a fait le contact vit dans `S.tapeTruth[i]`, au même titre
 que `r.dist`. Un `grep tapeTruth` dans un chemin logiciel saute donc aux yeux.
 
+**Vérifié (investigation du 28 octobre 2026) : la séparation est tenue partout, sauf un seul
+endroit.** `measured()` (c'est elle qui construit ce que l'écran affiche à partir de ce que
+le logiciel sait) ne lit jamais `r.dist` ni `r.spd` directement, à une exception : la ligne
+`if (!r.rec) { out.set(r.bib, { pos: r.dist, spd: r.spd, read: true }); continue; }`. Elle ne
+joue que pour un coureur qui n'a **encore jamais eu de lecture de boucle**, et seulement
+dans deux cas :
+
+1. **Au tout début de la course**, avant que chaque coureur ait franchi sa première boucle
+   (0 à environ 2 s de course selon sa place sur la grille).
+2. **Après un « Reinstate »** (un coureur remis en course après un ABD/DNF), qui remet
+   `r.rec` à vide jusqu'à sa prochaine lecture.
+
+**Ce n'est pas une fuite à corriger.** L'opérateur, 28 octobre 2026 : dans le cas 1, la
+position de départ (deux colonnes, entre Pursuit A et la ligne) est un fait que l'opérateur
+connaît et pourrait saisir lui-même (un ordre d'appel), pas un secret du simulateur — et rien
+ne se décide (ni groupe, ni tour, ni points) sur ces quelques secondes. Dans le cas 2, la
+position se corrige dès la lecture suivante, sans conséquence sur l'intervalle. **À garder en
+tête pour le jour où le matériel réel remplace le simulateur** : ce sera le seul endroit à
+revoir — la position de départ viendra alors d'une saisie opérateur (ordre d'appel), pas de
+`r.dist` ; partout ailleurs, `measured()`, `computeGroups()` et `detect()` consomment déjà
+exactement le type de données (lectures de boucles, contacts de tape switch) que le matériel
+réel produira.
+
 ## 2. État `S`
 
 ```
