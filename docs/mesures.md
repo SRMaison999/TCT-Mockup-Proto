@@ -21,9 +21,10 @@ Le scénario : BIB 4 et 11 décrochent au tour 4 ; BIB 12 attaque au tour 5, les
 prend leur roue puis gagne un tour sur le peloton ; 4 et 11 sont repris plus tard ; au
 sprint 2, BIB 7 et 52 passent la ligne à 11 ms d'écart.
 
-**Attention** (voir `pitfalls.md` A10) : depuis la build 65 le scénario **ne tourne plus
-sur un `reset()`**. Une course neuve est un peloton nu. Pour mesurer la course de
-référence, il faut la **charger** depuis Files.
+**Attention** (voir `pitfalls.md` A10 et A11) : il n'y a plus de scénario depuis la build 74.
+Une course neuve est un peloton nu, parce qu'elle ne porte aucun ordre. Pour mesurer la course
+de référence, il faut la **charger** depuis Files — c'est une course enregistrée comme une
+autre (§15).
 
 ### État courant — builds 66 à 68, pace 15 m/s
 
@@ -35,7 +36,7 @@ Mesuré le 28 octobre 2026 à la build 66 et reconfirmé aux builds 67 et 68, en
 | Durée de la course | **674,2 s** (13 485 pas de 0,05 s) |
 | Coureurs | 16 |
 | Tours | 40 |
-| Propositions de tour | **deux, et deux seulement** : `lap:12:1` à **165,5 s**, `lap:4,11:-1` à **458 s** |
+| Propositions de tour | **deux, et deux seulement** : `lap:12:1` à **165,5 s**, `lap:4,11:-1` à **458,1 s** |
 | Passages de bande jugés | 185 |
 | Contacts par tape switch | 637 · 621 · 619 · 621 · 620 |
 | Contacts sans lecture (`lone`) | 0 |
@@ -60,9 +61,11 @@ tourner la boucle d'affichage — ce qui a été fait à la build 67, voir §12.
 | 60 | 717 s | les deux mêmes | 173 passages jugés, 28 lignes de journal, 41 lignes de Crossings |
 | 62 | 716,5 s | les deux mêmes | 173 passages, contacts 643·622·617·620·623, zéro `lone` faux |
 | 63 | 728 s | les deux mêmes | les trois oscillations du simulateur retirées ; contacts 638·622·624·624·623, 180 passages, un `short` maximum au lieu de trois |
-| 66 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` 458 s | pace par défaut passée à 15 m/s ; détection des tours réécrite |
+| 66 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` 458,0 s | pace par défaut passée à 15 m/s ; détection des tours réécrite |
 | 67 | 674,2 s | les deux mêmes, aux mêmes instants | médiane supprimée ; tour du peloton = son premier coureur, delta contre le coureur d'en face (§12) |
 | 68 | 674,2 s | les deux mêmes, aux mêmes instants | seuil de cassure paire par paire, vitesse du coureur qui suit (§13) |
+| 74 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` **458,1 s** | le scénario câblé devient une course enregistrée ; la perte de tour se propose **un dixième plus tard** (§15) |
+| 75 | 674,2 s | les deux mêmes, aux mêmes instants | la course de référence quitte le code et devient une ligne de la liste enregistrée ; renommer et effacer (§16) |
 
 Les durées bougent avec la **pace par défaut** et avec le modèle de vitesse du simulateur,
 pas avec les règles de course. Comparer deux builds de part et d'autre d'un de ces
@@ -270,13 +273,13 @@ régimes : le pas-à-pas (`factor = 0`) et la boucle d'affichage réelle à ×16
 
 **La course ne bouge pas.** Durée **674,2 s**, 16 coureurs, 185 passages de bande — les
 mêmes qu'à la build 66. Les deux propositions tombent **aux mêmes instants et avec les
-mêmes deltas** : `lap:12:1` à **165,5 s**, `lap:4,11:-1` à **458 s**. Aucune troisième
+mêmes deltas** : `lap:12:1` à **165,5 s**, `lap:4,11:-1` à **458,1 s**. Aucune troisième
 proposition, aucune erreur de console, `bunchRaw` fini à chacun des 13 485 pas.
 
 **Ce que le coureur d'en face a donné.** Les deux jonctions, relevées à l'image où la
 proposition naît :
 
-| | Tour gagné, 165,5 s | Tour perdu, 458 s |
+| | Tour gagné, 165,5 s | Tour perdu, 458,1 s |
 |---|---|---|
 | Coureur mesuré | BIB 12 | BIB 4 |
 | Sa place dans l'amas | **arrière** | **avant** |
@@ -293,7 +296,7 @@ chiffres qui les montrent :
   attardés à un tour qui roulent entre lui et le peloton. Mesurer contre le voisin immédiat
   aurait donné `delta = 0` et **aucune proposition**. Il faut sauter jusqu'au premier
   coureur qui appartenait au peloton, trois crans plus loin.
-- **458 s** : le coureur le plus avancé de l'amas est **BIB 4 lui-même**, l'attardé qu'on
+- **458,1 s** : le coureur le plus avancé de l'amas est **BIB 4 lui-même**, l'attardé qu'on
   est en train de mesurer. `bunchRaw` vaut pourtant **6 814,3 m**, la position de BIB 15 :
   le filtre « déjà dans le peloton à l'image précédente » a bien écarté BIB 4 et BIB 11.
   Sans ce filtre, le tour du peloton aurait chuté d'un tour à cette image même.
@@ -371,8 +374,9 @@ La correction joue donc **dans les deux sens**, et chaque fois du bon côté.
 
 Les quatre épisodes dépassent le délai de confirmation de 0,3 s, donc les blocs affichés
 diffèrent brièvement. **Les deux propositions de tour, elles, ne bougent pas** : `lap:12:1` à
-165,5 s et `lap:4,11:-1` à 458 s, les mêmes qu'aux builds 66 et 67, avec les mêmes coureurs
-d'en face (BIB 52 et BIB 15).
+165,5 s et `lap:4,11:-1` à 458,0 s, les mêmes qu'aux builds 66 et 67, avec les mêmes coureurs
+d'en face (BIB 52 et BIB 15). *(La seconde est passée à 458,1 s à la build 74 ; le §15 dit
+pourquoi.)*
 
 **Course complète à ×16**, boucle d'affichage réelle : 674,2 s, 185 passages de bande, aucune
 erreur de console, et le classement identique à celui de la build 67 — 15 (19 pts) · 12 (15)
@@ -511,9 +515,120 @@ leurs contacts continuent d'être comptés dans l'onglet Track.
 référence chargée depuis Files, dans les deux régimes :
 
 - **Pas-à-pas** (`factor = 0`) : **13 485 pas**, durée **674,2 s**, deux propositions et
-  deux seulement — `lap:12:1` à **165,5 s** et `lap:4,11:-1` à **458 s**. Exactement les
+  deux seulement — `lap:12:1` à **165,5 s** et `lap:4,11:-1` à **458,1 s**. Exactement les
   builds 66, 67 et 68.
 - **Boucle d'affichage réelle à ×16** : course menée à son terme en 42 s de temps réel,
   **aucune erreur de console**, quatre sprints jugés, deux propositions laissées ouvertes,
   26 lignes de journal. Classement par les points des sprints seuls : **15 (19) · 12 (15) ·
   23 (8) · 4 (6) · 11 (4) · 46 (3)** — identique aux builds 67 et 68.
+
+---
+
+## 15. La course de référence devenue une course enregistrée, build 74
+
+Mesuré le 28 octobre 2026 en pilotant le prototype pas à pas, course de référence chargée
+depuis l'onglet Files.
+
+**Ce qui a disparu du code** : la table `SCRIPT`, le drapeau `S.useScript`, le mode `away`
+et les deux `const keep` qui ressuscitaient le drapeau après un `reset()`. Un `grep` des
+trois noms dans le fichier ne rend **plus rien**.
+
+**Ce qui les remplace** : deux ordres dans `REF_RACE.acts`, rejoués sur l'horloge comme ceux
+de n'importe quelle course enregistrée.
+
+| Ordre | Instant | Ce qu'il fait |
+|---|---|---|
+| `lose` sur BIB 4 et 11 | t = 50,49 s (tour 4) | ils décrochent, et **la roue du 12** leur est donnée pour trois tours |
+| `gain` sur BIB 12 | t = 67,39 s (tour 5) | il attaque, les rattrape, puis prend un tour au peloton |
+
+Les deux instants sont ceux auxquels le scénario câblé se déclenchait, relevés sur la course
+elle-même. Ils sont posés **un centième avant** le pas de 0,05 s (50,49 et non 50,50) parce
+que `replayTick()` compare `a.t <= S.t` sur un `S.t` qui s'accumule par additions
+flottantes : à 50,50 pile, la comparaison tombait du mauvais côté et l'ordre partait un pas
+trop tard.
+
+**La course rejouée, événement par événement**, comparée au scénario câblé de la build 73 :
+
+| Événement | Build 73, câblé | Build 74, rejoué |
+|---|---|---|
+| 4 et 11 décrochent | 50,55 s | **50,55 s** |
+| 12 attaque | 67,45 s | **67,45 s** |
+| 11 prend la roue du 12 | 161,75 s, tour 11 | **161,75 s, tour 11** |
+| 4 prend la roue du 12 | 162,55 s, tour 11 | **162,55 s, tour 11** |
+| 12 a pris son tour | 201,80 s | **201,80 s** |
+| 11 a perdu le sien | 473,55 s | **473,55 s** |
+| 4 a perdu le sien | 473,60 s | **473,60 s** |
+| Fin de course | 674,2 s · 13 485 pas | **674,2 s · 13 485 pas** |
+| Classement | 15(19)·12(15)·23(8)·4(6)·11(4)·46(3) | **identique** |
+| Sprints jugés | 4 | **4** |
+
+**Le seul écart : la proposition de tour perdu passe de 458,0 s à 458,1 s**, soit deux pas de
+simulation. La cause est connue et mesurée : l'ordre est appliqué par `replayTick()` **avant**
+`step()`, donc les coureurs 4 et 11 quittent le mode `bunch` un pas plus tôt qu'avec le
+scénario câblé, qui changeait leur mode à l'intérieur de `step()` une fois la position moyenne
+du peloton déjà calculée. Ce pas d'écart déplace cette moyenne une seule fois, de très peu, et
+la proposition sort un dixième plus tard. **Rien d'autre ne bouge** : ni la durée, ni les sept
+événements physiques ci-dessus, ni le classement. Le choix a été de ne pas tordre le code pour
+récupérer ce dixième, et de l'écrire ici.
+
+**Les trois boutons**, vérifiés sur le prototype, `localStorage` vidé au départ :
+
+| Action | Horloge | Ordres à rejouer | Courses enregistrées |
+|---|---|---|---|
+| Au chargement | 0,0 s | — | **0** |
+| Course de référence chargée, jouée 150 s | 150,0 s | 0 restant | 0 |
+| `↺` **Restart** | **0,0 s** | **2, de nouveau** | **0** — rien n'a été enregistré |
+| rejouée 150 s, puis `+` **Nouvelle course** | **0,0 s** | **0** | **1** — la course est enregistrée |
+
+Donc : Restart rejoue sans rien enregistrer ni ouvrir, et `+` enregistre puis ouvre une course
+vide. Une course ouverte par `+` ne porte aucun ordre, donc **ne bouge pas toute seule**,
+quelle que soit la course chargée avant — ce qui est le premier critère du poste `travaux.md`
+§7a.
+
+**Le point REC**, relevé sur la classe de `#simrec` : **allumé** quand la course est en
+lecture, **éteint** en pause, éteint tant qu'aucune course n'est partie. C'est la lecture que
+l'opérateur a tranchée le 28 octobre 2026 : « Le point REC s'éteint dès qu'on met en pause. »
+
+**Dans l'onglet Files**, la course de référence est désormais une ligne comme les autres :
+« Reference — 4 and 11 lose a lap, 12 takes a lap · 250 m · 40 laps · **11:14.2** ». Elle
+n'avait pas de durée tant qu'elle était un scénario. Et une course enregistrée depuis le
+prototype après avoir rejoué la référence se nomme toute seule d'après ses ordres — « 4 and 11
+lose a lap at 4 · 12 takes a lap at 5 » — preuve que `raceName()` la décrit par ses actions,
+comme n'importe quelle autre.
+
+---
+
+## 16. Renommer et effacer une course, build 75
+
+Mesuré le 28 octobre 2026 sur le prototype en marche, `localStorage` vidé avant chaque
+série.
+
+**Le dépôt du modèle.** Clé `tct.sim.races` absente, page ouverte : la liste contient
+**une** ligne, « Reference — 4 and 11 lose a lap, 12 takes a lap », et la clé est écrite. La
+ligne porte *Load*, *Rename* et *Delete*.
+
+**Les quatre gestes, et ce qu'ils laissent après un rechargement de la page :**
+
+| Geste | Ce qu'on voit | Dans la liste enregistrée | Après rechargement |
+|---|---|---|---|
+| *Rename*, puis *Save* | le nom devient un champ, *Save* / *Cancel* remplacent les trois boutons | « Essai 24 coureurs — 2 novembre » | **le nouveau nom** |
+| *Rename*, nom vidé, *Save* | — | le nom d'avant, inchangé | le nom d'avant |
+| *Rename*, puis Échap | la ligne redevient une ligne | le nom d'avant, inchangé | le nom d'avant |
+| *Delete*, un clic | le bouton devient **Delete?** en rouge | **1 course**, rien n'a bougé | — |
+| *Delete*, deuxième clic | la ligne disparaît ; « No saved race. Play one and press New. » | **0 course** | **toujours 0** |
+
+La dernière ligne est celle qui compte : la clé existe et vaut `[]`, donc le modèle n'est pas
+redéposé. **Une course de référence effacée reste effacée.**
+
+**La course de référence rejouée après tout cela n'a pas bougé.** Liste reconstituée,
+course chargée depuis Files, course menée jusqu'au bout pas à pas :
+
+| | Build 74 | Build 75 |
+|---|---|---|
+| Pas | 13 485 | **13 485** |
+| Durée | 674,2 s | **674,2 s** |
+| `lap:12:1` | 165,5 s, tour 11 | **165,5 s, tour 11** |
+| `lap:4,11:-1` | 458,1 s, tour 28 | **458,1 s, tour 28** |
+| Classement | 15(19) · 12(15) · 23(8) · 4(6) · 11(4) · 46(3) | **le même** |
+| Sprints gagnés | 4 | **4** |
+| Erreurs console | aucune | **aucune** |

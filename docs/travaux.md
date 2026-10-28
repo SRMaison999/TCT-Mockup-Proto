@@ -139,6 +139,13 @@ l'atteindre. Le renommage n'existe pas du tout.
 **Fini quand** chaque ligne de l'onglet Files porte de quoi supprimer et de quoi renommer, et
 que les deux survivent à un rechargement de la page.
 
+✅ **Fait à la build 75.** Chaque ligne porte *Load*, *Rename* et *Delete*. Le renommage se
+fait **sur place** — le nom devient un champ, *Save* et *Cancel* prennent la place des trois
+boutons, Entrée valide, Échap annule, un nom vide est refusé sans rien dire. La suppression
+**demande deux clics** : le bouton devient *Delete?* en rouge, le second clic efface. Aucune
+fenêtre de dialogue. La course de référence est une ligne comme les autres (§16 des règles) :
+elle se renomme, elle s'efface, et l'un comme l'autre tiennent au rechargement — vérifié.
+
 ### b. Trier la liste des coureurs
 
 > « il faut pouvoir trier la liste des coureurs par BIB, NOC alphabétique, ou nom
@@ -173,25 +180,27 @@ Signalé par l'opérateur le 28 octobre 2026, mot pour mot :
 > référence soit une course de référence, il faut que ce soit une course que l'on peut rejouer
 > comme les autres. »
 
-**Ce qui est vérifié dans le code à la build 68**, sans aller plus loin :
+**Corrigé à la build 74**, non pas en colmatant le drapeau mais en supprimant la chose :
+`SCRIPT`, `useScript` et le mode `away` n'existent plus. La course de référence est une
+course enregistrée ordinaire — une configuration et **deux ordres sur l'horloge** —, et plus
+rien dans le code ne la connaît au-delà du fait que l'onglet Files l'offre toujours. Le détail
+est dans `architecture.md` §15, les mesures dans `mesures.md` §15.
 
-- `reset()` met bien `useScript: false` — c'est le correctif de la build 65, `pitfalls.md` A11.
-- Mais **deux chemins le remettent à sa valeur d'avant après le `reset()`** : le bouton
-  *Restart* et `rewind30()`, tous deux par un `const keep = S.useScript`. Une fois la course de
-  référence chargée, le scénario reste donc actif à travers un Restart.
-- Dans l'onglet Files, la course de référence est rendue **à part** des autres, avec l'indice
-  `-1` et une classe `ref` : c'est bien un cas particulier et non une course ordinaire.
+Avant d'y toucher, deux questions ont été posées à l'opérateur ; ses réponses sont au §16 des
+règles et ont décidé du reste. Les trois tours que les coureurs 4 et 11 passent dans la roue
+du 12 sont **une règle**, et le moyen est le sien : leur vitesse s'ajuste sur celle du 12.
+`↺` **Restart rejoue la course chargée** ; un **bouton +** ouvre une course neuve ; un **point
+rouge REC** s'allume en lecture et s'éteint en pause.
 
-**La cause n'est pas diagnostiquée et rien n'a été corrigé.** Ce qui précède est une piste,
-pas un verdict.
+✅ **Les trois critères sont remplis à la build 75.** Une course neuve ne bouge plus toute
+seule, quelle que soit la course chargée avant ; la course de référence est une ligne comme
+les autres dans l'onglet Files, avec sa durée ; et « le poste 6a s'applique à elle aussi » —
+elle se renomme et s'efface comme les autres, et l'un comme l'autre survivent au
+rechargement. **Ce poste est clos.**
 
-**La demande de l'opérateur va plus loin que le bug** : il ne veut pas qu'on colmate le
-`useScript`, il veut que **la course de référence cesse d'être un cas particulier** et devienne
-une course enregistrée comme les autres, qu'on charge, rejoue, renomme et supprime.
-
-**Fini quand** : une course neuve ne bouge jamais toute seule, quel que soit ce qui a été
-chargé avant ; la course de référence apparaît dans l'onglet Files comme les autres ; et le
-poste 6a s'applique à elle aussi.
+À la build 75 elle a quitté le code pour de bon : elle n'y est plus qu'un **modèle de
+départ**, déposé dans la liste enregistrée la première fois que le prototype s'ouvre, et plus
+jamais relu ensuite.
 
 ### b. Deux étiquettes de l'ovale sortent du cadre
 

@@ -5,7 +5,7 @@
 dans `mesures.md`. L'index « quelle règle, codée où, quel statut » est
 `cas-de-course.md`.
 
-Un seul fichier (**build 73**) : CSS, HTML, puis un script dans une fermeture immédiate.
+Un seul fichier (**build 74**) : CSS, HTML, puis un script dans une fermeture immédiate.
 Aucune dépendance. Tout l'état vit dans l'objet `S`, recréé par `reset()`.
 
 **Le harnais de test.** Le script expose
@@ -66,9 +66,7 @@ withdrawn (Map bib→{code, lap})     ABD / DNF / DSQ
 selection (Set), ledger, hover      interface : sélection partagée timeline/ovale, panneau de compteurs, survol
 leader                              {bib, how, lap} désigné par l'opérateur ou par dépassement ; null = pris sur la piste
 arm                                 boucle armée (une position de LOOPS) ou null
-useScript                           le scénario de la course de référence tourne-t-il ? faux sur une course neuve,
-                                    posé par loadRace d'après le fichier chargé
-replay                              actes à rejouer (loadRace, rewind30)
+replay                              actes à rejouer (loadRace, Restart, rewind30)
 r.tp (sur le coureur)               VÉRITÉ SIMULÉE : l'id du transpondeur réellement monté sur son vélo.
                                     S.tp dit ce que le logiciel CROIT ; les deux ne coïncident plus dès que
                                     deux transpondeurs sont inversés, et c'est la table qui nomme la lecture
@@ -422,8 +420,8 @@ est celle d'un vélo (`TAPE_MIN_SPD` à `TAPE_MAX_SPD`).
 
 ## 11. Ce qui est en dur
 
-`RIDERS` (dossard, nom, NOC, couleur), `SCRIPT` (le scénario de la course de référence),
-`FLAGS` (drapeaux SVG simplifiés), `PALETTE`, `NOTP = []` (tous les coureurs ont un
+`RIDERS` (dossard, nom, NOC, couleur), `REF_RACE` (la course de référence : une configuration
+et deux ordres, §15), `FLAGS` (drapeaux SVG simplifiés), `PALETTE`, `NOTP = []` (tous les coureurs ont un
 transpondeur au départ ; le statut se pose à la main), `TIGHT` (deux coureurs à 11 ms au
 sprint 2).
 
@@ -504,9 +502,9 @@ sur sa propre ligne sous l'en-tête.
 - **Files** : la course en cours d'enregistrement, la course de référence qui reste intacte,
   puis les courses enregistrées, chacune avec un bouton `Load`. Chaque course s'auto-nomme
   d'après ce qu'on y a fait (`raceName`) et s'enregistre **automatiquement** dans
-  `localStorage` (`tct.sim.races`) à chaque `Restart` (`commitRec()`). `Open file…` relit un
-  `.json` externe. `loadRace` pose `S.useScript = !!r.script` : **une course neuve est un
-  peloton nu**, le scénario arrive avec la course de référence.
+  `localStorage` (`tct.sim.races`) quand on ouvre une course neuve avec `+` (`commitRec()`).
+  `Open file…` relit un `.json` externe. **Une course neuve est un peloton nu** : elle n'a
+  aucun ordre, donc rien ne peut l'animer toute seule (§15).
 
 **La largeur de la colonne suit son onglet (build 64).** `railWidth()` additionne les
 colonnes affichées et les cinq commandes toujours présentes, borne le résultat entre
@@ -609,3 +607,59 @@ largeur, celle des 100 m la moitié.
 `pt()` et `normalAt()` ne sont lus que par `renderMarks()` et `renderOval()` : **le dessin
 de l'ovale n'entre dans aucune mesure**. Changer la forme, la largeur ou les marquages ne
 peut donc rien déplacer dans les groupes, les tours, les sprints ou les bandes.
+
+---
+
+## 15. La course de référence, et les trois boutons de la barre
+
+**Il n'y a plus de scénario dans le simulateur (build 74).** La table `SCRIPT`, le drapeau
+`S.useScript` et le mode `away` ont été supprimés ; ils ne sont pas remplacés. La course de
+référence est une **course enregistrée** comme les autres : `REF_RACE` porte une `cfg` et une
+liste d'`acts`, que `loadRace()` met dans `S.replay` et que `replayTick()` applique sur
+l'horloge, exactement comme pour une course que l'opérateur a jouée lui-même.
+
+**Et à la build 75 elle quitte le code.** `REF_RACE` n'est plus une ligne que l'onglet Files
+ajoute à la liste : c'est un **modèle de départ**. Au chargement de la page, `localStorage`
+est lu ; si la clé `tct.sim.races` est **absente** — le prototype n'a jamais tourné sur ce
+poste — une copie de `REF_RACE` est déposée dans `RACES` et la liste est écrite. Si la clé
+existe, même vide, elle fait foi : c'est la liste que l'opérateur a laissée. La distinction
+compte, parce que c'est elle qui fait qu'**une course de référence effacée reste effacée**.
+Rien en aval ne sait d'où vient cette ligne : plus d'indice `-1`, plus de drapeau `ref`, plus
+de bordure verte sur sa ligne.
+
+**Renommer et effacer (poste `travaux.md` §6a).** Chaque ligne porte *Load*, *Rename* et
+*Delete*. Deux variables d'écran suffisent : `renaming` tient l'indice de la ligne en cours
+d'édition, `delArmed` celui de la ligne dont *Delete* a été cliqué une fois. Le gabarit d'une
+ligne lit les deux et se dessine en conséquence — champ + *Save*/*Cancel*, ou *Delete?* en
+rouge. Les deux écritures passent par `saveRaces()`, donc la liste entière est réécrite dans
+`localStorage` : c'est ce qui fait tenir le renommage comme l'effacement au rechargement. Un
+nom vide est refusé en silence ; Entrée valide, Échap annule.
+
+C'est ce qui ferme `pitfalls.md` A11 : un drapeau ne peut plus survivre à un `reset()`,
+puisqu'il n'y a plus de drapeau.
+
+**La roue, dans l'ordre `lose`.** Un ordre de perdre un tour peut porter un `wheel` et un
+`wheelLaps` : `pilotStep()` cherche alors le coureur nommé, note le tour où l'écart au coureur
+qui le double tombe sous une longueur de vélo, et **copie sa vitesse** pendant le nombre de
+tours donné. C'est la règle de l'opérateur du 28 octobre 2026, §16 des règles, et c'est la
+seule façon dont ce comportement existe : il n'y a pas de bouton pour lui, parce qu'il n'en a
+pas demandé. Le coureur continue de perdre son tour pendant ce temps — la condition de fin de
+l'ordre n'est pas touchée.
+
+**Les trois boutons.**
+
+| Bouton | Ce qu'il fait | Ce qu'il ne fait pas |
+|---|---|---|
+| *Replay* | remet l'horloge à zéro et **remet les ordres de la course en file** | n'enregistre rien, n'ouvre rien |
+| *New* | `commitRec()` puis `reset()` : la course en cours est **enregistrée**, une course vide s'ouvre sur la configuration affichée | ne rejoue rien |
+| `●` REC | un point rouge dans la barre, allumé quand la course est en **lecture** | ne suit pas la course : il s'éteint en pause (décision de l'opérateur) |
+
+*New* fait ce que faisait Restart jusqu'à la build 73. *Replay* est donc le bouton dont le
+comportement a changé, et c'est voulu : « le bouton Restart doit redémarrer la course ». Les
+libellés *Replay* et *New*, leur voisinage, et « ⏮ 30s » placé **à gauche de Play**, sont ceux
+que l'opérateur a dictés le 28 octobre 2026 (§16 des règles). Tous les composants de cette
+ligne — boutons, groupes de boutons, horloge et point REC — prennent une hauteur unique,
+donnée une fois par `--tph` pour la barre du haut et une fois pour le rail.
+
+Le point REC se pilote dans `syncSeg()`, à côté des boutons lecture et pause, sur le même
+`playing` qu'eux — une seule source, donc il ne peut pas désaccorder.

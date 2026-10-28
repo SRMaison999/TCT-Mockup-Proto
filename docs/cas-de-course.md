@@ -30,6 +30,8 @@ silencieusement optimiste.
 | 15 | **Mise en place et tour de lancement** | `regles-operateur.md` §12 | — | — | **Pas codé.** Ni la phase dans le simulateur, ni la vérification des transpondeurs, ni les propositions. Le travail à faire est détaillé dans `travaux.md` §1 |
 | 16 | **Les deux Pursuits face à face sur l'ovale** | `regles-operateur.md` §9 | `#trackpath` ancré au milieu de la ligne droite d'arrivée, `pt()` décalé de `CFG.gap` | `pitfalls.md` A14 · `mesures.md` §14 | **Conforme**, corrigé build 69. Les deux repères tombent au milieu de leur ligne droite pour les quatre longueurs de piste et tout `gap` |
 | 17 | **Les marquages de la piste** | `regles-operateur.md` §9, tableau de la norme UCI | les quatre rectangles longitudinaux du décor, et `renderMarks()` pour les traits en travers | `mesures.md` §14 | **Conforme**, codé build 69, couleurs, épaisseurs et étendue des traits revues builds 70 à 73 sur ses quatre relectures du 28 octobre 2026. Côte d'azur, lignes noire, rouge et bleue à leur cote ; arrivée en trait noir sur bande blanche, ni l'un ni l'autre à sa cote réelle ; 200 m et 100 m en blanc ; tape switches **pas dessinés** |
+| 18 | **La course de référence est une course enregistrée** | `regles-operateur.md` §16 | `REF_RACE.acts`, `replayTick()`, `pilotStep()` pour la roue | `pitfalls.md` A11 · `mesures.md` §15 | **Conforme**, codé build 74. Plus de `SCRIPT`, plus de `useScript`, plus de mode `away`. **Build 75** : elle quitte le code, déposée dans la liste enregistrée à la première ouverture, puis renommable et effaçable comme les autres |
+| 19 | **Renommer et effacer une course** | `regles-operateur.md` §16 | le gabarit d'une ligne de l'onglet Files, `renaming`, `delArmed`, `commitRename()`, `saveRaces()` | `mesures.md` §16 | **Conforme**, codé build 75. Renommage sur place, effacement en deux clics, les deux tiennent au rechargement |
 
 ---
 
@@ -90,6 +92,15 @@ quelle, produisait des fausses alertes — mais ils ne viennent pas de lui.
 9. **Les couleurs de la piste, de la côte d'azur et de la ligne des stayers.** L'opérateur
    a demandé « plus clair », « plus foncé », « plus visible » ; les valeurs retenues sont
    dans `mesures.md` §14 et n'ont pas été dictées.
+10. **La façon de renommer et d'effacer une course.** Il a demandé de pouvoir le faire, pas
+    une manière de le faire. Trois choses sont de nous : le renommage se fait **sur place**
+    plutôt que dans une fenêtre ; l'effacement **demande deux clics** plutôt qu'une
+    confirmation ; et l'ordre des boutons est *Load*, *Rename*, *Delete*, le destructif en
+    dernier.
+11. **Le modèle de départ n'est déposé qu'une fois.** Il a demandé que la course de
+    référence s'efface « comme on le désire » ; pour qu'un effacement tienne, il fallait
+    décider que la liste enregistrée fait foi dès qu'elle existe, même vide. Ce choix est
+    de nous, et c'est lui qui fait qu'une course de référence effacée ne revient pas.
 
 ---
 

@@ -737,3 +737,78 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   tour prévu suivant, à confirmer dans le règlement en vigueur.
 - **Le protocole exact d'échange avec la photo-finish**, à voir à l'implémentation.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
+
+---
+
+## 16. Le simulateur : courses enregistrées, Restart, REC
+
+Cette section vient après le §15 pour ne renuméroter aucune autre : les six sections qui la
+précèdent sont citées par leur numéro dans tous les autres documents. Elle porte sur le
+**prototype lui-même**, pas sur la course.
+
+**28 octobre 2026 — la course de référence doit devenir une course ordinaire.** Le poste
+`travaux.md` §7a demande que le scénario de référence cesse d'être un cas particulier câblé
+dans le code et devienne une course enregistrée comme les autres, qu'on charge, rejoue,
+renomme et efface. Deux questions lui ont été posées avant d'y toucher. Ses réponses, mot
+pour mot :
+
+> oui les BIB 4 et 11 doivent rester au contact de 12 pendant les trois tours, i faut donc
+> que leur vitesse s'ajuste sur celle de 12
+
+> le bouton Restart doit redémarrer la course. Il faut ajouter un bouton pour faire une
+> nouvelle course. Pendant qu'une course est en cours on devrait peut-être avoir un point
+> rouge "REC" qui s'allume.
+
+Ce que cela fixe :
+
+1. **Le contact des coureurs 4 et 11 avec le 12 est une règle, pas un effet de bord.** Les
+   trois tours passés dans sa roue doivent survivre à la conversion en course enregistrée,
+   et le moyen est énoncé : **leur vitesse s'ajuste sur celle du 12**, elle n'est pas rejouée
+   indépendamment.
+2. **`↺` Restart redémarre la course en cours**, celle qui est chargée. Il ne l'efface pas et
+   n'en ouvre pas une autre.
+3. **Un deuxième bouton ouvre une course neuve.**
+4. **Un point rouge « REC »** s'allume pendant qu'une course est en cours. Il a été proposé
+   avec un « peut-être » : l'écran se propose avant d'être codé (§14).
+
+**28 octobre 2026 — le point REC suit la lecture, pas la course.** La maquette montrait le
+point allumé tant que la course n'est pas finie. Sa correction, mot pour mot :
+
+> Le point REC s'éteint dès qu'on met en pause. Tu peux coder la maquette avec ça.
+
+**28 octobre 2026 — les libellés des deux boutons de course, et la place du retour.** Mot
+pour mot :
+
+> Je pense que je préfèrerais un libellé "New" plutôt que "+" pour une nouvelle course, et
+> "Replay" pour rejouer la course et ces deux boutons devraient être proches l'un de l'autre.
+> Le bouton "< Rewind 30s" devrait s'appeler "< 30s"
+
+> on va déplacer le bouton "< 30s" et le mettre à gauche du bouton "play"
+
+**28 octobre 2026 — les composants de la barre doivent avoir la même taille.** Il l'a vu sur
+une image, avant toute mesure. Mot pour mot :
+
+> la ligne des boutons + horloges : est-ce que tous les composants sont de dimensions
+> identiques ? sur l'image que tu me montres ce n'est pas le cas
+
+Mesuré sur la barre : les six faisaient 22,8 · 25,2 · 24,4 · 24,4 · 22,4 · 14,4 pixels de
+haut. Ils font maintenant la même hauteur, donnée une fois pour la barre du haut et une fois
+pour le rail.
+
+**28 octobre 2026 — la course de référence s'efface et se renomme comme une autre.** La
+maquette du poste 6a lui demandait ce que devient la course de référence, puisqu'elle était
+écrite dans le code et non dans la liste enregistrée. Sa réponse, mot pour mot :
+
+> il faut pouvoir la supprimer et également pouvoir la renommer comme on le désire. Le fait
+> qu'elle soit dans le code n'intéresse pas l'utilisateur ! D'ailleurs que fait-elle dans le
+> code ?
+
+Ce que cela fixe :
+
+5. **Elle n'est plus une ligne à part.** Elle porte *Load*, *Rename* et *Delete* comme les
+   autres, elle n'a plus de marque de couleur qui la distingue, et le nom qu'on lui donne
+   comme l'effacement qu'on en fait **survivent au rechargement de la page**.
+6. **Elle n'est plus dans le code.** Elle y est seulement comme **modèle de départ** : la
+   toute première fois que le prototype s'ouvre sur un poste, la liste enregistrée est vide
+   et il y dépose cette course. Ensuite il ne la regarde plus jamais — la liste est celle que
+   l'opérateur a laissée.

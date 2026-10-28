@@ -54,7 +54,7 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 
 | Fichier | Rôle |
 |---|---|
-| `timeline-prototype.html` | **Le prototype** (un seul fichier, aucune dépendance). L'en-tête affiche « build N », incrémenté à chaque publication ; actuellement **build 73**. Publié sur https://claude.ai/artifact/4dcfPEf9XmK7xQ4QDVfcJ4 |
+| `timeline-prototype.html` | **Le prototype** (un seul fichier, aucune dépendance). L'en-tête affiche « build N », incrémenté à chaque publication ; actuellement **build 75**. Publié sur https://claude.ai/artifact/4dcfPEf9XmK7xQ4QDVfcJ4 |
 | `maquette-groupes.html` | Maquette des décisions du 25 octobre 2026, dérivée du prototype, **conservée comme témoin** : les décisions ont depuis été codées dans le prototype. `maquette-groupes.jpg` en est une capture |
 | `maquette-simulateur.html` | Maquette de l'écran de **simulateur de courses de test** (composer un scénario). Maquette seule, pas de moteur |
 | `console-course-aux-points.html` | Première maquette, abandonnée pour son interface, mais dont le **moteur d'inférence** a été validé et doit être repris dans l'implémentation réelle (voir `docs/concept.md`) |
@@ -90,10 +90,16 @@ fichiers du dossier.
 
 ### Charger la course de référence
 
-Un prototype qui vient de démarrer tourne sur une course **vide**. Le scénario de référence —
-celui que décrit `docs/mesures.md` — doit être **chargé depuis l'onglet Files**. Sans ce
+Un prototype qui vient de démarrer tourne sur une course **vide**. La course de référence —
+celle que décrit `docs/mesures.md` — est une course enregistrée ordinaire depuis la build 74,
+et doit être **chargée depuis l'onglet Files**. Sans ce
 chargement, aucun des événements décrits dans la documentation ne se produit. C'est une erreur
 classique, consignée dans `docs/pitfalls.md`.
+
+Depuis la build 75 elle est **déposée dans la liste à la première ouverture seulement**, et
+elle s'y renomme et s'y efface comme n'importe quelle autre. Si elle n'apparaît plus, c'est
+qu'elle a été effacée : vider la clé `tct.sim.races` du stockage du navigateur, puis
+recharger la page, la redépose.
 
 ---
 

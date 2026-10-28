@@ -92,10 +92,16 @@ avec la course de référence, qui se charge depuis l'onglet Files. **Conséquen
 tests : la course de référence ne se mesure plus sur un `reset()`, il faut la charger
 d'abord.**
 
-⚠️ **Le correctif n'a pas tenu.** L'opérateur signale le 28 octobre 2026 que le scénario
-tourne encore sur une course neuve. `reset()` met bien `useScript: false`, mais d'autres
-chemins le remettent après coup. Voir `travaux.md` §7a : le symptôme, ce qui est vérifié, et
-ce que l'opérateur veut à la place.
+⚠️ **Le correctif n'a pas tenu**, et le 28 octobre 2026 l'opérateur a signalé que le scénario
+tournait encore sur une course neuve. `reset()` mettait bien `useScript: false`, mais le
+bouton Restart et `rewind30()` le remettaient après coup, chacun par un `const keep`.
+
+✅ **Résolu à la build 74, en supprimant la chose plutôt que le symptôme.** Il n'y a plus de
+`SCRIPT`, plus de `useScript`, plus de mode `away` : la course de référence est une course
+enregistrée comme les autres, deux ordres sur l'horloge. Aucun drapeau ne peut donc survivre à
+un `reset()`, parce qu'il n'y a plus de drapeau. **La conséquence pour les tests ne change
+pas** : la course de référence se charge depuis l'onglet Files avant d'être mesurée, et c'est
+désormais vrai pour la même raison que pour n'importe quelle autre course enregistrée.
 
 **A12. Les précisions de l'opérateur ne sont pas des demandes.** Il a donné les longueurs
 réelles des tape switches ; elles ont été codées à la build 61, et il a demandé de les

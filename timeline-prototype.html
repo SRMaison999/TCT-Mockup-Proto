@@ -271,8 +271,15 @@ body.sprintmode #scard{display:flex}
 .bar #simtransport{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .bar #simtransport .sh{padding:0;gap:6px}
 .bar #simtransport .btn.lg{padding:3px 9px;font-size:13px}
-.bar #simtransport #simrewind{font-size:11px;padding:3px 7px}
 .bar #simtransport .clock{font-size:13px;padding:2px 8px}
+#railtransport #simtransport .clockrow{padding-top:8px}   /* the second row only breathes when the rail is open; in the top bar the two rows sit side by side */
+/* One height for everything in the transport row — buttons, groups of buttons, clock and REC. Each of them was
+   sizing itself on its own text and padding, so six controls side by side came out six different heights
+   (operator, 28 October 2026). The height is given once per place the row can sit, and every control takes it. */
+#simtransport{--tph:38px}
+.bar #simtransport{--tph:26px}
+#simtransport .btn,#simtransport .seg,#simtransport .clock,#simtransport .recdot{height:var(--tph);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+#simtransport .seg .btn{height:100%;border-radius:0}
 .bar.withtransport h1{display:none}
 .btn.lg{padding:8px 16px;font-size:16px}
 .rosterrow{display:grid;grid-template-columns:22px 40px minmax(0,1fr) 44px 26px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2)}
@@ -296,8 +303,15 @@ body.sprintmode #scard{display:flex}
 .crow .nm{font:500 11.5px var(--sans);line-height:1.3}
 .crow .mt{display:flex;align-items:center;gap:5px;margin-top:3px}
 .crow .du{font:500 11px var(--mono);color:var(--muted)}
-.crow.ref{border-left-color:var(--good)}
 .crow.rec{border-left-color:var(--crit)}
+.btn.newrace{border-color:var(--acc);color:#8FB4FF}
+.btn.armed{background:#3a1515;border-color:var(--crit);color:#ffb3b3;font-weight:600}
+.crow input.rn{font:500 11.5px var(--sans);color:var(--fg);background:var(--deep);border:1px solid var(--acc);border-radius:3px;padding:2px 5px;width:100%;box-sizing:border-box}
+/* The red dot: it says a race is being recorded, and the operator asked for it to go out the moment the race is
+   paused, not when the race ends (28 October 2026). So it follows the play button, not the race. */
+.recdot{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--sans);letter-spacing:.1em;color:var(--crit)}
+.recdot i{width:9px;height:9px;border-radius:50%;background:var(--crit);display:block}
+.recdot.off{visibility:hidden}
 .dot{display:inline-block;width:7px;height:7px;border-radius:4px;background:var(--crit);margin-right:5px;vertical-align:1px}
 .hint{color:var(--dim);font:500 11px var(--mono);padding:5px 4px 0}
 </style>
@@ -306,7 +320,7 @@ body.sprintmode #scard{display:flex}
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 73</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 75</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
@@ -389,12 +403,16 @@ body.sprintmode #scard{display:flex}
   <div class="sec fix" style="border-bottom:0">
     <div id="railtransport"><div id="simtransport">
     <div class="sh" style="justify-content:center">
-      <span class="seg"><button class="btn lg quiet" id="simplay" title="Play">&#9654;</button><button class="btn lg quiet" id="simpause" title="Pause">&#10073;&#10073;</button><button class="btn lg quiet" id="simrestart" title="Restart">&#8634;</button></span>
+      <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
+      <span class="seg"><button class="btn lg quiet" id="simplay" title="Play">&#9654;</button><button class="btn lg quiet" id="simpause" title="Pause">&#10073;&#10073;</button></span>
       <span class="seg" id="speedseg"><button class="btn lg on" data-f="1">&times;1</button><button class="btn lg quiet" data-f="4">&times;4</button><button class="btn lg quiet" data-f="16">&times;16</button></span>
+      <!-- The two race buttons sit together, away from the transport: one replays the race that is loaded, the
+           other opens a fresh one. Their wording is the operator's, 28 October 2026. -->
+      <span class="seg"><button class="btn lg quiet" id="simrestart" title="Replay this race from its start">Replay</button><button class="btn lg newrace" id="simnew" title="Open a new, empty race">New</button></span>
     </div>
-    <div class="sh" style="justify-content:center;padding-top:8px">
-      <button class="btn" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; Rewind 30s</button>
+    <div class="sh clockrow" style="justify-content:center">
       <span class="clock" id="simclock">0:00.0</span>
+      <span class="recdot off" id="simrec"><i></i>REC</span>
     </div>
     </div></div>
     <div class="cfgrow">
@@ -450,12 +468,6 @@ const RIDERS = [
   [67,'LEHMANN','GER','#4b5563'],[58,'PETROV','KAZ','#06b6d4',1],[70,'SILVA','BRA','#22c55e',1],[46,'DE WIT','BEL','#111827'],
   [23,'IVERSEN','DEN','#ef4444'],[11,'TANAKA','JPN','#ec4899'],[4,'WALSH','GBR','#1e3a8a'],[15,"O'NEILL",'IRL','#15803d']
 ];
-// Scripted scenario, by race lap. Everything else is a steady bunch.
-const SCRIPT = {
-  4:  { fromLap: 4, delta: -1.0, follow: 12, followLaps: 3 },   // BIB 4 and 11 drop off the back of the bunch
-  11: { fromLap: 4, delta: -1.0, follow: 12, followLaps: 3 },   // … and take BIB 12's wheel for three laps when he catches them
-  12: { fromLap: 5, delta: +1.7 },                               // BIB 12 attacks, catches 4 and 11 from behind, then takes a lap on the bunch
-};
 const SILENT = {};                              // transponder stops answering from lap 14
 const CRASH = { lap: 999, bibs: [], backLap: 999 };  // crash at Pursuit B, back on the track four laps later
 const NOTP = [];                                // riders without transponder from the start: carried with their group, placed by hand
@@ -507,7 +519,6 @@ function reset() {
     // The reference scenario belongs to the reference race, and to nothing else. It used to run on every fresh
     // start, so BIB 12 attacked and BIB 4 and 11 were dropped while the operator was driving his OWN riders — three
     // speeds moving for a reason he had not asked for. It is loaded with the race, from Files.
-    useScript: false,
     replay: null,           // a saved race being replayed: the piloting acts left to apply, by race time
   };
   for (const r of S.riders) { S.lapStatus[r.bib] = 0; S.laps[r.bib] = { gained: 0, lost: 0 }; }
@@ -532,11 +543,26 @@ const tpOf = bib => S.tp.find(t => t.bib === bib) || null;
 const tpSilent = bib => { const t = tpOf(bib); return !!(t && t.silent); };
 const tpById = id => S.tp.find(t => t.id === id) || null;   // the transponder fitted to a bike, found in the table
 function endPilot(r) { delete S.pilot[r.bib]; r.mode = 'bunch'; r.done = true; railDirty = true; dirty = true; }
-function pilotStep(r, po, base, ref) {
+function pilotStep(r, po, base, ref, lap) {
   const rel = r.dist - ref;
   if (po.kind === 'spd') { r.spd = po.v; return; }
   if (po.kind === 'gain') { r.spd = base + 1.7; if (rel >= TRACK * (r.lapTrue + 1) - 20) { r.lapTrue += 1; endPilot(r); } return; }
-  if (po.kind === 'lose') { r.spd = base - 1.0; if (rel <= TRACK * (r.lapTrue - 1) + 20) { r.lapTrue -= 1; endPilot(r); } return; }
+  if (po.kind === 'lose') {
+    r.spd = base - 1.0;
+    // An order to lose a lap can carry a WHEEL: the rider who is lapping him catches him, and he goes with him. The
+    // operator, 28 October 2026: « oui les BIB 4 et 11 doivent rester au contact de 12 pendant les trois tours, il
+    // faut donc que leur vitesse s'ajuste sur celle de 12 ». So it is the other rider's speed that is copied, step
+    // after step, never a speed of our own: he takes the wheel when the gap to the rider lapping him closes to a
+    // bike length or so, and holds it for the laps the order names. He goes on losing his lap all the while.
+    if (po.wheel) {
+      const w = S.riders.find(x => x.bib === po.wheel);
+      if (w) {
+        if (!r.following && S.pilot[po.wheel] && Math.abs((w.dist - r.dist) - TRACK) < 8) r.following = lap;
+        if (r.following && lap < r.following + po.wheelLaps) r.spd = w.spd;
+      }
+    }
+    if (rel <= TRACK * (r.lapTrue - 1) + 20) { r.lapTrue -= 1; endPilot(r); } return;
+  }
   const mates = po.bibs.map(b => S.riders.find(x => x.bib === b)).filter(x => x && x.mode !== 'out');
   if (!mates.length) { endPilot(r); return; }
   if (po.kind === 'up') {   // bridge to the back of the group ahead
@@ -563,21 +589,9 @@ function step(dt) {
     if (r.mode === 'out') continue;
     if (CRASH.bibs.includes(r.bib) && !r.crashed && lap >= CRASH.lap && (r.dist % TRACK) > 100 && (r.dist % TRACK) < 118) { r.mode = 'off'; r.crashed = true; }
     if (r.mode === 'off') { if (lap >= CRASH.backLap) { r.mode = 'bunch'; r.lapTrue = 0; r.dist = ref + r.offset - 30; } else continue; }
-    const sc = S.useScript ? SCRIPT[r.bib] : null;
-    if (sc && r.mode === 'bunch' && r.lapTrue === 0 && lap >= sc.fromLap && !r.done) { r.mode = 'away'; }
     const po = S.pilot[r.bib];
-    if (po) { pilotStep(r, po, base, ref); }
-    else if (r.mode === 'away' && sc) {
-      r.spd = base + sc.delta;
-      if (sc.follow) {   // a dropped rider takes the wheel of the attacker who laps him, for a few laps
-        const f = S.riders.find(x => x.bib === sc.follow);
-        if (!r.following && f.mode === 'away' && Math.abs((f.dist - r.dist) - TRACK) < 8) r.following = lap;
-        if (r.following && lap < r.following + sc.followLaps) r.spd = f.spd;
-      }
-      const rel = r.dist - ref;
-      if (sc.delta > 0 && rel >= TRACK - 20) { r.mode = 'bunch'; r.lapTrue = 1; r.done = true; }
-      if (sc.delta < 0 && rel <= -TRACK + 20) { r.mode = 'bunch'; r.lapTrue = -1; r.done = true; }
-    } else {
+    if (po) { pilotStep(r, po, base, ref, lap); }
+    else {
       let off = r.offset;
       if (TIGHT.bibs.includes(r.bib) && lap >= TIGHT.lap - 2 && lap <= TIGHT.lap) off = S.riders.find(x => x.bib === TIGHT.bibs[0]).offset + 0.15 * TIGHT.bibs.indexOf(r.bib);   // a tight sprint
       const target = ref + TRACK * r.lapTrue + off;
@@ -1622,7 +1636,9 @@ function syncSeg() {
   const playing = S.started && S.factor > 0, paused = S.started && S.factor <= 0;
   $('#simplay').classList.toggle('on', playing); $('#simplay').classList.toggle('quiet', !playing);
   $('#simpause').classList.toggle('on', paused); $('#simpause').classList.toggle('quiet', !paused);
-  $('#simpause').disabled = !S.started; $('#simrestart').disabled = !S.started; $('#simrewind').disabled = !S.started;
+  $('#simpause').disabled = !S.started; $('#simrewind').disabled = !S.started;
+  $('#simrestart').disabled = !S.started && !(REC && REC.acts.length);   // a race just loaded can be restarted before it is started
+  $('#simrec').classList.toggle('off', !playing);
 }
 $('#logtabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; logTab = b.dataset.tab; $('#logtabs').querySelectorAll('[data-tab]').forEach(x => { x.classList.toggle('on', x === b); x.classList.toggle('quiet', x !== b); }); $('#loghint').textContent = { cross: 'finish-line order of every lap · leader first · newest lap first', dec: 'facts only · newest first', sprints: 'every sprint as judged · click one to open it', stand: 'points: sprints 5-3-2-1, final ×2, laps ±20 · ties: place in the final sprint' }[logTab]; dirty = true; render(); });
 
@@ -1996,16 +2012,33 @@ function rehost(bibs, allBibs) { for (const b of bibs) if (S.noTp.has(b)) { cons
 // The rail is rebuilt only when its structure changes; speeds, the clock and the lit buttons are written into the
 // existing nodes every frame, so a click is never lost to a redraw (pitfall D2).
 const RKEY = 'tct.sim.races';
+let renaming = null, delArmed = null;   // the row being renamed, and the row whose Delete has been clicked once
 let RACES = [], REC = null, simTab = 'riders', railRows = {}, startListEditing = false;
-try { RACES = JSON.parse(localStorage.getItem(RKEY) || '[]'); } catch (e) { RACES = []; }
-const REF_RACE = { ref: true, name: 'Reference — 4 and 11 lose a lap, 12 takes a lap', cfg: { ...DEF }, script: true, acts: [], laps: DEF.laps };
+// The reference race is a SAVED RACE like any other: a configuration and a list of orders, replayed on the clock.
+// It was a scenario wired into the simulator until the build 74; nothing in the code knows it any more, beyond the
+// Files tab always offering it. The two times below are the ones the wired scenario fired at, read off the race
+// itself, so what is replayed is the race every measurement was taken on (mesures.md §15).
+const REF_RACE = { name: 'Reference — 4 and 11 lose a lap, 12 takes a lap', cfg: { ...DEF }, laps: DEF.laps, dur: 674.2, acts: [
+  { t: 50.49, lap: 4, kind: 'lose', bibs: [4, 11], v: { wheel: 12, wheelLaps: 3 } },
+  { t: 67.39, lap: 5, kind: 'gain', bibs: [12] },
+] };
+// The saved list is read once. **Never seen before** and the reference race is put in it, as an ordinary row;
+// seen before — even if it is now empty — and what is there is what the operator left, reference race included or
+// deleted. He asked for it on 28 October 2026: « il faut pouvoir la supprimer et également pouvoir la renommer
+// comme on le désire. Le fait qu'elle soit dans le code n'intéresse pas l'utilisateur ! » So the code seeds the
+// list and then forgets it: nothing downstream knows that one of these rows came from there.
+try {
+  const raw = localStorage.getItem(RKEY);
+  if (raw == null) { RACES = [JSON.parse(JSON.stringify(REF_RACE))]; saveRaces(); }
+  else RACES = JSON.parse(raw) || [];
+} catch (e) { RACES = []; }
 const VERB = { gain: ['takes a lap', 'take a lap'], lose: ['loses a lap', 'lose a lap'], up: ['joins the group ahead', 'join the group ahead'],
   down: ['drops back', 'drop back'], silent: ['goes silent', 'go silent'], bike: ['changes bike', 'change bike'],
   free: ['rides with the bunch again', 'ride with the bunch again'], assign: ['is read again', 'are read again'] };
 const andList = bibs => bibs.length === 1 ? '' + bibs[0] : bibs.slice(0, -1).join(', ') + ' and ' + bibs[bibs.length - 1];
 
 
-function newRec() { return { cfg: { ...CFG }, script: S.useScript, acts: [] }; }
+function newRec() { return { cfg: { ...CFG }, acts: [] }; }
 function saveRaces() { try { localStorage.setItem(RKEY, JSON.stringify(RACES.slice(0, 60))); } catch (e) { /* storage full or blocked: the list stays in this session */ } }
 
 // The name says what the race looks like: the orders given, in the order they were given, in the words of the buttons.
@@ -2027,13 +2060,13 @@ function raceName(rec) {
   const head = phrases.slice(0, 3);
   if (phrases.length > 3) head.push('and ' + (phrases.length - 3) + ' more');
   const body = head.join(' · ') || 'steady bunch, nothing piloted';
-  return (rec.script && rec.acts.length ? 'from Reference · ' : '') + (pre.length ? pre.join(' · ') + ' · ' : '') + body;
+  return (pre.length ? pre.join(' · ') + ' · ' : '') + body;
 }
 
 function recAct(kind, bibs, v) { if (REC) { REC.acts.push({ t: +S.t.toFixed(2), lap: raceLap(), kind, bibs: [...bibs], v }); railDirty = true; } }
 function commitRec() {
   if (!REC || S.t <= 0) return;
-  const r = { cfg: REC.cfg, script: REC.script, acts: REC.acts, laps: S.finished ? LAPS : dispLap(), dur: +S.t.toFixed(1), at: Date.now() };
+  const r = { cfg: REC.cfg, acts: REC.acts, laps: S.finished ? LAPS : dispLap(), dur: +S.t.toFixed(1), at: Date.now() };
   r.name = raceName(r);
   let n = 2, name = r.name; while (RACES.some(x => x.name === name)) name = r.name + ' (' + n++ + ')';
   r.name = name;
@@ -2101,7 +2134,7 @@ function doAct(kind, bibs, v, record = true) {
   for (const bib of bibs) {
     const r = S.riders.find(x => x.bib === bib);
     if (kind === 'spd' && r) { S.pilot[bib] = { kind: 'spd', v }; r.mode = 'pilot'; }
-    else if ((kind === 'gain' || kind === 'lose') && r) { S.pilot[bib] = { kind }; r.mode = 'pilot'; }
+    else if ((kind === 'gain' || kind === 'lose') && r) { S.pilot[bib] = v && v.wheel ? { kind, wheel: v.wheel, wheelLaps: v.wheelLaps } : { kind }; r.mode = 'pilot'; }
     else if ((kind === 'up' || kind === 'down') && r) { const m = neighbourGroup(bib, kind === 'up' ? -1 : 1); if (!m || !m.length) continue; S.pilot[bib] = { kind, bibs: m }; r.mode = 'pilot'; }
     else if (kind === 'free' && r) { delete S.pilot[bib]; r.mode = 'bunch'; r.done = true; }
     else if (kind === 'silent') { const t = tpOf(bib); if (t) t.silent = !t.silent; }
@@ -2151,7 +2184,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 73';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 75';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
@@ -2245,13 +2278,23 @@ function renderRail() {
     ${TAPES.map((T, i) => fixed(T.name, T.pos, `<span id="tapec${i}">${S.taps[i].length}</span>`)).join('')}
     <div class="hint">the three in a loop are compared with it: bikes counted minus transponders read</div>`;
 
-  const row = (r, i) => `<div class="crow${r.ref ? ' ref' : ''}">
-    <div class="nm">${r.name}</div>
+  // A row carries its three buttons: load it, rename it, delete it. While it is being renamed the name becomes a
+  // field and Save/Cancel take the place of the three; a delete asks once, by turning red, and the second click on
+  // the same button does it. No dialog: the rail is the operator's own screen and a modal would cover it.
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  const row = (r, i) => renaming === i
+    ? `<div class="crow">
+    <div class="nm"><input class="rn" id="rnin" value="${esc(r.name)}"></div>
     <div class="mt"><span class="du">${r.cfg.track} m · ${plural(r.laps || 0, 'lap')}${r.dur ? ' · ' + fmtT(r.dur) : ''}</span><span class="sp"></span>
-      <button class="btn xs quiet" data-load="${i}">Load</button></div></div>`;
+      <button class="btn xs ok" data-rnok="${i}">Save</button><button class="btn xs quiet" data-rncancel="1">Cancel</button></div></div>`
+    : `<div class="crow">
+    <div class="nm">${esc(r.name)}</div>
+    <div class="mt"><span class="du">${r.cfg.track} m · ${plural(r.laps || 0, 'lap')}${r.dur ? ' · ' + fmtT(r.dur) : ''}</span><span class="sp"></span>
+      <button class="btn xs quiet" data-load="${i}">Load</button><button class="btn xs quiet" data-rn="${i}">Rename</button><button class="btn xs ${delArmed === i ? 'armed' : 'danger'}" data-del="${i}">${delArmed === i ? 'Delete?' : 'Delete'}</button></div></div>`;
   $('#simfileslist').innerHTML = (REC && S.t > 0 ? `<div class="crow rec"><div class="nm"><span class="dot"></span>${raceName(REC)}</div>
       <div class="mt"><span class="du">recording · lap ${dispLap()}</span></div></div>` : '')
-    + row(REF_RACE, -1) + RACES.map((r, i) => row(r, i)).join('');
+    + (RACES.length ? RACES.map((r, i) => row(r, i)).join('') : '<div class="hint">No saved race. Play one and press New.</div>');
+  if (renaming != null) { const el = $('#rnin'); if (el && document.activeElement !== el) { el.focus(); el.select(); } }
 
   $('#simstartlist').innerHTML = `<div class="ksub">Entered riders<span class="sp"></span><button class="btn xs quiet" id="rosteradd"${lock}>Add</button><button class="btn xs quiet${startListEditing ? ' on' : ''}" id="rosteredit"${lock}>Edit</button></div>`
     + RIDERS.map(([bib, name, nat, color], i) => `<div class="rosterrow${startListEditing ? ' editing' : ''}">
@@ -2296,18 +2339,29 @@ $('#simpause').addEventListener('click', () => {
   S.factor = 0;
   syncSeg(); railDirty = true; dirty = true; render();
 });
+// Restart replays the race that is loaded, from its start: same riders, same track, same recorded orders. It saves
+// nothing and opens nothing — the operator, 28 October 2026: « le bouton Restart doit redémarrer la course ».
 $('#simrestart').addEventListener('click', () => {
-  if (!S.started) return;
-  commitRec(); const keep = S.useScript; reset(); S.useScript = keep; REC = newRec();
+  if (!S.started && !(REC && REC.acts.length)) return;   // nothing loaded and nothing run: there is no race to restart
+  const acts = (REC ? REC.acts : []).map(a => ({ ...a }));
+  reset();
+  S.replay = acts.map(a => ({ ...a })).sort((a, b) => a.t - b.t);
+  REC = newRec(); REC.acts = acts;
+  logEvent('RACE', 'Restart · the same race replayed from its start', false);
+  syncSeg(); railDirty = true; dirty = true; render();
+});
+// … and a race of its own: the current one is saved, an empty one opens on the configuration shown. This is what
+// Restart did until the build 74 — « Il faut ajouter un bouton pour faire une nouvelle course » (same day).
+$('#simnew').addEventListener('click', () => {
+  commitRec(); reset(); REC = newRec();
   syncSeg(); railDirty = true; dirty = true; render();
 });
 function rewind30() {
   if (!S.started) return;
   const target = Math.max(0, S.t - 30);
   const keep = REC.acts.filter(a => a.t <= target);
-  const keepScript = S.useScript;
   reset();
-  S.useScript = keepScript; S.started = true;
+  S.started = true;
   REC.acts = keep;
   S.replay = keep.map(a => ({ ...a })).sort((a, b) => a.t - b.t);
   let guard = 0;
@@ -2317,9 +2371,7 @@ function rewind30() {
   syncSeg(); railDirty = true; dirty = true; render();
 }
 $('#simrewind').addEventListener('click', rewind30);
-// Every rider back in the bunch at the bunch's pace: the ones the operator is driving by hand AND the ones the
-// scripted race sent away. Freeing only the piloted ones left the script free to launch its attackers again on the
-// next step, which made the button look dead.
+// Every rider back in the bunch at the bunch's pace, piloted or not.
 function syncAllToBunchPace() {
   const live = S.riders.filter(r => r.mode !== 'out' && r.mode !== 'off').map(r => r.bib);
   if (live.length) doAct('free', live);
@@ -2391,12 +2443,22 @@ $('#rail').addEventListener('keydown', e => {
   else if (e.key === 'Escape') { e.target.blur(); }
 });
 $('#rail').addEventListener('click', e => {
-  const b = e.target.closest('[data-sim],[data-cfg],[data-col],[data-track],[data-load],[data-del],[data-rosterdel],#syncspeeds,#rosteradd,#rosteredit');
+  const b = e.target.closest('[data-sim],[data-cfg],[data-col],[data-track],[data-load],[data-del],[data-rn],[data-rnok],[data-rncancel],[data-rosterdel],#syncspeeds,#rosteradd,#rosteredit');
   if (!b || b.disabled) return;
   if (b.dataset.track) return setTrack(+b.dataset.track);
   if (b.dataset.cfg) return cfgStep(b.dataset.cfg, +b.dataset.d);
-  if (b.dataset.load != null) { const r = +b.dataset.load < 0 ? REF_RACE : RACES[+b.dataset.load]; if (r) loadRace(r); return; }
-  if (b.dataset.del != null) { RACES.splice(+b.dataset.del, 1); saveRaces(); railDirty = true; render(); return; }
+  if (b.dataset.load != null) { const r = RACES[+b.dataset.load]; if (r) loadRace(r); return; }
+  if (b.dataset.del != null) {
+    const i = +b.dataset.del;
+    if (delArmed !== i) { delArmed = i; renaming = null; railDirty = true; render(); return; }   // first click: ask
+    const gone = RACES[i];
+    RACES.splice(i, 1); saveRaces(); delArmed = null;
+    logEvent('OP', 'Race deleted · ' + gone.name, false);
+    railDirty = true; render(); return;
+  }
+  if (b.dataset.rn != null) { renaming = +b.dataset.rn; delArmed = null; railDirty = true; render(); return; }
+  if (b.dataset.rncancel != null) { renaming = null; railDirty = true; render(); return; }
+  if (b.dataset.rnok != null) { commitRename(+b.dataset.rnok); return; }
   if (b.id === 'syncspeeds') return syncAllToBunchPace();
   if (b.dataset.col && b.dataset.col !== 'bib') { simCols[b.dataset.col] = !simCols[b.dataset.col]; railDirty = true; render(); return; }
   if (b.id === 'rosteradd') return addRosterRider();
@@ -2424,6 +2486,18 @@ $('#simfile').addEventListener('change', e => {
   };
   fr.readAsText(f); e.target.value = '';
 });
+// A renamed race keeps its new name through a reload, because the whole list is written back to localStorage.
+// An empty name is refused in silence: the row keeps the one it had rather than becoming nameless.
+function commitRename(i) {
+  const el = $('#rnin'), v = el ? el.value.trim() : '';
+  if (v && RACES[i] && v !== RACES[i].name) { logEvent('OP', 'Race renamed · ' + RACES[i].name + ' → ' + v, false); RACES[i].name = v; saveRaces(); }
+  renaming = null; railDirty = true; render();
+}
+document.addEventListener('keydown', e => {
+  if (renaming == null || e.target.id !== 'rnin') return;
+  if (e.key === 'Enter') { e.preventDefault(); commitRename(renaming); }
+  if (e.key === 'Escape') { e.preventDefault(); renaming = null; railDirty = true; render(); }
+});
 function saveRaceFile(r) { download('race-' + r.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-|-$/g, '').slice(0, 60) + '.json', JSON.stringify(r, null, 1), 'application/json'); }
 function loadRace(r) {
   commitRec();
@@ -2432,7 +2506,6 @@ function loadRace(r) {
   if (r.cfg && r.cfg.gap == null && r.cfg.a != null) c.gap = Math.max(0, Math.round(c.track - r.cfg.a));
   delete c.tape; CFG = c; applyCfg();
   reset();
-  S.useScript = !!r.script;
   S.replay = (r.acts || []).map(a => ({ ...a })).sort((a, b) => a.t - b.t);
   REC = newRec(); REC.acts = (r.acts || []).map(a => ({ ...a }));
   S.hideOnStart = true;   // the rail stays until the operator starts the race, then steps out of the way
@@ -2440,7 +2513,7 @@ function loadRace(r) {
 }
 
 // ---------- loop ----------
-window.__proto = { state: () => S, step, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, markDirty: () => { dirty = true; } };
+window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, markDirty: () => { dirty = true; } };
 applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 let last = performance.now();
 // the race advances in fixed steps of FIXED seconds whatever the speed, so 1x, 4x and 16x run the same race;
