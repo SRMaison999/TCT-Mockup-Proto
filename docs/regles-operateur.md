@@ -1,0 +1,621 @@
+# Les règles de l'opérateur
+
+**Ce fichier fait foi.** Le code s'y conforme, pas l'inverse. Tout ce qui suit est
+énoncé par l'opérateur, repris **mot pour mot**, avec sa date. Une règle ne change que
+parce qu'il l'énonce lui-même.
+
+**Ce fichier ne contient que ses énoncés.** Les mesures qui les ont validés sont dans
+`mesures.md`. Le code qui les applique est dans `architecture.md`. L'index « quelle règle,
+codée où, quel statut » est dans `cas-de-course.md`. Les erreurs de lecture déjà commises
+sont dans `pitfalls.md`. **Ne recopiez une règle d'ici dans aucun autre fichier** : c'est
+exactement ce qui a produit onze contradictions entre les documents.
+
+## Sommaire
+
+1. [La cassure : ce qui définit un groupe](#1-la-cassure--ce-qui-définit-un-groupe)
+2. [Rejoindre un groupe, se faire rejoindre](#2-rejoindre-un-groupe-se-faire-rejoindre)
+3. [Le merge dans la timeline](#3-le-merge-dans-la-timeline)
+4. [Le tour gagné ou perdu : quand, et combien](#4-le-tour-gagné-ou-perdu--quand-et-combien)
+5. [Le tour du peloton](#5-le-tour-du-peloton)
+6. [L'éligibilité aux sprints](#6-léligibilité-aux-sprints)
+7. [La conséquence sur le rang](#7-la-conséquence-sur-le-rang)
+8. [L'affichage d'un passage inéligible](#8-laffichage-dun-passage-inéligible)
+9. [L'installation mesurée](#9-linstallation-mesurée)
+10. [Les tape switches](#10-les-tape-switches)
+11. [Le vélo en trop, le coureur sans transpondeur, les transpondeurs inversés](#11-le-vélo-en-trop-le-coureur-sans-transpondeur-les-transpondeurs-inversés)
+12. [La mise en place et le tour de lancement](#12-la-mise-en-place-et-le-tour-de-lancement)
+13. [Les trois nombres de tours](#13-les-trois-nombres-de-tours)
+14. [La manière de travailler](#14-la-manière-de-travailler)
+15. [Ce qui reste à trancher](#15-ce-qui-reste-à-trancher)
+
+---
+
+## 1. La cassure : ce qui définit un groupe
+
+**25 octobre 2026.** Il n'existe pas de définition précise pour déterminer qu'un ou
+plusieurs coureurs rattrape(nt) ou se fait (font) rattraper par un ou plusieurs autres
+coureurs. C'est pourquoi on utilise une règle du cyclisme sur route, celle des
+**cassures**. Une cassure sanctionne un nouveau groupe et donc un nouveau gap avec le
+vainqueur. Mot pour mot :
+
+> Si l'écart entre l'arrière de la roue arrière d'un coureur (#1), et l'avant de la roue
+> avant du coureur (#2) qui le suit est supérieure à 1,000 secondes, il y a une cassure,
+> le coureur (#2) passe dans un autre groupe. En conséquence l'écart entre le vainqueur
+> et le coureur (#2) se mesure entre l'avant de la roue avant du vainqueur et l'avant de
+> la roue avant du coureur (#2).
+>
+> Si l'écart entre l'arrière de la roue arrière d'un coureur (#1), et l'avant de la roue
+> avant du coureur (#2) qui le suit est inférieure à 1,000 secondes, il n'y a pas de
+> cassure, le coureur (#2) reste dans le même groupe que le coureur (#1). En conséquence
+> l'écart entre le vainqueur et le coureur (#2) se mesure entre l'avant de la roue avant
+> du vainqueur et l'avant de la roue avant du coureur en première position du groupe dans
+> lequel figure le coureur (#2).
+
+Cette règle remplace le seuil de regroupement de 2 s du début du projet.
+
+**Ce qu'on peut mesurer.** On ne pourra pas mesurer précisément le temps écoulé entre
+l'arrière d'une roue arrière et l'avant d'une roue avant. On pourra en revanche calculer
+le temps écoulé entre l'axe de la roue avant d'un coureur et l'axe de la roue avant du
+coureur qui le suit, et en fonction de la vitesse (approximative) et des dimensions
+(approximatives) des bicyclettes on pourra définir (approximativement) le temps écoulé
+entre l'arrière d'une roue arrière et l'avant d'une roue avant.
+
+**La correction vaut exactement une longueur de vélo.** Avec `x1` et `x2` les positions
+des axes de roue avant, coureur #1 devant :
+
+    arrière de la roue arrière de #1 = x1 − empattement − rayon
+    avant de la roue avant de #2     = x2 + rayon
+    écart                            = (x1 − x2) − (empattement + 2 × rayon)
+                                     = écart entre axes − longueur du vélo
+
+Longueur du vélo ≈ **1,65 m** (empattement ≈ 0,98 m, diamètre de roue ≈ 0,67 m). Le temps
+écoulé vaut cet écart divisé par la vitesse.
+
+**La vitesse de conversion est celle du coureur qui suit**, puisque c'est sa roue avant
+qui doit couvrir l'écart.
+
+**Le seuil est un temps, pas une distance**, donc il suit automatiquement la catégorie —
+juniors, femmes, élites — sans qu'on touche à un réglage. Ce qui reste réglable n'est donc
+pas une adaptation technique : c'est la **sévérité du commissaire**.
+
+**Délai de confirmation : 0,3 s.** Accordé le 25 octobre 2026 (« vas-y comme tu le penses
+le mieux »), valeur recommandée sur mesure. Quand un coureur franchit une boucle sa
+position se recale d'un coup, et ce saut peut faire apparaître ou disparaître une cassure
+pendant une fraction de seconde. Une cassure, et sa disparition, ne comptent donc que si
+elles tiennent 0,3 s. La mesure qui a fixé la valeur est dans `mesures.md`.
+
+**Une reformulation équivalente, proposée par l'opérateur.** À partir du temps de passage
+des transpondeurs plutôt que d'une conversion en distance :
+
+> On peut raisonnablement déterminer le temps que met un coureur pour parcourir une
+> distance qui correspond à (longueur totale du vélo − rayon de la roue avant).
+> Appelons-la « valeur x ».
+> On peut raisonnablement déterminer le temps que met un coureur pour parcourir une
+> distance qui correspond à (rayon de la roue avant). Appelons-la « valeur y ».
+> On connaît avec précision le temps écoulé entre le passage des transpondeurs de deux
+> vélos qui se suivent. Appelons-le « valeur z ».
+> On obtient une donnée en temps par la formule suivante : **z − (x + y)**.
+> Si la valeur obtenue est supérieure à 1,000 seconde → **CASSURE**.
+> Si la valeur obtenue est inférieure à 1,000 seconde → **PAS DE CASSURE**.
+
+Ce n'est pas une seconde méthode indépendante : c'est le même calcul écrit autrement, sur
+les mêmes données approximatives. Elle ne permettrait donc pas de vérifier la première.
+
+---
+
+## 2. Rejoindre un groupe, se faire rejoindre
+
+**C'est la mesure du §1, appliquée à une paire précise.** Dans les deux cas la mesure va
+**d'un coureur à l'autre**, jamais d'un coureur à un groupe entier.
+
+> Rattrapé par le groupe de tête veut dire que le groupe de tête lui a repris un tour et
+> qu'il se trouve au mieux positionné avec le groupe de tête (mais avec un tour de retard)
+> ou alors déjà distancé par le groupe de tête. Pour savoir si un coureur est rattrapé par
+> un groupe, ce sera le cas s'il y a moins d'une seconde d'écart entre l'arrière de sa roue
+> arrière et l'avant de la roue avant du premier coureur du groupe le rattrapant.
+
+— 25 octobre 2026.
+
+- **Il rejoint un groupe par l'arrière** quand l'écart entre l'arrière de sa propre roue
+  arrière et l'avant de la roue avant du coureur en **dernière** position de ce groupe
+  passe sous 1,000 s.
+- **Il se fait rejoindre par un groupe** quand l'écart entre l'arrière de sa propre roue
+  arrière et l'avant de la roue avant du coureur en **première** position du groupe qui le
+  rattrape passe sous 1,000 s.
+
+**C'est un événement, pas un état instantané.** « Ou alors déjà distancé par le groupe de
+tête » : une fois rattrapé, il le reste, même quand le groupe de tête s'en va. Le
+rattrapage se date et se retient.
+
+**Confirmation du 28 octobre 2026.** Sur l'énoncé « ils ont rejoint le peloton quand ils
+sont arrivés à moins de 15,65 m du dernier coureur de la queue — pas de son centre » :
+« ça c'est correct ».
+
+---
+
+## 3. Le merge dans la timeline
+
+**25 octobre 2026.** Mot pour mot, pour les deux sens :
+
+> **Pour les gains de tours** : au moment où un ou plusieurs coureurs échappés à l'avant
+> de la course rattrapent le peloton (et par là il faut comprendre que le ou les leaders
+> se trouvent à une distance de moins de 2 mètres du coureur placé en dernière position
+> du peloton, ils soient mergés dans le groupe du peloton > attention ici la mesure doit
+> être entre le dernier coureur du peloton et le premier coureur du groupe des leaders,
+> et ceci peu importe à quel endroit de la piste). Et soient donc de nouveau considérés
+> dans le même tour que les autres coureurs du peloton.
+>
+> **Pour les pertes de tours** : au moment où un ou plusieurs coureurs lâchés à l'arrière
+> de la course se font rattraper par le peloton (et par là il faut comprendre que le
+> coureur en première position du peloton se trouve à une distance de moins de 2 mètres
+> du coureur placé en dernière position du groupe des coureurs attardés, ou du coureur
+> attardé si il est seul dans son groupe, ils soient mergés dans le groupe du peloton >
+> attention ici la mesure doit être entre le dernier coureur du groupe des attardés et le
+> premier coureur du peloton, et ceci peu importe à quel endroit de la piste). Et soient
+> donc de nouveau considérés dans le même tour que les autres coureurs du peloton.
+>
+> **Et ceci même si le gain du tour, ou la perte du tour, n'a pas été validé par
+> l'opérateur.** Cette validation fera gagner ou perdre 20 points à un coureur, mais pour
+> qu'il soit, dans la timeline, de nouveau dans le même groupe des coureurs qu'il vient
+> de rattraper ou par qui il vient d'être rattrapé, il n'y a pas besoin de validation par
+> l'opérateur. Il faut donc que ce merge automatique se fasse au moment correct, le plus
+> précis possible.
+
+> **Seuil remplacé le 25 octobre 2026.** Le « moins de 2 mètres » de cet énoncé est
+> remplacé par la règle des cassures du §1 : « rattrapé par le peloton » veut dire qu'il
+> n'y a plus de cassure entre lui et le peloton. Le reste tient inchangé — la mesure
+> entre les deux coureurs qui se font face (qui sont précisément la paire de coureurs
+> consécutifs à la frontière des deux groupes), et le fait que le merge n'attend aucune
+> validation.
+
+**28 octobre 2026.** L'opérateur a repris le point de lui-même :
+
+> Un coureur qui a gagné ou perdu un tour, lorsque ce gain ou cette perte est validé(e)
+> redevient un coureur qu'il faut considérer dans le même tour que le peloton dans la
+> timeline !
+>
+> Les gains ou pertes sont consignés dans le journal et comptabilisés dans le classement
+> général. En revanche dans la timeline il est à nouveau considéré l'égal des autres
+> coureurs dans la timeline.
+>
+> **C'est dans la timeline qu'on gagne ou perd un tour !**
+
+Et, à la question de savoir si le merge attend la validation ou non : « Oui c'est
+correct » — le merge ne l'attend pas, il rejoint le tour du peloton à la jonction, validé
+ou pas, et la validation ne fait que les ±20 points et la ligne au journal.
+
+**Conséquence, et c'est elle qui compte pour tout le reste** : dans la timeline, aucun
+coureur à l'intérieur du peloton n'a un tour d'avance ou de retard. Dès qu'il est dans le
+peloton, il est l'égal des autres.
+
+**Le merge se calcule avant l'éligibilité.** Les deux reposent sur « qui est où dans la
+timeline » ; calculer l'éligibilité avant le merge, c'est la calculer sur une timeline
+fausse.
+
+---
+
+## 4. Le tour gagné ou perdu : quand, et combien
+
+Deux questions distinctes, et le §3 répond aux deux.
+
+**Quand.** À la jonction, et nulle part ailleurs : l'instant où il n'y a plus de cassure
+entre le coureur et le peloton, **« et ceci peu importe à quel endroit de la piste »**.
+Aucune distance au peloton n'est testée, aucune tolérance n'existe.
+
+**Combien.** L'écart se compte entre lui et **le coureur d'en face** — le dernier coureur
+du peloton quand il le rattrape, le premier coureur du peloton quand il se fait rattraper
+(§3, « la mesure doit être entre… »). À cet instant les deux sont au même endroit de la
+piste : la différence entre leurs deux comptes de passages vaut 0, +1 ou −1. **+1 il a
+gagné un tour, −1 il en a perdu un, 0 il a seulement refermé un écart ordinaire** et rien
+n'est proposé.
+
+**Ce que le système ne propose jamais** : ce que les boucles n'ont pas mesuré. Un compteur
+réglé à la main est l'affaire de l'opérateur.
+
+**C'est une proposition, jamais une décision.** Elle reste affichée jusqu'à validation ou
+rejet — elle ne disparaît pas parce que la condition a cessé d'être vraie, sinon elle
+s'effacerait avant que l'opérateur ne l'ait vue. Il n'y a pas de bouton « plus tard ».
+
+**27 octobre 2026**, mot pour mot :
+
+> Un tour est remporté quand un coureur rattrape le peloton. Un tour est perdu quand le
+> peloton rattrape un coureur.
+
+---
+
+## 5. Le tour du peloton
+
+**28 octobre 2026.** Le peloton n'est pas un point sur la piste : ses coureurs s'étalent
+sur plusieurs dizaines de mètres, et pendant qu'il franchit la ligne d'arrivée ses
+premiers coureurs ont commencé le tour suivant tandis que ses derniers n'ont pas fini le
+précédent. À la question « le tour du peloton, c'est celui de ses premiers coureurs ou
+celui de ses derniers ? » :
+
+> celui des premiers !!
+
+**Et une interdiction explicite, le même jour**, sur l'emploi d'une médiane des positions
+du peloton comme point de référence :
+
+> ça tu dois impérativement arrêter d'utiliser la médiane ! On ne veut pas connaitre cette
+> médiane !
+
+Donc : le tour du peloton est celui de ses premiers coureurs. Aucune statistique de
+position — ni médiane, ni moyenne — ne sert de référence, nulle part.
+
+**Taille du peloton.** « c'est maximum 24 » coureurs (28 octobre 2026).
+
+---
+
+## 6. L'éligibilité aux sprints
+
+**25 octobre 2026, formulation par groupes.** Elle remplace la formulation par conditions
+du §6 bis et lui est équivalente en résultat. Il faut toujours avoir les deux mesures en
+tête, la timeline et l'ovale.
+
+- **Dans la timeline**, un groupe est composé de 1 ou plusieurs coureurs qui se tiennent
+  dans les limites définies par ce qu'est une cassure. Dès qu'il y a cassure, le coureur
+  suivant sera dans un nouveau groupe, et avec lui ceux qui restent dans son sillage sans
+  cassure. S'il n'y a que lui, soit ; le suivant sera un autre groupe, et ainsi de suite.
+- **Dans la timeline**, les groupes se numérotent en commençant par le n° 1 pour le groupe
+  de tête, le n° 2 pour le groupe suivant en descendant dans la timeline, et ainsi de suite.
+- **Dans l'ovale**, on regarde à tout moment la distance qu'il reste à parcourir à chaque
+  groupe jusqu'à la ligne d'arrivée du prochain sprint : le nombre de mètres pour rejoindre
+  la ligne du tour en cours, plus le nombre de tours éventuels encore à parcourir jusqu'au
+  sprint.
+- Il faut **toujours considérer le groupe de tête comme étant le plus proche** en distance
+  à parcourir jusqu'au prochain sprint.
+- Le groupe de tête est **forcément toujours éligible**, étant le groupe le plus proche du
+  prochain sprint.
+- Après les membres du groupe de tête, ne peuvent être éligibles que les membres du
+  **groupe 2**. Tout membre d'un groupe autre que le groupe 2 se trouvant plus proche de la
+  ligne d'arrivée du prochain sprint que les membres du groupe 2 eux-mêmes est **inéligible**.
+- Après les membres du groupe 2, ne peuvent être éligibles que les membres du **groupe 3**.
+  Tout membre d'un groupe autre que le groupe 3 se trouvant plus proche de la ligne que les
+  membres du groupe 3 eux-mêmes est inéligible. Et ainsi de suite.
+
+**Le prochain sprint, pour un groupe qui n'est pas le groupe de tête**, mot pour mot :
+
+> Pour tous les groupes autres que le groupe de tête, le prochain sprint sera le moment du
+> passage sur la ligne d'arrivée d'un groupe à partir du moment où le groupe de tête aura
+> atteint le sprint, et ceci indépendamment du nombre de tours de retard que peuvent avoir
+> les groupes sur le groupe de tête.
+
+**Forme calculable** : `distance d'un groupe au sprint = écart sur la route mesuré en
+remontant depuis le groupe de tête`, soit `(piste_tête − piste_groupe) mod longueur de
+piste`. Le groupe de tête est donc à 0 par construction, ce qui donne directement
+« toujours considérer le groupe de tête comme le plus proche ». C'est aussi, littéralement,
+le « on va prendre le 12, on va pas prendre la distance depuis la ligne, c'est ridicule »
+de l'opérateur.
+
+### 6 bis. La même règle, formulation par conditions (équivalente)
+
+Les trois conditions doivent être vraies **ensemble** pour qu'un coureur soit inéligible.
+
+**Condition 1** — un coureur se trouvant positionné **derrière le peloton** dans la
+timeline (c'est-à-dire plus bas dans la timeline) est rattrapé sur la piste par **le
+groupe de tête** (c'est-à-dire formé d'un ou plusieurs membres, les leaders).
+
+**Condition 2** — il doit se trouver positionné derrière d'autres coureurs dans la
+timeline (c'est-à-dire plus bas dans la timeline), mais placé devant ces mêmes coureurs
+sur la piste, c'est-à-dire que **la distance qui lui reste encore à parcourir pour
+atteindre la ligne d'arrivée est inférieure à la distance qu'il reste encore à parcourir
+à ces coureurs positionnés plus haut que lui dans la timeline** pour atteindre la ligne
+d'arrivée.
+
+**Condition 3** — le coureur n'a pas encore été rattrapé par le peloton.
+
+La formulation par groupes est celle qui est codée : elle donne le même résultat sans
+demander de dater ni de retenir un événement de rattrapage.
+
+---
+
+## 7. La conséquence sur le rang
+
+**25 octobre 2026.** Dans le résultat complet d'un sprint intermédiaire **ou d'arrivée**,
+un coureur inéligible prend **au mieux le rang juste après les coureurs placés devant lui
+dans la timeline**. Il n'est pas effacé du résultat : il est déclassé derrière eux.
+
+---
+
+## 8. L'affichage d'un passage inéligible
+
+**26 octobre 2026**, dicté sur la carte du sprint :
+
+> Dans le résultat, les coureurs détectés qui sont inéligibles, on peut les mettre aussi,
+> mais **en grisé**. En grisé, oui, il ne faut pas changer de couleur. Il reste en grisé.
+> Comme ça, on voit tout de même qu'il y a eu passage de ces coureurs-là. Et puis là aussi,
+> dans la partie grisée, on pourrait mettre « no points ». Ensuite, dès qu'il y a de nouveau
+> des coureurs éligibles, on les remet en normal. Et puis, finalement, les non-éligibles,
+> redevenus éligibles, on pourra les rafficher une deuxième fois dans le résultat du sprint.
+> Et ce coup-là, ils ne seront plus grisés, ils seront normaux.
+
+Précisions données ensuite :
+
+1. La ligne grisée est **sans numéro** de rang.
+2. « La ligne est grisée car elle indique un passage du coureur à un moment où il n'était pas
+   éligible. Elle ne doit pas comporter de rang. **Si le sprint se referme avant que le
+   coureur ne repasse en étant éligible, ça m'importe peu !** »
+3. **L'écart se mesure entre les coureurs classés.**
+
+Et le cadrage, qui vaut pour toute demande de ce genre :
+
+> « On parle uniquement de ce qui est affiché dans la fenêtre de sprint, et c'est utile à
+> l'utilisateur car ça lui permet de mieux comprendre la situation de course. Il ne faut
+> [pas] commencer à modifier toute la logique derrière. »
+
+**Un seul point n'a pas été dicté** : chaque passage est jugé une seule fois, à l'instant
+où il est lu. Il découle de l'énoncé, qui parle d'« un passage du coureur à un moment où
+il n'était pas éligible », et il a été ajouté parce que la première version grisait
+rétroactivement (voir `pitfalls.md` F10).
+
+**Écart affiché par groupe — 25 octobre 2026.** Un coureur dans un groupe porte l'écart du
+**premier coureur de son groupe**, et non le sien. L'écart apparaît **une seule fois, dans
+l'en-tête du groupe**, à côté de son numéro et de son nom ; il disparaît des lignes de
+coureurs, où il répétait seize fois la même valeur. Le groupe de tête garde `leader`.
+
+**Le statut de tours n'est affiché nulle part** — ni sur la timeline, ni sur l'ovale. Pas
+de mention « +1 ? ». Il ne sert qu'aux points et à l'éligibilité.
+
+---
+
+## 9. L'installation mesurée
+
+**27 octobre 2026.** Les positions sont celles des tape switches, mot pour mot :
+
+> Il y a 5 tape switchs installés sur la piste : 3x > 1 au milieu de chacune des 3 boucles ;
+> 1x > 50m après la boucle "Finish" ; 1x > 150m après la boucle "Finish".
+
+Sur la géométrie des boucles :
+
+> les deux Pursuits doivent être exactement face-à-face l'une de l'autre et au milieu de
+> leur ligne droite respective. Sur une piste de 250m, il y a donc 125m entre les deux, sur
+> une 200m il y a 100m d'écart, sur une 166m il y a 83m d'écart et sur une 333m il y a
+> 166.5m d'écart.
+
+**Aucune distance n'est imposée entre Finish et Pursuit A** : c'est le propriétaire de la
+piste qui décide, le plus souvent 10 m. Ce qui est obligatoire, c'est que les deux Pursuits
+soient face à face. Tout le reste en découle.
+
+Sur une piste de 250 m, dans le sens de course, repère 0 m = ligne d'arrivée :
+
+| Point | Position | Identifie le coureur |
+|---|---|---|
+| Finish (boucle + tape) | 0 m | oui |
+| Tape « départ du 200 m lancé » | 50 m | non (contact seulement) |
+| Pursuit B (boucle + tape, ligne droite opposée) | ≈ 113 m | oui |
+| Tape « intermédiaire du 200 m lancé » | 150 m | non |
+| Pursuit A (boucle + tape, ligne droite d'arrivée) | ≈ 238 m | oui |
+
+Les deux tapes isolés sont le départ et l'intermédiaire du **200 m lancé**, soit 200 m et
+100 m **avant** la ligne — ce qui donne bien 50 m et 150 m après elle sur une 250 m, et les
+replace tout seuls sur les autres longueurs. Une piste de **166 m n'a que les trois des
+boucles** : le 200 m lancé n'y est pas disputé. Sur une **200 m**, le départ du 200 m lancé
+tombe sur la ligne d'arrivée elle-même : une seule bande, donc quatre tape switches.
+
+**Les bandes ne traversent pas la piste.** Mot pour mot :
+
+> Les tapes switchs des pursuit A et B ne mesurent que 3m de long, celui de l'intermédiaire
+> des 200m ne mesure que 2m de long, celui du départ des 200m ne fait que 4.5m. La piste
+> elle fait environ 7,5m de longueur. Le tape switch de la boucle Finish couvre toute la
+> largeur de la piste.
+
+Et : « Les bandes partent du bas de la piste (côté corde / bande bleue) et montent vers
+l'extérieur. » Donc un vélo n'est compté que tant qu'il roule **dans** la largeur de la
+bande ; plus haut sur la piste il ne franchit rien. Les boucles, elles, lisent sur toute la
+largeur. **Ces longueurs sont une précision sur le matériel, pas une demande** : elles ne
+sont pas modélisées, voir `cas-de-course.md` §9.
+
+Le compteur de tours est relié en série ou en réseau. Les sprints sont confirmés par
+photo-finish. Des transpondeurs manquants ou muets sont fréquents.
+
+---
+
+## 10. Les tape switches
+
+**La règle.** Un tape switch compte les vélos qui passent, sans les identifier. Une boucle
+nomme les vélos qu'elle voit. Rapprocher les deux dit **combien** de vélos sans transpondeur
+sont passés là.
+
+**Corrigé par l'opérateur le 27 octobre 2026 : on n'oppose pas deux comptes, on apparie des
+heures.** Mot pour mot :
+
+> on connait l'heure de passage des deux transpondeurs sur la boucle (chaque décodeur de boucle
+> est synchronisé avec le système) et on connait l'heure de passage du troisième coureur qui est
+> en retard. Si on définit une marge d'erreur de détection de temps de passage des transpondeurs
+> de l'ordre de 20 millisecondes, on peut savoir si un tape switch détecte deux roues plus tard
+> que les autres (par "plus tard" je veux dire "plus que les 20 millisecondes") alors on saura
+> que ce n'est pas un des deux vélos 4 et 11.
+
+- un contact qui ne trouve aucune lecture **est** un vélo sans transpondeur ;
+- une lecture qu'aucun contact n'a payée est une roue que la bande n'a pas su séparer de la
+  précédente.
+
+**Sur la capacité des bandes** : « je pense que les tape switch sont efficaces et capables de
+détecter le passage de deux roues très proches, disons 5cm ».
+
+---
+
+## 11. Le vélo en trop, le coureur sans transpondeur, les transpondeurs inversés
+
+**Qui est le vélo en trop — 27 octobre 2026**, mot pour mot :
+
+> Quand le système détecte un vélo par les tape switchs de plus que les transpondeurs, que ce
+> soit dans un groupe ou même en dehors d'un groupe, lors de cette détection des tape switch le
+> système pourrait proposer le ou les coureurs dont on n'aurait pas les transpondeurs, et les
+> placer dans le groupe détecté ou créer un nouveau groupe. Et ceci pourrait fonctionner presque
+> tout au long de la course, et proposer si le système détecte qu'un coureur sans transpondeur
+> ne fait plus partie d'un groupe il faudrait le proposer à l'utilisateur.
+
+Et, sur le moment où ça doit marcher : « on doit pouvoir corriger un problème de transpondeur
+n'importe quand, pas uniquement avant le coup de pistolet annonçant le début de la course ».
+
+**Ce qu'un vélo de plus veut dire.** L'opérateur a corrigé la façon dont la question était
+posée : il ne s'agit pas d'un vélo « inconnu » qui apparaîtrait — « s'il n'y a aucun coureur
+sans transpondeur ça paraît difficile qu'un vélo inconnu apparaisse ». Un vélo de plus que de
+transpondeurs lus veut dire qu'un transpondeur est absent, a cessé de fonctionner, ou n'est pas
+celui que la table annonce : un coureur connu que les boucles ne nomment plus.
+
+**Positionner un coureur sans transpondeur par un contact de bande — 27 octobre 2026** :
+
+> « positionner un coureur sans transpondeur à partir d'un contact de bande » > OUI évidemment
+> qu'il faut se servir de cette info, à chaque fois qu'elle est utile ! C'est-à-dire pendant la
+> mise en place et pendant la course !
+
+**La place du coureur dans son groupe ne se tire PAS de l'horodatage du contact.** Tranché le
+27 octobre 2026 : « les tape switch ne t'apportent rien ici ». Il n'y a rien à implémenter sur
+ce point ; un coureur sans transpondeur continue d'être placé à la main dans la carte de sprint.
+
+**Un coureur sans transpondeur se place à une longueur de vélo derrière son host**, et non à
+1,5 m, qui faisait se chevaucher les deux vélos.
+
+**Deux transpondeurs inversés — 27 octobre 2026** :
+
+> pour ce qui est de l'inversion de deux transpondeurs, effectivement le système ne peut pas le
+> savoir. Mais l'opérateur oui ! Il doit donc avoir un moyen d'indiquer cette inversion au
+> système, qui à son tour l'inversera dans l'attribution des transpondeurs aux coureurs.
+
+Et sur ce que le prototype doit montrer : « L'erreur et le bouton qui la corrige. Mais l'erreur
+ne peut être que vue par l'opérateur dans le cas de deux transpondeurs inversés. »
+
+---
+
+## 12. La mise en place et le tour de lancement
+
+**27 octobre 2026**, mot pour mot :
+
+> - Tous les coureurs de la course précédente sont descendus de la piste. Après 2-3 minutes :
+> - Les coureurs de notre course montent sur la piste par une entrée proche de Pursuit A. Sur
+>   certaines pistes les coureurs passent sur la boucle Pursuit A et sur d'autres ils n'y
+>   passent pas au moment de monter sur la piste.
+> - Les coureurs une fois montés sur la piste font un tour très lent et puis ensuite s'arrêtent
+>   à leur place. La moitié des coureurs en file indienne derrière la boucle Finish, à la
+>   barrière (c'est-à-dire côté extérieur de la piste) et l'autre moitié des coureurs en file
+>   indienne derrière la boucle Finish, à la bande bleue (c'est-à-dire plutôt au centre de la
+>   piste et soutenus par leurs entraineurs) en attendant le départ.
+> - Après la vérification des participants de la part des commissaires, le start siffle ce qui
+>   annonce le début du tour de lancement. Les coureurs s'élancent.
+> - Lorsque les coureurs atteignent la boucle finish au terme du tour de lancement, le starter
+>   tire au pistolet pour annoncer le départ de la course.
+
+Et l'exigence, mot pour mot :
+
+> dans cette phase de mise en place et de lancement, le système doit pratiquement être
+> infaillible pour informer l'utilisateur sur l'absence ou non-fonctionnement d'un transpondeur,
+> ou la présence de transpondeurs erronés par rapport à la table des transpondeurs. Et le système
+> doit proposer les corrections que l'utilisateur doit approuver.
+
+Précisions du même jour, qui changent la lecture de cette phase :
+
+- **Le tour lent ne se fait pas forcément sur la piste.** « Lors du tour lent, les coureurs ne
+  sont pas toujours effectivement sur la piste au sens propre du terme. Ils sont assez
+  régulièrement sur la zone en béton, plate, immédiatement à l'intérieur de l'ovale de la piste
+  en bois. Les tape switch et les boucles ne couvrent que la largeur de la piste, pas la zone
+  en béton, plate, immédiatement à l'intérieur de l'ovale. » Donc **le tour lent n'est pas un
+  inventaire** : un coureur non lu peut simplement rouler sur le béton. Une lecture prouve
+  qu'un transpondeur fonctionne ; une absence de lecture ne prouve rien.
+- **La montée sur la piste doit être exploitée.** « Il faut se servir des passages détectés sur
+  Pursuit A. » Même asymétrie : là où ils passent sur la boucle en montant, c'est une
+  confirmation gratuite et précoce ; là où ils n'y passent pas, il n'y a rien à conclure.
+- **L'arrêt.** « Avant le départ ils s'arrêtent avant la boucle Finish, mais cela ne vaut que
+  pour les deux coureurs placés en première position du côté à la barrière ("At the fence" tel
+  que décrit dans les règlements UCI), et du côté à la bande bleue ("At the blue band" tel que
+  décrit dans les règlements UCI). Tous les autres coureurs sont placés derrière, un par un. »
+  Personne ne franchit donc la boucle Finish avant le tour de lancement.
+- **À l'arrêt, le matériel est incertain.** « Un transpondeur sur un vélo pas en mouvement peut
+  soit détecté une fois, soit pas détecter. »
+- **Il n'y a pas d'heure limite pour le verdict.** « On doit pouvoir corriger un problème de
+  transpondeur n'importe quand, pas uniquement avant le coup de pistolet annonçant le début de
+  la course. » La vérification n'est donc pas une barrière avant le départ mais un état qui se
+  précise, et qui reste corrigeable en course.
+
+**Conséquence de la première précision** : le premier moment où tout le monde est certainement
+sur la piste et franchit toutes les boucles est le **tour de lancement**, et c'est seulement là
+qu'une absence de lecture devient une information.
+
+---
+
+## 13. Les trois nombres de tours
+
+Jamais confondus :
+
+- **Le compteur de course** — les tours restants. Un seul pour toute la course, tenu par le
+  commissaire au lap counter.
+- **Le statut de tours d'un coureur** — +1, 0, −1. Par coureur, relatif au groupe principal,
+  changé par les décisions du jury. Il ne sert qu'aux points et à l'éligibilité.
+- **Le compte de passages** — le nombre de fois où le transpondeur du coureur a réellement
+  franchi la ligne. C'est un fait physique, pas un tour officiel.
+
+**Le compteur suit la tête de course telle que le starter la voit**, pas le coureur qui a le
+plus de passages. Un coureur qui a repris un tour et roule en queue de peloton a un passage de
+plus que tout le monde : s'il ouvrait les tours, le compteur prendrait un tour d'avance sur le
+lap counter et sur le peloton, et l'arrivée serait comptée un tour trop tôt.
+
+**Le lap counter n'est pas un passage.** Le compteur est un petit écran que les coureurs doivent
+pouvoir lire, donc le commissaire le décrémente un peu **avant** le passage du leader —
+certains dans le dernier virage, d'autres quand le dernier coureur du groupe de tête a dépassé
+le tableau. Le logiciel rapproche chaque décrémentation du passage du leader le plus proche,
+avant ou après, et ne la prend jamais pour ce passage. L'information met souvent plusieurs
+secondes à atteindre l'opérateur du chronométrage.
+
+**Un lap counter relié est toujours prioritaire.** Le compteur interne s'aligne sur lui, et un
+désaccord est signalé avec les deux valeurs plutôt que corrigé en silence.
+
+**Un tour perdu ne se compense jamais par un tour gagné.** Les deux compteurs servent au
+départage, donc on ne les additionne pas pour n'en garder qu'un. Une erreur se corrige en
+baissant le compteur fautif, pas en ajoutant à l'autre.
+
+---
+
+## 14. La manière de travailler
+
+**Les écrans se proposent avant d'être codés.** La carte du sprint a été dessinée dix fois et
+critiquée point par point avant qu'une ligne ne soit écrite. On propose, l'opérateur critique,
+on ne code qu'après son accord explicite.
+
+**On n'ajoute jamais ce qui n'a pas été demandé** : ni un contrôle, ni une ligne, ni un texte.
+Une précision que l'opérateur donne sur le matériel ou sur la course est un **fait**, pas une
+demande de le coder.
+
+**On ne modifie jamais un comportement approuvé sans le dire.** C'est arrivé plusieurs fois et
+cela a coûté la confiance de l'opérateur. Tout écart par rapport à un comportement validé se
+propose avant d'être codé. Cela vaut en particulier pour les tours, les groupes, le merge et
+l'éligibilité : **avant d'y toucher, lire ce fichier du §1 au §7.** Un seuil qui n'y figure pas
+n'a rien à faire dans le code.
+
+**Les règles de l'opérateur se consignent mot pour mot.** On ne les paraphrase pas, on n'ajoute
+pas une condition qu'il n'a pas énoncée.
+
+**On ne demande à l'opérateur que ce qu'il voit.** Les questions se posent en mètres, en
+coureurs et en matériel installé — jamais en millisecondes, en seuils ni en choix d'algorithme.
+
+**Rien ne se décide sur un seul instantané.** Toute mesure se fait sur la course complète, et on
+compte les **changements de statut**, pas seulement les coureurs touchés.
+
+---
+
+## 15. Ce qui reste à trancher
+
+- **Où placer le réglage du seuil de cassure.** L'opérateur ne veut pas voir l'indication de la
+  seconde sur l'écran de course. L'intention d'en faire un contrôle à l'écran, notée le
+  25 octobre, est donc en suspens.
+- **Le texte affiché pour la raison d'inéligibilité**, encore « lap down » alors que la raison
+  est devenue « plus proche de la ligne que le groupe au-dessus ».
+- **Le bandeau « race leader » après un merge.** Un coureur qui a gagné un tour n'est plus en
+  tête de la distance de course, et le bandeau donne le leader au premier coureur du peloton.
+  Suit-il la timeline ou le classement par points ?
+- **« Plus proche que les membres du groupe 2 »**, lu comme « plus proche que *tous* » : à
+  confirmer.
+- **Le peloton coupé en deux pendant qu'un coureur lui prend un tour.** À 1,000 s le peloton se
+  sépare parfois lui-même en deux groupes, et le coureur qui lui prend un tour se trouve entre
+  les deux moitiés sur la piste. Comme la distance se mesure en remontant depuis le groupe de
+  tête, la moitié arrière ressort plus proche de la ligne que la moitié avant, donc inéligible.
+  C'est la règle appliquée à la lettre ; c'est à l'opérateur de dire ce qui doit se passer quand
+  un groupe est physiquement **devant** le groupe de tête.
+- **Les passages déjà enregistrés sous un nom erroné** après correction de deux transpondeurs
+  inversés : la règle dit d'inverser l'attribution, pas de refaire l'histoire. À confirmer.
+- **Ce qui s'affiche quand le système a perdu un coureur sans transpondeur** : sa ligne dit « no
+  transponder » et non « not read ».
+- **Un sprint tombé pendant une course neutralisée** : redonné au tour suivant la relance ou au
+  tour prévu suivant, à confirmer dans le règlement en vigueur.
+- **Le protocole exact d'échange avec la photo-finish**, à voir à l'implémentation.
+- **La Madison, la course tempo et le scratch** : même modèle, autre barème.

@@ -1,0 +1,304 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Maquette · simulateur de courses de test</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;
+  --bg:#121416;--panel:#1b1e21;--deep:#0f1113;--line:#2d3237;--line2:#3a4046;
+  --fg:#ECEAE4;--muted:#9a9890;--dim:#5f5c55;
+  --acc:#4F8CFF;--acc-soft:#1b2a4a;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#9a7140;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);overflow:hidden}
+.app{height:100%;display:flex}
+.left{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px;padding:10px 10px 10px 16px;box-sizing:border-box}
+.btn{font:500 13px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+.btn.quiet{color:var(--muted)}
+.btn.xs{padding:2px 7px;font-size:12px;border-radius:3px}
+.btn[disabled]{opacity:.35;cursor:default}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:4px;overflow:hidden}
+.seg .btn{border:0;border-radius:0}
+.seg .btn.on{background:var(--acc);color:#0b1020;font-weight:600}
+.lbl{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:20px;border-radius:4px;padding:0 5px;font:600 12px var(--mono);color:#fff;text-shadow:0 0 2px rgba(0,0,0,.7);box-sizing:border-box}
+.chip.dk{color:#111;text-shadow:none}
+.chip.silent{border:1px dashed var(--warn)}
+.sp{flex:1 1 auto}
+.bar{display:flex;align-items:center;gap:8px;height:36px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:0 10px;flex:0 0 auto}
+.bar h1{font:600 15px var(--sans);margin:0;white-space:nowrap}
+.bar .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sepv{width:1px;height:22px;background:var(--line2);margin:0 4px}
+.main{flex:1 1 auto;min-height:0;display:flex;gap:10px}
+.ghostcol{background:var(--panel);border:1px solid var(--line);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--dim);font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase}
+.ghostcol.tl{width:360px;flex:0 0 360px}
+.ghostcol.mid{flex:1 1 auto}
+
+.rail{width:460px;flex:0 0 460px;background:var(--panel);border-left:1px solid var(--acc);display:flex;flex-direction:column;min-height:0}
+.rail .hd{display:flex;align-items:center;gap:8px;padding:0 8px;height:36px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.sec{display:flex;flex-direction:column;min-height:0;border-bottom:1px solid var(--line)}
+.sh{display:flex;align-items:center;gap:8px;padding:6px 8px 4px;flex:0 0 auto}
+.sec>.bd{padding:0 6px 7px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;min-height:0}
+.sec>.bd[hidden]{display:none}
+.sec.grow{flex:1 1 0}
+.sec.fix{flex:0 0 auto}
+
+.rrow{display:grid;grid-template-columns:32px minmax(0,1fr) 84px 30px 30px 42px 44px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--mono);font-variant-numeric:tabular-nums}
+.rrow.hdr{background:none;border-left-color:transparent;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:18px}
+.rrow .nm{font:500 12px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rrow.piloted{border-left-color:var(--acc)}
+.spd{display:flex;align-items:center;gap:3px;justify-content:flex-end}
+.rrow .spd{justify-content:center}
+.spd .v{min-width:30px;max-width:42px;text-align:center;color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:3px;padding:1px 3px;font:500 12px var(--mono);font-variant-numeric:tabular-nums;font-family:inherit}
+.rrow.piloted .spd .v{color:var(--acc);border-color:var(--acc);font-weight:600}
+.stp{width:17px;height:17px;line-height:15px;text-align:center;padding:0;font-size:12px;border-radius:3px;background:#23272b;border:1px solid var(--line2);color:var(--fg);cursor:pointer}
+.cfgrow{display:flex;align-items:center;justify-content:center;gap:40px;padding:4px 4px 8px}
+.cfgfield{display:flex;align-items:center;gap:8px}
+.clock{font:600 18px var(--mono);color:var(--fg);background:#17191c;border:1px solid var(--line2);border-radius:4px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.btn.lg{padding:8px 16px;font-size:16px}
+.seg .btn.lg{padding:8px 16px}
+
+.trow{display:grid;grid-template-columns:44px 34px minmax(0,1fr) 50px 40px 42px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--mono)}
+.trow.hdr{background:none;border-left-color:transparent;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:18px}
+.trow.spare{border-left-color:var(--warn)}
+.trow .st{font:500 11px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .dead{color:var(--crit);text-decoration:line-through}
+
+.krow{display:grid;grid-template-columns:minmax(0,1fr) 96px 26px;gap:6px;align-items:center;min-height:27px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--sans)}
+.krow .v{min-width:40px;text-align:right;font:500 12px var(--mono);font-variant-numeric:tabular-nums}
+.krow .u{color:var(--muted);font:500 11px var(--mono)}
+.ksub{font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:7px 4px 1px;display:flex;align-items:center;gap:8px}
+.rosterrow{display:grid;grid-template-columns:22px 40px minmax(0,1fr) 44px 26px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2)}
+.rosterrow .swatch{width:18px;height:18px;border-radius:4px;border:1px solid var(--line2);padding:0;cursor:default}
+.rosterrow input{background:transparent;border:1px solid transparent;color:var(--fg);font:500 12px var(--sans);border-radius:3px;padding:1px 4px;width:100%;box-sizing:border-box;min-width:0}
+.rosterrow input.bib{font-family:var(--mono);text-align:center;color:var(--muted)}
+.rosterrow input.noc{font-family:var(--mono);text-align:center;text-transform:uppercase;color:var(--muted)}
+.rosterrow.editing input{background:#23272b;border-color:var(--line2);color:var(--fg);cursor:text}
+.rosterrow.editing .swatch{cursor:pointer;border-color:var(--acc)}
+.rail[hidden]{display:none}
+
+.crow{background:#17191c;border-left:3px solid var(--line2);padding:4px 6px}
+.crow .nm{font:500 11.5px var(--sans);line-height:1.3}
+.crow .mt{display:flex;align-items:center;gap:5px;margin-top:3px}
+.crow .du{font:500 11px var(--mono);color:var(--muted)}
+.crow.ref{border-left-color:var(--good)}
+.crow.rec{border-left-color:var(--crit)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:4px;background:var(--crit);margin-right:5px;vertical-align:1px}
+</style>
+
+<div class="app">
+  <div class="left">
+    <div class="bar">
+      <h1>Lap timeline · prototype</h1>
+      <span class="sub">Men's Points Race · 40 laps · sprint every 10 laps · 250 m · simulated · build 55</span>
+      <span class="sp"></span>
+      <span class="lbl">Race leader</span>
+      <span class="seg"><button class="btn quiet">Finish</button><button class="btn quiet">Pursuit A</button><button class="btn quiet">Pursuit B</button></span>
+      <button class="btn quiet">Auto</button>
+      <span class="sepv"></span>
+      <button class="btn quiet" disabled>Undo</button>
+      <span class="sepv"></span>
+      <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
+    </div>
+    <div class="main">
+      <div class="ghostcol tl">Lap timeline · 360</div>
+      <div class="ghostcol mid">strip · oval · sprint card · log</div>
+    </div>
+  </div>
+
+  <aside class="rail" id="rail">
+    <div class="hd">
+      <span class="lbl" style="color:var(--acc)">Simulator</span>
+      <span class="sp"></span>
+      <button class="btn xs quiet" id="railhide" title="Hide the simulator">Hide &rsaquo;</button>
+    </div>
+
+    <div class="sec grow">
+      <div class="sh" style="justify-content:center">
+        <span class="seg" id="tabs"><button class="btn xs on" data-t="riders">Simulation</button><button class="btn xs quiet" data-t="tp">Transponders</button><button class="btn xs quiet" data-t="track">Track</button><button class="btn xs quiet" data-t="startlist">Start list</button><button class="btn xs quiet" data-t="files">Files</button></span>
+      </div>
+      <div class="bd" data-p="riders">
+        <div class="sh" style="justify-content:center;gap:20px;padding:10px 0 6px">
+          <span class="cfgfield"><span>Pace</span><span class="spd"><button class="stp">&minus;</button><input class="v" value="13.9"><button class="stp">+</button><span class="u" style="color:var(--muted);margin-left:2px">m/s</span></span></span>
+          <button class="btn xs quiet" id="syncspeeds" title="Set every rider to the bunch's base pace">Sync all to bunch pace</button>
+        </div>
+        <div class="rrow hdr"><span>BIB</span><span>Name</span><span style="text-align:center;color:var(--muted)">m/s</span><span style="grid-column:4 / span 2;text-align:center;color:var(--muted)">group</span><span style="grid-column:6 / span 2;text-align:center;color:var(--muted)">&plusmn;lap</span></div>
+
+        <div class="rrow"><span class="chip" style="background:#0284c7">52</span><span class="nm">ROSSI</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow piloted"><span class="chip" style="background:#c8102e">12</span><span class="nm">HUBER</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">15.6</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs on">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip dk" style="background:#f97316">7</span><span class="nm">BRAND</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip dk" style="background:#eab308">61</span><span class="nm">NAVARRO</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip" style="background:#9f1239">18</span><span class="nm">SANTOS</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow piloted"><span class="chip" style="background:#1d4ed8">3</span><span class="nm">MOREAU</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.4</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs on">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip" style="background:#16a34a">9</span><span class="nm">KOVAC</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip" style="background:#d62828">1</span><span class="nm">RIVERA</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip" style="background:#4b5563">67</span><span class="nm">LEHMANN</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip dk" style="background:#06b6d4">58</span><span class="nm">PETROV</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip dk" style="background:#22c55e">70</span><span class="nm">SILVA</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip" style="background:#111827">46</span><span class="nm">DE WIT</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip" style="background:#ef4444">23</span><span class="nm">IVERSEN</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+
+        <div class="rrow piloted"><span class="chip" style="background:#ec4899">11</span><span class="nm">TANAKA</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">12.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs on">&minus;lap</button></div>
+
+        <div class="rrow piloted"><span class="chip" style="background:#1e3a8a">4</span><span class="nm">WALSH</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">12.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs on">&minus;lap</button></div>
+
+        <div class="rrow"><span class="chip silent" style="background:#15803d">15</span><span class="nm">O&rsquo;NEILL</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">13.9</span><button class="stp">+</button></span>
+          <button class="btn xs quiet">&uarr;</button><button class="btn xs quiet">&darr;</button><button class="btn xs quiet">+lap</button><button class="btn xs quiet">&minus;lap</button></div>
+      </div>
+
+      <div class="bd" data-p="tp" hidden>
+        <div class="trow hdr"><span>TP</span><span>BIB</span><span>State</span><span></span><span></span><span></span></div>
+        <div class="trow"><span>1042</span><span>52</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1043</span><span>12</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1044</span><span style="color:var(--dim)">&mdash;</span><span class="st">freed &middot; BIB 7, bike change</span><button class="btn xs quiet" disabled>Silent</button><button class="btn xs quiet" disabled>Bike</button><button class="btn xs quiet">Assign</button></div>
+        <div class="trow"><span>1045</span><span>61</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1046</span><span>18</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span class="dead">1047</span><span>3</span><span class="st" style="color:var(--crit)">silent since lap 14</span><button class="btn xs on">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1048</span><span>9</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1049</span><span>1</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1050</span><span>67</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1051</span><span>58</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1052</span><span>70</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1053</span><span>46</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1054</span><span>23</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1055</span><span>11</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow"><span>1056</span><span>4</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow spare"><span>2001</span><span>7</span><span class="st" style="color:var(--warn)">unknown to the software</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+        <div class="trow spare"><span>2002</span><span style="color:var(--dim)">&mdash;</span><span class="st">spare</span><button class="btn xs quiet" disabled>Silent</button><button class="btn xs quiet" disabled>Bike</button><button class="btn xs quiet">Assign</button></div>
+        <div class="trow spare"><span>2003</span><span style="color:var(--dim)">&mdash;</span><span class="st">spare</span><button class="btn xs quiet" disabled>Silent</button><button class="btn xs quiet" disabled>Bike</button><button class="btn xs quiet">Assign</button></div>
+        <div class="trow"><span>1057</span><span>15</span><span class="st">read</span><button class="btn xs quiet">Silent</button><button class="btn xs quiet">Bike</button><button class="btn xs quiet">Free</button></div>
+      </div>
+
+      <div class="bd" data-p="track" hidden>
+        <div class="ksub">Lap length</div>
+        <div class="krow" style="grid-template-columns:minmax(0,1fr) auto 26px">
+          <span>Track</span>
+          <span class="seg"><button class="btn xs quiet">166</button><button class="btn xs quiet">200</button><button class="btn xs on">250</button><button class="btn xs quiet">333</button></span>
+          <span class="u" style="text-align:right">m</span>
+        </div>
+
+        <div class="ksub">Loops<span class="sp"></span><span style="color:var(--dim);text-transform:none;letter-spacing:0">finish fixed on the line</span></div>
+        <div class="krow"><span>Finish</span>
+          <span class="spd"><span class="v">0</span><span class="u">m</span></span><span></span></div>
+        <div class="krow"><span>Pursuit A</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">238</span><button class="stp">+</button><span class="u">m</span></span><span></span></div>
+        <div class="krow"><span>Pursuit B</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">113</span><button class="stp">+</button><span class="u">m</span></span><span></span></div>
+
+        <div class="ksub">Tape switches<span class="sp"></span><button class="btn xs quiet">Add</button></div>
+        <div class="krow"><span>Tape 1</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">0</span><button class="stp">+</button><span class="u">m</span></span>
+          <button class="btn xs quiet">&times;</button></div>
+        <div class="krow"><span>Tape 2</span>
+          <span class="spd"><button class="stp">&minus;</button><span class="v">125</span><button class="stp">+</button><span class="u">m</span></span>
+          <button class="btn xs quiet">&times;</button></div>
+      </div>
+
+      <div class="bd" data-p="startlist" hidden>
+        <div class="ksub">Entered riders<span class="sp"></span><button class="btn xs quiet">Add</button><button class="btn xs quiet" id="rosteredit">Edit</button></div>
+        <div class="rosterrow hdr" style="background:none;border-left-color:transparent;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:18px"><span></span><span>Bib</span><span>Name</span><span>NOC</span><span></span></div>
+        <div class="rosterrow"><button class="swatch" style="background:#0284c7" title="Change color"></button><input class="bib" value="52"><input class="nm" value="ROSSI"><input class="noc" value="ITA"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#c8102e" title="Change color"></button><input class="bib" value="12"><input class="nm" value="HUBER"><input class="noc" value="SUI"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#f97316" title="Change color"></button><input class="bib" value="7"><input class="nm" value="BRAND"><input class="noc" value="NED"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#eab308" title="Change color"></button><input class="bib" value="61"><input class="nm" value="NAVARRO"><input class="noc" value="COL"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#9f1239" title="Change color"></button><input class="bib" value="18"><input class="nm" value="SANTOS"><input class="noc" value="POR"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#1d4ed8" title="Change color"></button><input class="bib" value="3"><input class="nm" value="MOREAU"><input class="noc" value="FRA"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#16a34a" title="Change color"></button><input class="bib" value="9"><input class="nm" value="KOVAC"><input class="noc" value="SLO"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#d62828" title="Change color"></button><input class="bib" value="1"><input class="nm" value="RIVERA"><input class="noc" value="ESP"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#4b5563" title="Change color"></button><input class="bib" value="67"><input class="nm" value="LEHMANN"><input class="noc" value="GER"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#06b6d4" title="Change color"></button><input class="bib" value="58"><input class="nm" value="PETROV"><input class="noc" value="KAZ"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#22c55e" title="Change color"></button><input class="bib" value="70"><input class="nm" value="SILVA"><input class="noc" value="BRA"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#111827" title="Change color"></button><input class="bib" value="46"><input class="nm" value="DE WIT"><input class="noc" value="BEL"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#ef4444" title="Change color"></button><input class="bib" value="23"><input class="nm" value="IVERSEN"><input class="noc" value="DEN"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#ec4899" title="Change color"></button><input class="bib" value="11"><input class="nm" value="TANAKA"><input class="noc" value="JPN"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#1e3a8a" title="Change color"></button><input class="bib" value="4"><input class="nm" value="WALSH"><input class="noc" value="GBR"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+        <div class="rosterrow"><button class="swatch" style="background:#15803d" title="Change color"></button><input class="bib" value="15"><input class="nm" value="O&rsquo;NEILL"><input class="noc" value="IRL"><button class="btn xs quiet" title="Remove from the race" hidden>&times;</button></div>
+      </div>
+
+      <div class="bd" data-p="files" hidden>
+        <div class="ksub">Saved simulations<span class="sp"></span><button class="btn xs quiet">Open file&hellip;</button></div>
+        <div class="crow ref">
+          <div class="nm">Reference &mdash; 4 and 11 lose a lap, 12 takes a lap</div>
+          <div class="mt"><span class="du">250 m &middot; 40 laps &middot; 11:56</span><span class="sp"></span><button class="btn xs quiet">Load</button></div>
+        </div>
+        <div class="crow">
+          <div class="nm">4 and 11 lose a lap at 6 &middot; 12 takes a lap at 7</div>
+          <div class="mt"><span class="du">250 m &middot; 40 laps &middot; 11:54</span><span class="sp"></span><button class="btn xs quiet">Load</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec fix" style="border-bottom:0">
+      <div class="sh" style="justify-content:center">
+        <span class="seg"><button class="btn lg quiet" title="Play">&#9654;</button><button class="btn lg on" title="Pause">&#10073;&#10073;</button><button class="btn lg quiet" title="Restart">&#8634;</button></span>
+        <span class="seg"><button class="btn lg quiet">&times;1</button><button class="btn lg on">&times;4</button><button class="btn lg quiet">&times;16</button></span>
+      </div>
+      <div class="sh" style="justify-content:center;padding-top:8px">
+        <button class="btn" title="Go back 30 seconds of race time, and resume from there">&#9198; Rewind 30s</button>
+        <span class="clock">3:33.1</span>
+      </div>
+      <div class="cfgrow" style="padding:14px 4px 16px">
+        <span class="cfgfield"><span>Laps</span><span class="spd"><button class="stp">&minus;</button><input class="v" value="60"><button class="stp">+</button></span></span>
+        <span class="cfgfield"><span>Sprints</span><span class="spd"><button class="stp">&minus;</button><input class="v" value="6"><button class="stp">+</button></span></span>
+      </div>
+    </div>
+  </aside>
+</div>
+<script>
+document.getElementById('railhide').addEventListener('click', () => { document.getElementById('rail').hidden = true; document.getElementById('railshow').hidden = false; });
+document.getElementById('railshow').addEventListener('click', () => { document.getElementById('rail').hidden = false; document.getElementById('railshow').hidden = true; });
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  document.querySelectorAll('#tabs [data-t]').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.classList.toggle('quiet', !on); });
+  document.querySelectorAll('[data-p]').forEach(p => p.hidden = p.dataset.p !== b.dataset.t);
+});
+document.getElementById('rosteredit').addEventListener('click', e => {
+  const on = e.target.classList.toggle('on');
+  e.target.classList.toggle('quiet', !on);
+  document.querySelectorAll('.rosterrow:not(.hdr)').forEach(x => { x.classList.toggle('editing', on); x.querySelector('button.btn').hidden = !on; });
+});
+</script>

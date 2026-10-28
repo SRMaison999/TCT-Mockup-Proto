@@ -1,0 +1,73 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Arrivee.dc.html": {
+      "h": 1317,
+      "title": "3 · Finish",
+      "w": 1814,
+      "x": 4887,
+      "y": -464
+    },
+    "Course.dc.html": {
+      "h": 1317,
+      "title": "2 · Race in progress",
+      "w": 1814,
+      "x": 2971,
+      "y": -464
+    },
+    "Main.dc.html": {
+      "h": 1317,
+      "title": "1 · Sprint lap",
+      "w": 1814,
+      "x": 1056,
+      "y": -464
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-21T19:40:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "n1": {
+      "fill": "blue",
+      "text": "To judge here: the sprint card covers the track while the sprint is judged. On the left, the timeline is minimised to a 44 px rail: one block per group with the rider count, gaps to scale, pending items at the bottom. One click reopens it.",
+      "w": 520,
+      "x": 1279,
+      "y": 968
+    },
+    "n2": {
+      "fill": "blue",
+      "text": "To judge here: the lap timeline, expanded. Full height, left of the oval: leader at the top, last rider at the bottom, one block per group with the gap between blocks. Checkbox to select riders, drag handles to move them, one click to make a new group, dissolve a group (×) or mark the selection 1 or 2 laps behind.",
+      "w": 520,
+      "x": 2971,
+      "y": 968
+    },
+    "n3": {
+      "fill": "blue",
+      "text": "To judge here: at the finish the card shows the complete order on the line with doubled points, and the side panel the final standings. The minimised timeline keeps the lap groups and the withdrawn rider visible.",
+      "w": 520,
+      "x": 4887,
+      "y": 968
+    },
+    "titre": {
+      "kind": "title1",
+      "maxW": 4480,
+      "text": "Points Race · three screens to review before anything is wired up",
+      "w": 240,
+      "x": 1056,
+      "y": -904
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Course.dc.html",
+    "Arrivee.dc.html"
+  ],
+  "pages": [],
+  "title": "Points Race screens"
+}

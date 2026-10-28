@@ -1,0 +1,992 @@
+<title>Console Course aux points</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: operator console. One band of counters, the oval with its infield as the work area, alerts under it, a side panel for lists. */
+:root{
+  --bg:#f1efe9; --panel:#ffffff; --panel-2:#f6f4ee; --fg:#1c1b18; --muted:#6a665d; --line:#d8d3c7;
+  --accent:#1f4fd8; --accent-fg:#ffffff; --accent-soft:#e3e9fb;
+  --wood:#d6ad74; --wood-edge:#b2874c; --azur:#8cc5e6; --infield:#e9e4d9; --trackline:#2a2420; --redline:#c62828; --head:#15a34a;
+  --good:#1a8f4a; --warn:#d97a05; --crit:#c92a2a; --good-soft:#dff3e6; --warn-soft:#fdeedb; --crit-soft:#fbe1e1;
+  --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141516; --panel:#1d1f21; --panel-2:#232629; --fg:#ebe8e1; --muted:#9b978e; --line:#34373b;
+  --accent:#7d9eff; --accent-fg:#0b1020; --accent-soft:#1f2a4a;
+  --wood:#8b6638; --wood-edge:#5a4022; --azur:#2e6c90; --infield:#1a1c1e; --trackline:#0b0a09; --redline:#e05555; --head:#3fd37a;
+  --good:#3fc46f; --warn:#f0a030; --crit:#ff6b6b; --good-soft:#153a24; --warn-soft:#3d2a0d; --crit-soft:#3d1717;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141516; --panel:#1d1f21; --panel-2:#232629; --fg:#ebe8e1; --muted:#9b978e; --line:#34373b;
+  --accent:#7d9eff; --accent-fg:#0b1020; --accent-soft:#1f2a4a;
+  --wood:#8b6638; --wood-edge:#5a4022; --azur:#2e6c90; --infield:#1a1c1e; --trackline:#0b0a09; --redline:#e05555; --head:#3fd37a;
+  --good:#3fc46f; --warn:#f0a030; --crit:#ff6b6b; --good-soft:#153a24; --warn-soft:#3d2a0d; --crit-soft:#3d1717;
+  color-scheme:dark }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.4;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+button{font:inherit;color:inherit;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:5px 10px;cursor:pointer;white-space:nowrap}
+button:hover{border-color:var(--accent)}
+button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button.good{background:var(--good);color:#fff;border-color:var(--good)}
+button.small{padding:2px 7px;font-size:12px}
+button.danger{border-color:var(--crit);color:var(--crit)}
+button.on{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button:disabled{opacity:.5;cursor:default}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+h1{font-size:17px;margin:0;font-weight:600}
+.app{display:flex;flex-direction:column;gap:10px;max-width:1600px;margin:0 auto}
+.topbar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.topbar .sub{color:var(--muted);font-size:12px}
+.controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-shrink:0}
+.seg button{border:0;border-radius:0;background:transparent;padding:4px 9px}
+.seg button.on{background:var(--accent);color:var(--accent-fg)}
+.reperes{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+@media (max-width:900px){.reperes{grid-template-columns:repeat(3,1fr)}}
+.rep{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0}
+.rep .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rep .val{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rep .val small{font-size:12px;color:var(--muted);font-weight:500}
+.rep.hot{border-color:var(--crit);background:var(--crit-soft)}
+.rep.sprint{border-color:var(--accent);background:var(--accent-soft)}
+.rep.neutral{border-color:var(--warn);background:var(--warn-soft)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,400px);gap:10px;align-items:start}
+@media (max-width:1000px){.main{grid-template-columns:1fr}}
+.trackwrap{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px;min-width:0}
+.trackwrap svg{width:100%;height:auto;display:block;touch-action:none}
+.badge{cursor:grab}
+.badge.dragging{cursor:grabbing}
+.badge text{font-family:var(--mono);font-weight:600;font-size:11px;pointer-events:none;user-select:none}
+.badge .chip{font-size:8px;font-weight:600}
+/* infield work area, laid over the svg */
+.infield{position:absolute;display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:6px;padding:8px 12px;overflow:hidden;min-width:0}
+.infield .big{font-family:var(--mono);font-size:clamp(18px,2.6vw,34px);font-weight:600;text-align:center;line-height:1.1}
+.infield .mid{font-size:clamp(12px,1.3vw,15px);text-align:center;color:var(--muted)}
+.infield .alertline{font-size:clamp(13px,1.4vw,18px);font-weight:600;text-align:center;color:var(--accent)}
+.racebar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;font-size:12px}
+.racebar .grp{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;background:var(--panel)}
+.racebar .grp.main{border-color:var(--fg)}
+.racebar .gap{font-family:var(--mono);color:var(--muted);font-size:11px}
+.reading{font-size:12.5px;display:flex;flex-direction:column;gap:2px;text-align:center}
+/* sprint editor in the infield */
+.sed{display:flex;flex-direction:column;gap:4px;height:100%;min-height:0}
+.sed .hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between}
+.sed .hd b{font-size:clamp(14px,1.5vw,19px)}
+.hdrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sed .rows{overflow:auto;min-height:0;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;align-content:start}
+.sed .rows.single{grid-template-columns:1fr}
+.sed .row{display:grid;grid-template-columns:20px 34px minmax(0,1fr) 40px 58px auto;gap:5px;align-items:center;padding:2px 6px;border-radius:6px;background:var(--panel);font-size:13px;min-width:0}
+.sed .row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sed .row .pt{font-family:var(--mono);font-weight:600;text-align:right}
+.sed .row .gp{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:right}
+.sed .row.photo{box-shadow:inset 0 0 0 2px var(--warn)}
+.sed .row .ops{display:flex;gap:2px}
+.sed .row .ops button{padding:0 5px;font-size:11px;line-height:18px}
+.sed .ft{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px}
+.sed .note{font-size:12px;color:var(--muted)}
+.sed .unread{font-size:12px;color:var(--warn);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.alerts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:6px;margin-top:6px}
+.alerts:empty{display:none}
+.alert{background:var(--panel-2);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:7px 10px;font-size:13px;min-width:0}
+.alert.crit{border-left-color:var(--crit)}
+.alert.info{border-left-color:var(--accent)}
+.alert.good{border-left-color:var(--good)}
+.alert .ttl{font-weight:600;display:flex;justify-content:space-between;gap:8px}
+.alert .ttl .when{color:var(--muted);font-weight:400;font-family:var(--mono);font-size:11px;white-space:nowrap}
+.alert .txt{margin:3px 0 6px}
+.alert .acts{display:flex;flex-wrap:wrap;gap:4px}
+.morealerts{font-size:12px;color:var(--muted);margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;font-size:11px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid var(--fg)}
+.legend i.inf{border-style:dashed}
+.legend i.sil{border-color:var(--warn);border-style:dotted}
+.legend i.man{border-color:var(--accent)}
+.legend i.neu{border-color:var(--crit);background:var(--crit-soft)}
+.legend i.notp{border-color:var(--muted);border-style:double}
+.legend i.head{border-radius:2px;width:4px;background:var(--head);border-color:var(--head)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;display:flex;flex-direction:column;max-height:calc(100vh - 150px);min-height:460px}
+@media (max-width:1000px){.panel{max-height:none}}
+.tabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.tabs button{border:0;border-radius:0;background:transparent;padding:8px 9px;font-weight:500;color:var(--muted);position:relative;font-size:13px}
+.tabs button.on{color:var(--fg)}
+.tabs button.on::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;background:var(--accent)}
+.tabs button .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--crit);margin-left:5px;vertical-align:middle}
+.tabbody{padding:10px 12px;overflow:auto;min-height:0}
+.tabbody h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:10px 0 6px;font-weight:600}
+.tabbody h3:first-child{margin-top:0}
+table{border-collapse:collapse;width:100%;font-size:13px;table-layout:fixed}
+th,td{text-align:left;padding:4px 5px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td.r,th.r{text-align:right}
+.pill{display:inline-block;border-radius:999px;padding:0 7px;font-size:11px;font-weight:600;line-height:18px;border:1px solid var(--line);background:var(--panel-2);white-space:nowrap}
+.pill.good{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.pill.warn{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.pill.crit{background:var(--crit-soft);border-color:var(--crit);color:var(--crit)}
+.pill.acc{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.bibchip{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;border-radius:5px;padding:0 5px;font-family:var(--mono);font-weight:600;font-size:12px;color:#fff;text-shadow:0 0 2px rgba(0,0,0,.6);vertical-align:middle}
+.splist{display:flex;flex-direction:column;gap:4px}
+.spitem{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--panel-2);display:flex;flex-direction:column;gap:3px;cursor:pointer}
+.spitem:hover{border-color:var(--accent)}
+.spitem.cur{border-color:var(--accent)}
+.spitem .l1{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.spitem .l2{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:12px}
+.muted{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.journal{display:flex;flex-direction:column;gap:2px;font-size:12.5px}
+.journal .e{display:grid;grid-template-columns:50px 30px 54px 1fr;gap:6px;padding:3px 4px;border-radius:5px;align-items:baseline}
+.journal .e:nth-child(odd){background:var(--panel-2)}
+.journal .e .t,.journal .e .w{font-family:var(--mono);color:var(--muted);font-size:11px}
+.journal .e .o{font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.journal .e .o.m{color:var(--muted)}.journal .e .o.d{color:var(--warn)}.journal .e .o.c{color:var(--accent)}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center}
+.filters select,.filters input,input.inp{font:inherit;padding:3px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
+.laps{display:flex;flex-direction:column;gap:3px;font-size:12px}
+.laps .lap{display:grid;grid-template-columns:44px 1fr;gap:6px;padding:3px 4px;border-radius:5px;align-items:center}
+.laps .lap:nth-child(odd){background:var(--panel-2)}
+.laps .lap .w{font-family:var(--mono);color:var(--muted)}
+.laps .lap .seq{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.laps .lap .seq .g{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.popover{position:absolute;z-index:6;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:8px;width:290px;font-size:13px}
+.popover .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-weight:600}
+.popover .sec{border-top:1px solid var(--line);margin-top:6px;padding-top:6px}
+.popover .sec .st{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;font-weight:600}
+.popover .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.popover button{text-align:left;font-size:12px;padding:5px 7px;white-space:normal}
+.popover .full{grid-column:1/-1}
+.popover .stepper{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono)}
+.popover .stepper button{padding:0 7px}
+.scen li{margin:4px 0}
+.scen .st{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px}
+.footer{color:var(--muted);font-size:12px}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:13px;z-index:20;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){.toast{transition:none}}
+.checkin{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px}
+.checkin .c{border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;display:flex;align-items:center;gap:6px}
+.checkin .c.ok{border-color:var(--good);background:var(--good-soft)}
+.checkin .c.miss{border-color:var(--crit);background:var(--crit-soft)}
+.checkin .c.notp{border-color:var(--muted);border-style:dashed}
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <div>
+      <h1>Console Course aux points <span class="sub">maquette de simulation</span></h1>
+      <div class="sub">Course aux points Hommes · 60 tours (15 km) · sprint tous les 10 tours · piste 250 m</div>
+    </div>
+    <div class="controls">
+      <button id="btnStart" class="primary">Départ (signal du starter)</button>
+      <span class="seg" id="speedSeg">
+        <button data-sp="0">Pause</button><button data-sp="1" class="on">×1</button><button data-sp="2">×2</button><button data-sp="4">×4</button><button data-sp="8">×8</button><button data-sp="16">×16</button>
+      </span>
+      <button id="btnArm" title="Touche A">Armer le prochain passage</button>
+      <button id="btnNeutral">Neutraliser la course</button>
+      <button id="btnReveal" class="small">Révéler la réalité</button>
+      <button id="btnReset" class="small">Réinitialiser</button>
+    </div>
+  </div>
+
+  <div class="reperes" id="reperes"></div>
+
+  <div class="main">
+    <div class="trackwrap" id="trackwrap">
+      <svg id="svg" viewBox="0 0 1000 490" aria-label="Vue de piste"></svg>
+      <div class="infield" id="infield"></div>
+      <div class="alerts" id="alerts"></div>
+      <div class="morealerts" id="morealerts"></div>
+      <div class="legend">
+        <span><i class="head"></i> tête de course</span><span><i></i> mesuré</span><span><i class="inf"></i> déduit</span><span><i class="sil"></i> transpondeur muet</span><span><i class="man"></i> placé par l'opérateur</span><span><i class="neu"></i> neutralisé</span><span><i class="notp"></i> sans transpondeur</span><span>· clic sur un badge: menu · glisser: replacer</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="tabs" id="tabs">
+        <button data-tab="sprint" class="on">Sprints</button><button data-tab="rank">Classement</button><button data-tab="laps">Passages</button><button data-tab="journal">Journal</button><button data-tab="reading">Lecture</button><button data-tab="tp">Transpondeurs</button><button data-tab="scen">Scénario</button>
+      </div>
+      <div class="tabbody" id="tabbody"></div>
+    </div>
+  </div>
+  <div class="footer">Les positions affichées sont celles que le logiciel estime à partir des capteurs et des décisions de l'opérateur, jamais celles de la simulation. "Révéler la réalité" superpose les positions réelles pour contrôler l'inférence.</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ===================== Configuration ===================== */
+const CFG={
+  trackLen:250, laps:60, sprintEvery:10, points:[5,3,2,1], lapPts:20, neutralLaps:5,
+  closeMs:15, groupGapS:2.0, marginS:2.0, marginK:1.5, withdrawAfterLost:2, debounceS:4, reconDeadline:44, lcConnected:true,
+  loops:[{id:'F',name:'Arrivée',pos:0},{id:'B',name:'Poursuite B',pos:113},{id:'A',name:'Poursuite A',pos:238}],
+  tapes:[{id:'TF',loop:'F',pos:0},{id:'T200',loop:null,pos:50},{id:'TB',loop:'B',pos:113},{id:'T100',loop:null,pos:150},{id:'TA',loop:'A',pos:238}],
+  dayStart:14*3600+30*60
+};
+const STARTLIST=[
+  {bib:1,name:'RIVERA Lucas',nat:'ESP',col:'#d62828',pow:0.55},
+  {bib:3,name:'MOREAU Théo',nat:'FRA',col:'#1d4ed8',pow:0.7},
+  {bib:7,name:'BRAND Nils',nat:'NED',col:'#f97316',pow:0.95},
+  {bib:9,name:'KOVAC Jan',nat:'SLO',col:'#16a34a',pow:0.5},
+  {bib:12,name:'HUBER Simon',nat:'SUI',col:'#c8102e',pow:0.85},
+  {bib:15,name:'O’NEILL Ciaran',nat:'IRL',col:'#15803d',pow:0.6},
+  {bib:18,name:'SANTOS Rui',nat:'POR',col:'#9f1239',pow:0.65},
+  {bib:23,name:'IVERSEN Mads',nat:'DEN',col:'#ef4444',pow:0.4},
+  {bib:31,name:'TANAKA Ren',nat:'JPN',col:'#ec4899',pow:0.45},
+  {bib:44,name:'WALSH Owen',nat:'GBR',col:'#1e3a8a',pow:0.5},
+  {bib:46,name:'DE WIT Pim',nat:'BEL',col:'#111827',pow:0.75},
+  {bib:52,name:'ROSSI Marco',nat:'ITA',col:'#0284c7',pow:0.9},
+  {bib:58,name:'PETROV Ilya',nat:'KAZ',col:'#06b6d4',pow:0.6},
+  {bib:61,name:'NAVARRO Diego',nat:'COL',col:'#eab308',pow:0.7},
+  {bib:67,name:'LEHMANN Felix',nat:'GER',col:'#4b5563',pow:0.8},
+  {bib:70,name:'SILVA Bruno',nat:'BRA',col:'#22c55e',pow:0.65}
+];
+const pad3=n=>String(n).padStart(3,'0');
+const TP=bib=>'T-'+pad3(bib);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const modeOf=arr=>{const m=new Map();let best=null,bc=0;for(const v of arr){const c=(m.get(v)||0)+1;m.set(v,c);if(c>bc){bc=c;best=v}}return best};
+const fmtRace=s=>{if(s<0)s=0;const m=Math.floor(s/60),x=(s-m*60);return m+':'+(x<10?'0':'')+x.toFixed(1)};
+const fmtDay=s=>{const t=CFG.dayStart+s;const h=Math.floor(t/3600)%24,m=Math.floor(t/60)%60,x=Math.floor(t%60);return [h,m,x].map(v=>String(v).padStart(2,'0')).join(':')};
+const fmtDayMs=s=>{const t=CFG.dayStart+s;const h=Math.floor(t/3600)%24,m=Math.floor(t/60)%60,x=t%60;return [h,m].map(v=>String(v).padStart(2,'0')).join(':')+':'+(x<10?'0':'')+x.toFixed(3)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let rnd=mulberry32(20261021);
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const sprintWaveBase=k=>k*CFG.sprintEvery;
+const NSPRINTS=CFG.laps/CFG.sprintEvery;
+function lum(hex){const c=hex.replace('#','');const r=parseInt(c.substr(0,2),16)/255,g=parseInt(c.substr(2,2),16)/255,b=parseInt(c.substr(4,2),16)/255;return 0.2126*r+0.7152*g+0.0722*b}
+
+/* ===================== Track geometry (model coordinate: finish line F at 0; drawing stretched for a large infield) ===================== */
+const GEO={S:118,R:27,k:5.5,cx:500,cy:245};
+const PATHLEN=2*GEO.S+2*Math.PI*GEO.R;
+function trackXY(dModel){
+  const S=GEO.S,R=GEO.R;const d=((((dModel+12)%250)+250)%250)*PATHLEN/250;
+  const a=S/2,b=a+Math.PI*R,c=b+S,e=c+Math.PI*R;let x,y;
+  if(d<a){x=d;y=R}
+  else if(d<b){const th=Math.PI/2-(d-a)/R;x=S/2+R*Math.cos(th);y=R*Math.sin(th)}
+  else if(d<c){x=S/2-(d-b);y=-R}
+  else if(d<e){const th=-Math.PI/2-(d-c)/R;x=-S/2+R*Math.cos(th);y=R*Math.sin(th)}
+  else{x=-S/2+(d-e);y=R}
+  return {x:GEO.cx+x*GEO.k,y:GEO.cy+y*GEO.k};
+}
+function trackPos(dModel,lane){ // lane offset in drawing metres, + = outer
+  const p=trackXY(dModel);if(!lane)return p;
+  const p1=trackXY(dModel-0.3),p2=trackXY(dModel+0.3);let tx=p2.x-p1.x,ty=p2.y-p1.y;const L=Math.hypot(tx,ty)||1;tx/=L;ty/=L;
+  return {x:p.x+(-ty)*lane*GEO.k,y:p.y+tx*lane*GEO.k};
+}
+function pathAt(lane){let s='';for(let d=0;d<=250;d+=1){const p=trackPos(d,lane);s+=(d===0?'M':'L')+p.x.toFixed(1)+' '+p.y.toFixed(1)}return s+'Z'}
+function nearestD(x,y){let best=0,bd=1e9;for(let d=0;d<250;d+=0.5){const p=trackXY(d);const dd=(p.x-x)**2+(p.y-y)**2;if(dd<bd){bd=dd;best=d}}return best}
+
+/* ===================== Simulation of reality (never read by the model) ===================== */
+class Sim{
+  constructor(){
+    this.t=0;this.phase='recon';this.P=0;this.v=0;this.v0=14.6;this.neutral=false;this.raceT=0;this.started=false;
+    this.riders=STARTLIST.map((r,i)=>({bib:r.bib,tp:TP(r.bib),dist:-1,prev:-1,mode:'off',rel:0,lapAhead:0,rank:i,pow:r.pow,miss:0.02,onTrack:false,rate:0,downUntil:0,rejoinBike:'same',dropLaps:0,out:false}));
+    this.by=new Map(this.riders.map(r=>[r.bib,r]));
+    this.by.get(9).tp='T-118';this.by.get(31).tp=null;
+    this.enterIdx=0;this.nextEnter=2;this.events=[];this.pulses={};this.physWave=0;this.lc={value:CFG.laps,skipNext:false,doubleNext:false};
+    this.shuffleT=0;this.sprintSet=new Set();this.tightSprint=0;this.junction={};
+  }
+  leaderDist(){let m=-1;for(const r of this.riders)if(r.onTrack&&!r.out)m=Math.max(m,r.dist);return m}
+  boardDist(){let m=-1;for(const r of this.riders)if(r.onTrack&&!r.out)m=Math.max(m,r.dist-250*r.lapAhead);return m}
+  startRace(){
+    this.started=true;this.phase='race';this.raceT=0;this.P=this.leaderDist();this.lapBase=Math.floor(this.P/250);
+    for(const r of this.riders){if(r.onTrack){r.rel=r.dist-this.P;r.mode='peloton';r.jit=0}}
+    this.v=0;
+  }
+  raceDist(d){return d-(this.lapBase||0)*250}
+  step(dt){
+    this.t+=dt;const ev=this.events;
+    if(this.phase==='recon'){
+      if(this.enterIdx<this.riders.length&&this.t>=this.nextEnter){const r=this.riders[this.enterIdx++];r.onTrack=true;r.dist=15;r.prev=15;r.mode='recon';this.nextEnter=this.t+1.6}
+      for(const r of this.riders){if(!r.onTrack)continue;r.prev=r.dist;const end=250+0.6+r.rank*0.8;if(r.dist<end)r.dist=Math.min(end,r.dist+9*dt)}
+    }else{
+      if(!this.neutral)this.raceT+=dt;
+      const lapF=this.raceDist(this.P)/250;const f=lapF%CFG.sprintEvery;
+      let boost=0;if(f>8.6)boost=(f-8.6)/1.4*2.6;else if(f<0.5)boost=-1.2;
+      const vt=this.neutral?8:(this.raceT<8?this.raceT*2:this.physWave>=CFG.laps?this.v0:this.v0*(1+0.03*Math.sin(this.raceT/19))+boost);
+      this.v+=clamp(vt-this.v,-4*dt,4*dt);this.P+=this.v*dt;
+      const sprintK=Math.floor(lapF/CFG.sprintEvery)+1;
+      if(f>8.6&&!this.sprintSet.has(sprintK)&&sprintK<=NSPRINTS){this.sprintSet.add(sprintK);const pel=this.riders.filter(r=>r.mode==='peloton'&&!r.out).sort((a,b)=>(b.pow+rnd()*0.6)-(a.pow+rnd()*0.6));pel.forEach((r,i)=>r.rank=i);this.tightNow=(this.tightSprint===sprintK)}
+      else if(this.raceT-this.shuffleT>12&&f<8){this.shuffleT=this.raceT;const pel=this.riders.filter(r=>r.mode==='peloton'&&!r.out).sort((a,b)=>a.rank-b.rank);for(let n=0;n<3;n++){const i=Math.floor(rnd()*(pel.length-1));if(pel[i]&&pel[i+1]){const t=pel[i].rank;pel[i].rank=pel[i+1].rank;pel[i+1].rank=t}}this.tightNow=false}
+      for(const r of this.riders){
+        if(!r.onTrack||r.out)continue;r.prev=r.dist;
+        if(r.mode==='peloton'){r.jit=clamp((r.jit||0)+(rnd()-0.5)*0.6*dt,-0.35,0.35);let target=250*r.lapAhead-r.rank*0.9+r.jit;if(this.tightNow&&r.rank===1){const lead=this.riders.find(x=>x.rank===0&&x.mode==='peloton');target=250*r.lapAhead-0.03+(lead?lead.jit:0)}r.rel+=clamp(target-r.rel,-2.5*dt,2.5*dt);r.dist=this.P+r.rel}
+        else if(r.mode==='attack'){r.rel+=r.rate*dt;r.dist=this.P+r.rel;if(r.rel>=250*(r.lapAhead+1)-15){r.lapAhead++;r.mode='peloton';r.rank=15;this.junction[r.bib]=this.raceT}}
+        else if(r.mode==='drop'){r.rel-=r.rate*dt;r.dist=this.P+r.rel;if(r.rel<=-250*r.dropLaps-15){r.lapAhead=-r.dropLaps;r.mode='peloton';r.rank=15;this.junction['lost'+r.bib]=this.raceT}}
+        else if(r.mode==='down'){r.rel=r.dist-this.P;if(this.raceT>=r.downUntil){if(r.rejoinBike==='out'){r.out=true;r.onTrack=false;continue}r.mode='peloton';r.rank=15;r.rel=250*r.lapAhead-15*0.9;r.dist=this.P+r.rel;r.prev=r.dist;if(r.rejoinBike==='other')r.tp=null;continue}}
+      }
+      const w=Math.floor(this.raceDist(this.boardDist())/250);
+      if(w>this.physWave&&!this.neutral){this.physWave=w;if(this.lc.value>0){if(this.lc.skipNext){this.lc.skipNext=false}else if(this.lc.doubleNext){this.lc.doubleNext=false;this.lc.value=Math.max(0,this.lc.value-2)}else this.lc.value--;ev.push({kind:'lc',t:this.t,value:this.lc.value})}}
+      if(this.physWave>=CFG.laps+1){for(const r of this.riders)if(r.onTrack){r.onTrack=false}}
+      if(this.physWave>=CFG.laps)this.v0=7;
+    }
+    for(const r of this.riders){
+      if(!r.onTrack||r.out||r.dist<=r.prev)continue;
+      for(const L of CFG.loops){const k0=Math.floor((r.prev-L.pos)/250),k1=Math.floor((r.dist-L.pos)/250);if(k1>k0){const tc=this.t-dt+dt*((k1*250+L.pos-r.prev)/(r.dist-r.prev));if(r.tp&&rnd()>r.miss)ev.push({kind:'pass',t:tc,loop:L.id,tp:r.tp,sig:60+Math.round(rnd()*40)})}}
+      for(const T of CFG.tapes){const k0=Math.floor((r.prev-T.pos)/250),k1=Math.floor((r.dist-T.pos)/250);if(k1>k0){const tc=this.t-dt+dt*((k1*250+T.pos-r.prev)/(r.dist-r.prev));const last=this.pulses[T.id]||-9;if(tc-last>0.03){this.pulses[T.id]=tc;ev.push({kind:'tape',t:tc,tape:T.id})}}}
+    }
+    ev.sort((a,b)=>a.t-b.t);const out=ev.splice(0,ev.length);return out;
+  }
+  truthPositions(){return this.riders.filter(r=>r.onTrack&&!r.out).map(r=>({bib:r.bib,d:this.started?this.raceDist(r.dist):r.dist}))}
+}
+
+/* ===================== Software model: sees only sensors and operator decisions ===================== */
+class Model{
+  constructor(){
+    this.riders=STARTLIST.map(r=>({bib:r.bib,name:r.name,nat:r.nat,col:r.col,tpExpected:TP(r.bib),tp:TP(r.bib),detected:false,
+      state:'waiting',noTp:false,anchor:null,anchorT:null,speed:9,est:0,passF:0,lastLoop:null,lastSeen:null,missStreak:0,silentMisses:0,conf:'none',overdueSince:null,handled:'',
+      group:null,rel:'in',relSince:0,relPending:null,manualUntil:-1,lapIdx:0,lapStatus:0,rawDelta:0,residuals:[],speedPrev:0,neutralSince:null,neutralKind:null,incidentWave:null,reappeared:false,gapM:0,deltaSeen:0,deltaSince:0,deltaWave:0,ignoreUntil:-1,brokeLogged:false,missTimes:[],assumed:null,assumedT:0,assumedKey:'',finishedAt:null,frozenEst:null,lastOtherGroup:null}));
+    this.by=new Map(this.riders.map(r=>[r.bib,r]));
+    this.tpTable=new Map(this.riders.map(r=>[r.tp,r.bib]));
+    this.phase='recon';this.started=false;this.t=0;this.startT=0;this.raceT=0;this.pausedT=0;this.lastTickT=0;
+    this.wave=0;this.waveT=0;this.kOffset=0;this.neutral=false;this.liveMode=true;
+    this.passLog=[];this.allPass=[];this.journal=[];this.decisions=[];this.alerts=[];this.sprints=new Map();this.readings=[];this.outputs=[];
+    this.groups=[];this.main=null;this.prevGroups=[];this.gid=1;this.lcValue=CFG.laps;this.lcAlerted=null;this.armed=false;this.leadFlag=null;
+    this.unknown=new Map();this.tapePulses={};this.loopPass={};this.finished=false;this.trace=[];this.recon={missingAlerted:false};this.results={sprints:[],ranking:[]};this.alertSeq=1;this.anomalyAt={};this.dirty=true;this.leaderSpeed=14.5;this.leaderBib=null;this.freshSpeed=12;
+  }
+  log(type,origin,text,extra){this.journal.push(Object.assign({t:this.t,wave:this.wave,type,origin,text},extra||{}));this.dirty=true}
+  alert(a){a.id=this.alertSeq++;a.t=this.t;this.alerts.push(a);this.dirty=true;return a}
+  dismiss(id){this.alerts=this.alerts.filter(a=>a.id!==id);this.dirty=true}
+  findAlert(kind,key){return this.alerts.find(a=>a.kind===kind&&a.key===key)}
+  lapsToGo(){return CFG.laps-this.wave}
+  nextSprint(){for(let k=1;k<=NSPRINTS;k++){const w=this.sprintWave(k);if(w>this.wave)return {k,wave:w,inLaps:w-this.wave};}return null}
+  sprintWave(k){let w=sprintWaveBase(k);for(const d of this.decisions)if(!d.cancelled&&d.type==='shiftSprint'&&d.sprint===k)w+=d.delta;return w}
+  sprintAtWave(w){for(let k=1;k<=NSPRINTS;k++)if(this.sprintWave(k)===w)return k;return 0}
+  adj(bib,wave){let a=0;for(const d of this.decisions){if(d.cancelled||d.bib!==bib)continue;if(d.type==='lapGain'&&wave>=d.wave)a-=1;else if(d.type==='lapLoss'&&wave>=d.wave)a+=1}return a}
+  countOf(type,bib){return this.decisions.filter(d=>!d.cancelled&&d.type===type&&d.bib===bib).length}
+  ingest(ev){this.t=ev.t;if(ev.kind==='pass')this.onPassing(ev);else if(ev.kind==='tape')this.onTape(ev);else if(ev.kind==='lc')this.onLapCounter(ev.value)}
+  onTape(ev){const arr=this.tapePulses[ev.tape]||(this.tapePulses[ev.tape]=[]);arr.push(ev.t);if(arr.length>400)arr.splice(0,100)}
+  pulsesAround(tape,t,win){const arr=this.tapePulses[tape]||[];return arr.filter(x=>Math.abs(x-t)<=win).length}
+  onPassing(ev){
+    const bib=this.tpTable.get(ev.tp);
+    if(bib===undefined){this.onUnknown(ev);return}
+    const r=this.by.get(bib);const L=CFG.loops.find(l=>l.id===ev.loop);
+    if(this.phase==='recon'){
+      if(!r.detected){r.detected=true;r.lastSeen=ev.t;this.log('tp','mesuré',`Transpondeur ${ev.tp} du dossard ${bib} détecté (${L.name})`,{bibs:[bib]});const a=this.findAlert('tpMissing','all');if(a)this.refreshMissing();}
+      r.lastSeen=ev.t;return;
+    }
+    if(r.state==='out')return;
+    if(r.state==='neutralised'){
+      r.lastSeen=ev.t;r.seenLoop=L.id;r.seenT=ev.t;if(!r.reappeared){r.reappeared=true;this.log('tp','mesuré',`${bib} réapparu sur ${L.name} alors qu'il est neutralisé`,{bibs:[bib]});
+        if(!this.findAlert('rejoin',bib))this.alert({kind:'rejoin',key:bib,bibs:[bib],level:'info',title:`${bib} ${r.name} réapparu sur ${L.name}`,text:`Neutralisé depuis le T${r.incidentWave}. Compte de tours à aligner sur le groupe qu'il réintègre.`,actions:[{label:'Retour en course, même vélo',primary:true,fn:()=>OP.rejoin(bib,'same')},{label:'Abandon',fn:()=>OP.status(bib,'dnf')}]});}
+      return;
+    }
+    if(r.noTp){r.noTp=false;this.log('tp','mesuré',`Transpondeur du ${bib} à nouveau détecté sur ${L.name}`,{bibs:[bib]})}
+    const now=ev.t;const est=this.estAt(r,now);
+    if(this.finished&&r.finishedAt!==null)return;
+    let newDist;
+    const refD0=r.lastPassDist!==undefined&&r.lastPassDist!==null?r.lastPassDist:r.anchor,refT0=r.lastPassT!==undefined&&r.lastPassT!==null?r.lastPassT:r.anchorT;
+    if(r.anchor===null){newDist=L.pos}else{ // lap snap: never behind the last measured passing, implied speed closest to the speed freshly measured on the track
+      const k0=Math.round((est-L.pos)/250);const dt=Math.max(0.2,now-refT0);let best=null,bs=1e9;
+      for(const k of [k0-1,k0,k0+1]){const nd=k*250+L.pos;if(nd<=refD0+0.5)continue;const v=(nd-refD0)/dt;if(v<2.5||v>24)continue;const sc=Math.abs(v-this.freshSpeed);if(sc<bs){bs=sc;best=nd}}
+      newDist=best!==null?best:k0*250+L.pos;}
+    if(r.anchor!==null&&Math.abs(newDist-r.anchor)<1&&r.assumed===L.id){ // late detection of a crossing already assumed by the miss inference
+      r.anchorT=now;r.assumed=null;r.lastSeen=now;r.lastLoop=L.id;r.overdueSince=null;r.lastPassDist=newDist;r.lastPassT=now;
+      this.log('tp','mesuré',`${bib} détecté sur ${L.name} avec ${(now-r.assumedT).toFixed(1)} s de retard sur l'heure attendue: passage confirmé`,{bibs:[bib]});
+      r.missStreak=Math.max(0,r.missStreak-1);(this.loopPass[L.id]=this.loopPass[L.id]||[]).push({t:now,bib});if(r.missStreak===0){r.silentMisses=0;if(r.manualUntil<this.wave)r.conf='measured';const a=this.findAlert('silent',bib);if(a)this.dismiss(a.id);this.clearAnomalies(bib)}
+      const ap=this.allPass.find(p=>p.bib===bib&&p.loop===L.id&&p.origin==='déduit'&&Math.abs(p.dist-newDist)<1);if(ap){ap.origin='mesuré';ap.t=now}
+      if(L.id==='F'){const p=this.passLog.find(p=>p.bib===bib&&p.origin==='déduit'&&Math.abs(p.passF*250-newDist)<1);if(p){p.origin='mesuré';p.t=now;this.passLog.sort((a,b)=>a.t-b.t);this.sprintUpdate()}}
+      this.dirty=true;return;
+    }
+    // speed is always measured between two real passings, never from an anchor moved by inference
+    const refD=r.lastPassDist!==undefined&&r.lastPassDist!==null?r.lastPassDist:r.anchor,refT=r.lastPassT!==undefined&&r.lastPassT!==null?r.lastPassT:r.anchorT;
+    if(refD!==null&&now>refT+0.2){const sp=(newDist-refD)/(now-refT);if(sp>4&&sp<23){r.speed=r.conf==='measured'?r.speed*0.5+sp*0.5:sp;this.freshSpeed=this.freshSpeed*0.5+sp*0.5}
+      if(r.conf==='measured'&&r.missStreak===0){const predicted=refT+(newDist-refD)/Math.max(6,r.speedPrev||r.speed);r.residuals.push(now-predicted);if(r.residuals.length>8)r.residuals.shift()}r.speedPrev=r.speed}
+    r.anchor=newDist;r.anchorT=now;r.lastSeen=now;r.lastLoop=L.id;r.assumed=null;r.overdueSince=null;r.lastPassDist=newDist;r.lastPassT=now;
+    (this.loopPass[L.id]=this.loopPass[L.id]||[]).push({t:now,bib});if(this.loopPass[L.id].length>300)this.loopPass[L.id].splice(0,100);
+    this.allPass.push({t:now,bib,loop:L.id,dist:newDist,lap:Math.floor((newDist+0.5)/250),origin:'mesuré'});
+    if(r.missStreak>0){this.log('tp','mesuré',`${bib} de nouveau détecté sur ${L.name} après ${r.missStreak} passage(s) manqué(s)`,{bibs:[bib]});const a=this.findAlert('silent',bib);if(a)this.dismiss(a.id)}
+    r.missStreak=0;r.silentMisses=0;if(r.manualUntil<this.wave)r.conf='measured';r.groupSeen=r.group;this.clearAnomalies(bib);
+    if(this.leadFlag===L.id){this.leadFlag=null;const nextK=Math.floor(r.anchor/250)+(L.id==='F'?0:1);r.lapStatus=nextK-(this.wave+(L.id==='F'?0:1));this.log('decision','décidé',`Tête de course désignée: ${bib} au passage sur ${L.name} (statut de tours ${r.lapStatus>0?'+':''}${r.lapStatus})`,{bibs:[bib]});UI.toast(`${bib} désigné tête de course`)}
+    if(L.id==='F')this.finishPassing(r,now,'mesuré');
+    this.dirty=true;
+  }
+  finishPassing(r,now,origin){
+    if(this.finished&&r.finishedAt!==null)return;
+    const k=Math.round(r.anchor/250);r.passF=k;
+    const raceLap=k-r.lapStatus;let w=raceLap-this.kOffset;
+    if(w>this.wave){
+      if(this.neutral){this.kOffset+=(w-this.wave);w=this.wave}
+      else if(this.finished){return}
+      else if(r.lapStatus+this.adj(r.bib,this.wave)>=0){this.openWave(w,now)}
+    }
+    w=clamp(w,this.wave-1,this.wave+1);if(raceLap>(this.maxRaceLap||0)){this.maxRaceLap=raceLap;this.lastLeadCross={raceLap,t:now}}
+    this.passLog.push({t:now,bib:r.bib,loop:'F',passF:k,wave:w,raceLap,status:r.lapStatus,origin});
+    if(this.finished&&w===this.wave&&r.finishedAt===null){r.finishedAt=now;r.frozenEst=this.estAt(r,now);this.log('system',origin,`${r.bib}: arrivée enregistrée (${origin}), ${this.passLog.filter(p=>p.wave===this.wave).length}e sur la ligne`,{bibs:[r.bib]})}
+    this.sprintUpdate();
+    const ks=this.sprintAtWave(w);if(ks&&this.liveMode)this.liveSendCheck(ks);
+  }
+  liveSendCheck(k){ // live mode: send once the whole lead group has crossed (eligibility can change until the last rider passes) and the four places are unambiguous
+    const rec=this.sprintRec(k);if(rec.sent||rec.held||!this.liveMode)return;const res=this.results.sprints[k-1];if(!res||res.order.length<4)return;
+    const w=this.sprintWave(k);const expected=this.riders.filter(r=>r.state==='racing'&&!r.noTp&&r.missStreak<2);
+    const complete=expected.every(r=>this.passLog.some(p=>p.bib===r.bib&&p.wave===w))||(this.t-this.waveT>25);
+    if(!complete)return;
+    const top=res.order.slice(0,4);if(top.some(o=>o.photo||o.photoPair||o.inferred))return;if(res.unread.some(u=>u.estPlace<=4))return;
+    OP.send(k,false,true);
+  }
+  onUnknown(ev){
+    const u=this.unknown.get(ev.tp)||{tp:ev.tp,count:0,first:ev.t};u.count++;u.last=ev.t;u.loop=ev.loop;this.unknown.set(ev.tp,u);
+    if(u.count===1)this.log('tp','mesuré',`Transpondeur inconnu ${ev.tp} détecté sur ${CFG.loops.find(l=>l.id===ev.loop).name}: attribué à aucun partant`);
+    if(!this.findAlert('tpUnknown',ev.tp))this.alert({kind:'tpUnknown',key:ev.tp,level:'warn',title:`Transpondeur inconnu ${ev.tp}`,text:'',actions:[]});
+    this.refreshUnknown();
+  }
+  onLapCounter(v){
+    this.lcValue=v;this.dirty=true;
+    if(!this.started||this.finished||!CFG.lcConnected)return;
+    const nw=CFG.laps-v;const lc=this.lastLeadCross;const recent=lc&&(this.t-lc.t)<6;
+    const r=recent?lc.raceLap:(this.maxRaceLap||0)+1;const newOffset=r-nw;
+    if(newOffset!==this.kOffset||nw!==this.wave){
+      const old=this.kOffset;this.kOffset=newOffset;
+      for(const p of this.passLog)if(p.raceLap>=r)p.wave=p.raceLap-this.kOffset;
+      if(nw>this.wave)this.openWave(nw,this.t);else if(nw<this.wave){this.wave=nw;this.log('system','mesuré',`Lap counter relié: tour de course ramené à T${nw}`)}
+      if(old!==newOffset)this.log('system','mesuré',`Lap counter relié: ${v} tours restants, tour de course T${nw}${recent?'':' (passage de tête non lu, rattaché au prochain passage)'}`);
+      this.sprintUpdate();
+    }
+  }
+  lcCheck(now){
+    if(!this.started||this.finished)return;const v=this.lcValue,mine=this.lapsToGo();
+    if(v!==mine){
+      if(this.lcMismatchSince===null||this.lcMismatchSince===undefined)this.lcMismatchSince=now;
+      else if(now-this.lcMismatchSince>4&&this.lcAlerted!==v){this.lcAlerted=v;
+        const old=this.findAlert('lc','lc');if(old)this.dismiss(old.id);
+        this.log('anomaly','déduit',`Lap counter ${v} tours restants, compteur des passages ${mine}, écart persistant`);
+        if(CFG.lcConnected)this.alert({kind:'lc',key:'lc',level:'warn',title:'Écart avec le lap counter relié',text:`Le lap counter indique ${v} à faire, les passages de tête donnent ${mine}. Le lap counter fait foi; vérifier avec le commissaire qu'il n'a pas oublié une décrémentation.`,actions:[{label:'OK',primary:true,fn:()=>{const a=this.findAlert('lc','lc');if(a)this.dismiss(a.id)}},{label:`Forcer ${v}`,fn:()=>OP.adoptLc(v)}]});
+        else this.alert({kind:'lc',key:'lc',level:'warn',title:'Écart avec le lap counter',text:`Lap counter du commissaire: ${v} à faire. Compteur interne: ${mine}. Lequel fait foi?`,actions:[{label:`Adopter ${v}`,fn:()=>OP.adoptLc(v)},{label:`Garder ${mine}`,primary:true,fn:()=>{const a=this.findAlert('lc','lc');if(a)this.dismiss(a.id)}}]});}
+    }else{this.lcMismatchSince=null;const a=this.findAlert('lc','lc');if(a){this.dismiss(a.id);this.log('system','mesuré',`Lap counter de nouveau aligné (${v})`)}this.lcAlerted=null}
+  }
+  openWave(w,now){
+    this.wave=w;this.waveT=now;
+    const k=this.sprintAtWave(w);
+    if(this.armed){this.armed=false;const ns=this.nextSprintFrom(w);if(ns&&ns.wave!==w){this.decide({type:'shiftSprint',sprint:ns.k,delta:w-sprintWaveBase(ns.k),text:`Armé: sprint ${ns.k} enregistré au T${w} au lieu du T${ns.wave}`});UI.toast(`Sprint ${ns.k} enregistré sur ce passage`)}else if(k){this.log('operator','décidé',`Sprint ${k} armé par l'opérateur`);}UI.syncButtons()}
+    const k2=this.sprintAtWave(w);
+    if(k2){const s=this.sprintRec(k2);s.wave=w;s.openedT=now;this.log('sprint','mesuré',`T${w}: sprint ${k2}${k2===NSPRINTS?' (final, points doublés)':''}, ordre de passage en cours`);UI.openSprint(k2);for(const a of this.alerts.filter(a=>a.kind==='notp'))this.dismiss(a.id);
+      const noTp=this.riders.filter(r=>r.state==='racing'&&r.noTp&&r.lapStatus+this.adj(r.bib,w)>=0);
+      if(noTp.length)this.alert({kind:'notp',key:'s'+k2,level:'warn',title:`Sprint ${k2}: ${noTp.map(r=>r.bib).join(', ')} sans transpondeur`,text:`Éligible${noTp.length>1?'s':''} à marquer, mais aucun passage ne sera lu: saisir la place à la main si nécessaire.`,actions:[{label:'Vu',primary:true,fn:()=>{const a=this.findAlert('notp','s'+k2);if(a)this.dismiss(a.id)}}]});}
+    if(w>=CFG.laps){this.finished=true;this.log('system','mesuré','Dernier passage franchi par la tête de course: enregistrement du protocole d’arrivée');}
+    this.readingAt(w);this.dirty=true;
+  }
+  nextSprintFrom(w){for(let k=1;k<=NSPRINTS;k++){const sw=this.sprintWave(k);if(sw>=w)return {k,wave:sw}}return null}
+  sprintRec(k){let s=this.sprints.get(k);if(!s){s={k,wave:null,openedT:null,sent:false,sentAuto:false,photoConfirmed:false,held:false};this.sprints.set(k,s)}return s}
+  estAt(r,now){if(r.anchor===null)return 0;return r.anchor+r.speed*(now-r.anchorT)}
+  marginFor(r){const v=r.residuals||[];if(v.length<3)return CFG.marginS;const m=v.reduce((s,x)=>s+x,0)/v.length;const sd=Math.sqrt(v.reduce((s,x)=>s+(x-m)*(x-m),0)/v.length);return Math.max(CFG.marginS,CFG.marginK*sd)}
+  start(now){
+    this.started=true;this.phase='race';this.startT=now;this.t=now;this.lastTickT=now;
+    for(const r of this.riders){r.state='racing';r.anchor=0.5;r.anchorT=now;r.speed=8;r.passF=0;r.conf='measured';
+      if(!r.detected){r.noTp=true;r.conf='notp';this.log('tp','déduit',`${r.bib} part sans transpondeur reconnu: suivi par inférence et par l'opérateur`,{bibs:[r.bib]})}}
+    const miss=this.findAlert('tpMissing','all');if(miss)this.dismiss(miss.id);
+    this.log('system','mesuré','Départ donné par le starter. Enregistrement permanent de tous les passages.');this.dirty=true;
+  }
+  tick(now){
+    this.t=now;if(this.phase==='recon'){this.reconTick(now);return}
+    if(!this.started)return;
+    if(this.neutral)this.pausedT+=now-this.lastTickT;this.lastTickT=now;this.raceT=now-this.startT-this.pausedT;
+    const racing=this.riders.filter(r=>r.state==='racing');
+    for(const r of racing){
+      if(r.finishedAt!==null){r.est=r.frozenEst;r.lapIdx=Math.floor(r.est/250);continue}
+      const g=this.groups.find(g=>g.id===r.group);
+      const stale=this.neutral&&r.lastSeen!==null&&now-r.lastSeen>6; // neutralised race: a rider not read for a while follows his group's measured speed, never his own stale race speed
+      if(r.noTp||r.missStreak>=2||stale){const sp=g?g.speed:this.leaderSpeed;r.anchor+=sp*(now-r.anchorT);r.anchorT=now;r.speed=sp;}
+      r.est=this.estAt(r,now);
+      if((r.noTp||r.missStreak>=1||stale)&&g&&g.members.length>1&&r.conf!=='manual'&&(r.noTp||stale||r.groupSeen===g.id)){
+        const others=g.members.filter(b=>b!==r.bib).map(b=>{const e=this.by.get(b).est;return e+250*Math.round((r.est-e)/250)});const head=Math.max(...others),tail=Math.min(...others);
+        let corr=0;if(r.est>head+2)corr=head+2-r.est;else if(r.est<tail-2)corr=tail-2-r.est;
+        if(corr&&Math.abs(corr)<=40){r.anchor+=corr;r.est+=corr}}
+      r.lapIdx=Math.floor(r.est/250);
+    }
+    for(const r of racing){
+      if(r.noTp||this.neutral||r.finishedAt!==null)continue;
+      const lapPos=((r.anchor%250)+250)%250;let next=null,dist=0;
+      for(const L of [CFG.loops[0],CFG.loops[1],CFG.loops[2]].sort((a,b)=>a.pos-b.pos)){const dd=((L.pos-lapPos)%250+250)%250;if(dd>0.5&&(next===null||dd<dist)){next=L;dist=dd}}
+      const expected=r.anchorT+dist/Math.max(r.speed,6);
+      if(now>expected+this.marginFor(r)){
+        const key=next.id+':'+Math.round((r.anchor+dist)/250);
+        if(r.handled!==key){r.handled=key;r.missStreak++;r.silentMisses++;if(!r.overdueSince)r.overdueSince=now;r.missTimes.push(now);if(r.missTimes.length>20)r.missTimes.shift();
+          const g=this.groups.find(g=>g.id===r.group);const tape=CFG.tapes.find(t=>t.loop===next.id);
+          const pulses=tape?this.pulsesAround(tape.id,expected,1.2):0;
+          const groupName=g?this.groupName(g):'son groupe';
+          if(r.missStreak===1){this.log('miss','déduit',`T${this.wave} ${next.name}: ${r.bib} non détecté, placé dans ${groupName} (vu au tour précédent)${pulses>0?' · contact tape switch compatible':''}`,{bibs:[r.bib]});r.conf='inferred'}
+          else if(r.missStreak===2){r.conf='silent';this.log('miss','déduit',`${r.bib}: deuxième passage manqué (${next.name}), transpondeur considéré muet`,{bibs:[r.bib]});
+            if(!this.findAlert('silent',r.bib)&&!r.silentAck&&!this.finished)this.alert({kind:'silent',key:r.bib,bibs:[r.bib],level:'warn',title:`Transpondeur du ${r.bib} muet`,text:`${r.name}: 2 passages manqués de suite. Badge maintenu dans ${groupName} par inférence. Méfiance sur les sprints.`,actions:[{label:'Confirmer dans le groupe',primary:true,fn:()=>OP.confirmInGroup(r.bib)},{label:'Chute',fn:()=>OP.incident([r.bib],'chute')},{label:'Abandon',fn:()=>OP.status(r.bib,'dnf')}]});}
+          r.anchor=r.anchor+dist;r.anchorT=expected;r.assumed=next.id;r.assumedT=expected;r.assumedKey=key;
+          this.allPass.push({t:expected,bib:r.bib,loop:next.id,dist:r.anchor,lap:Math.floor((r.anchor+0.5)/250),origin:'déduit'});
+          if(next.id==='F')this.finishPassing(r,expected,'déduit');
+        }
+      }
+    }
+    this.computeGroups(now);if(!this.finished){this.anomalyCheck(now);this.proposalCheck(now);this.lcCheck(now)}
+    const ks=this.sprintAtWave(this.wave);if(ks&&this.liveMode&&now-(this.lastLiveCheck||0)>1){this.lastLiveCheck=now;this.liveSendCheck(ks)}
+  }
+  reconTick(now){if(now>CFG.reconDeadline&&!this.recon.missingAlerted){this.recon.missingAlerted=true;this.refreshMissing()}}
+  refreshMissing(){
+    this.refreshUnknown();
+    if(!this.recon.missingAlerted)return;
+    const miss=this.riders.filter(r=>!r.detected);const a=this.findAlert('tpMissing','all');
+    if(!miss.length){if(a){this.dismiss(a.id);this.log('tp','mesuré','Tous les transpondeurs attendus sont détectés')}return}
+    const text=`Non détectés au tour de reconnaissance: ${miss.map(m=>m.bib+' ('+m.tpExpected+')').join(', ')}. Vérifier les vélos avant le départ.`;
+    if(a){a.text=text;this.dirty=true}else{this.alert({kind:'tpMissing',key:'all',level:'crit',title:'Transpondeurs manquants',text,actions:[]});this.log('tp','déduit',text)}
+  }
+  refreshUnknown(){
+    for(const a of this.alerts.filter(a=>a.kind==='tpUnknown')){
+      const cands=this.riders.filter(r=>this.phase==='recon'?!r.detected:(r.noTp&&r.state==='racing'));
+      const u=this.unknown.get(a.key);const Lname=u?CFG.loops.find(l=>l.id===u.loop).name:'';
+      const ready=this.phase!=='recon'||this.recon.missingAlerted;
+      a.text=`Détecté sur ${Lname}, attribué à aucun partant de cette course. ${ready?(cands.length?'Sans transpondeur détecté: '+cands.map(c=>c.bib).join(', ')+'.':'Tous les partants sont déjà détectés.'):'En attente de la fin du tour de reconnaissance pour proposer une attribution.'}`;
+      a.actions=(ready?cands.slice(0,3).map(c=>({label:`Attribuer au ${c.bib} ${c.name.split(' ')[0]}`,primary:cands.length===1,fn:()=>OP.assignTp(a.key,c.bib)})):[]).concat([{label:'Ignorer',fn:()=>{this.dismiss(a.id)}}]);
+    }
+    this.dirty=true;
+  }
+  groupName(g){if(g.isMain)return 'le peloton';const ahead=g.gap>0;if(g.members.length===1)return (ahead?'échappé ':'lâché ')+g.members[0];return (ahead?'échappée (':'attardés (')+g.members.length+')'}
+  computeGroups(now){
+    const racing=this.riders.filter(r=>r.state==='racing').sort((a,b)=>b.est-a.est);
+    const measured=racing.filter(r=>r.conf==='measured');
+    this.leaderSpeed=measured.length?Math.max(8,measured.reduce((s,r)=>s+r.speed,0)/measured.length):this.leaderSpeed;
+    if(!racing.length){this.groups=[];this.main=null;return}
+    const thr=CFG.groupGapS*this.leaderSpeed;const pos=r=>((r.est%250)+250)%250;const leadPos=pos(racing[0]);
+    const items=racing.map(r=>({r,back:((leadPos-pos(r))%250+250)%250})).sort((a,b)=>a.back-b.back);
+    const clusters=[];let cur=null;
+    for(const it of items){if(!cur||it.back-cur.lastBack>thr){cur={members:[],firstBack:it.back,lastBack:it.back};clusters.push(cur)}cur.members.push(it.r.bib);cur.lastBack=it.back}
+    if(clusters.length>1){const first=clusters[0],last=clusters[clusters.length-1];if(250-last.lastBack+first.firstBack<=thr){first.members=last.members.concat(first.members);clusters.pop()}}
+    for(const c of clusters){const rs=c.members.map(b=>this.by.get(b));c.fieldLap=modeOf(rs.map(r=>r.lapIdx));const maj=rs.filter(r=>r.lapIdx===c.fieldLap);c.head=Math.max(...maj.map(r=>r.est));c.tail=Math.min(...maj.map(r=>r.est));
+      const ms=rs.filter(r=>r.conf==='measured'&&r.lastSeen!==null&&now-r.lastSeen<20);c.speed=ms.length?ms.reduce((s,r)=>s+r.speed,0)/ms.length:this.freshSpeed; // only speeds measured recently; otherwise the freshest speed seen on the track
+      let best=null,bo=0;for(const p of this.prevGroups){const o=p.members.filter(b=>c.members.includes(b)).length;if(o>bo||(o===bo&&best&&p.isMain)){bo=o;best=p}}c.id=(best&&bo>=Math.ceil(c.members.length/2))?best.id:this.gid++;}
+    let main=null;for(const c of clusters){if(!main||c.members.length>main.members.length||(c.members.length===main.members.length&&this.prevGroups.find(p=>p.isMain&&p.id===c.id)))main=c}
+    for(const c of clusters){c.isMain=(c===main);c.gap=main?c.head-main.head:0;c.gapS=c.gap/Math.max(8,this.leaderSpeed)}
+    if(main){const ests=main.members.map(b=>this.by.get(b).est).sort((a,b)=>a-b);const med=ests[Math.floor(ests.length/2)];
+      for(const b of main.members){const r=this.by.get(b);const x=(r.est-med)/250;const k=Math.round(x);if(Math.abs(x-k)*250<=thr+10){r.lapStatus=k;r.rawDelta=k}}}
+    this.groups=clusters;this.main=main;this.prevGroups=clusters;
+    // head of the race: the rider who will open the next lap
+    let lead=null,ls=-1e9;for(const r of racing){const s=r.est-250*(r.lapStatus+this.adj(r.bib,this.wave));if(s>ls){ls=s;lead=r}}this.leaderBib=lead?lead.bib:null;
+    for(const r of racing){const g=clusters.find(c=>c.members.includes(r.bib));r.group=g.id;if(!g.isMain)r.lastOtherGroup=g.id;
+      const myGap=g.isMain?0:(r.est-main.head);r.gapM=myGap;
+      const rel=g.isMain?'in':(myGap>0?'front':'back');
+      if(r.conf!=='measured'&&r.conf!=='manual'){r.relPending=null;continue}
+      if(rel!==r.rel){if(r.relPending!==rel){r.relPending=rel;r.relSince=now}else if(now-r.relSince>=CFG.debounceS){if(this.wave>=2&&!this.finished)this.relChange(r,rel,myGap);r.rel=rel;r.relPending=null}}else r.relPending=null;
+      if(r.rel==='front'&&!r.brokeLogged&&now-r.relSince>30&&myGap>25){r.brokeLogged=true;const mates=g.members.filter(b=>this.by.get(b).rel==='front');this.log('break','déduit',`T${this.wave}: échappée établie, ${mates.join(', ')} à +${myGap.toFixed(0)} m (${(myGap/Math.max(8,this.leaderSpeed)).toFixed(1)} s)`,{bibs:mates})}
+    }
+  }
+  relChange(r,rel,myGap){
+    const gap=Math.abs(myGap).toFixed(0)+' m';
+    if(rel==='front'&&r.rel==='in'){this.log('attack','déduit',`T${this.wave}: ${r.bib} attaque, +${gap} sur le peloton`,{bibs:[r.bib]});r.brokeLogged=false}
+    else if(rel==='in'&&r.rel==='front'){this.log('junction','déduit',`T${this.wave}: ${r.bib} a rejoint le peloton par l'avant (jonction)`,{bibs:[r.bib]})}
+    else if(rel==='back'&&r.rel==='in'){this.log('drop','déduit',`T${this.wave}: ${r.bib} décroche, −${gap}`,{bibs:[r.bib]})}
+    else if(rel==='in'&&r.rel==='back'){this.log('caught','déduit',`T${this.wave}: ${r.bib} repris par le peloton (par l'arrière)`,{bibs:[r.bib]})}
+    else if(rel==='back'&&r.rel==='front'){this.log('drop','déduit',`T${this.wave}: ${r.bib} passe de l'avant à l'arrière du peloton, −${gap}`,{bibs:[r.bib]})}
+    else if(rel==='front'&&r.rel==='back'){this.log('attack','déduit',`T${this.wave}: ${r.bib} ressort devant le peloton, +${gap}`,{bibs:[r.bib]})}
+  }
+  anomalyCheck(now){
+    const od=this.riders.filter(r=>r.state==='racing'&&!r.noTp&&r.overdueSince&&now-r.overdueSince<6&&r.missStreak>=1&&r.missTimes.filter(t=>now-t<90).length<=2);
+    const byK={};for(const r of od){const k=r.group+'|'+(r.assumedKey||r.handled);(byK[k]=byK[k]||[]).push(r)}
+    for(const key in byK){const rs=byK[key];const gid=rs[0].group;if(rs.length>=2&&!this.anomalyAt[key]){this.anomalyAt[key]=now;
+      const loopId=rs[0].handled.split(':')[0];const L=CFG.loops.find(l=>l.id===loopId);const tape=CFG.tapes.find(t=>t.loop===loopId);const g=this.groups.find(x=>x.id===gid);
+      const T=rs[0].assumedT||now;const pulses=tape?this.pulsesAround(tape.id,T,2.5):0;
+      const detected=g?(this.loopPass[loopId]||[]).filter(p=>Math.abs(p.t-T)<=2.5&&g.members.includes(p.bib)).length:0;
+      const bibs=rs.map(r=>r.bib);const expectedBikes=detected+bibs.length;const deficit=expectedBikes-pulses;
+      if(g&&tape&&deficit<=0){this.log('anomaly','déduit',`T${this.wave}: ${bibs.join(' et ')} non détectés sur ${L.name}, mais le tape switch a compté ${pulses} contacts pour ${expectedBikes} vélos attendus: pas de chute, transpondeurs à surveiller`,{bibs});continue}
+      const strong=!tape||deficit>bibs.length;
+      this.log('anomaly','déduit',`T${this.wave}: ${bibs.join(' et ')} absents sur ${L?L.name:'la boucle suivante'}, attendus depuis ${(now-rs[0].overdueSince+CFG.marginS).toFixed(0)} s${tape?', tape switch: '+pulses+' contacts pour '+expectedBikes+' vélos attendus':''}. ${strong?'Chute probable.':'Anomalie à vérifier.'}`,{bibs});
+      this.alert({kind:'anomaly',key:key,bibs,level:strong?'crit':'warn',title:`${strong?'Chute probable':'Anomalie à vérifier'}: ${bibs.join(', ')} absents`,text:`${bibs.length} coureurs du même groupe manquent au même point de détection (${L?L.name:''})${tape?'. Tape switch: '+pulses+' contacts pour '+expectedBikes+' vélos attendus'+(strong?', le compte confirme des vélos manquants':', écart compatible avec des roues collées'):''}.`,actions:[{label:'Chute',primary:strong,fn:()=>OP.incident(bibs,'chute')},{label:'Mécanique',fn:()=>OP.incident(bibs,'mécanique')},{label:'Fausse alerte',primary:!strong,fn:()=>{const a=this.findAlert('anomaly',key);if(a)this.dismiss(a.id)}}]});}}
+  }
+  clearAnomalies(bib){for(const a of this.alerts.filter(a=>a.kind==='anomaly'&&a.bibs&&a.bibs.includes(bib))){if(a.bibs.every(b=>this.by.get(b).missStreak===0)){this.dismiss(a.id);this.log('anomaly','mesuré',`Alerte levée: ${a.bibs.join(' et ')} de nouveau détectés`,{bibs:a.bibs})}}}
+  proposalCheck(now){ // riders who physically lapped the bunch or were lapped, grouped so that a pair that lost a lap together is one decision
+    if(!this.main)return;const ready=[];
+    for(const b of this.main.members){const r=this.by.get(b);const eff=r.lapStatus+this.adj(b,this.wave);
+      if(eff!==0&&this.wave>r.ignoreUntil){if(r.deltaSeen!==eff){r.deltaSeen=eff;r.deltaSince=now;r.deltaWave=this.wave}else if(now-r.deltaSince>=CFG.debounceS&&!this.alerts.some(a=>a.kind==='lapProp'&&a.bibs.includes(b)))ready.push(r)}
+      else r.deltaSeen=0}
+    for(const r of ready){
+      const kind=r.deltaSeen>0?'gain':'loss';
+      const mate=this.alerts.find(a=>a.kind==='lapProp'&&a.lapKind===kind&&a.grp===r.lastOtherGroup&&!a.done);
+      if(mate){mate.bibs.push(r.bib);this.lapPropText(mate);continue}
+      const a=this.alert({kind:'lapProp',key:'lp'+r.bib,bibs:[r.bib],lapKind:kind,grp:r.lastOtherGroup,wave:r.deltaWave,level:'info',title:'',text:'',actions:[]});this.lapPropText(a);
+    }
+  }
+  lapPropText(a){
+    const n=a.bibs.length;const names=a.bibs.join(', ');const gain=a.lapKind==='gain';
+    a.title=`${gain?'Tour gagné':'Tour perdu'} probable: ${names}`;
+    a.text=`${n>1?'Ces coureurs ont':'Ce coureur a'} ${gain?'recollé à la queue du peloton':'été repris par le peloton'} au T${a.wave} avec un passage ${gain?'de plus':'de moins'}.${a.radio?' Radio PCP: décision confirmée.':' Décision du PCP attendue.'}`;
+    a.actions=[{label:`Valider ${n>1?'pour les '+n:''}, effet T${a.wave}`,primary:true,fn:()=>OP.lapMany(a.bibs,a.lapKind,a.wave)},{label:'Plus tard',fn:()=>{for(const b of a.bibs)this.by.get(b).ignoreUntil=this.wave+2;this.dismiss(a.id)}}];
+    this.dirty=true;
+  }
+  sprintOrderFor(k){
+    const w=this.sprintWave(k);const ps=this.passLog.filter(p=>p.loop==='F'&&p.wave===w);
+    if(!ps.length)return {k,wave:w,order:[],excluded:[],unread:[]};
+    const rows=ps.map(p=>{const delta=(p.status||0)+this.adj(p.bib,w);return {bib:p.bib,t:p.t,delta,origin:p.origin,dsq:this.countOf('dsq',p.bib)>0}});
+    const lead=Math.max(...rows.filter(x=>!x.dsq).map(x=>x.delta));
+    const rel=new Set(this.decisions.filter(d=>!d.cancelled&&d.type==='relegate'&&d.sprint===k).map(d=>d.bib));
+    const exc=new Set();for(const d of this.decisions)if(!d.cancelled&&d.type==='exclude'&&d.sprint===k)for(const b of d.bibs)exc.add(b);
+    const seenB=new Set();const eligibleAll=rows.filter(x=>x.delta===lead&&!x.dsq&&!rel.has(x.bib)&&!exc.has(x.bib)).sort((a,b)=>a.t-b.t).filter(x=>{if(seenB.has(x.bib))return false;seenB.add(x.bib);return true});
+    const eligible=eligibleAll.filter(x=>x.origin!=='déduit');
+    const unread=eligibleAll.filter(x=>x.origin==='déduit').map(x=>({bib:x.bib,estPlace:eligibleAll.indexOf(x)+1}));
+    const excluded=rows.filter(x=>x.delta!==lead||x.dsq||rel.has(x.bib)||exc.has(x.bib)).map(x=>({bib:x.bib,why:exc.has(x.bib)?'exclu':rel.has(x.bib)?'déclassé':x.dsq?'DSQ':(x.delta<lead?`${x.delta-lead} tour`:`+${x.delta-lead} tour`)}));
+    const man=[...this.decisions].reverse().find(d=>!d.cancelled&&d.type==='manualOrder'&&d.sprint===k);
+    let order=eligible.map((x,i)=>({bib:x.bib,t:x.t,gapMs:i?Math.round((x.t-eligible[i-1].t)*1000):null,inferred:false,manual:false}));
+    if(man){const byB=new Map(order.map(o=>[o.bib,o]));order=man.order.map(b=>{const o=byB.get(b);return {bib:b,t:o?o.t:null,gapMs:null,inferred:false,manual:true}})}
+    for(let i=0;i<order.length;i++){order[i].photo=!man&&order[i].gapMs!==null&&order[i].gapMs<CFG.closeMs;if(order[i].photo&&i>0)order[i-1].photoPair=true}
+    return {k,wave:w,order,excluded,unread:man?unread.filter(u=>!man.order.includes(u.bib)):unread};
+  }
+  sprintUpdate(){
+    const sp=[];for(let k=1;k<=NSPRINTS;k++)sp.push(this.sprintOrderFor(k));this.results.sprints=sp;
+    const pts=new Map(this.riders.map(r=>[r.bib,{sprint:0,wins:0,final:Infinity}]));
+    for(const s of sp){const mult=s.k===NSPRINTS?2:1;s.order.forEach((o,i)=>{const p=pts.get(o.bib);if(i<4)p.sprint+=CFG.points[i]*mult;if(i===0)p.wins++;if(s.k===NSPRINTS)p.final=i+1})}
+    const rank=this.riders.filter(r=>this.countOf('dsq',r.bib)===0).map(r=>{const p=pts.get(r.bib);const g=this.countOf('lapGain',r.bib),l=this.countOf('lapLoss',r.bib);return {bib:r.bib,name:r.name,nat:r.nat,col:r.col,sprint:p.sprint,wins:p.wins,gains:g,losses:l,lapPts:(g-l)*CFG.lapPts,total:p.sprint+(g-l)*CFG.lapPts,final:p.final,state:r.state,status:this.statusText(r)}});
+    rank.sort((a,b)=>b.total-a.total||a.final-b.final||a.bib-b.bib);
+    this.results.ranking=rank;this.dirty=true;
+  }
+  statusText(r){if(r.state==='out'){const d=[...this.decisions].reverse().find(d=>!d.cancelled&&d.bib===r.bib&&['dnf','withdraw','dsq'].includes(d.type));return d?({dnf:'Abandon',withdraw:'Retiré',dsq:'DSQ'})[d.type]+' T'+d.wave:'Hors course'}if(r.state==='neutralised')return 'Neutralisé';if(r.noTp)return 'Sans transp.';return ''}
+  decide(d){d.id=this.decisions.length+1;d.t=this.t;if(d.wave===undefined)d.wave=this.wave;this.decisions.push(d);this.log('decision','décidé',d.text||d.type,{bibs:d.bib?[d.bib]:(d.bibs||[]),decision:d.id});this.sprintUpdate();this.dirty=true;return d}
+  cancelDecision(id){const d=this.decisions.find(x=>x.id===id);if(!d||d.cancelled)return;d.cancelled=true;this.log('decision','décidé',`Annulé: ${d.text}`,{bibs:d.bib?[d.bib]:[]});this.sprintUpdate()}
+  readingAt(w){
+    if(!this.main)return;const lines=[];
+    const rk=this.results.ranking.filter(x=>x.state==='racing');
+    if(rk.length>=2){const a=rk[0],b=rk[1];const diff=a.total-b.total;const ra=this.by.get(a.bib),rb=this.by.get(b.bib);const gap=ra.est-rb.est;
+      if(diff<=3){lines.push(`${a.bib} et ${b.bib} à ${diff} point${diff>1?'s':''}: ${ra.group===rb.group?'dans le même groupe':(gap>0?a.bib+' a '+gap.toFixed(0)+' m ('+(gap/this.leaderSpeed).toFixed(1)+' s) d’avance sur '+b.bib:b.bib+' a '+(-gap).toFixed(0)+' m d’avance sur '+a.bib)}`)}
+      const ns=this.nextSprint();
+      if(ns&&ns.inLaps<=2){const mult=ns.k===NSPRINTS?2:1;const need=diff+1;let place=null;for(let i=0;i<4;i++)if(CFG.points[i]*mult>=need){place=i+1}
+        lines.push(`Sprint ${ns.k} dans ${ns.inLaps} tour${ns.inLaps>1?'s':''}${ns.k===NSPRINTS?' (final, points doublés)':''}: ${place?b.bib+' a besoin de la '+place+(place===1?'re':'e')+' place pour passer devant '+a.bib:b.bib+' ne peut pas rattraper '+a.bib+' sur ce sprint'}`)}
+      if(w===CFG.laps-1)lines.push(`Dernier tour: ${a.bib} l’emporte si rien ne change, ${b.bib} à ${diff} point${diff>1?'s':''}`);
+    }
+    const gs=[...this.groups].sort((a,b)=>b.head-a.head);
+    const desc=gs.map(g=>{if(g.isMain)return `peloton (${g.members.length})`;const lapsPart=Math.trunc(g.gap/250),rem=g.gap-lapsPart*250;const who=g.members.length<=3?g.members.join(', '):g.members.length+' coureurs';return `${who} ${lapsPart?(lapsPart>0?'+':'')+lapsPart+' tour '+(rem>=0?'+':'')+rem.toFixed(0)+' m':(g.gap>0?'+':'')+g.gap.toFixed(0)+' m ('+(g.gap>0?'+':'')+g.gapS.toFixed(1)+' s)'}`}).join(' · ');
+    lines.push(desc);
+    this.readings.unshift({wave:w,t:this.t,lines});if(this.readings.length>80)this.readings.pop();
+  }
+}
+
+/* ===================== Operator actions (all become journal decisions) ===================== */
+const OP={
+  assignTp(tp,bib){const r=M.by.get(bib);const old=r.tp;M.tpTable.delete(old);M.tpTable.set(tp,bib);r.tp=tp;r.detected=true;r.noTp=false;if(r.state==='racing')r.conf='measured';const a=M.findAlert('tpUnknown',tp);if(a)M.dismiss(a.id);M.unknown.delete(tp);M.decide({type:'tpAssign',bib,tp,text:`Transpondeur ${tp} attribué au dossard ${bib} (attendu ${old})`});M.refreshMissing();UI.toast(`${tp} → dossard ${bib}`)},
+  incident(bibs,kind){for(const b of bibs){const r=M.by.get(b);if(r.state!=='racing')continue;r.state='neutralised';r.neutralKind=kind;r.neutralSince=M.t;r.incidentWave=M.wave;r.reappeared=false;r.conf='neutralised';r.missStreak=0;r.overdueSince=null;M.decide({type:'incident',bib:b,kind,text:`${b}: ${kind} au T${M.wave}, neutralisé (${CFG.neutralLaps} tours de récupération, retour attendu avant le T${M.wave+CFG.neutralLaps})`});const s=M.findAlert('silent',b);if(s)M.dismiss(s.id)}
+    for(const a of M.alerts.filter(a=>a.kind==='anomaly'))M.dismiss(a.id);
+    if(M.lapsToGo()<=CFG.neutralLaps)M.alert({kind:'info',key:'late'+bibs.join(),level:'info',title:'Incident dans les 5 derniers tours',text:`${bibs.join(', ')}: pas de retour possible selon le règlement, classement avec les points et tours acquis.`,actions:[{label:'Classer comme tel',primary:true,fn:()=>{for(const b of bibs)OP.status(b,'dnf');const a=M.findAlert('info','late'+bibs.join());if(a)M.dismiss(a.id)}}]});
+    UI.hidePopover()},
+  rejoin(bib,bike){const r=M.by.get(bib);if(r.state!=='neutralised')return;r.state='racing';const g=M.main;
+    let ref=0;if(g){const ests=g.members.map(b=>M.by.get(b).est).sort((a,b)=>a-b);const med=ests[Math.floor(ests.length/2)];ref=Math.min(...ests.map(e=>e+250*Math.round((med-e)/250)))-2}
+    if(r.seenLoop&&M.t-r.seenT<20){const L=CFG.loops.find(l=>l.id===r.seenLoop);const k=Math.round((ref-L.pos)/250);r.anchor=k*250+L.pos;r.anchorT=r.seenT}else{r.anchor=ref;r.anchorT=M.t}
+    r.seenLoop=null;r.lapStatus=0;r.rawDelta=0;r.lastPassDist=null;r.lastPassT=null;r.speed=g?g.speed:M.leaderSpeed;r.conf=bike==='other'?'notp':'measured';r.noTp=(bike==='other');r.missStreak=0;r.handled='';r.reappeared=false;
+    M.decide({type:'rejoin',bib,bike,text:`${bib} reprend la course dans le peloton au T${M.wave}${bike==='other'?' avec un autre vélo: plus de transpondeur, suivi par inférence':' avec son vélo'}; compte de tours aligné sur le peloton`});
+    const a=M.findAlert('rejoin',bib);if(a)M.dismiss(a.id);UI.hidePopover()},
+  status(bib,kind){const r=M.by.get(bib);r.state='out';r.conf='out';const names={dnf:'abandon',withdraw:'retiré de la course par les commissaires',dsq:'disqualifié'};M.decide({type:kind,bib,text:`${bib}: ${names[kind]} au T${M.wave}`});for(const a of M.alerts.filter(a=>a.key===bib||(a.bibs&&a.bibs.length===1&&a.bibs[0]===bib)))M.dismiss(a.id);UI.hidePopover()},
+  lap(bib,kind,wave){const r=M.by.get(bib);M.decide({type:kind==='gain'?'lapGain':'lapLoss',bib,wave,text:`${bib} ${r.name}: tour ${kind==='gain'?'gagné (+'+CFG.lapPts+')':'perdu (−'+CFG.lapPts+')'}, effet T${wave}, saisi au T${M.wave}`});r.deltaSeen=0;
+    for(const a of M.alerts.filter(a=>a.kind==='lapProp'&&a.bibs.includes(bib))){a.bibs=a.bibs.filter(b=>b!==bib);if(!a.bibs.length)M.dismiss(a.id);else M.lapPropText(a)}
+    for(const x of M.alerts.filter(x=>x.kind==='radio'&&x.bibs&&x.bibs.includes(bib))){x.bibs=x.bibs.filter(b=>b!==bib);if(!x.bibs.length)M.dismiss(x.id)}
+    if(kind==='loss'&&M.countOf('lapLoss',bib)>=CFG.withdrawAfterLost&&r.state==='racing'&&!M.findAlert('withdraw',bib))M.alert({kind:'withdraw',key:bib,bibs:[bib],level:'warn',title:`${bib}: ${M.countOf('lapLoss',bib)} tours perdus`,text:`Seuil de retrait préréglé: ${CFG.withdrawAfterLost} tours perdus. Retirer ${r.name} de la course? Jamais sans validation.`,actions:[{label:'Retirer',primary:true,fn:()=>{OP.status(bib,'withdraw');const a=M.findAlert('withdraw',bib);if(a)M.dismiss(a.id)}},{label:'Laisser courir',fn:()=>{const a=M.findAlert('withdraw',bib);if(a)M.dismiss(a.id)}}]});
+    UI.hidePopover()},
+  lapMany(bibs,kind,wave){for(const b of bibs)if(M.by.get(b).state==='racing')OP.lap(b,kind,wave)},
+  confirmInGroup(bib){const r=M.by.get(bib);r.conf='manual';r.manualUntil=M.wave+1;r.missStreak=1;r.silentAck=true;M.decide({type:'manualPlace',bib,text:`${bib} confirmé dans son groupe par l'opérateur (transpondeur muet): plus d'alerte pour ce transpondeur, suivi par inférence`});const a=M.findAlert('silent',bib);if(a)M.dismiss(a.id);UI.hidePopover()},
+  place(bib,d){const r=M.by.get(bib);const cur=M.estAt(r,M.t);const base=Math.floor(cur/250)*250;let best=base+d,bd=Math.abs(best-cur);for(const c of [base+d-250,base+d+250]){if(Math.abs(c-cur)<bd){bd=Math.abs(c-cur);best=c}}r.anchor=best;r.anchorT=M.t;r.lastPassDist=null;r.lastPassT=null;r.conf='manual';r.manualUntil=M.wave+1;r.handled='';M.decide({type:'manualPlace',bib,text:`${bib} replacé par l'opérateur à ${d.toFixed(0)} m de la ligne (${best>cur?'+':''}${(best-cur).toFixed(0)} m)`});},
+  relegate(bib,k){M.decide({type:'relegate',bib,sprint:k,text:`${bib} déclassé sur le sprint ${k}`});UI.hidePopover()},
+  exclude(bibs,k){M.decide({type:'exclude',bibs,sprint:k,text:`${bibs.join(', ')} exclu${bibs.length>1?'s':''} du sprint ${k} par l'opérateur: passage non pris en compte, non éligible`});UI.hidePopover()},
+  shift(k,delta){const w=M.sprintWave(k)+delta;M.decide({type:'shiftSprint',sprint:k,delta:(M.sprintWave(k)-sprintWaveBase(k))+delta,text:`Sprint ${k} déplacé au T${w}`});},
+  manualOrder(k,order){M.decide({type:'manualOrder',sprint:k,order,text:`Sprint ${k}: ordre saisi par l'opérateur ${order.join('-')}`});const s=M.sprintRec(k);if(s.sent)OP.send(k,true)},
+  send(k,correction,auto){const res=M.results.sprints[k-1];const s=M.sprintRec(k);s.sent=true;s.held=false;s.sentAuto=!!auto;const na=M.findAlert('notp','s'+k);if(na)M.dismiss(na.id);const txt=`Sprint ${k} (T${res.wave}): ${res.order.slice(0,k===NSPRINTS?res.order.length:6).map((o,i)=>(i+1)+'. '+o.bib+(o.photo||o.photoPair?' [photo]':'')).join('  ')}`;M.outputs.unshift({t:M.t,text:(correction?'Correction · ':auto?'Live · ':'')+txt});M.decide({type:'send',sprint:k,text:`${correction?'Correction envoyée':auto?'Envoyé automatiquement (mode live)':'Envoyé en direct'} vers TV, scoreboard et web: ${txt}`})},
+  hold(k){const s=M.sprintRec(k);s.held=true;M.log('operator','décidé',`Sprint ${k} retenu pour contrôle avant envoi`);M.dirty=true},
+  photoConfirm(k){const s=M.sprintRec(k);s.photoConfirmed=true;M.decide({type:'photoConfirm',sprint:k,text:`Sprint ${k}: ordre confirmé par la photo-finish`});if(s.sent)OP.send(k,true)},
+  swap(k,i){const res=M.results.sprints[k-1];const o=res.order.map(x=>x.bib);if(i<0||i+1>=o.length)return;[o[i],o[i+1]]=[o[i+1],o[i]];OP.manualOrder(k,o)},
+  insert(k,bib,pos){const res=M.results.sprints[k-1];const o=res.order.map(x=>x.bib).filter(b=>b!==bib);o.splice(clamp(pos,0,o.length),0,bib);OP.manualOrder(k,o)},
+  remove(k,bib){const res=M.results.sprints[k-1];OP.manualOrder(k,res.order.map(x=>x.bib).filter(b=>b!==bib))},
+  resetOrder(k){const d=M.decisions.filter(d=>!d.cancelled&&d.type==='manualOrder'&&d.sprint===k);for(const x of d)x.cancelled=true;M.log('decision','décidé',`Sprint ${k}: retour à l'ordre détecté`);M.sprintUpdate()},
+  adoptLc(v){const k=M.maxRaceLap||M.wave;const nw=CFG.laps-v;
+    if(nw>M.wave){M.kOffset=k+1-nw;M.openWave(nw,M.t)}else{M.kOffset=k-nw;M.wave=nw}
+    M.decide({type:'adoptLc',text:`Compteur interne aligné sur le lap counter: ${v} tours restants`});const a=M.findAlert('lc','lc');if(a)M.dismiss(a.id);M.lcAlerted=null;M.lcMismatchSince=null},
+  leaderNext(loop){M.leadFlag=loop;UI.toast(`Le prochain passage sur ${CFG.loops.find(l=>l.id===loop).name} définit la tête de course`);UI.hidePopover()},
+  neutral(on){M.neutral=on;S.neutral=on;if(on){M.decide({type:'neutralStart',text:`Course neutralisée au T${M.wave}: compteur et temps de course figés, passages enregistrés sans décompte`})}else{M.decide({type:'neutralEnd',text:`Relance de la course au T${M.wave}`});const ns=M.nextSprint();if(ns&&ns.inLaps===1){M.alert({kind:'info',key:'defer',level:'info',title:`Sprint ${ns.k} tombait pendant la neutralisation`,text:'Le règlement prévoit de le redonner après la relance. Le décaler au tour suivant?',actions:[{label:'Décaler d’un tour',primary:true,fn:()=>{OP.shift(ns.k,1);const a=M.findAlert('info','defer');if(a)M.dismiss(a.id)}},{label:'Garder',fn:()=>{const a=M.findAlert('info','defer');if(a)M.dismiss(a.id)}}]})}}UI.syncButtons()},
+  setLive(on){M.liveMode=on;M.log('operator','décidé',on?'Mode live: les sprints sont envoyés dès que les quatre places sont lues sans ambiguïté':'Mode contrôle: aucun sprint ne part sans validation de l’opérateur');M.dirty=true}
+};
+
+/* ===================== Scenario ===================== */
+function makeScenario(){return [
+  {id:'tp31',label:'Le mécanicien pose enfin le transpondeur du 31',auto:true,when:s=>s.phase==='recon'&&s.t>26,run:s=>{s.by.get(31).tp='T-031'}},
+  {id:'attack12',label:'Attaque du 12 (SUI) pour prendre un tour',auto:true,when:s=>s.started&&s.physWave>=14,run:s=>{const r=s.by.get(12);r.mode='attack';r.rate=0.98}},
+  {id:'silent46',label:'Transpondeur du 46 devient intermittent (50 % de passages manqués)',auto:true,when:s=>s.started&&s.physWave>=15,run:s=>{s.by.get(46).miss=0.5}},
+  {id:'tight',label:'Arrivée serrée au sprint 2 (moins de 15 ms)',auto:true,when:s=>s.started&&s.physWave>=18,run:s=>{s.tightSprint=2}},
+  {id:'drop',label:'23, 31 et 44 décrochent (23 et 31 perdront 2 tours, 44 un seul)',auto:true,when:s=>s.started&&s.physWave>=22,run:s=>{for(const b of [23,31]){const r=s.by.get(b);r.mode='drop';r.rate=0.95;r.dropLaps=2}const r=s.by.get(44);r.mode='drop';r.rate=0.55;r.dropLaps=1}},
+  {id:'lc',label:'Le lap counter oublie une décrémentation (corrigée deux tours plus tard)',auto:true,when:s=>s.started&&s.physWave>=27,run:s=>{s.lc.skipNext=true;s.lcFix=true}},
+  {id:'lcfix',label:'Correction du lap counter',auto:true,hidden:true,when:s=>s.lcFix&&s.physWave>=29,run:s=>{s.lcFix=false;s.lc.doubleNext=true}},
+  {id:'pcp12',label:'Radio PCP: tour gagné pour le 12 (arrive 25 s après la jonction)',auto:true,when:s=>s.junction[12]&&s.raceT>s.junction[12]+25,run:s=>{UI.radio('Tour gagné pour le dossard 12. Il revient dans le même tour que le peloton.',[12],'gain')}},
+  {id:'crash',label:'Chute du 7 et du 15 (le 7 reprend son vélo, le 15 change de vélo)',auto:true,when:s=>s.started&&s.physWave>=33&&(s.boardDist()%250)>90,run:s=>{const a=s.by.get(7),b=s.by.get(15);for(const r of [a,b]){r.mode='down';r.rel=r.dist-s.P}a.downUntil=s.raceT+55;a.rejoinBike='same';b.downUntil=s.raceT+70;b.rejoinBike='other'}},
+  {id:'pcpLost',label:'Radio PCP: tour perdu pour 23 et 31 (20 s après la reprise)',auto:true,when:s=>s.junction.lost23&&s.raceT>s.junction.lost23+20,run:s=>{UI.radio('Tour perdu pour les dossards 23 et 31.',[23,31],'loss')}},
+  {id:'pcpLost44',label:'Radio PCP: tour perdu pour le 44',auto:true,when:s=>s.junction.lost44&&s.raceT>s.junction.lost44+20,run:s=>{UI.radio('Tour perdu pour le dossard 44.',[44],'loss')}},
+  {id:'duel',label:'Le 7 attaque à 5 tours de l’arrivée',auto:true,when:s=>s.started&&s.physWave>=55,run:s=>{const r=s.by.get(7);if(r.mode==='peloton'){r.mode='attack';r.rate=0.5}}},
+  {id:'neutral',label:'Neutralisation de toute la course (bouton en haut)',auto:false,when:()=>false,run:()=>{OP.neutral(!M.neutral)}}
+];}
+
+/* ===================== UI ===================== */
+const UI={
+  speed:1,tab:'sprint',reveal:false,center:{mode:'auto'},sprintOpen:null,drag:null,popoverBib:null,lastPanel:0,showAllAlerts:false,
+  svg:null,badges:new Map(),
+  init(){
+    this.svg=document.getElementById('svg');this.buildTrack();
+    document.getElementById('btnStart').onclick=()=>{if(!S.started){S.startRace();M.start(S.t);document.getElementById('btnStart').disabled=true;document.getElementById('btnStart').textContent='Course lancée'}};
+    document.querySelectorAll('#speedSeg button').forEach(b=>b.onclick=()=>{this.speed=+b.dataset.sp;document.querySelectorAll('#speedSeg button').forEach(x=>x.classList.toggle('on',x===b))});
+    document.getElementById('btnArm').onclick=()=>this.arm();
+    document.getElementById('btnNeutral').onclick=()=>OP.neutral(!M.neutral);
+    document.getElementById('btnReveal').onclick=()=>{this.reveal=!this.reveal;document.getElementById('btnReveal').classList.toggle('primary',this.reveal)};
+    document.getElementById('btnReset').onclick=()=>init();
+    document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>this.setTab(b.dataset.tab));
+    document.addEventListener('keydown',e=>{if(e.key==='a'||e.key==='A'){if(document.activeElement&&['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;this.arm()}if(e.key==='Escape')this.hidePopover()});
+    document.getElementById('trackwrap').addEventListener('pointerdown',e=>{if(!e.target.closest('.badge')&&!e.target.closest('.popover'))this.hidePopover()});
+    const inf=document.getElementById('infield');const x0=GEO.cx-GEO.S/2*GEO.k,x1=GEO.cx+GEO.S/2*GEO.k,y0=GEO.cy-(GEO.R-5)*GEO.k,y1=GEO.cy+(GEO.R-5)*GEO.k;
+    inf.style.left=(x0/1000*100)+'%';inf.style.width=((x1-x0)/1000*100)+'%';inf.style.top=(y0/490*100)+'%';inf.style.height=((y1-y0)/490*100)+'%';
+    this.syncButtons();
+  },
+  arm(){if(!M.started){this.toast('La course n’est pas lancée');return}M.armed=!M.armed;this.toast(M.armed?'Armé: le prochain passage sur la ligne est enregistré comme sprint':'Désarmé');this.syncButtons()},
+  syncButtons(){document.getElementById('btnArm').classList.toggle('primary',M.armed);const n=document.getElementById('btnNeutral');n.textContent=M.neutral?'Relancer la course':'Neutraliser la course';n.classList.toggle('danger',M.neutral)},
+  toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(this._tt);this._tt=setTimeout(()=>el.classList.remove('show'),2600)},
+  radio(text,bibs,kind){ // a PCP radio message merges into the matching proposal when one exists
+    const prop=M.alerts.find(a=>a.kind==='lapProp'&&a.lapKind===kind&&bibs.some(b=>a.bibs.includes(b)));
+    const already=bibs.every(b=>M.decisions.some(d=>!d.cancelled&&d.type===(kind==='gain'?'lapGain':'lapLoss')&&d.bib===b&&d.wave>=M.wave-8));
+    M.log('operator','décidé',`Radio PCP: ${text}${already?' (déjà saisi)':''}`,{bibs});
+    if(already){this.toast('Radio PCP: '+text+' Déjà saisi.');return}
+    if(prop){prop.radio=true;prop.level='warn';for(const b of bibs)if(!prop.bibs.includes(b)&&M.by.get(b).state==='racing')prop.bibs.push(b);M.lapPropText(prop);return}
+    const wave=Math.max(1,M.wave-1);
+    M.alert({kind:'radio',key:text,bibs:[...bibs],level:'warn',title:'Radio PCP',text,actions:[{label:`Saisir: tour ${kind==='gain'?'gagné':'perdu'} ${bibs.join(', ')} (effet T${wave})`,primary:true,fn:()=>{OP.lapMany(bibs,kind,wave);const x=M.findAlert('radio',text);if(x)M.dismiss(x.id)}},{label:'Plus tard',fn:()=>{const x=M.findAlert('radio',text);if(x)M.dismiss(x.id)}}]});
+  },
+  setTab(t){this.tab=t;document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x.dataset.tab===t));M.dirty=true;this.renderPanel(true)},
+  openSprint(k){this.sprintOpen=k;this.center={mode:'sprint',k};M.dirty=true},
+  closeCenter(){this.center={mode:'auto'};M.dirty=true},
+  /* ---- track ---- */
+  buildTrack(){
+    const ns='http://www.w3.org/2000/svg';const svg=this.svg;svg.innerHTML='';
+    const mk=(tag,attrs,parent)=>{const el=document.createElementNS(ns,tag);for(const k in attrs)el.setAttribute(k,attrs[k]);(parent||svg).appendChild(el);return el};
+    mk('path',{d:pathAt(0),fill:'var(--infield)',stroke:'var(--wood)','stroke-width':9*GEO.k,'stroke-linejoin':'round'});
+    mk('path',{d:pathAt(4.5),fill:'none',stroke:'var(--wood-edge)','stroke-width':2});
+    mk('path',{d:pathAt(-4.5),fill:'none',stroke:'var(--wood-edge)','stroke-width':1});
+    mk('path',{d:pathAt(-3.9),fill:'none',stroke:'var(--azur)','stroke-width':0.7*GEO.k});
+    mk('path',{d:pathAt(-3.2),fill:'none',stroke:'var(--trackline)','stroke-width':1.2});
+    mk('path',{d:pathAt(-2.4),fill:'none',stroke:'var(--redline)','stroke-width':1});
+    for(const T of CFG.tapes){const a=trackPos(T.pos,-4.2),b=trackPos(T.pos,4.2);mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'var(--muted)','stroke-width':1,'stroke-dasharray':'2 2'});if(!T.loop){const lp=trackPos(T.pos,7.2);mk('text',{x:lp.x,y:lp.y+3,'text-anchor':'middle','font-size':'9',fill:'var(--muted)','font-family':'var(--mono)'}).textContent=T.id==='T200'?'tape 200 m':'tape 100 m'}}
+    for(const L of CFG.loops){const a=trackPos(L.pos,-4.6),b=trackPos(L.pos,4.6);mk('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:L.id==='F'?'var(--crit)':'var(--fg)','stroke-width':L.id==='F'?2.5:1.8});const lp=trackPos(L.pos,L.id==='B'?-6.6:7.4);const t=mk('text',{x:lp.x,y:lp.y+3,'text-anchor':'middle','font-size':'10','font-weight':'600',fill:'var(--fg)','font-family':'var(--mono)'});t.textContent=L.id==='F'?'Arrivée':L.id==='A'?'Poursuite A':'Poursuite B'}
+    const dir=mk('text',{x:GEO.cx,y:GEO.cy+(GEO.R-5)*GEO.k-6,'text-anchor':'middle','font-size':'10',fill:'var(--muted)'});dir.textContent='sens de course →';
+    this.headLayer=mk('g',{id:'head'});this.ghostLayer=mk('g',{id:'ghosts'});this.groupLayer=mk('g',{id:'groups'});this.badgeLayer=mk('g',{id:'badges'});
+    this.badges.clear();
+    for(const r of M.riders){const g=mk('g',{class:'badge','data-bib':r.bib,tabindex:'0',role:'button','aria-label':'Coureur '+r.bib},this.badgeLayer);
+      const c=mk('circle',{r:11,fill:r.col,stroke:'var(--fg)','stroke-width':2},g);const tx=mk('text',{y:4,'text-anchor':'middle',fill:lum(r.col)>0.5?'#111':'#fff'},g);tx.textContent=r.bib;
+      const chip=mk('g',{class:'chipg'},g);mk('rect',{x:7,y:-17,width:19,height:11,rx:3,fill:'var(--panel)',stroke:'var(--line)'},chip);const ct=mk('text',{x:16.5,y:-8.5,'text-anchor':'middle',class:'chip',fill:'var(--fg)'},chip);chip.style.display='none';
+      g.style.display='none';this.badges.set(r.bib,{g,c,tx,chip,ct});
+      g.addEventListener('pointerdown',e=>this.onDown(e,r.bib));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();this.showPopover(r.bib)}});
+    }
+    svg.addEventListener('pointermove',e=>this.onMove(e));svg.addEventListener('pointerup',e=>this.onUp(e));svg.addEventListener('pointercancel',e=>this.onUp(e));
+  },
+  svgPoint(e){const pt=this.svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(this.svg.getScreenCTM().inverse())},
+  onDown(e,bib){const r=M.by.get(bib);if(r.state!=='racing'||!M.started){this.showPopover(bib);return}this.drag={bib,moved:false,x0:e.clientX,y0:e.clientY};this.svg.setPointerCapture&&this.svg.setPointerCapture(e.pointerId);e.preventDefault()},
+  onMove(e){const d=this.drag;if(!d)return;if(!d.moved&&Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<5)return;d.moved=true;const p=this.svgPoint(e);d.d=nearestD(p.x,p.y);const b=this.badges.get(d.bib);b.g.classList.add('dragging');const q=trackPos(d.d,0);b.g.setAttribute('transform',`translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})`)},
+  onUp(e){const d=this.drag;if(!d)return;this.drag=null;const b=this.badges.get(d.bib);b.g.classList.remove('dragging');if(d.moved&&d.d!==undefined){OP.place(d.bib,d.d);this.toast(`${d.bib} replacé par l'opérateur`)}else this.showPopover(d.bib)},
+  showPopover(bib){
+    this.hidePopover();const r=M.by.get(bib);const wrap=document.getElementById('trackwrap');const b=this.badges.get(bib);const pt=this.svg.createSVGPoint();const m=b.g.transform.baseVal.consolidate();pt.x=m?m.matrix.e:GEO.cx;pt.y=m?m.matrix.f:GEO.cy;const sp=pt.matrixTransform(this.svg.getScreenCTM());const wr=wrap.getBoundingClientRect();
+    const div=document.createElement('div');div.className='popover';let x=sp.x-wr.left+14,y=sp.y-wr.top+14;if(x+300>wr.width)x=Math.max(4,sp.x-wr.left-304);if(y+330>wr.height)y=Math.max(4,y-340);div.style.left=x+'px';div.style.top=y+'px';
+    const g=M.groups.find(g=>g.id===r.group);const confTxt={measured:'mesuré',inferred:'déduit',silent:'transpondeur muet',manual:'placé par l’opérateur',notp:'sans transpondeur',neutralised:'neutralisé',out:'hors course',none:'en attente'}[r.conf]||r.conf;
+    const rk=M.results.ranking.find(x=>x.bib===bib);this._eff=M.wave;this._grp=false;
+    const btn=(label,fn,cls)=>{const id='p'+(this._pid=(this._pid||0)+1);this._pfn=this._pfn||{};this._pfn[id]=fn;return `<button class="${cls||''}" data-p="${id}">${label}</button>`};
+    let h=`<div class="hd"><span><span class="bibchip" style="background:${r.col}">${bib}</span> ${esc(r.name)} <span class="muted">${r.nat}</span></span><button class="small" data-x="1">×</button></div>`;
+    h+=`<div class="muted" style="font-size:12px">${esc(r.state==='racing'?'en course':r.state==='neutralised'?'neutralisé ('+r.neutralKind+')':r.state==='out'?M.statusText(r):'en attente')} · ${confTxt}${rk?' · '+rk.total+' pts':''}${g&&!g.isMain?' · '+esc(M.groupName(g))+' '+(g.gap>0?'+':'')+g.gap.toFixed(0)+' m':''}${(r.lapStatus+M.adj(bib,M.wave))?' · statut '+((r.lapStatus+M.adj(bib,M.wave))>0?'+':'')+(r.lapStatus+M.adj(bib,M.wave))+' tour':''}</div>`;
+    if(r.state==='racing'){
+      const mates=g&&!g.isMain?g.members.filter(x=>x!==bib):[];
+      h+=`<div class="sec"><div class="st">Tours</div><div class="row" style="margin-bottom:4px"><span class="muted" style="font-size:12px">effet</span><span class="stepper"><button class="small" data-eff="-1">−</button><b id="effT">T${M.wave}</b><button class="small" data-eff="1">+</button></span>${mates.length?`<label style="font-size:12px"><input type="checkbox" id="grpChk"> aussi pour ${mates.join(', ')}</label>`:''}</div><div class="grid">`;
+      h+=btn('Tour gagné +20',()=>{const bibs=this._grp?[bib,...mates]:[bib];OP.lapMany(bibs,'gain',this._eff)},'good')+btn('Tour perdu −20',()=>{const bibs=this._grp?[bib,...mates]:[bib];OP.lapMany(bibs,'loss',this._eff)},'danger')+'</div></div>';
+      const ns=M.nextSprint();const k=this.sprintOpen&&M.wave===M.sprintWave(this.sprintOpen)?this.sprintOpen:(ns?ns.k:null);
+      if(k){h+=`<div class="sec"><div class="st">Sprint ${k}</div><div class="grid">`+btn('Exclure (non éligible)',()=>OP.exclude([bib],k))+(mates.length?btn(`Exclure le groupe (${mates.length+1})`,()=>OP.exclude([bib,...mates],k)):'')+btn('Déclasser',()=>OP.relegate(bib,k))+'</div></div>'}
+      h+=`<div class="sec"><div class="st">Incident</div><div class="grid">`+btn('Chute',()=>OP.incident([bib],'chute'))+btn('Pépin mécanique',()=>OP.incident([bib],'mécanique'))+((r.conf==='silent'||r.conf==='inferred')?btn('Confirmer dans le groupe',()=>OP.confirmInGroup(bib),'full'):'')+'</div></div>';
+      h+=`<div class="sec"><div class="st">Statut</div><div class="grid">`+btn('Abandon',()=>OP.status(bib,'dnf'),'danger')+btn('Retirer (commissaires)',()=>OP.status(bib,'withdraw'),'danger')+btn('Disqualifier',()=>OP.status(bib,'dsq'),'danger full')+'</div></div>';
+    }else if(r.state==='neutralised'){h+=`<div class="sec"><div class="st">Retour en course</div><div class="grid">`+btn('Même vélo',()=>OP.rejoin(bib,'same'),'primary')+btn('Autre vélo (sans transpondeur)',()=>OP.rejoin(bib,'other'))+btn('Abandon',()=>OP.status(bib,'dnf'),'danger full')+'</div></div>'}
+    else if(r.state==='waiting'){h+=`<div class="sec muted">${r.detected?'Transpondeur détecté':'Transpondeur non détecté'} · ${r.tp}</div>`}
+    div.innerHTML=h;wrap.appendChild(div);this.popoverBib=bib;
+    div.querySelector('[data-x]').onclick=()=>this.hidePopover();div.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{this._pfn[b.dataset.p]()});
+    div.querySelectorAll('[data-eff]').forEach(b=>b.onclick=()=>{this._eff=clamp(this._eff+(+b.dataset.eff),1,M.wave);div.querySelector('#effT').textContent='T'+this._eff});
+    const gc=div.querySelector('#grpChk');if(gc)gc.onchange=()=>{this._grp=gc.checked};
+  },
+  hidePopover(){const p=document.querySelector('.popover');if(p)p.remove();this.popoverBib=null},
+  /* ---- frame render ---- */
+  renderFrame(){
+    const now=M.t;const items=[];
+    for(const r of M.riders){const b=this.badges.get(r.bib);
+      if(M.phase==='recon'){if(!r.detected){b.g.style.display='none';continue}const p=r.lastSeen!==null?Math.min(250.5+0.8*M.riders.indexOf(r),(now-r.lastSeen)*9+(r.lastLoop==='F'?0:r.lastLoop==='B'?113:238)):0;items.push({r,pos:p,est:p});continue}
+      if(r.state==='out'||r.state==='waiting'){b.g.style.display='none';continue}
+      const est=r.state==='neutralised'?r.anchor:r.est;items.push({r,pos:((est%250)+250)%250,est});
+    }
+    if(items.length){
+      const lead=items.reduce((a,b)=>(b.est||0)>(a.est||0)?b:a);
+      const rel=x=>((lead.pos-x.pos)%250+250)%250;items.sort((a,b)=>rel(a)-rel(b));
+      let prev=null,lane=0;const minAlong=2.2;
+      for(const it of items){let back=rel(it);if(prev!==null){if(back-prev<minAlong){back=prev+minAlong;lane=(lane+1)%3}else lane=0}else lane=0;it.back=back;it.lane=lane;prev=back}
+      for(const it of items){const r=it.r,b=this.badges.get(r.bib);if(this.drag&&this.drag.bib===r.bib&&this.drag.moved)continue;
+        const d=lead.pos-it.back;const laneM=[0,-2.8,2.8][it.lane];const p=trackPos(d,laneM);
+        b.g.style.display='';b.g.setAttribute('transform',`translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
+        const st={measured:['var(--fg)','',2],inferred:['var(--fg)','4 3',2],silent:['var(--warn)','2 2',2.5],manual:['var(--accent)','',3],notp:['var(--muted)','1 2',3],neutralised:['var(--crit)','',3],none:['var(--fg)','',2]}[r.conf]||['var(--fg)','',2];
+        b.c.setAttribute('stroke',st[0]);b.c.setAttribute('stroke-dasharray',st[1]);b.c.setAttribute('stroke-width',st[2]);b.c.setAttribute('opacity',r.state==='neutralised'?0.55:1);
+        const d2=M.started&&r.state==='racing'?(r.lapStatus||0)+M.adj(r.bib,M.wave):0;
+        if(d2){b.chip.style.display='';b.ct.textContent=(d2>0?'+':'')+d2+'T'}else b.chip.style.display='none';
+      }
+    }
+    // head of the race marker
+    const hl=this.headLayer;hl.innerHTML='';
+    if(M.started&&M.leaderBib!==null&&!M.finished){const r=M.by.get(M.leaderBib);const d=((r.est%250)+250)%250;const a=trackPos(d,-4.5),b2=trackPos(d,4.5);const ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('x1',a.x);ln.setAttribute('y1',a.y);ln.setAttribute('x2',b2.x);ln.setAttribute('y2',b2.y);ln.setAttribute('stroke','var(--head)');ln.setAttribute('stroke-width',6);ln.setAttribute('stroke-linecap','round');ln.setAttribute('opacity',.85);hl.appendChild(ln);
+      const lp=trackPos(d,-6.6);const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',lp.x);t.setAttribute('y',lp.y+3);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','9');t.setAttribute('font-family','var(--mono)');t.setAttribute('font-weight','600');t.setAttribute('fill','var(--head)');t.textContent='tête '+r.bib;hl.appendChild(t)}
+    // group labels, outside the band
+    const gl=this.groupLayer;gl.innerHTML='';
+    if(M.started){for(const g of M.groups){if(g.isMain&&M.groups.length===1)continue;const headPos=((g.head%250)+250)%250;const p=trackPos(headPos,8.2);const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',p.x);t.setAttribute('y',p.y+3);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','10');t.setAttribute('font-family','var(--mono)');t.setAttribute('fill',g.isMain?'var(--muted)':'var(--accent)');t.setAttribute('font-weight','600');
+      const lapsPart=Math.trunc(g.gap/250),rem=g.gap-lapsPart*250;t.textContent=g.isMain?`peloton ${g.members.length}`:`${g.members.length>1?g.members.length+' cour.':g.members[0]} ${lapsPart?(lapsPart>0?'+':'')+lapsPart+'T '+(rem>=0?'+':'')+rem.toFixed(0)+' m':(g.gap>0?'+':'')+g.gap.toFixed(0)+' m / '+(g.gap>0?'+':'')+g.gapS.toFixed(1)+' s'}`;gl.appendChild(t)}}
+    const gh=this.ghostLayer;gh.innerHTML='';
+    if(this.reveal){for(const tp of S.truthPositions()){const p=trackPos(tp.d,5.6);const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);c.setAttribute('r',3.2);c.setAttribute('fill',M.by.get(tp.bib).col);c.setAttribute('stroke','var(--fg)');c.setAttribute('stroke-width',.6);gh.appendChild(c)}}
+  },
+  /* ---- panels ---- */
+  renderPanel(force){
+    const now=performance.now();if(!force&&!M.dirty&&now-this.lastPanel<400)return;if(!force&&now-this.lastPanel<250)return;this.lastPanel=now;M.dirty=false;
+    this.renderReperes();this.renderInfield();this.renderAlerts();
+    const body=document.getElementById('tabbody');const f={sprint:this.tabSprint,rank:this.tabRank,laps:this.tabLaps,journal:this.tabJournal,reading:this.tabReading,tp:this.tabTp,scen:this.tabScen}[this.tab];
+    const sc=body.scrollTop;body.innerHTML=f.call(this);body.scrollTop=sc;this.bindPanel(body);
+    document.querySelectorAll('#tabs button').forEach(b=>{const t=b.dataset.tab;const dot=b.querySelector('.dot');const need=(t==='sprint'&&[...M.sprints.values()].some(s=>!s.sent&&s.wave!==null&&M.results.sprints[s.k-1].order.length>0))||(t==='tp'&&M.alerts.some(a=>a.kind.startsWith('tp')));if(need&&!dot){const s=document.createElement('span');s.className='dot';b.appendChild(s)}else if(!need&&dot)dot.remove()});
+  },
+  renderReperes(){
+    const el=document.getElementById('reperes');const ns=M.nextSprint();const lcDiff=M.started&&!M.finished&&M.lcValue!==M.lapsToGo();
+    const cards=[];
+    if(M.phase==='recon'){cards.push(['Phase','<span style="font-size:17px">Reconnaissance</span>']);cards.push(['Transpondeurs',`${M.riders.filter(r=>r.detected).length}<small>/${M.riders.length}</small>`]);cards.push(['Tours','60']);cards.push(['Temps de course','<span style="font-size:17px">0:00.0</span>']);cards.push(['Lap counter',`${M.lcValue}`]);cards.push(['Heure',`<span style="font-size:17px">${fmtDay(M.t)}</span>`])}
+    else{
+      cards.push(['Tour',M.finished?'<span style="font-size:17px">Arrivée</span>':`${Math.min(M.wave+1,CFG.laps)}<small>/${CFG.laps} · ${M.lapsToGo()} à faire</small>`]);
+      cards.push([ns?`Sprint ${ns.k}`:'Sprints',ns?(ns.inLaps===1?'<span style="font-size:17px">prochain passage</span>':`${ns.inLaps}<small> tours</small>`):'<span style="font-size:17px">terminés</span>',ns&&ns.inLaps<=2?'sprint':'']);
+      cards.push(['Temps de course',`<span style="font-size:18px">${fmtRace(M.raceT)}</span>${M.neutral?'<small> figé</small>':''}`,M.neutral?'neutral':'']);
+      cards.push(['Lap counter',`${M.lcValue}<small> ${lcDiff?'≠ passages '+M.lapsToGo():'✓'}</small>`,lcDiff?'hot':'']);
+      cards.push(['Vitesse tête',`${(M.leaderSpeed*3.6).toFixed(1)}<small> km/h</small>`]);
+      cards.push(['Heure',`<span style="font-size:18px">${fmtDay(M.t)}</span>`]);
+    }
+    el.innerHTML=cards.map(c=>`<div class="rep ${c[2]||''}"><div class="lbl">${c[0]}</div><div class="val">${c[1]}</div></div>`).join('');
+  },
+  renderInfield(){
+    const el=document.getElementById('infield');let h='';
+    const ns=M.nextSprint();
+    let mode=this.center.mode;
+    if(mode==='auto'){if(M.phase==='recon')mode='recon';else if(M.finished)mode='finish';else if(ns&&ns.inLaps===1)mode='bell';else mode='race'}
+    if(mode==='sprint'&&this.center.k&&M.wave>M.sprintWave(this.center.k)+1&&M.sprintRec(this.center.k).sent)mode='race'; // an old sent sprint gives the centre back
+    if(mode==='recon'){h=`<div class="big">RECONNAISSANCE</div><div class="mid">${M.riders.filter(r=>r.detected).length} / ${M.riders.length} transpondeurs détectés · en attente du signal du starter</div>`}
+    else if(mode==='bell'){h=`<div class="big">SPRINT ${ns.k} AU PROCHAIN PASSAGE</div><div class="mid">${ns.k===NSPRINTS?'sprint final, points doublés · ':''}mode ${M.liveMode?'live: envoi automatique si les 4 places sont lues sans ambiguïté':'contrôle: envoi après validation'}</div>`+this.raceBarHtml()+this.readingHtml()}
+    else if(mode==='race'){h=this.raceBarHtml()+this.readingHtml()}
+    else if(mode==='sprint'||mode==='finish'){h=this.sprintEditorHtml(mode==='finish'?NSPRINTS:this.center.k,mode==='finish')}
+    el.innerHTML=h;
+    el.querySelectorAll('[data-send]').forEach(b=>b.onclick=()=>{const k=+b.dataset.send;OP.send(k,M.sprintRec(k).sent)});
+    el.querySelectorAll('[data-hold]').forEach(b=>b.onclick=()=>OP.hold(+b.dataset.hold));
+    el.querySelectorAll('[data-photo]').forEach(b=>b.onclick=()=>OP.photoConfirm(+b.dataset.photo));
+    el.querySelectorAll('[data-photoinv]').forEach(b=>b.onclick=()=>{const k=+b.dataset.photoinv;const res=M.results.sprints[k-1];const i=res.order.findIndex(o=>o.photo);if(i>0)OP.swap(k,i-1);OP.photoConfirm(k)});
+    el.querySelectorAll('[data-sw]').forEach(b=>b.onclick=()=>{const [k,i]=b.dataset.sw.split(':').map(Number);OP.swap(k,i)});
+    el.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const [k,bib]=b.dataset.rm.split(':').map(Number);OP.remove(k,bib)});
+    el.querySelectorAll('[data-insu]').forEach(b=>b.onclick=()=>{const [k,bib,pos]=b.dataset.insu.split(':').map(Number);OP.insert(k,bib,pos-1)});
+    el.querySelectorAll('[data-shift]').forEach(b=>b.onclick=()=>{const [k,d]=b.dataset.shift.split(':').map(Number);OP.shift(k,d)});
+    el.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>OP.resetOrder(+b.dataset.reset));
+    el.querySelectorAll('[data-live]').forEach(b=>b.onclick=()=>OP.setLive(b.dataset.live==='1'));
+    el.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>this.closeCenter());
+    const ins=el.querySelector('[data-ins]');if(ins)ins.onclick=()=>{const k=+ins.dataset.ins;const bib=+el.querySelector('#insBib').value;const pos=+el.querySelector('#insPos').value||1;if(!M.by.has(bib)){this.toast('Dossard inconnu');return}OP.insert(k,bib,pos-1)};
+  },
+  raceBarHtml(){
+    if(!M.started||!M.groups.length)return '';
+    const gs=[...M.groups].sort((a,b)=>b.head-a.head);let h='<div class="racebar">';
+    gs.forEach((g,i)=>{if(i>0){const prev=gs[i-1];const gap=prev.head-g.head;h+=`<span class="gap">${gap>=250?Math.trunc(gap/250)+'T + '+(gap-250*Math.trunc(gap/250)).toFixed(0)+' m':(gap).toFixed(0)+' m / '+(gap/M.leaderSpeed).toFixed(1)+' s'}</span>`}
+      h+=`<span class="grp ${g.isMain?'main':''}">${g.isMain?'<b>peloton</b> '+g.members.length:g.members.length<=4?g.members.map(b=>this.bibHtml(b)).join(''):g.members.length+' coureurs'}</span>`});
+    return h+'</div>';
+  },
+  readingHtml(){const r=M.readings[0];if(!r)return '<div class="mid">La lecture de course apparaît à chaque passage de la tête de course.</div>';return '<div class="reading">'+r.lines.slice(0,2).map(l=>`<div>${esc(l)}</div>`).join('')+'</div>'},
+  sprintEditorHtml(k,isFinish){
+    const res=M.results.sprints[k-1];const rec=M.sprintRec(k);const live=M.wave===res.wave&&!M.finished;const mult=k===NSPRINTS?2:1;
+    let h=`<div class="sed"><div class="hd"><span><b>${isFinish?'Arrivée · sprint final ×2':'Sprint '+k}</b> <span class="muted">T${res.wave}</span></span><span class="hdrow"><span class="seg"><button class="small ${M.liveMode?'on':''}" data-live="1">Live</button><button class="small ${M.liveMode?'':'on'}" data-live="0">Contrôle</button></span>${rec.sent?'<span class="pill good">envoyé'+(rec.sentAuto?' (live)':'')+'</span>':rec.held?'<span class="pill warn">retenu</span>':live?'<span class="pill acc">en cours</span>':'<span class="pill">non envoyé</span>'}${rec.photoConfirmed?'<span class="pill good">photo ok</span>':res.order.some(o=>o.photo)?'<span class="pill warn">photo à juger</span>':''}${isFinish?'':'<button class="small" data-close="1">Fermer</button>'}</span></div>`;
+    const rows=isFinish?res.order:res.order.slice(0,8);
+    h+=`<div class="rows ${rows.length<=4?'single':''}">`+rows.map((o,i)=>`<div class="row ${o.photo||o.photoPair?'photo':''}"><span class="num muted">${i+1}.</span>${this.bibHtml(o.bib)}<span class="nm">${esc(M.by.get(o.bib).name)} <span class="muted">${M.by.get(o.bib).nat}</span></span><span class="pt">${i<4?(CFG.points[i]*mult)+' pt':''}</span><span class="gp">${o.gapMs!==null?'+'+o.gapMs+' ms':''}${o.photo?' photo':''}${o.manual?' saisi':''}</span><span class="ops"><button data-sw="${k}:${i-1}" title="Monter">↑</button><button data-sw="${k}:${i}" title="Descendre">↓</button><button data-rm="${k}:${o.bib}" title="Retirer">×</button></span></div>`).join('')+(rows.length?'':'<div class="note">En attente des passages sur la ligne</div>')+'</div>';
+    if(res.unread.length)h+=`<div class="unread">Non lu sur la ligne (passage déduit): ${res.unread.map(u=>this.bibHtml(u.bib)+' <span class="muted">estimé '+u.estPlace+'e</span> <button class="small" data-insu="'+k+':'+u.bib+':'+u.estPlace+'">Insérer '+u.estPlace+'e</button>').join(' ')} · à confirmer par photo-finish</div>`;
+    const noTp=M.riders.filter(r=>r.state==='racing'&&r.noTp).map(r=>r.bib);const notes=[];
+    if(res.excluded.length)notes.push('écartés: '+res.excluded.map(x=>x.bib+' ('+x.why+')').join(', '));
+    if(noTp.length&&!res.order.some(o=>noTp.includes(o.bib)))notes.push('sans transpondeur: '+noTp.join(', ')+', saisir à la main si classé');
+    if(notes.length)h+=`<div class="note">${esc(notes.join(' · '))}</div>`;
+    h+=`<div class="ft">${rec.sent?`<button class="small" data-send="${k}">Renvoyer (correction)</button>`:`<button class="small primary" data-send="${k}">Envoyer en direct</button>${rec.held?'':`<button class="small" data-hold="${k}">Retenir</button>`}`}${res.order.some(o=>o.photo)&&!rec.photoConfirmed?`<button class="small" data-photo="${k}">Photo: confirmer</button><button class="small" data-photoinv="${k}">Photo: inverser</button>`:''}<button class="small" data-shift="${k}:-1">← T${res.wave-1}</button><button class="small" data-shift="${k}:1">T${res.wave+1} →</button><button class="small" data-reset="${k}">Ordre détecté</button><input id="insBib" class="inp" type="number" placeholder="dossard" style="width:78px"><input id="insPos" class="inp" type="number" placeholder="rang" style="width:58px"><button class="small" data-ins="${k}">Insérer</button></div></div>`;
+    return h;
+  },
+  renderAlerts(){
+    const el=document.getElementById('alerts');const more=document.getElementById('morealerts');const all=[...M.alerts].reverse();const list=this.showAllAlerts?all:all.slice(0,3);
+    el.innerHTML=list.map(a=>`<div class="alert ${a.level||''}"><div class="ttl"><span>${esc(a.title)}</span><span class="when">${fmtDay(a.t)}</span></div><div class="txt">${esc(a.text)}</div><div class="acts">${(a.actions||[]).map((x,i)=>`<button class="small ${x.primary?'primary':''}" data-alert="${a.id}" data-i="${i}">${esc(x.label)}</button>`).join('')}${(a.actions&&a.actions.length)?'':`<button class="small" data-alert="${a.id}" data-i="-1">OK</button>`}</div></div>`).join('');
+    more.innerHTML=all.length>3?`<button class="small" id="moreBtn">${this.showAllAlerts?'Réduire':'+'+(all.length-3)+' autres alertes'}</button>`:'';
+    const mb=document.getElementById('moreBtn');if(mb)mb.onclick=()=>{this.showAllAlerts=!this.showAllAlerts;M.dirty=true;this.renderPanel(true)};
+    el.querySelectorAll('button').forEach(b=>b.onclick=()=>{const a=M.alerts.find(x=>x.id===+b.dataset.alert);if(!a)return;const i=+b.dataset.i;if(i<0){M.dismiss(a.id)}else a.actions[i].fn();M.dirty=true});
+  },
+  bibHtml(b){const r=M.by.get(b);return `<span class="bibchip" style="background:${r.col};${lum(r.col)>0.5?'color:#111;text-shadow:none':''}">${b}</span>`},
+  tabSprint(){
+    if(!M.started)return '<p class="muted">Les sprints sont prévus aux tours '+Array.from({length:NSPRINTS},(_,i)=>sprintWaveBase(i+1)).join(', ')+', le dernier compte double. Au tour de sprint, le classement s’ouvre au centre de l’ovale avec les commandes d’envoi et d’édition.</p><p class="muted">Mode actuel: '+(M.liveMode?'live, envoi automatique des places lues sans ambiguïté':'contrôle, envoi après validation')+'.</p>';
+    let h='<div class="splist">';
+    for(const s of [...M.results.sprints].reverse()){const rec=M.sprintRec(s.k);if(s.wave>M.wave)continue;
+      h+=`<div class="spitem ${this.center.mode==='sprint'&&this.center.k===s.k?'cur':''}" data-open="${s.k}"><div class="l1"><b>Sprint ${s.k}${s.k===NSPRINTS?' ×2':''}</b><span class="muted">T${s.wave}</span><span>${rec.sent?'<span class="pill good">envoyé</span>':rec.held?'<span class="pill warn">retenu</span>':M.wave===s.wave?'<span class="pill acc">en cours</span>':'<span class="pill crit">non envoyé</span>'}</span></div><div class="l2">${s.order.slice(0,4).map((o,i)=>this.bibHtml(o.bib)).join('')}${s.order.some(o=>o.photo)?'<span class="pill warn">photo</span>':''}${s.unread.length?'<span class="pill warn">non lu: '+s.unread.map(u=>u.bib).join(', ')+'</span>':''}</div></div>`}
+    h+='</div>';
+    if(M.outputs.length){h+='<h3>Sorties TV · scoreboard · web</h3><div class="journal">'+M.outputs.slice(0,8).map(o=>`<div class="e" style="grid-template-columns:50px 1fr"><span class="t">${fmtDay(o.t)}</span><span>${esc(o.text)}</span></div>`).join('')+'</div>'}
+    return h;
+  },
+  tabRank(){
+    const rk=M.results.ranking;if(!M.started)return '<p class="muted">Classement en direct après le départ.</p>';
+    const pending=M.alerts.filter(a=>a.kind==='lapProp'||a.kind==='radio').length;
+    return (pending?`<p class="muted" style="font-size:12px;margin:0 0 6px">${pending} décision${pending>1?'s':''} de tours en attente de validation: le classement ne les compte pas encore.</p>`:'')+`<table><colgroup><col style="width:28px"><col style="width:36px"><col><col style="width:40px"><col style="width:40px"><col style="width:44px"><col style="width:70px"></colgroup><thead><tr><th>#</th><th></th><th>Nom</th><th class="r">Spr</th><th class="r">T±</th><th class="r">Total</th><th></th></tr></thead><tbody>${rk.map((x,i)=>`<tr><td class="num">${i+1}</td><td>${this.bibHtml(x.bib)}</td><td title="${esc(x.name)}">${esc(x.name.split(' ')[0])} <span class="muted">${x.nat}</span></td><td class="r num">${x.sprint}</td><td class="r num">${x.gains||x.losses?(x.gains?'+'+x.gains:'')+(x.losses?' −'+x.losses:''):''}</td><td class="r num"><b>${x.total}</b></td><td>${x.status?'<span class="pill '+(x.state==='out'?'crit':'warn')+'">'+esc(x.status)+'</span>':''}${M.finished&&x.final<Infinity?'<span class="muted num"> arr. '+x.final+'</span>':''}</td></tr>`).join('')}</tbody></table><p class="muted" style="font-size:12px">T±: tours gagnés et perdus, comptés en plus des points. Égalités départagées par la place au dernier sprint.</p>`;
+  },
+  tabLaps(){
+    const f=this.lf||(this.lf={bib:''});
+    let h=`<div class="filters"><input id="lbib" placeholder="dossard" value="${f.bib}" style="width:80px"><span class="muted" style="font-size:12px">${f.bib?'passages du coureur sur les trois boucles':'ordre de passage sur la ligne, tour par tour · écart en s · ? = déduit'}</span></div>`;
+    if(f.bib){const b=+f.bib;const ps=M.allPass.filter(p=>p.bib===b).sort((a,c)=>c.t-a.t);
+      return h+`<table><colgroup><col style="width:44px"><col style="width:90px"><col style="width:70px"><col></colgroup><thead><tr><th>Tour</th><th>Point</th><th>Heure</th><th>Origine</th></tr></thead><tbody>${ps.slice(0,200).map(p=>`<tr><td class="num">T${p.loop==='F'?p.lap:p.lap+1}</td><td>${CFG.loops.find(l=>l.id===p.loop).name}</td><td class="num">${fmtDayMs(p.t).slice(3)}</td><td>${p.origin==='déduit'?'<span class="pill warn">déduit</span>':'mesuré'}</td></tr>`).join('')||'<tr><td colspan="4" class="muted">Aucun passage</td></tr>'}</tbody></table>`}
+    const laps=[];for(let w=Math.max(1,M.wave);w>=1;w--){const ps=M.passLog.filter(p=>p.wave===w).sort((a,b)=>a.t-b.t);if(!ps.length)continue;const k=M.sprintAtWave(w);
+      laps.push(`<div class="lap"><span class="w">T${w}${k?'<br><span class="pill acc">S'+k+'</span>':''}</span><span class="seq">${ps.map((p,i)=>`<span title="${fmtDayMs(p.t)}${p.origin==='déduit'?' · déduit':''}">${this.bibHtml(p.bib)}${p.origin==='déduit'?'<sup>?</sup>':''}${i?'<span class="g">+'+((p.t-ps[i-1].t)).toFixed(1)+'</span>':''}</span>`).join('')}</span></div>`)}
+    return h+'<div class="laps">'+(laps.join('')||'<div class="muted">Aucun passage enregistré</div>')+'</div>';
+  },
+  tabJournal(){
+    const f=this.jf||(this.jf={bib:'',type:'',origin:'',view:'events'});
+    let h=`<div class="filters"><select id="jview"><option value="events" ${f.view==='events'?'selected':''}>Événements</option><option value="decisions" ${f.view==='decisions'?'selected':''}>Décisions</option></select><input id="jbib" placeholder="dossard" value="${f.bib}" style="width:80px"><select id="jorigin"><option value="">toutes origines</option><option value="mesuré" ${f.origin==='mesuré'?'selected':''}>mesuré</option><option value="déduit" ${f.origin==='déduit'?'selected':''}>déduit</option><option value="décidé" ${f.origin==='décidé'?'selected':''}>décidé</option></select><select id="jtype"><option value="">tous types</option>${['tp','miss','attack','break','junction','drop','caught','sprint','decision','anomaly','operator','system'].map(t=>`<option value="${t}" ${f.type===t?'selected':''}>${t}</option>`).join('')}</select></div>`;
+    if(f.view==='decisions'){
+      return h+'<div class="journal">'+[...M.decisions].reverse().map(d=>`<div class="e" style="grid-template-columns:50px 30px 1fr auto"><span class="t">${fmtDay(d.t)}</span><span class="w">T${d.wave}</span><span style="${d.cancelled?'text-decoration:line-through;opacity:.6':''}">${esc(d.text||d.type)}</span><span>${d.cancelled||['send','tpAssign','adoptLc','neutralStart','neutralEnd','manualPlace','rejoin','incident'].includes(d.type)?'':`<button class="small" data-cancel="${d.id}">Annuler</button>`}</span></div>`).join('')+'</div>';
+    }
+    const list=M.journal.filter(e=>(!f.bib||(e.bibs||[]).includes(+f.bib))&&(!f.origin||e.origin===f.origin)&&(!f.type||e.type===f.type)).slice(-250).reverse();
+    return h+'<div class="journal">'+list.map(e=>`<div class="e"><span class="t">${fmtDay(e.t)}</span><span class="w">T${e.wave}</span><span class="o ${e.origin==='mesuré'?'m':e.origin==='déduit'?'d':'c'}">${e.origin}</span><span>${esc(e.text)}</span></div>`).join('')+'</div>';
+  },
+  tabReading(){
+    if(!M.started)return '<p class="muted">À chaque passage de la tête de course: les prétendants au classement, ce qu’il leur faut au prochain sprint, et les groupes avec leurs écarts.</p>';
+    const rk=M.results.ranking.filter(x=>x.state==='racing').slice(0,4);
+    let h='<h3>Prétendants</h3>'+(rk.length?'<div class="kv">'+rk.map((x,i)=>{const r=M.by.get(x.bib);const lead=rk[0];const rl=M.by.get(lead.bib);const gap=i?rl.est-r.est:0;return `<span>${this.bibHtml(x.bib)} ${esc(x.name)}</span><span class="num">${x.total} pts${i?' · −'+(lead.total-x.total)+' pt · '+(r.group===rl.group?'même groupe':(gap>0?gap.toFixed(0)+' m derrière':(-gap).toFixed(0)+' m devant')):''}</span>`}).join('')+'</div>':'');
+    h+='<h3>Lignes de lecture</h3><div class="journal">'+M.readings.map(r=>r.lines.map((l,i)=>`<div class="e" style="grid-template-columns:50px 30px 1fr"><span class="t">${i===0?fmtDay(r.t):''}</span><span class="w">${i===0?'T'+r.wave:''}</span><span>${esc(l)}</span></div>`).join('')).join('')+'</div>';
+    return h;
+  },
+  tabTp(){
+    let h='';
+    if(M.phase==='recon')h+='<p class="muted">Tour de reconnaissance: chaque passage est confronté à la startlist et à la table des transpondeurs. Vert: attendu et détecté. Rouge: attendu, absent. Un transpondeur inconnu déclenche une proposition d’attribution.</p>';
+    h+='<div class="checkin">'+M.riders.map(r=>`<div class="c ${r.detected?'ok':(M.recon.missingAlerted||M.started)?'miss':''} ${r.noTp?'notp':''}">${this.bibHtml(r.bib)}<span class="num" style="font-size:11px">${r.tp||'—'}</span></div>`).join('')+'</div>';
+    h+='<h3>Table des transpondeurs</h3><table><colgroup><col style="width:36px"><col><col style="width:60px"><col style="width:60px"><col style="width:84px"></colgroup><thead><tr><th></th><th>Nom</th><th>Attendu</th><th>Actif</th><th>État</th></tr></thead><tbody>'+M.riders.map(r=>{const st=r.state==='out'?'hors course':r.state==='neutralised'?'neutralisé':r.noTp?'<span class="pill warn">sans</span>':r.conf==='silent'?'<span class="pill warn">muet</span>':r.detected?'<span class="pill good">ok</span>':'<span class="pill crit">absent</span>';return `<tr><td>${this.bibHtml(r.bib)}</td><td title="${esc(r.name)}">${esc(r.name.split(' ')[0])}</td><td class="num">${r.tpExpected}</td><td class="num">${r.tp!==r.tpExpected?'<b>'+r.tp+'</b>':r.tp}</td><td>${st}</td></tr>`}).join('')+'</tbody></table>';
+    if(M.unknown.size)h+='<h3>Transpondeurs inconnus</h3><div class="kv">'+[...M.unknown.values()].map(u=>`<span class="num">${u.tp}</span><span>${u.count} passage${u.count>1?'s':''}, dernier sur ${u.loop} à ${fmtDay(u.last)}</span>`).join('')+'</div>';
+    h+='<h3>Contacts tape switch (dernière minute)</h3><div class="kv">'+CFG.tapes.map(t=>`<span class="num">${t.id}</span><span>${(M.tapePulses[t.id]||[]).filter(x=>M.t-x<60).length} impulsions</span>`).join('')+'</div>';
+    return h;
+  },
+  tabScen(){
+    let h='<p class="muted">Événements de la simulation. Ils se déclenchent seuls au tour indiqué; chacun peut être déclenché tout de suite pour tester la réaction du logiciel.</p><ul class="scen" style="padding-left:18px">';
+    for(const e of SCEN){if(e.hidden)continue;h+=`<li>${esc(e.label)} <span class="st">${e.fired?'déclenché à '+fmtDay(e.firedAt):e.auto?'à venir':'manuel'}</span> ${e.fired&&e.id!=='neutral'?'':`<button class="small" data-fire="${e.id}">Déclencher</button>`}</li>`}
+    h+='</ul><h3>Outils de test</h3><div class="row"><button class="small" data-lead="F">Tête de course: prochain sur l’arrivée</button><button class="small" data-lead="A">… sur Poursuite A</button><button class="small" data-lead="B">… sur Poursuite B</button></div>';
+    {const ns=M.nextSprint();const k=ns?ns.k:NSPRINTS;if(M.started&&!M.finished)h+=`<div class="row" style="margin-top:6px"><input id="excBibs" class="inp" placeholder="dossards, ex. 22 31" style="width:150px"><button class="small" data-exc="${k}">Exclure du sprint ${k}</button></div>`}
+    if(this.reveal&&M.started){const tp=S.truthPositions();let n=0,err=0;for(const t of tp){const r=M.by.get(t.bib);if(r.state!=='racing')continue;const e=Math.abs(M.estAt(r,M.t)-t.d);const em=Math.min(e,Math.abs(e-250),Math.abs(e-500));n++;err+=em}h+=`<p class="muted" style="font-size:12px">Contrôle de l’inférence: écart moyen entre position estimée et réelle ${(n?err/n:0).toFixed(1)} m sur ${n} coureurs.</p>`}
+    h+='<h3>Paramètres</h3><div class="kv"><span class="muted">Seuil de groupe</span><span>'+CFG.groupGapS+' s (réglage d’usine, modifiable par course)</span><span class="muted">Marge d’anomalie</span><span>'+CFG.marginK+' × l’écart-type des derniers passages du coureur, plancher '+CFG.marginS+' s</span><span class="muted">Lap counter</span><span>'+(CFG.lcConnected?'relié, prioritaire sur le compteur interne':'non relié, mode auto')+'</span><span class="muted">Flag photo</span><span>écart &lt; '+CFG.closeMs+' ms</span><span class="muted">Retrait proposé</span><span>à '+CFG.withdrawAfterLost+' tours perdus, jamais sans validation</span><span class="muted">Neutralisation</span><span>'+CFG.neutralLaps+' tours</span></div>';
+    return h;
+  },
+  bindPanel(body){
+    body.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>this.openSprint(+b.dataset.open));
+    body.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>M.cancelDecision(+b.dataset.cancel));
+    body.querySelectorAll('[data-fire]').forEach(b=>b.onclick=()=>{const e=SCEN.find(x=>x.id===b.dataset.fire);if(e&&!e.fired){fire(e)}else if(e&&e.id==='neutral')e.run(S)});
+    body.querySelectorAll('[data-lead]').forEach(b=>b.onclick=()=>OP.leaderNext(b.dataset.lead));
+    body.querySelectorAll('[data-exc]').forEach(b=>b.onclick=()=>{const bibs=(document.getElementById('excBibs').value.match(/\d+/g)||[]).map(Number).filter(x=>M.by.has(x));if(!bibs.length){UI.toast('Aucun dossard valide');return}OP.exclude(bibs,+b.dataset.exc)});
+    const jv=body.querySelector('#jview');if(jv){const f=this.jf;jv.onchange=()=>{f.view=jv.value;this.renderPanel(true)};body.querySelector('#jbib').oninput=e=>{f.bib=e.target.value;M.dirty=true};body.querySelector('#jorigin').onchange=e=>{f.origin=e.target.value;this.renderPanel(true)};body.querySelector('#jtype').onchange=e=>{f.type=e.target.value;this.renderPanel(true)}}
+    const lb=body.querySelector('#lbib');if(lb)lb.oninput=e=>{this.lf.bib=e.target.value;M.dirty=true};
+  }
+};
+
+/* ===================== Main loop ===================== */
+let S,M,SCEN,last=0,raf=0,lastTick=0;
+function fire(e){e.fired=true;e.firedAt=S.t;e.run(S);M.dirty=true}
+function advance(dt){const evs=S.step(dt);for(const e of evs)M.ingest(e);if(S.t-lastTick>=0.1){lastTick=S.t;M.tick(S.t)}for(const e of SCEN){if(!e.fired&&e.auto&&e.when(S))fire(e)}}
+function fastForward(secs){const n=Math.round(secs/0.02);for(let i=0;i<n;i++)advance(0.02)}
+function init(){
+  cancelAnimationFrame(raf);rnd=mulberry32(20261021);S=new Sim();M=new Model();SCEN=makeScenario();lastTick=0;UI.center={mode:'auto'};UI.sprintOpen=null;UI.reveal=false;UI.drag=null;UI.jf=null;UI.lf=null;UI.showAllAlerts=false;
+  const bs=document.getElementById('btnStart');bs.disabled=false;bs.textContent='Départ (signal du starter)';document.getElementById('btnReveal').classList.remove('primary');
+  UI.init();M.log('system','mesuré','Session ouverte: Course aux points Hommes, 60 tours, 6 sprints. Startlist et table des transpondeurs chargées.');
+  last=performance.now();M.dirty=true;UI.renderPanel(true);loop(last);
+}
+function loop(ts){
+  raf=requestAnimationFrame(loop);
+  const real=Math.min(0.1,(ts-last)/1000);last=ts;
+  if(UI.speed>0){let simDt=real*UI.speed;const sub=0.02;while(simDt>0){const dt=Math.min(sub,simDt);simDt-=dt;advance(dt)}}
+  UI.renderFrame();UI.renderPanel(false);
+}
+init();
+</script>
