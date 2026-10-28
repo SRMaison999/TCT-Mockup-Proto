@@ -66,6 +66,7 @@ tourner la boucle d'affichage — ce qui a été fait à la build 67, voir §12.
 | 68 | 674,2 s | les deux mêmes, aux mêmes instants | seuil de cassure paire par paire, vitesse du coureur qui suit (§13) |
 | 74 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` **458,1 s** | le scénario câblé devient une course enregistrée ; la perte de tour se propose **un dixième plus tard** (§15) |
 | 75 | 674,2 s | les deux mêmes, aux mêmes instants | la course de référence quitte le code et devient une ligne de la liste enregistrée ; renommer et effacer (§16) |
+| 76 | **669,3 s** | `lap:12:1` **165,2 s** · `lap:4,11:-1` **405,7 s** | le peloton cesse de ralentir quand un coureur le quitte : il roule l'allure affichée, donc la course est plus courte et la reprise plus précoce (§17) |
 
 Les durées bougent avec la **pace par défaut** et avec le modèle de vitesse du simulateur,
 pas avec les règles de course. Comparer deux builds de part et d'autre d'un de ces
@@ -632,3 +633,406 @@ course chargée depuis Files, course menée jusqu'au bout pas à pas :
 | Classement | 15(19) · 12(15) · 23(8) · 4(6) · 11(4) · 46(3) | **le même** |
 | Sprints gagnés | 4 | **4** |
 | Erreurs console | aucune | **aucune** |
+
+---
+
+## 17. Le peloton qui ralentissait tout seul, build 76
+
+Mesuré le 28 octobre 2026 sur la course de référence, menée pas à pas. L'opérateur avait
+signalé que « les vitesses se modifient toutes seules » dès qu'il se servait de *Sync all to
+bunch pace* et des flèches ↑ ↓.
+
+**Ce qui se passait.** Chaque coureur du peloton tient une **place** — tant de mètres devant
+ou derrière le milieu du peloton — et règle sa vitesse pour la retrouver. Le milieu était
+calculé sur **les coureurs encore dans le peloton**. Un coureur qui le quitte emporte donc sa
+place avec lui, le milieu se déplace, et tous les autres se retrouvent décalés d'un écart que
+personne n'a ouvert. L'écart ne se referme jamais, puisque c'est le repère lui-même qui a
+bougé.
+
+**Mesuré, sur le BIB 15, qui n'a reçu aucun ordre de toute la course :**
+
+| Instant | Sa vitesse | Ce qui venait de se passer |
+|---|---|---|
+| 50,0 s | 15,000 m/s | rien ; allure demandée 15,0 |
+| 50,6 s | **14,774 m/s** | les BIB 4 et 11 viennent de décrocher |
+| 70,6 s | **14,888 m/s** | — |
+| 120,6 s | **14,888 m/s** | le BIB 12 est parti prendre son tour |
+
+L'arithmétique tombe juste : les trois places parties valaient −14,3, +12,1 et +14,3 m, soit
+**−12,1 m** pour les treize coureurs restants, donc **0,93 m** chacun. Un écart permanent de
+0,93 m vaut, dans ce réglage, **11 cm/s** de trop peu. Allure demandée 15,0 — peloton à 14,89.
+
+**Après correction**, le peloton se repère sur un point qui roule l'allure affichée, posé au
+départ. Même course, mêmes instants : le BIB 15 roule **15,000 m/s** à 50,0 s, à 50,6 s, à
+70,6 s et à 120,6 s, et les treize coureurs du peloton sont tous à 15,000 à la fin.
+
+**Les deux autres constats, mesurés le même jour :**
+
+| Constat | Mesuré | Après correction |
+|---|---|---|
+| *Sync all to bunch pace* annulait les ordres en cours | à 168 s, trois ordres tournaient (12 prenait un tour, 4 et 11 en perdaient un) : un clic, les trois ont disparu ; une vitesse posée à la main sur le 46 (15,1) retombait à 15,0 | le bouton met tout le monde à la vitesse du peloton **sans déplacer personne** ; trente secondes plus tard les seize coureurs sont toujours à 15,00 |
+| La flèche ↓ ne faisait rien | BIB 52 à 30 s, un seul peloton : clic, aucun ordre créé, aucune réponse | les deux flèches sont **éteintes** quand il n'y a nulle part où aller, allumées dès qu'un deuxième groupe existe (vérifié à 100 s) |
+
+**Ce que la correction change dans la course de référence.** Elle la raccourcit, puisque le
+peloton ne roule plus 0,75 % trop lentement :
+
+| | Build 75 | Build 76 |
+|---|---|---|
+| Durée | 674,2 s · 13 485 pas | **669,3 s · 13 386 pas** |
+| `lap:12:1` | 165,5 s, tour 11 | **165,2 s, tour 11** |
+| `lap:4,11:-1` | 458,1 s, tour 28 | **405,7 s, tour 25** |
+| Classement | 15(19) · 12(15) · 23(8) · 4(6) · 11(4) · 46(3) | **le même** |
+| Sprints gagnés | 4 | **4** |
+| Erreurs console | aucune | **aucune** |
+
+La reprise des BIB 4 et 11 tombe trois tours plus tôt : le peloton qui les reprend roule
+maintenant à l'allure demandée, pas 11 cm/s en dessous. L'opérateur a tranché l'arbitrage
+avant la correction : « je me fous de la course de référence » (§16 des règles). Les chiffres
+des builds antérieures ne sont pas réécrits.
+
+---
+
+## 18. La progression des ordres, build 77
+
+Mesuré le 28 octobre 2026 sur la course de référence, rail ouvert, course menée pas à pas.
+
+**Un tour à prendre, BIB 12.** Le bouton `+lap` s'allume à 67,45 s et se remplit :
+
+| Instant | Jauge |
+|---|---|
+| 70,0 s | 2 % |
+| 100,0 s | 23 % |
+| 130,0 s | 44 % |
+| 160,0 s | 64 % |
+| 190,0 s | 85 % |
+| 211,2 s | le tour est pris, **le bouton s'éteint** |
+
+**Un coureur envoyé sur le groupe de derrière, BIB 15 → le groupe des BIB 4 et 11.** Ordre
+donné à 165,0 s, l'écart est alors de 106 m :
+
+| Instant | Jauge | Écart | Sa vitesse | Celle du groupe visé |
+|---|---|---|---|---|
+| 166,0 s | 3 % | 103,3 m | 13,800 | 16,700 |
+| 176,0 s | 31 % | 74,3 m | 13,800 | 16,700 |
+| 186,0 s | 59 % | 45,3 m | 13,800 | 16,700 |
+| 196,0 s | 87 % | 16,3 m | 13,800 | 16,700 |
+| 201,0 s | **éteint** | 2,4 m | **16,700** | 16,700 |
+| 211,0 s | éteint | 2,4 m | **14,000** | 14,000 |
+| 215,0 s | éteint | — | **15,423** | 15,423 |
+
+C'est la règle du §16 des règles, vérifiée : il ne reprend pas l'allure du peloton, il prend
+**celle du groupe qu'il vient de rejoindre**, et il la tient quand ce groupe change de vitesse.
+Les deux flèches de sa ligne restent éteintes tant qu'il est dans la roue du groupe, et se
+rallument dès que le détecteur sépare les groupes (vérifié à 225 s).
+
+**La jauge se mesure sur l'écart qui reste, pas sur les mètres parcourus.** Mesuré en premier
+sur les mètres parcourus : pour un ordre de rejoindre un groupe qui vient de derrière plus
+vite que lui, la jauge affichait **100 % alors que le coureur était encore à 69 m**, parce que
+le but avançait plus vite que lui. Sur l'écart restant, elle suit l'approche réelle.
+
+**Ce que la course de référence donne à la build 77 :** 669,3 s · 13 386 pas, `lap:12:1` à
+165,2 s tour 11, `lap:4,11:-1` à 405,7 s tour 25, classement 15(19) · 12(15) · 23(8) · 4(6) ·
+11(4) · 46(3), 4 sprints, aucune erreur console — **inchangé depuis la build 76**.
+
+**Un essai retiré.** Rendre la synchronisation instantanée pour `+lap` et `−lap`, en laissant
+le coureur à l'endroit exact où il a bouclé son tour au lieu de le laisser revenir à sa place,
+a été codé puis retiré : le logiciel proposait alors la perte de tour des BIB 4 et 11 **au
+tour 14, à 220,1 s**, alors que la simulation ne la constate qu'à 415,8 s — 195 s d'avance, et
+un classement final différent. Le comportement de la build 76 est conservé pour ces deux
+ordres, et le point est au §15 des règles.
+
+---
+
+## 19. Rejouer une course de la liste, build 78
+
+Mesuré le 28 octobre 2026, liste vidée avant chaque série.
+
+**Ce qui se passait.** Charger une course mettait ses ordres en file pour les rejouer **et**
+ouvrait en même temps un enregistrement contenant déjà ces mêmes ordres. Au Load suivant, ou
+au clic sur *New*, cet enregistrement était sauvé comme une course neuve. Mesuré sur une
+course menée à la main, « 46 takes a lap at 2 · 1 ordre · 50 s » :
+
+| | La liste |
+|---|---|
+| au départ | `46 takes a lap at 2` · `Reference` |
+| après un 2ᵉ Load | **`46 takes a lap at 2 (2)`** · l'originale · `Reference` |
+| après un 3ᵉ Load | **`(3)`** · `(2)` · l'originale · `Reference` |
+
+La relecture marchait — l'ordre partait au bon instant, le BIB 46 attaquait à 16,70 — mais au
+bout de trois essais l'opérateur rechargeait des copies au lieu de sa course.
+
+**Après correction, les trois mêmes Load :**
+
+| Load | REC | L'écran | Ce que fait le 46 | La liste |
+|---|---|---|---|---|
+| 1 | éteint | « Playing · 46 takes a lap at 2 · 23 loses a lap at 4 » | `gain` à 16,70 | **2 courses** |
+| 2 | éteint | la même | `gain` à 16,70 | **2 courses** |
+| 3 | éteint | la même | `gain` à 16,70 | **2 courses** |
+
+**Un ordre donné pendant une relecture n'enregistre rien.** Ordre `+lap` sur le BIB 70 au
+milieu d'une relecture : il s'exécute à l'écran — le 70 attaque à 16,70 — et la liste ne
+bouge pas, ni en nombre de courses (2 avant, 2 après) ni en nombre d'ordres de la course
+rejouée (2 avant, 2 après). C'est la règle du §16 : « rien ne s'enregistre jamais depuis une
+course chargée, quoi qu'on fasse ».
+
+**Une course menée à la main s'enregistre toute seule.** Sans jamais cliquer sur *New* :
+
+| | La liste |
+|---|---|
+| 20 s de course, aucun ordre | inchangée |
+| un ordre donné | **`46 takes a lap at 2` [1 ordre, 20 s]** |
+| un deuxième ordre, 30 s plus tard | **`46 takes a lap at 2 · 23 loses a lap at 4` [2 ordres, 50 s]** |
+
+Une seule ligne, tenue à jour en place. Elle est aussi écrite à chaque pause et à l'arrivée,
+pour qu'une course sans aucun ordre soit gardée elle aussi. Un nom donné à la main n'est
+plus jamais recalculé.
+
+**Le centrage des symboles.** Mesuré sur les huit boutons de la barre : la **boîte** du
+contenu était déjà centrée partout, 16 px à gauche comme à droite. Ce qui n'était pas centré,
+c'est **l'encre des glyphes** dans leur boîte, mesurée au canevas :
+
+| Bouton | Décalage de l'encre |
+|---|---|
+| ⏮ 30s | 0,05 px |
+| ▶ | 0,11 px, mais un triangle plein pointant à droite **paraît** à gauche : sa masse est sur son côté vertical |
+| ❙❙ | −0,01 px |
+| ×1 · ×4 · ×16 | 0,70 px |
+| Replay | 0,89 px |
+| New | 0,61 px |
+
+Play et Pause sont maintenant **dessinés** et non écrits : un carré de dessin centré dans le
+bouton, avec une correction optique de 0,4 unité sur 12 pour le triangle. Les autres sont du
+texte, dont le décalage reste sous le pixel.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, `lap:12:1` à 165,2 s tour 11,
+`lap:4,11:-1` à 405,7 s tour 25, classement 15(19) · 12(15) · 23(8) · 4(6) · 11(4) · 46(3),
+4 sprints, aucune erreur console. Et une relecture complète n'ajoute **aucune** copie à la
+liste.
+
+---
+
+## 20. Le numéro de course et le vert, build 79
+
+Mesuré le 28 octobre 2026, liste vidée au départ.
+
+| Ce qui est fait | La liste, par numéro |
+|---|---|
+| première ouverture du prototype | **n°1** Reference |
+| une course menée à la main, un ordre donné | **n°2** · n°1 |
+| *New*, une deuxième course menée | **n°3** · n°2 · n°1 |
+| la **n°2 effacée** | **n°3 · n°1** |
+
+Les numéros ne se renumérotent pas : la n°3 reste la n°3 après l'effacement de la n°2, et la
+n°1 reste la n°1 bien qu'elle soit passée de la troisième à la deuxième ligne. C'est le
+numéro **de la course**, pas son rang.
+
+**L'affichage pendant la relecture**, course n°1 chargée et jouée :
+
+| | Mesuré |
+|---|---|
+| Texte | **« Playing race 1 »** |
+| Couleur calculée | **rgb(28, 198, 52)** — soit #1CC634, le vert donné |
+| Point REC | **éteint** |
+
+Le numéro est aussi sur chaque ligne de l'onglet Files, dans une pastille devant le nom.
+
+---
+
+## 21. Le centrage des symboles, build 80
+
+Mesuré le 28 octobre 2026 **simulateur déplié**, sur l'écran que l'opérateur regarde.
+
+**Ce qui n'était pas en cause.** La boîte de chaque libellé est centrée dans son bouton à
+moins d'un pixel : `display:flex`, `justify-content:center`, 16 px de marge à gauche comme à
+droite sur les huit boutons. Les boutons du simulateur déplié eux-mêmes (↑, ↓, +lap, −lap,
+Sync all to bunch pace…) sont tous sous **0,4 px** d'écart d'encre.
+
+**Deux erreurs à moi, mesurées :**
+
+| | Mesuré |
+|---|---|
+| Le trait rouge de mes captures « preuve » | un trait de 1 px posé à `left:50%` : son milieu tombait **0,5 px à droite** du vrai centre |
+| La correction de la build 80, au démarrage | mesurée **avant le chargement d'IBM Plex Sans**, donc sur une police de secours |
+
+La seconde est celle que l'opérateur voyait : au lieu de corriger, elle décalait.
+
+| Bouton | Correction posée (police de secours) | Écart restant |
+|---|---|---|
+| ×1 | −0,28 px | **0,42 px** |
+| ×4 | −0,89 px | **−0,19 px** |
+| ×16 | −0,53 px | **0,17 px** |
+| Replay | −0,93 px | −0,05 px |
+| New | −0,95 px | **−0,34 px** |
+
+**Après correction**, la mesure attendant `document.fonts.ready`, simulateur déplié :
+
+| Bouton | Correction posée | Écart restant |
+|---|---|---|
+| ⏮ 30s | −0,05 px | −0,003 px |
+| ▶ | aucune | 0,000 px |
+| ❚❚ | aucune | 0,000 px |
+| ×1 · ×4 · ×16 | −0,70 px | 0,000 px |
+| Replay | −0,88 px | 0,003 px |
+| New | −0,61 px | −0,004 px |
+
+**« PLAYING RACE *x* ».** Mesuré sur l'élément lui-même : texte et numéro à **11 px** tous les
+deux (le numéro était à 14 px), `text-transform: uppercase`, couleur calculée
+**rgb(28, 198, 52)**.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+
+---
+
+## 22. Les boutons qui se chevauchent, build 81
+
+Mesuré le 28 octobre 2026, simulateur déplié, après que l'opérateur a dit trois fois que les
+symboles n'étaient pas au centre de leurs boutons.
+
+**La cause.** Elle n'était pas dans les lettres, elle était dans la place :
+
+| | Mesuré |
+|---|---|
+| Largeur de la ligne du transport | **460 px** |
+| Largeur demandée par les huit boutons | **476 px** |
+| Groupe ▶/❚❚ | comprimé de **6,6 px** |
+| Groupe ×1 ×4 ×16 | comprimé de **11,8 px** |
+| Groupe Replay/New | comprimé de **11,2 px** |
+| **❚❚ sous ×1** | **12,3 px** |
+| **×16 sous Replay** | **16,6 px** |
+
+Un bouton comprimé ne rétrécit pas : il déborde **sous son voisin**. Le bord qu'on voit n'est
+donc pas le bord du bouton, et le symbole, centré dans le bouton réel, tombe à côté du milieu
+de ce qu'on voit. Les mesures d'encre des §19 et §21 portaient toutes sur la largeur réelle,
+celle qu'on ne voit pas : elles étaient justes et ne répondaient pas à la question.
+
+**Après correction**, Replay et New posés sur la ligne de l'horloge :
+
+| Ligne | Largeur | Demandée | Éléments comprimés | Chevauchements |
+|---|---|---|---|---|
+| ⏮ 30s · ▶ ❚❚ · ×1 ×4 ×16 | 460 px | 460 px | **0** | **aucun** |
+| 0:00.0 · PLAYING RACE 3 · Replay New | 460 px | 460 px | **0** | **aucun** |
+
+Mesuré dans le cas le plus large, course chargée et « PLAYING RACE *x* » affiché (102,3 px).
+*Replay* relance bien la course chargée et *New* ouvre bien une course vide.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+
+**Le champ unique.** Mesuré dans la foulée, même jour. Les deux champs se suivaient sur la
+ligne de l'horloge, et `.recdot.off` posait `visibility:hidden` : caché, le point REC gardait
+sa boîte de **39,3 px**, plus 8 px d'écart, devant « PLAYING RACE *x* ».
+
+| | Ligne du transport | Ligne de l'horloge |
+|---|---|---|
+| Deux champs, course chargée | 356,0 px | **404,6 px** |
+| **Un seul champ**, course chargée | 356,0 px | **357,3 px** |
+
+Les deux lignes font maintenant la même largeur. Le champ dit **REC**, ou
+**PLAYING RACE *x***, ou rien, et il n'y a plus qu'un seul élément à la place des deux. Aucun
+chevauchement dans aucun des quatre états mesurés : au démarrage, course chargée, en
+relecture, course menée.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+
+**La grandeur fixe, build 82.** Mesuré le 28 octobre 2026. Le champ unique changeait encore de
+taille avec ce qu'il disait : **39,3 px** pour « REC », **102,3 px** pour « PLAYING RACE 1 »,
+**117,7 px** pour « PLAYING RACE 888 ». Il est désormais large de **120 px**, assez pour le
+plus long des trois.
+
+| État | Ce que dit le champ | Bord gauche | Largeur |
+|---|---|---|---|
+| Au démarrage | *(rien)* | 712,1 px | **120 px** |
+| Course menée | **REC** | 712,1 px | **120 px** |
+| En pause | *(rien)* | 712,1 px | **120 px** |
+| Course chargée | **PLAYING RACE *x*** | 712,1 px | **120 px** |
+
+Le champ ne bouge pas d'un pixel et rien autour de lui ne glisse. Quand il n'a rien à dire il
+se tait **sans rendre sa place**, sinon l'horloge et les boutons se déplaceraient à chaque
+départ.
+
+Les deux lignes, course chargée : **357,3 px** pour le transport, **375,9 px** pour l'horloge,
+dans une barre de 460 px. L'écart de 18,6 px est la largeur fixe du champ ; il était de 48 px
+avec les deux champs. Aucun élément comprimé, aucun chevauchement.
+
+---
+
+## 23. Le tri de la liste des coureurs, build 83
+
+Mesuré le 28 octobre 2026, course de référence chargée, quatre premières lignes à chaque fois.
+
+| Ce qui est cliqué | Les quatre premières lignes |
+|---|---|
+| *(rien)* | 52 ROSSI · 12 HUBER · 7 BRAND · 61 NAVARRO |
+| **BIB** | 1 RIVERA · 3 MOREAU · 4 WALSH · 7 BRAND |
+| **BIB** à nouveau | 70 SILVA · 67 LEHMANN · 61 NAVARRO · 58 PETROV |
+| **Nat** | BEL · BRA · COL · DEN |
+| **Nat** à nouveau | SUI · SLO · POR · NED |
+| **Name** | BRAND · DE WIT · HUBER · IVERSEN |
+| **Name** à nouveau | WALSH · TANAKA · SILVA · SANTOS |
+
+**Les ordres suivent la ligne, pas le rang.** Liste triée par nom à l'envers, donc l'ordre
+affiché n'est plus celui de `S.riders` (52 ROSSI · 12 HUBER · 7 BRAND…). Un *+lap* cliqué sur
+la **troisième ligne**, celle du BIB 70 :
+
+| | Mesuré |
+|---|---|
+| Ordre reçu | **70 → gain** |
+| Jauge allumée | sur la ligne du **70** |
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+
+**La ligne Pace sous la liste, build 84.** Mesuré le 28 octobre 2026 : le bas du dernier
+coureur de la liste — BIB 15 O'NEILL — est à **562,4 px**, le haut de la ligne Pace à
+**564,4 px**. Elle est bien dessous.
+
+Les deux commandes répondent toujours : *Pace* va de 15,0 à 15,1, puis à 14,9, puis revient à
+15,0 par pas de 0,1 m/s ; *Sync all to bunch pace* fait tomber le nombre d'ordres en cours de
+**1 à 0**, comme le veut le §16 des règles.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+
+**Le tri reporté sur la vue Start list, build 85.** Mesuré le 28 octobre 2026, quatre
+premières lignes de chaque vue, à chaque ordre.
+
+| Ordre | Vue Simulation | Vue Start list |
+|---|---|---|
+| *(rien)* | 52 · 12 · 7 · 61 | **les mêmes** |
+| **BIB** | 1 · 3 · 4 · 7 | **les mêmes** |
+| **Name** | BRAND · DE WIT · HUBER · IVERSEN | **les mêmes** |
+| **Name** à l'envers | WALSH · TANAKA · SILVA · SANTOS | **les mêmes** |
+
+**L'édition vise toujours le bon coureur.** Liste triée par nom à l'envers, donc la première
+ligne affichée est le BIB 4, **rang 14** dans la liste de départ. Son nom changé en « ESSAI » :
+c'est bien le BIB 4 qui porte le nouveau nom, et la ligne descend d'elle-même à sa place
+alphabétique. Remis à WALSH ensuite.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+
+---
+
+## 24. Les réglages gardés, build 86
+
+Mesuré le 28 octobre 2026, réglages effacés au départ pour partir des valeurs du fichier.
+
+**Ce qui a été changé à la main :** le premier coureur passé de *52 ITA ROSSI* à
+**99 FRA DUPONT** (dossard, nation et nom), la piste de 250 m à **200 m**, la distance
+Finish → Pursuit A de 10 m à **12 m**, et le transpondeur du 99 passé de 1042 à **2001**.
+
+| | Premier coureur | Piste | Finish → Pursuit A | Transpondeur du 99 |
+|---|---|---|---|---|
+| Après les changements | 99 FRA DUPONT | 200 m | 12 m | 2001 |
+| Après **New** | **les mêmes** | **200** | **12** | **2001** |
+| Après **rechargement** | **les mêmes** | **200** | **12** | **2001** |
+
+**Ce qui se passe pendant une course n'est pas un réglage.** Un changement de vélo donné au
+BIB 99 en pleine course le fait passer sur le transpondeur 1042 **dans cette course**, et
+l'appairage gardé ne bouge pas : il dit toujours 2001. C'est le partage qui a été retenu —
+avant le départ, c'est un réglage ; pendant la course, c'est un fait de cette course-là.
+
+**Un défaut trouvé en chemin, et corrigé.** La carte de sprint tombait à chaque image —
+192 erreurs dans la console — quand un dossard de `S.noTp` n'existait plus dans la liste de
+départ : `chip()` recevait `undefined`. Garder la liste d'une course à l'autre rend ce cas
+atteignable, puisqu'un dossard peut changer entre deux courses. La carte passe maintenant ce
+dossard-là. **Le chemin exact qui y mène n'a pas été reproduit à la demande** : la correction
+supprime la chute, elle n'a pas été vérifiée sur le cas qui l'a provoquée.
+
+**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.

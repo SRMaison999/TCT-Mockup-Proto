@@ -713,6 +713,11 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
 
 ## 15. Ce qui reste à trancher
 
+- **L'appairage des transpondeurs changé PENDANT une course.** La règle §16.28 dit que
+  l'appairage se garde. Ce qui n'a pas été énoncé, c'est le sort d'un changement fait en pleine
+  course — un vélo changé, deux transpondeurs échangés dans les boxes. Il a été codé comme un
+  **fait de cette course-là**, qui ne suit pas dans la suivante ; seul ce qui est changé avant
+  le départ est gardé. À confirmer ou à retourner.
 - **Où placer le réglage du seuil de cassure.** L'opérateur ne veut pas voir l'indication de la
   seconde sur l'écran de course. L'intention d'en faire un contrôle à l'écran, notée le
   25 octobre, est donc en suspens.
@@ -736,6 +741,11 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
 - **Un sprint tombé pendant une course neutralisée** : redonné au tour suivant la relance ou au
   tour prévu suivant, à confirmer dans le règlement en vigueur.
 - **Le protocole exact d'échange avec la photo-finish**, à voir à l'implémentation.
+- **Le retour au peloton après un tour gagné ou perdu.** La règle du §16 dit que le coureur
+  prend la vitesse du groupe rejoint. Pour `↑` et `↓` c'est immédiat ; pour `+lap` et
+  `−lap` le coureur revient dans le peloton en une trentaine de secondes, parce qu'il doit
+  rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
+  tour de 195 secondes (`travaux.md` §8d). À trancher.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -812,3 +822,195 @@ Ce que cela fixe :
    toute première fois que le prototype s'ouvre sur un poste, la liste enregistrée est vide
    et il y dépose cette course. Ensuite il ne la regarde plus jamais — la liste est celle que
    l'opérateur a laissée.
+
+**28 octobre 2026 — les vitesses qui se modifient toutes seules.** Il a essayé le simulateur
+et signalé, mot pour mot :
+
+> j'ai testé le simulateur. Il y a encore des comportements étranges. Les vitesses se
+> modifient toutes seules à partir du moment où commence à utiliser les boutons "Sync all to
+> bunch pace" et les flèches en haut et en bas
+
+Trois choses distinctes ont été mesurées sur la course de référence, et lui ont été
+présentées (`mesures.md` §17). Ses décisions, mot pour mot :
+
+> 1. ok
+
+> 2. son libellé ne dis pas qu'il va les remettre dans le peloton, il dit que tous les
+> coureurs doivent rouler à la vitesse du peloton. c'est ça que je veux
+
+> 3. ok
+
+> 4. je voudrais aussi que quand on utilise les touche haut, bas, lap+ et lap- ces boutons
+> s'allument mais doivent afficher une progression jusqu'à l'accomplissement de leur mission,
+> et une fois la mission accomplie ils s'éteignent et la vitesses de leurs coureurs se
+> synchronise sur le groupe qu'ils cherchait à atteindre (et qu'ils ont atteint)
+
+Et sur les chiffres de la course de référence, qui changent forcément quand le peloton cesse
+de ralentir :
+
+> je me fous de la course de référence !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Ce que cela fixe :
+
+7. **Le peloton roule l'allure affichée, et rien d'autre ne la change.** Un coureur qui
+   décroche, qui prend un tour ou qui revient ne doit **pas** faire changer d'allure ceux qui
+   restent.
+8. **« Sync all to bunch pace » veut dire ce que son libellé dit** : tous les coureurs
+   roulent à la vitesse du peloton. Il ne les déplace pas et ne les remet pas en place.
+9. **Une flèche qui ne mène nulle part est éteinte.**
+10. **Un ordre en cours montre où il en est**, et quand sa mission est accomplie le bouton
+    s'éteint et le coureur prend **la vitesse du groupe qu'il visait et qu'il a rejoint**. La
+    forme de cette progression est un écran : elle se propose avant d'être codée (§14).
+
+**28 octobre 2026 — la maquette de la progression, tranchée.** Deux formes lui ont été
+proposées, et la question de la vitesse d'arrivée posée. Ses réponses, mot pour mot :
+
+> 1. option A
+
+> 2. il faut qu'il prenne la vitesse du groupe qu'il vient réellement de rejoindre.
+
+Ce que cela fixe :
+
+11. **La jauge est dans le bouton.** Le bouton allumé se remplit de sa gauche vers sa droite.
+    Pas de trait sous la ligne du coureur, qui était l'autre proposition.
+12. **La vitesse d'arrivée est celle du groupe réellement rejoint**, pas celle du peloton. Un
+    coureur envoyé sur une échappée prend la vitesse de l'échappée et la tient tant qu'elle
+    tient.
+
+**28 octobre 2026 — rejouer une course de la liste.** Il a essayé et signalé, mot pour mot :
+
+> maintenant regarde le code des courses enregistrées. Je ne parviens pas à rejouer celles de
+> la liste. En effet quand je load une course et la démarre il y a le bouton REC qui s'allume
+
+Mesuré : une course chargée était rejouée **et** réenregistrée en même temps, donc chaque
+relecture déposait une copie dans la liste — trois Load, trois copies (`mesures.md` §19). Ses
+décisions sur ce qui lui a été proposé, mot pour mot :
+
+> 1. Une course chargée se rejoue, point : rien ne s'enregistre, le point REC reste éteint >
+> ok mais il pourrait y avoir un affichage "Playing Race xy"
+
+> 2. « puis New pour l'enregistrer » > pourquoi tu as cliqué sur "New" pour l'enregistrer ? Il
+> faut soit qu'elle s'enregistre toute seule soit un bouton "Save"
+
+> 3. Vous rejouez une course et, en cours de route, vous donnez un ordre de votre cru. Est-ce
+> que ça devient une course neuve, qui s'enregistre à partir de là ? > NON, rien ne
+> s'enregistre jamais depuis une course chargée, quoi qu'on fasse.
+
+> 4. Regarde la capture : mis à part pour le bouton "< 30s", les symboles ne sont pas au
+> centre de leurs boutons. Fix cela car ce n'est pas beau
+
+Ce que cela fixe :
+
+13. **Une course chargée se rejoue et n'enregistre rien**, quoi que l'opérateur fasse pendant
+    sa relecture — y compris s'il donne des ordres de son cru. Le point REC reste éteint.
+14. **Pendant une relecture, l'écran dit « Playing · *nom de la course* »**, à la place du
+    point REC.
+15. **Une course menée par l'opérateur s'enregistre toute seule.** Il n'a rien à cliquer pour
+    la garder. Pas de bouton *Save*.
+16. **Les symboles des boutons sont au centre de leurs boutons.**
+
+**28 octobre 2026 — le numéro de course, et le vert.** Mot pour mot :
+
+> il faut que nous donnions un numéro de course aux courses de la liste. Et ensuite quand on
+> la rejoue, à l'endroit où s'affiche "REC" pendant un enregistrement, il faut afficher
+> "Playing race x", x étant le numéro de la course dans la liste. ET ce texte "Playing race x"
+> doit être en vert.
+
+Le vert a été donné par une capture de sa fiche : **Dark Pastel Green, #1CC634**,
+RGB(28, 198, 52).
+
+Ce que cela fixe :
+
+17. **Chaque course de la liste porte un numéro**, visible sur sa ligne dans l'onglet Files.
+18. **Pendant une relecture, l'écran dit « Playing race *x* »**, à la place du point REC, en
+    **#1CC634**.
+
+**28 octobre 2026 — le numéro, et où sont les boutons.** Sur une capture de la build 79, mot
+pour mot :
+
+> Dans ta capture d'écran le texte "Playing race 1" est bizarre. on dirait que le "1" est dns
+> une taille plus grande que le reste du texte. Ajuste la taille du numéro avec le texte et
+> mets le en majuscules.
+
+> Pour info, dans le build 78, les symboles des boutons ne sont toujours pas centrés > dans le
+> 79 non plus
+
+Puis, deux fois, pour dire **de quels boutons il parle** :
+
+> les boutons dont les symboles ne sont pas centrés sont ceux affichés dans le simulateur
+> lorsqu'il est déplié
+
+> mais je te parle des boutons de transport lorsque le simulateur est déplié !!!
+
+Ce que cela fixe :
+
+19. **Le numéro a la taille et l'espacement du texte qui l'entoure**, et « PLAYING RACE *x* »
+    s'écrit **en majuscules**.
+20. **Les boutons à regarder sont ceux de la barre de transport, telle qu'elle s'affiche quand
+    le simulateur est déplié.** C'est là que se vérifie le centrage, pas ailleurs.
+
+**28 octobre 2026 — où vont Replay et New.** Devant la cause enfin mesurée — huit boutons qui
+demandent 476 px pour 460, donc des groupes écrasés et des boutons qui passent sous leurs
+voisins —, deux corrections lui ont été proposées (des boutons moins larges, ou la barre sur
+deux lignes). Il en a choisi une troisième, mot pour mot :
+
+> place les boutons "Replay" et "New" sur la même ligne que l'horloge
+
+Ce que cela fixe :
+
+21. **Replay et New sont sur la ligne de l'horloge.** La ligne du transport ne porte plus que
+    ⏮ 30s, ▶, ❚❚ et les trois vitesses.
+
+**28 octobre 2026 — un seul champ.** Devant la ligne du bas plus large que celle du dessus,
+mot pour mot :
+
+> pourquoi le champ pour "PLAYING RACE 1" est aussi grand? Cela ne sert à rien et a pour
+> conséquence de rendre la ligne du bas plus large que celle du dessus
+
+> le champ pour afficher "REC" et "PLAYING RACE 1" doit être le même champ
+
+Ce que cela fixe :
+
+22. **« REC » et « PLAYING RACE *x* » sont un seul et même champ.** Il dit le point REC, ou
+    « PLAYING RACE *x* », ou rien. Jamais deux champs dont l'un retient sa place pour rien.
+
+Sur la build 80, qui portait encore les deux champs, il a redit, mot pour mot :
+
+> Il faut un champ qui affiche soit REC soit PLAYING RACE 1 !!! et dont la grandeur est fixe !
+
+23. **Ce champ est de grandeur fixe.** Il ne change pas de taille et ne bouge pas de place
+    selon ce qu'il affiche.
+
+**28 octobre 2026 — où va la ligne Pace.** Mot pour mot :
+
+> la ligne "Pace −15.0 +m/s Sync all to bunch pace" place en dessous de la ligne du dernier
+> participant de la liste
+
+Ce que cela fixe :
+
+24. **La ligne Pace est sous la liste des coureurs**, après la ligne du dernier participant.
+
+**28 octobre 2026 — un seul ordre pour les deux vues.** Mot pour mot :
+
+> si on réordre la liste dans la vue SIMULATION, il faut que ce soit reporté dans la vue
+> START LIST
+
+25. **L'ordre choisi dans la vue Simulation est celui de la vue Start list.** Un seul ordre
+    pour les deux.
+
+**28 octobre 2026 — ce qu'il règle lui reste.** Mot pour mot :
+
+> Les paramètres du simulateur ne doivent pas se remettre sur des valeurs codées en dur à
+> chaque nouvelle course. Si un utilisateur modifie des noms, des nations, des dossards, des
+> distances de boucles dans TRACK, ou des changements dans TRANSPONDERS il faut qu'il les
+> retrouve dans une prochaine course
+
+Ce que cela fixe :
+
+26. **La liste de départ est gardée** — dossards, noms, nations, couleurs.
+27. **La piste est gardée** — longueur du tour, distance Finish → Pursuit A, tours, sprints,
+    allure.
+28. **L'appairage transpondeur ↔ dossard est gardé.**
+
+Les trois se retrouvent dans la course suivante, et au rechargement de la page. Les valeurs
+écrites dans le fichier ne servent plus que la toute première fois.

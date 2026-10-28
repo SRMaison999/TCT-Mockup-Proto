@@ -5,7 +5,7 @@
 :root{color-scheme:dark;
   --bg:#121416;--panel:#1b1e21;--deep:#0f1113;--line:#2d3237;--line2:#3a4046;
   --fg:#ECEAE4;--muted:#9a9890;--dim:#5f5c55;
-  --acc:#4F8CFF;--acc-soft:#1b2a4a;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#b5884e;
+  --acc:#4F8CFF;--play:#1CC634;--acc-soft:#1b2a4a;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#b5884e;
   --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);overflow:hidden}
@@ -254,10 +254,16 @@ body.sprintmode #scard{display:flex}
 .sec.grow{flex:1 1 0}
 .sec.fix{flex:0 0 auto}
 .rrow{display:grid;grid-template-columns:var(--rcols,32px 34px minmax(0,1fr) 84px 30px 30px 42px 44px);gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--mono);font-variant-numeric:tabular-nums}
+.rrow.hdr [data-sort]{cursor:pointer}
 .rrow.hdr{background:none;border-left-color:transparent;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:18px}
 .rrow .nm{font:500 12px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rrow .nat{font:500 11px var(--mono);color:var(--muted);text-align:center}
 .rrow.piloted{border-left-color:var(--acc)}
+/* The gauge of a mission under way: the lit button fills from its left edge. The fill sits behind the label, which
+   is why the label is lifted onto its own layer. A button at rest has --prog at 0 and shows nothing. */
+.rrow .btn.on{position:relative;overflow:hidden;isolation:isolate}
+.rrow .btn.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:var(--prog,0%);background:var(--acc);opacity:.45;z-index:-1}
+.rrow .btn:disabled{opacity:.3}
 .rrow.gone{opacity:.45}
 .spd{display:flex;align-items:center;gap:3px;justify-content:flex-end}
 .rrow .spd{justify-content:center}
@@ -278,7 +284,9 @@ body.sprintmode #scard{display:flex}
    (operator, 28 October 2026). The height is given once per place the row can sit, and every control takes it. */
 #simtransport{--tph:38px}
 .bar #simtransport{--tph:26px}
-#simtransport .btn,#simtransport .seg,#simtransport .clock,#simtransport .recdot{height:var(--tph);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+#simtransport .btn,#simtransport .seg,#simtransport .clock,#simtransport .simstate{height:var(--tph);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+#simtransport .simstate{flex:0 0 120px;width:120px}
+#simtransport .simstate.off{visibility:hidden}
 #simtransport .seg .btn{height:100%;border-radius:0}
 .bar.withtransport h1{display:none}
 .btn.lg{padding:8px 16px;font-size:16px}
@@ -300,7 +308,8 @@ body.sprintmode #scard{display:flex}
 .krow .u{color:var(--muted);font:500 11px var(--mono)}
 .ksub{font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:7px 4px 1px;display:flex;align-items:center;gap:8px}
 .crow{background:#17191c;border-left:3px solid var(--line2);padding:4px 6px}
-.crow .nm{font:500 11.5px var(--sans);line-height:1.3}
+.crow .nm{font:500 11.5px var(--sans);line-height:1.3;display:flex;align-items:center;gap:6px}
+.crow .rno{font:600 10px var(--mono);color:var(--deep);background:var(--muted);border-radius:3px;padding:1px 5px;flex:0 0 auto}
 .crow .mt{display:flex;align-items:center;gap:5px;margin-top:3px}
 .crow .du{font:500 11px var(--mono);color:var(--muted)}
 .crow.rec{border-left-color:var(--crit)}
@@ -309,9 +318,20 @@ body.sprintmode #scard{display:flex}
 .crow input.rn{font:500 11.5px var(--sans);color:var(--fg);background:var(--deep);border:1px solid var(--acc);border-radius:3px;padding:2px 5px;width:100%;box-sizing:border-box}
 /* The red dot: it says a race is being recorded, and the operator asked for it to go out the moment the race is
    paused, not when the race ends (28 October 2026). So it follows the play button, not the race. */
+.simstate{display:inline-flex}
 .recdot{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--sans);letter-spacing:.1em;color:var(--crit)}
 .recdot i{width:9px;height:9px;border-radius:50%;background:var(--crit);display:block}
-.recdot.off{visibility:hidden}
+/* Play and Pause are DRAWN, not written. As glyphs of a text font they carried their own side bearings and sat off
+   the middle of their buttons whatever the padding — the operator saw it on a capture, 28 October 2026: « les
+   symboles ne sont pas au centre de leurs boutons ». A square viewBox centred on the button cannot be off. */
+#simtransport .ico{width:1em;height:1em;display:block;fill:currentColor}
+/* « Playing race x » takes the place of the REC dot, in the green the operator gave by its hex code on 28 October
+   2026 — Dark Pastel Green, #1CC634. The number is the race's own number in the list, shown on its row there. */
+.playing{display:inline-flex;align-items:center;font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--play);white-space:nowrap}
+/* The number takes the size and the spacing of the words around it: left to itself, a <b> came out at 14 px against
+   11 px for the rest and the figure stood a head above the line — the operator saw it on a capture, 28 October 2026. */
+.playing b{color:var(--play);font-size:inherit;letter-spacing:inherit;font-weight:700}
+#simtransport .btn .ink{display:inline-block}   /* a box of its own, so it can be shifted inside its button */
 .dot{display:inline-block;width:7px;height:7px;border-radius:4px;background:var(--crit);margin-right:5px;vertical-align:1px}
 .hint{color:var(--dim);font:500 11px var(--mono);padding:5px 4px 0}
 </style>
@@ -320,7 +340,7 @@ body.sprintmode #scard{display:flex}
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 75</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 86</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
@@ -381,15 +401,18 @@ body.sprintmode #scard{display:flex}
       </span>
     </div>
     <div class="bd" id="simriders" data-p="riders">
-      <div class="sh" style="justify-content:center;gap:20px;padding:10px 0 6px">
-        <span class="cfgfield"><span>Pace</span><span class="spd"><button class="stp" data-cfg="pace" data-d="-1">−</button><input class="v" id="cfgpace" value="15.0"><button class="stp" data-cfg="pace" data-d="1">+</button><span class="u" style="color:var(--muted);margin-left:2px">m/s</span></span></span>
-        <button class="btn xs quiet" id="syncspeeds" title="Every rider back in the bunch, at the bunch's pace">Sync all to bunch pace</button>
-      </div>
       <div class="sh" style="justify-content:center;gap:8px;padding:0 0 6px">
         <span class="lbl" style="color:var(--dim)">Columns</span>
         <span class="seg" id="simcols"><button class="btn xs" data-col="nat">Nation</button><button class="btn xs" data-col="name">Nom</button></span>
       </div>
       <div id="simriderslist"></div>
+      <!-- La ligne Pace est SOUS la liste, après le dernier coureur. L'opérateur, 28 octobre 2026 : « la ligne
+           "Pace −15.0 +m/s Sync all to bunch pace" place en dessous de la ligne du dernier participant de la
+           liste ». -->
+      <div class="sh" style="justify-content:center;gap:20px;padding:10px 0 6px">
+        <span class="cfgfield"><span>Pace</span><span class="spd"><button class="stp" data-cfg="pace" data-d="-1">−</button><input class="v" id="cfgpace" value="15.0"><button class="stp" data-cfg="pace" data-d="1">+</button><span class="u" style="color:var(--muted);margin-left:2px">m/s</span></span></span>
+        <button class="btn xs quiet" id="syncspeeds" title="Every rider back in the bunch, at the bunch's pace">Sync all to bunch pace</button>
+      </div>
     </div>
     <div class="bd" id="simtp" data-p="tp" hidden></div>
     <div class="bd" id="simtrack" data-p="track" hidden></div>
@@ -404,15 +427,24 @@ body.sprintmode #scard{display:flex}
     <div id="railtransport"><div id="simtransport">
     <div class="sh" style="justify-content:center">
       <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
-      <span class="seg"><button class="btn lg quiet" id="simplay" title="Play">&#9654;</button><button class="btn lg quiet" id="simpause" title="Pause">&#10073;&#10073;</button></span>
+      <span class="seg"><button class="btn lg quiet" id="simplay" title="Play"><svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6 L9 6 L3 10.4 Z"/></svg></button><button class="btn lg quiet" id="simpause" title="Pause"><svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><rect x="3" y="1.6" width="2.4" height="8.8" rx=".4"/><rect x="6.6" y="1.6" width="2.4" height="8.8" rx=".4"/></svg></button></span>
       <span class="seg" id="speedseg"><button class="btn lg on" data-f="1">&times;1</button><button class="btn lg quiet" data-f="4">&times;4</button><button class="btn lg quiet" data-f="16">&times;16</button></span>
-      <!-- The two race buttons sit together, away from the transport: one replays the race that is loaded, the
-           other opens a fresh one. Their wording is the operator's, 28 October 2026. -->
-      <span class="seg"><button class="btn lg quiet" id="simrestart" title="Replay this race from its start">Replay</button><button class="btn lg newrace" id="simnew" title="Open a new, empty race">New</button></span>
     </div>
     <div class="sh clockrow" style="justify-content:center">
       <span class="clock" id="simclock">0:00.0</span>
-      <span class="recdot off" id="simrec"><i></i>REC</span>
+      <!-- UN SEUL champ dit ce qui se passe : le point REC quand l'opérateur mène la course, « PLAYING RACE x » quand
+           il en rejoue une, rien le reste du temps. L'opérateur, 28 octobre 2026 : « le champ pour afficher "REC" et
+           "PLAYING RACE 1" doit être le même champ ». En deux champs, celui qui ne s'affichait pas retenait quand même
+           sa place — 39,3 px devant l'autre — et la ligne de l'horloge sortait 48 px plus large que celle du
+           transport (mesures.md §22). -->
+      <span class="simstate off" id="simstate"></span>
+      <!-- Replay and New ride on the clock's line, not on the transport's. The operator, 28 October 2026: « place les
+           boutons "Replay" et "New" sur la même ligne que l'horloge ». On the transport's line the eight buttons
+           wanted 476 px for 460, so the groups were squeezed and their buttons ran UNDER their neighbours — ❚❚ under
+           ×1 by 12,3 px, ×16 under Replay by 16,6 px — and a symbol then sits off the middle of what the eye reads as
+           its button (mesures.md §22). Six buttons want 361 px on the first line, and the clock's line holds the two
+           others with room to spare. -->
+      <span class="seg"><button class="btn lg quiet" id="simrestart" title="Replay this race from its start">Replay</button><button class="btn lg newrace" id="simnew" title="Open a new, empty race">New</button></span>
     </div>
     </div></div>
     <div class="cfgrow">
@@ -468,6 +500,36 @@ const RIDERS = [
   [67,'LEHMANN','GER','#4b5563'],[58,'PETROV','KAZ','#06b6d4',1],[70,'SILVA','BRA','#22c55e',1],[46,'DE WIT','BEL','#111827'],
   [23,'IVERSEN','DEN','#ef4444'],[11,'TANAKA','JPN','#ec4899'],[4,'WALSH','GBR','#1e3a8a'],[15,"O'NEILL",'IRL','#15803d']
 ];
+// CE QUE L'OPÉRATEUR A RÉGLÉ LUI RESTE. Ses mots, 28 octobre 2026 : « Les paramètres du simulateur ne doivent pas se
+// remettre sur des valeurs codées en dur à chaque nouvelle course. Si un utilisateur modifie des noms, des nations,
+// des dossards, des distances de boucles dans TRACK, ou des changements dans TRANSPONDERS il faut qu'il les retrouve
+// dans une prochaine course ». Trois choses sont donc gardées : la liste de départ, la piste (longueur du tour,
+// distance Finish → Pursuit A, tours, sprints, allure) et l'appairage transpondeur ↔ dossard. Elles sont relues au
+// démarrage, et les valeurs ci-dessus ne servent plus que la toute première fois.
+const SKEY = 'tct.sim.setup';
+let TPMAP = null, TPSPARE = null;       // dossard → numéro de transpondeur, et les transpondeurs libres
+function saveSetup() {
+  // L'appairage est tenu à jour EN MÉMOIRE en même temps que sur le disque : c'est lui que `reset()` relit, et une
+  // course neuve ne recharge pas la page. Sans cela le 99 repartait sur son transpondeur d'origine au premier New.
+  if (S && S.tp) {
+    TPMAP = {}; for (const t of S.tp) if (t.bib != null) TPMAP[t.bib] = t.id;
+    TPSPARE = S.tp.filter(t => t.bib == null).map(t => t.id);
+  }
+  try {
+    localStorage.setItem(SKEY, JSON.stringify({
+      cfg: { track: CFG.track, laps: CFG.laps, sprints: CFG.sprints, gap: CFG.gap, pace: CFG.pace },
+      riders: RIDERS, tp: TPMAP ? Object.entries(TPMAP).map(([b, id]) => [+b, id]) : null, spare: TPSPARE
+    }));
+  } catch (e) { /* storage full or blocked: the settings hold for this session only */ }
+}
+function loadSetup() {
+  let d; try { d = JSON.parse(localStorage.getItem(SKEY) || 'null'); } catch (e) { return; }
+  if (!d) return;
+  if (d.cfg) for (const k of ['track', 'laps', 'sprints', 'gap', 'pace']) if (typeof d.cfg[k] === 'number') CFG[k] = d.cfg[k];
+  if (Array.isArray(d.riders) && d.riders.length >= 2) { RIDERS.length = 0; for (const r of d.riders) RIDERS.push(r); }
+  if (Array.isArray(d.tp)) { TPMAP = {}; for (const [bib, id] of d.tp) TPMAP[bib] = id; }
+  if (Array.isArray(d.spare)) TPSPARE = d.spare;
+}
 const SILENT = {};                              // transponder stops answering from lap 14
 const CRASH = { lap: 999, bibs: [], backLap: 999 };  // crash at Pursuit B, back on the track four laps later
 const NOTP = [];                                // riders without transponder from the start: carried with their group, placed by hand
@@ -522,15 +584,26 @@ function reset() {
     replay: null,           // a saved race being replayed: the piloting acts left to apply, by race time
   };
   for (const r of S.riders) { S.lapStatus[r.bib] = 0; S.laps[r.bib] = { gained: 0, lost: 0 }; }
-  S.tp = RIDERS.filter(([b]) => !NOTP.includes(b)).map(([b], i) => ({ id: 1042 + i, bib: b, silent: false, forBib: null }));
-  for (let i = 0; i < 3; i++) S.tp.push({ id: 2001 + i, bib: null, silent: false, forBib: null });
+  // L'appairage que l'opérateur a posé lui revient ; un coureur qu'il vient d'ajouter prend le premier numéro libre.
+  S.tp = RIDERS.filter(([b]) => !NOTP.includes(b)).map(([b], i) => ({ id: (TPMAP && TPMAP[b]) || (1042 + i), bib: b, silent: false, forBib: null }));
+  for (const id of (TPSPARE && TPSPARE.length ? TPSPARE : [2001, 2002, 2003])) S.tp.push({ id, bib: null, silent: false, forBib: null });
+  // Deux bicyclettes ne portent jamais le même numéro : si l'appairage gardé en amène un qui est déjà pris, celui-là
+  // reçoit le premier numéro encore libre, et le tableau reste lisible.
+  { const vus = new Set(); let libre = 1042;
+    for (const t of S.tp) { if (!vus.has(t.id)) { vus.add(t.id); continue; }
+      while (vus.has(libre)) libre++; t.id = libre; vus.add(libre); } }
   // Which transponder is actually bolted to which bike is the simulator's truth; S.tp says whose the software BELIEVES
   // it is. The two agree until something separates them — two transponders swapped in the pits, say. The loops then
   // announce the name the table gives, which is the whole reason the operator has to be able to say they are swapped.
   for (const r of S.riders) { const t = S.tp.find(x => x.bib === r.bib); r.tp = t ? t.id : null; }
   // Each rider's slot in the bunch IS where he starts, so nobody has to ride across the bunch to reach it at the
   // start: every speed then reads exactly the pace until something actually makes a rider change it.
-  { const ref = S.riders.reduce((a, r) => a + r.dist, 0) / S.riders.length; for (const r of S.riders) r.offset = round1(r.dist - ref); }
+  // The bunch holds its place against a POINT THAT RIDES THE PACE, not against its own middle. Its middle moves
+  // every time a rider leaves — he takes his slot with him — and the riders left behind then correct for a gap that
+  // nobody opened: measured on the reference race, the whole field settled at 14,888 m/s for a pace of 15,0 and
+  // never came back. The operator, 28 October 2026, on the speeds moving by themselves: « ok ». So the reference is
+  // set once, here, where the bunch starts, and from then on it simply rides the pace the operator shows.
+  { const ref = S.riders.reduce((a, r) => a + r.dist, 0) / S.riders.length; S.anchor = ref; for (const r of S.riders) r.offset = round1(r.dist - ref); }
   for (const b of NOTP) { const i = RIDERS.findIndex(x => x[0] === b); S.noTp.set(b, RIDERS[(i + 1) % RIDERS.length][0]); logEvent('READ', 'BIB ' + b + ' · no transponder · start list · carried with the group, placed by hand in the sprints', false); }
   S.factor = 1; dirty = true; railDirty = true;   // opens held at 0:00.0, ready to run at ×1 once Start is clicked
   lastDetect = -1; lastTl = -1;   // the render clocks start again with the race, or a restart waits for the old race time to pass
@@ -542,11 +615,38 @@ function reset() {
 const tpOf = bib => S.tp.find(t => t.bib === bib) || null;
 const tpSilent = bib => { const t = tpOf(bib); return !!(t && t.silent); };
 const tpById = id => S.tp.find(t => t.id === id) || null;   // the transponder fitted to a bike, found in the table
-function endPilot(r) { delete S.pilot[r.bib]; r.mode = 'bunch'; r.done = true; railDirty = true; dirty = true; }
+// A mission that is accomplished puts the button out and hands the rider to THE GROUP HE WAS RIDING TO, at that
+// group's speed. The operator, 28 October 2026: « il faut qu'il prenne la vitesse du groupe qu'il vient réellement
+// de rejoindre ». When that group is the bunch — and it always is for an order to gain or to lose a lap — the bunch
+// holds him at the pace, as before. When it is a group of its own, riding its own speed, he rides THAT speed: he is
+// put on its wheel and stays there as long as the group exists. No button is lit for this: his mission is over.
+function endPilot(r, mates) {
+  const own = mates && mates.filter(x => x && x.mode !== 'out' && !(x.mode === 'bunch' && !S.pilot[x.bib] && x.lapTrue === r.lapTrue));
+  if (own && own.length) { S.pilot[r.bib] = { kind: 'follow', bibs: own.map(x => x.bib) }; r.mode = 'pilot'; }
+  else { delete S.pilot[r.bib]; r.mode = 'bunch'; }
+  r.done = true; railDirty = true; dirty = true;
+}
+// How far along a mission is, from 0 to 1: the DISTANCE THAT STILL SEPARATES the rider from his goal, against the
+// distance that separated him from it when the order was given. It is measured on the gap and not on the ground he
+// covers, because for an order to join a group the goal moves too — a group that is coming up behind him runs past
+// the ground he has ridden, and a gauge counting his own metres read full while he was still a hundred metres away.
+// The starting gap is read on the first step the order runs, never guessed.
+function progress(po, now, goal) {
+  const gap = goal - now;
+  if (po.gap0 == null) po.gap0 = gap;
+  po.prog = Math.abs(po.gap0) < 0.01 ? 1 : Math.max(0, Math.min(1, 1 - gap / po.gap0));
+}
 function pilotStep(r, po, base, ref, lap) {
   const rel = r.dist - ref;
   if (po.kind === 'spd') { r.spd = po.v; return; }
-  if (po.kind === 'gain') { r.spd = base + 1.7; if (rel >= TRACK * (r.lapTrue + 1) - 20) { r.lapTrue += 1; endPilot(r); } return; }
+  // Riding a group's wheel after a mission: its speed, step after step, never a speed of our own.
+  if (po.kind === 'follow') {
+    const g = po.bibs.map(b => S.riders.find(x => x.bib === b)).filter(x => x && x.mode !== 'out');
+    if (!g.length) { delete S.pilot[r.bib]; r.mode = 'bunch'; r.offset = round1(r.dist - ref - TRACK * r.lapTrue); railDirty = true; return; }
+    r.spd = g.reduce((a, x) => a + x.spd, 0) / g.length;
+    return;
+  }
+  if (po.kind === 'gain') { r.spd = base + 1.7; const goal = TRACK * (r.lapTrue + 1) - 20; progress(po, rel, goal); if (rel >= goal) { r.lapTrue += 1; endPilot(r); } return; }
   if (po.kind === 'lose') {
     r.spd = base - 1.0;
     // An order to lose a lap can carry a WHEEL: the rider who is lapping him catches him, and he goes with him. The
@@ -561,18 +661,22 @@ function pilotStep(r, po, base, ref, lap) {
         if (r.following && lap < r.following + po.wheelLaps) r.spd = w.spd;
       }
     }
-    if (rel <= TRACK * (r.lapTrue - 1) + 20) { r.lapTrue -= 1; endPilot(r); } return;
+    const goalL = TRACK * (r.lapTrue - 1) + 20;
+    progress(po, rel, goalL);
+    if (rel <= goalL) { r.lapTrue -= 1; endPilot(r); } return;
   }
   const mates = po.bibs.map(b => S.riders.find(x => x.bib === b)).filter(x => x && x.mode !== 'out');
   if (!mates.length) { endPilot(r); return; }
   if (po.kind === 'up') {   // bridge to the back of the group ahead
     const goal = Math.min(...mates.map(x => x.dist)) - BIKE_L;
     r.spd = base + 1.2;
-    if (r.dist >= goal) { r.offset = goal - (ref + TRACK * r.lapTrue); endPilot(r); }
+    progress(po, r.dist, goal);
+    if (r.dist >= goal) { r.offset = goal - (ref + TRACK * r.lapTrue); endPilot(r, mates); }
   } else {                  // drift back until the group behind has him at its front
     const goal = Math.max(...mates.map(x => x.dist)) + BIKE_L;
     r.spd = base - 1.2;
-    if (r.dist <= goal) { r.offset = goal - (ref + TRACK * r.lapTrue); endPilot(r); }
+    progress(po, r.dist, goal);
+    if (r.dist <= goal) { r.offset = goal - (ref + TRACK * r.lapTrue); endPilot(r, mates); }
   }
 }
 
@@ -580,10 +684,10 @@ function pilotStep(r, po, base, ref, lap) {
 // simulation truth: the race lap is counted in the bunch's lap (a rider who physically took a lap is back in it)
 function raceLap() { const lead = Math.max(...S.riders.filter(r => r.mode !== 'out').map(r => r.dist - TRACK * r.lapTrue)); return Math.min(LAPS, Math.floor(lead / TRACK) + 1); }
 function step(dt) {
+  S.anchor += CFG.pace * dt;   // the point the bunch is held against moves on, at the pace and at nothing else
   const lap = raceLap();
   const taps = [];   // the tape-switch contacts of this step, settled together at the end: the merge rule needs them in time order
-  const bunchRiders = S.riders.filter(r => r.mode === 'bunch' && r.lapTrue === 0);
-  const ref = bunchRiders.reduce((a, r) => a + r.dist, 0) / bunchRiders.length;
+  const ref = S.anchor;    // where the bunch is, by the pace alone — never an average over whoever is still in it
   const base = CFG.pace;   // the bunch holds the pace it is given: no invented wobble, the number in the rail is the number the rider rides
   for (const r of S.riders) {
     if (r.mode === 'out') continue;
@@ -652,7 +756,7 @@ function step(dt) {
   }
   S.t += dt;
   if (lap > S.loggedLap) S.loggedLap = lap;
-  if (S.finishOpen && !S.finished && S.riders.filter(r => r.mode !== 'out' && !inIncident(r.bib) && !S.noTp.has(r.bib)).every(r => S.finishCrossed.has(r.bib))) { S.finished = true; S.factor = 0; syncSeg(); logEvent('RACE', 'Finish complete · ' + S.finishCrossed.size + ' riders across the line', false); }
+  if (S.finishOpen && !S.finished && S.riders.filter(r => r.mode !== 'out' && !inIncident(r.bib) && !S.noTp.has(r.bib)).every(r => S.finishCrossed.has(r.bib))) { S.finished = true; S.factor = 0; saveRec(); syncSeg(); logEvent('RACE', 'Finish complete · ' + S.finishCrossed.size + ' riders across the line', false); }
 }
 
 // ---------- what the software knows ----------
@@ -1631,14 +1735,75 @@ $('#leaderauto').addEventListener('click', () => { pushUndo('leader auto'); S.le
 function syncArm() { $('#armseg').querySelectorAll('[data-arm]').forEach(b => { const L = LOOPS[+b.dataset.arm]; b.classList.toggle('on', L === S.arm); b.classList.toggle('quiet', L !== S.arm); }); }
 let lastFactor = 1;
 $('#speedseg').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; S.factor = lastFactor = +b.dataset.f; syncSeg(); dirty = true; });
+// A label is centred in its button by its BOX, and a box is not what the eye sees: a glyph carries its own side
+// bearings, so « ×1 » or « Replay » sits up to 0,9 px off the middle of a button whose padding is perfectly even,
+// and a filled triangle pointing right looks left of centre even when it is not. Measured button by button on
+// 28 October 2026 after the operator said twice that the symbols were still not centred. So each label is measured
+// once — the ink of the drawing, or the ink of the text read on a canvas in the button's own font — and shifted by
+// exactly what it is off. The measurement is cached: the labels of this bar never change.
+// What is shifted is the LABEL INSIDE the button, never the button. Moving the button moves its frame and its ink
+// together, so the ink stays exactly as off-centre as it was: measured on 28 October 2026, a « ×1 » shifted that way
+// read the same 0,10 px off before and after. So each label gets a box of its own — the <svg> it already has, or a
+// <span> wrapped around its text — and that box alone is moved.
+const inkShift = new Map();
+function centreInk() {
+  const c = centreInk.c || (centreInk.c = document.createElement('canvas').getContext('2d'));
+  // Nothing is measured until the bar's own font is on screen. The first measurement ran at boot, while IBM Plex Sans
+  // was still loading, so it measured the fallback font's letters and shifted « ×4 », « Replay » and « New » 0,9 px
+  // to the LEFT of the middle they were already on — the operator saw it on the unfolded simulator, 28 October 2026.
+  if (document.fonts && document.fonts.status !== 'loaded' && !centreInk.waiting) {
+    centreInk.waiting = true;
+    document.fonts.ready.then(() => {
+      inkShift.clear();
+      for (const b of $('#simtransport').querySelectorAll('.btn'))
+        if (b.firstElementChild) b.firstElementChild.style.transform = '';
+      centreInk.waiting = false; centreInk();
+    });
+    return;
+  }
+  for (const b of $('#simtransport').querySelectorAll('.btn')) {
+    if (!b.firstElementChild) {                        // bare text: give it a box that can be moved
+      const sp = document.createElement('span'); sp.className = 'ink'; sp.textContent = b.textContent;
+      b.textContent = ''; b.appendChild(sp);
+    }
+    const node = b.firstElementChild, cs = getComputedStyle(b);
+    const key = (b.id || b.dataset.f) + '|' + cs.font;
+    if (!inkShift.has(key)) {
+      const rn = node.getBoundingClientRect();
+      if (!rn.width) continue;                         // the bar is hidden: nothing to measure yet
+      const mid = (rn.left + rn.right) / 2;
+      const shapes = [...node.querySelectorAll('path,rect')];
+      let ink;
+      if (shapes.length) {
+        const ls = shapes.map(x => x.getBoundingClientRect());
+        ink = (Math.min(...ls.map(r => r.left)) + Math.max(...ls.map(r => r.right))) / 2;
+      } else {
+        const t = node.textContent.trim(); if (!t) continue;
+        c.font = cs.font;
+        const m = c.measureText(t);
+        ink = rn.left + (-m.actualBoundingBoxLeft + m.actualBoundingBoxRight) / 2;
+      }
+      inkShift.set(key, +(mid - ink).toFixed(2));
+    }
+    const d = inkShift.get(key);
+    if (d) node.style.transform = 'translateX(' + d + 'px)';
+  }
+}
 function syncSeg() {
+  centreInk();
   $('#speedseg').querySelectorAll('[data-f]').forEach(b => { const on = +b.dataset.f === S.factor && S.factor > 0; b.classList.toggle('on', on); b.classList.toggle('quiet', !on); });
   const playing = S.started && S.factor > 0, paused = S.started && S.factor <= 0;
   $('#simplay').classList.toggle('on', playing); $('#simplay').classList.toggle('quiet', !playing);
   $('#simpause').classList.toggle('on', paused); $('#simpause').classList.toggle('quiet', !paused);
   $('#simpause').disabled = !S.started; $('#simrewind').disabled = !S.started;
   $('#simrestart').disabled = !S.started && !(REC && REC.acts.length);   // a race just loaded can be restarted before it is started
-  $('#simrec').classList.toggle('off', !playing);
+  // The two say which of the two things is happening, and they are never both on: a race the operator runs is being
+  // recorded, a race taken from the list is being played back. He asked for the second on 28 October 2026: « il
+  // pourrait y avoir un affichage "Playing Race xy" ». It sits where REC sits, because they exclude each other.
+  const st = $('#simstate');
+  if (LOADED) { st.className = 'simstate playing'; st.innerHTML = 'Playing race&nbsp;<b>' + (LOADED.no != null ? LOADED.no : '?') + '</b>'; }
+  else if (playing && REC) { st.className = 'simstate recdot'; st.innerHTML = '<i></i>REC'; }
+  else { st.className = 'simstate off'; st.textContent = ''; }
 }
 $('#logtabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; logTab = b.dataset.tab; $('#logtabs').querySelectorAll('[data-tab]').forEach(x => { x.classList.toggle('on', x === b); x.classList.toggle('quiet', x !== b); }); $('#loghint').textContent = { cross: 'finish-line order of every lap · leader first · newest lap first', dec: 'facts only · newest first', sprints: 'every sprint as judged · click one to open it', stand: 'points: sprints 5-3-2-1, final ×2, laps ±20 · ties: place in the final sprint' }[logTab]; dirty = true; render(); });
 
@@ -1856,6 +2021,7 @@ function renderCard() {
     if (S.withdrawn.has(bib) || s.notpDismiss.includes(bib) || seq.some(e => e.bib === bib)) continue;
     if (lappedAt(k, bib)) continue;
     const r = S.riders.find(x => x.bib === bib), g = lastG && lastG.groups.find(g => g.bibs.includes(bib));
+    if (!r) continue;                  // ce dossard n'est plus dans la course : il n'a rien à dire sur cette carte
     h += `<div class="nts">${chip(r, 'notp')}<span class="noc">${r.nat}</span><span class="nm">${r.name}<small>no transponder${g ? ' · in ' + groupName(g) : ''}</small></span>${[1, 2, 3, 4, 5].map(p => `<button class="btn xs" data-sact="hold:${bib}:${p}" title="BIB ${bib} will be ${ordinal(p)}: held until the next rider is read, or Send">${ordinal(p)}</button>`).join('')}<button class="btn xs quiet" data-sact="notpdismiss:${bib}" title="Not in the first places of this sprint">not placed</button></div>`;
   }
   h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span>Rider · drag to reorder</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
@@ -2013,7 +2179,35 @@ function rehost(bibs, allBibs) { for (const b of bibs) if (S.noTp.has(b)) { cons
 // existing nodes every frame, so a click is never lost to a redraw (pitfall D2).
 const RKEY = 'tct.sim.races';
 let renaming = null, delArmed = null;   // the row being renamed, and the row whose Delete has been clicked once
-let RACES = [], REC = null, simTab = 'riders', railRows = {}, startListEditing = false;
+// REC is the race the operator is running HIMSELF; LOADED is a race taken from the list and being replayed. Never
+// both: a loaded race is replayed and records nothing at all, whatever the operator does during it — his words,
+// 28 October 2026: « rien ne s'enregistre jamais depuis une course chargée, quoi qu'on fasse ». Until the build 77
+// a loaded race was replayed AND recorded at once, so every replay dropped a copy of it in the list: three Loads,
+// three copies (mesures.md §19).
+let RACES = [], REC = null, LOADED = null, simTab = 'riders', railRows = {}, startListEditing = false;
+// L'ordre dans lequel la liste des coureurs est AFFICHÉE. L'opérateur : « il faut pouvoir trier la liste des coureurs
+// par BIB, NOC alphabétique, ou nom alphabétique. un clic sur l'en-tête inverse l'ordre ». C'est un ordre d'affichage
+// et rien d'autre : S.riders n'est jamais réordonné, parce que c'est lui qui porte la course. Tant que rien n'est
+// demandé, la liste reste dans l'ordre de la liste de départ.
+let simSort = null;   // {key:'bib'|'nat'|'name', dir:1|-1}
+// La comparaison est écrite une fois et sert aux DEUX vues : l'opérateur, 28 octobre 2026, « si on réordre la liste
+// dans la vue SIMULATION, il faut que ce soit reporté dans la vue START LIST ». Un seul ordre, donc un seul tri.
+function simCmp(val) {
+  return (a, b) => { const x = val(a), y = val(b);
+    return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y), 'en')) * simSort.dir; };
+}
+function sortedRiders() {
+  if (!simSort) return S.riders;
+  return [...S.riders].sort(simCmp(r => simSort.key === 'bib' ? r.bib : (simSort.key === 'nat' ? r.nat : r.name)));
+}
+// La liste de départ garde le RANG D'ORIGINE de chaque coureur avec lui : c'est ce rang qui dit quelle ligne de
+// RIDERS on édite ou on retire, et il ne doit rien devoir à l'ordre dans lequel on regarde la liste.
+function sortedRoster() {
+  const rows = RIDERS.map((e, i) => ({ e, i }));
+  if (!simSort) return rows;
+  return rows.sort(simCmp(o => simSort.key === 'bib' ? o.e[0] : (simSort.key === 'nat' ? o.e[2] : o.e[1])));
+}
+const curActs = () => LOADED ? LOADED.acts : (REC ? REC.acts : []);
 // The reference race is a SAVED RACE like any other: a configuration and a list of orders, replayed on the clock.
 // It was a scenario wired into the simulator until the build 74; nothing in the code knows it any more, beyond the
 // Files tab always offering it. The two times below are the ones the wired scenario fired at, read off the race
@@ -2029,8 +2223,8 @@ const REF_RACE = { name: 'Reference — 4 and 11 lose a lap, 12 takes a lap', cf
 // list and then forgets it: nothing downstream knows that one of these rows came from there.
 try {
   const raw = localStorage.getItem(RKEY);
-  if (raw == null) { RACES = [JSON.parse(JSON.stringify(REF_RACE))]; saveRaces(); }
-  else RACES = JSON.parse(raw) || [];
+  if (raw == null) { RACES = [JSON.parse(JSON.stringify(REF_RACE))]; numberRaces(); saveRaces(); }
+  else { RACES = JSON.parse(raw) || []; numberRaces(); }
 } catch (e) { RACES = []; }
 const VERB = { gain: ['takes a lap', 'take a lap'], lose: ['loses a lap', 'lose a lap'], up: ['joins the group ahead', 'join the group ahead'],
   down: ['drops back', 'drop back'], silent: ['goes silent', 'go silent'], bike: ['changes bike', 'change bike'],
@@ -2038,8 +2232,19 @@ const VERB = { gain: ['takes a lap', 'take a lap'], lose: ['loses a lap', 'lose 
 const andList = bibs => bibs.length === 1 ? '' + bibs[0] : bibs.slice(0, -1).join(', ') + ' and ' + bibs[bibs.length - 1];
 
 
-function newRec() { return { cfg: { ...CFG }, acts: [] }; }
+// A race the operator runs is in the list from its first second and stays up to date there by itself. He asked for
+// it on 28 October 2026: « pourquoi tu as cliqué sur "New" pour l'enregistrer ? Il faut soit qu'elle s'enregistre
+// toute seule soit un bouton "Save" ». So there is no Save: the race is written to the list at every order given,
+// at every pause and at the finish, and found again by its id. Nothing has to be remembered, nothing can be lost.
+let recSeq = 0;
+function newRec() { return { id: 'r' + (++recSeq) + '-' + Date.now(), cfg: { ...CFG }, acts: [] }; }
 function saveRaces() { try { localStorage.setItem(RKEY, JSON.stringify(RACES.slice(0, 60))); } catch (e) { /* storage full or blocked: the list stays in this session */ } }
+// Every race in the list carries a NUMBER of its own, given when it enters the list and never taken back. The
+// operator, 28 October 2026: « il faut que nous donnions un numéro de course aux courses de la liste ». It is the
+// race's own number, not its rank in the list: a race keeps it when another is deleted above it or when a new one
+// pushes it down, so « Playing race 3 » always means the same race.
+function raceNo() { let n = 0; for (const r of RACES) if (r.no > n) n = r.no; return n + 1; }
+function numberRaces() { for (const r of RACES) if (!r.no) r.no = raceNo(); }
 
 // The name says what the race looks like: the orders given, in the order they were given, in the words of the buttons.
 function raceName(rec) {
@@ -2063,14 +2268,22 @@ function raceName(rec) {
   return (pre.length ? pre.join(' · ') + ' · ' : '') + body;
 }
 
-function recAct(kind, bibs, v) { if (REC) { REC.acts.push({ t: +S.t.toFixed(2), lap: raceLap(), kind, bibs: [...bibs], v }); railDirty = true; } }
-function commitRec() {
+function recAct(kind, bibs, v) { if (REC) { REC.acts.push({ t: +S.t.toFixed(2), lap: raceLap(), kind, bibs: [...bibs], v }); saveRec(); } }
+function saveRec() {
   if (!REC || S.t <= 0) return;
-  const r = { cfg: REC.cfg, acts: REC.acts, laps: S.finished ? LAPS : dispLap(), dur: +S.t.toFixed(1), at: Date.now() };
-  r.name = raceName(r);
-  let n = 2, name = r.name; while (RACES.some(x => x.name === name)) name = r.name + ' (' + n++ + ')';
-  r.name = name;
-  RACES.unshift(r); saveRaces();
+  const i = RACES.findIndex(x => x.id === REC.id);
+  const old = i >= 0 ? RACES[i] : null;
+  const r = { id: REC.id, no: old ? old.no : raceNo(), cfg: REC.cfg, acts: REC.acts.map(a => ({ ...a })), laps: S.finished ? LAPS : dispLap(), dur: +S.t.toFixed(1), at: Date.now() };
+  // Its name follows the orders given, so it stays true as the race goes on — unless the operator has renamed it
+  // himself, and then it is his and nothing touches it again.
+  if (old && old.named) { r.name = old.name; r.named = true; }
+  else {
+    r.name = raceName(r);
+    let n = 2, name = r.name; while (RACES.some(x => x.id !== r.id && x.name === name)) name = r.name + ' (' + n++ + ')';
+    r.name = name;
+  }
+  if (i >= 0) RACES[i] = r; else RACES.unshift(r);
+  saveRaces(); railDirty = true;
 }
 
 // the group just ahead of a rider in the timeline, or just behind: read from the blocks the last render computed,
@@ -2109,6 +2322,7 @@ function swapTp(a, b, reversal) {
   if (ra && rb) { const rc = ra.rec; ra.rec = rb.rec; rb.rec = rc; }
   logEvent('READ', 'BIB ' + a + ' and BIB ' + b + ' · transponders swapped · attribution exchanged' + (reversal ? ' · reversal' : ' · operator'), true,
     reversal ? null : () => swapTp(a, b, true));
+  saveTpIfSetup();
   railDirty = true; dirty = true;
 }
 function assignTp(id, bib) {
@@ -2119,6 +2333,7 @@ function assignTp(id, bib) {
   const rr = S.riders.find(x => x.bib === target); if (rr) rr.tp = t.id;
   S.noTp.delete(target);
   logEvent('READ', 'BIB ' + target + ' · transponder ' + t.id + ' · read again from the loops', false);
+  saveTpIfSetup();
 }
 function freeTp(id) {
   const t = S.tp.find(x => x.id === id); if (!t || !t.bib) return;
@@ -2126,8 +2341,13 @@ function freeTp(id) {
   const rr = S.riders.find(x => x.bib === bib); if (rr) rr.tp = null;   // the truth: nothing on his bike any more
   if (!S.noTp.has(bib)) { const o = S.riders.find(x => x.bib !== bib && !S.noTp.has(x.bib) && x.mode !== 'out'); S.noTp.set(bib, o ? o.bib : bib); }
   logEvent('READ', 'BIB ' + bib + ' · transponder ' + t.id + ' removed · no transponder · carried with the group', false);
+  saveTpIfSetup();
 }
 
+// L'appairage transpondeur ↔ dossard touché AVANT le départ est un RÉGLAGE : il se garde pour les courses
+// suivantes. Touché pendant une course, c'est un fait de cette course-là — un vélo changé, deux transpondeurs
+// échangés dans les boxes — et il n'a aucune raison de suivre dans la course d'après.
+function saveTpIfSetup() { if (!S.started) saveSetup(); }
 // one place for every simulator order, so the buttons and a replayed race do exactly the same thing
 function doAct(kind, bibs, v, record = true) {
   if (kind === 'swapbikes') { swapBikes(bibs[0], bibs[1]); if (record) recAct(kind, bibs, v); railDirty = true; dirty = true; return; }
@@ -2154,14 +2374,14 @@ function replayTick() {
 function setTrack(len) {
   if (S.started) return;
   CFG.gap = Math.min(CFG.gap, Math.round(len / 4));   // the gap is the owner's distance in metres, not a proportion; the loops and the tape switches follow from it
-  CFG.track = len; applyCfg(); reset(); REC = newRec(); syncSeg(); railDirty = true; dirty = true; render();
+  CFG.track = len; applyCfg(); reset(); REC = newRec(); saveSetup(); syncSeg(); railDirty = true; dirty = true; render();
 }
 // The pace is the bunch's own speed, and it is the one setting that means something DURING the race: the operator
 // slows the race down or speeds it up while it runs. It therefore never resets anything. Laps, sprints, the track
 // and the loop distances are the opposite: they define the race, so they are locked the moment it starts.
 function setPace(v) {
   if (!isFinite(v)) return;
-  CFG.pace = +Math.max(5, Math.min(25, v)).toFixed(1);
+  CFG.pace = +Math.max(5, Math.min(25, v)).toFixed(1); saveSetup();
   for (const r of S.riders) if (!S.pilot[r.bib]) r.spd = CFG.pace;   // shown at once, before the start as well as during
   if (!S.started) REC = newRec();
   railDirty = true; dirty = true; render();
@@ -2172,7 +2392,7 @@ function cfgStep(key, d) {
   if (key === 'laps') { CFG.laps = Math.max(2, Math.min(400, CFG.laps + d)); CFG.sprints = Math.min(CFG.sprints, CFG.laps); }
   else if (key === 'sprints') CFG.sprints = Math.max(1, Math.min(CFG.laps, CFG.sprints + d));
   else if (key === 'gap') CFG.gap = Math.max(0, Math.min(Math.round(TRACK / 4), CFG.gap + d));
-  applyCfg(); REC = newRec(); railDirty = true; dirty = true; render();
+  applyCfg(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
 }
 
 // Hiding the simulator must not take the race controls away: the transport block is MOVED into the top bar, not
@@ -2184,7 +2404,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 75';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 86';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
@@ -2218,11 +2438,11 @@ function renderRail() {
   $('#simriderslist').style.setProperty('--rcols', idCols.map(c => c[1]).join(' ') + ' 84px 30px 30px 42px 44px');
   const idCells = r => (simCols.bib ? chip(r) : '') + (simCols.nat ? `<span class="nat">${r.nat}</span>` : '') + (simCols.name ? `<span class="nm">${r.name}</span>` : '');
   const n = idCols.length;
-  $('#simriderslist').innerHTML = '<div class="rrow hdr">' + idCols.map(c => '<span>' + c[2] + '</span>').join('')
+  $('#simriderslist').innerHTML = '<div class="rrow hdr">' + idCols.map(c => '<span data-sort="' + c[0] + '">' + c[2] + '</span>').join('')
       + '<span style="text-align:center;color:var(--muted)">m/s</span>'
       + '<span style="grid-column:' + (n + 2) + ' / span 2;text-align:center;color:var(--muted)">group</span>'
       + '<span style="grid-column:' + (n + 4) + ' / span 2;text-align:center;color:var(--muted)">±lap</span></div>'
-    + S.riders.map(r => `<div class="rrow" data-bib="${r.bib}">${idCells(r)}
+    + sortedRiders().map(r => `<div class="rrow" data-bib="${r.bib}">${idCells(r)}
       <span class="spd"><button class="stp" data-sim="spd" data-bib="${r.bib}" data-d="-1">−</button><input class="v" data-bib="${r.bib}" value="${r.spd.toFixed(1)}" title="Type a pace, Enter to set · empty to put him back in the bunch"><button class="stp" data-sim="spd" data-bib="${r.bib}" data-d="1">+</button></span>
       <button class="btn xs quiet" data-sim="up" data-bib="${r.bib}" title="Join the group ahead">↑</button>
       <button class="btn xs quiet" data-sim="down" data-bib="${r.bib}" title="Drop back to the group behind">↓</button>
@@ -2284,20 +2504,20 @@ function renderRail() {
   const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const row = (r, i) => renaming === i
     ? `<div class="crow">
-    <div class="nm"><input class="rn" id="rnin" value="${esc(r.name)}"></div>
+    <div class="nm"><span class="rno">${r.no}</span><input class="rn" id="rnin" value="${esc(r.name)}"></div>
     <div class="mt"><span class="du">${r.cfg.track} m · ${plural(r.laps || 0, 'lap')}${r.dur ? ' · ' + fmtT(r.dur) : ''}</span><span class="sp"></span>
       <button class="btn xs ok" data-rnok="${i}">Save</button><button class="btn xs quiet" data-rncancel="1">Cancel</button></div></div>`
     : `<div class="crow">
-    <div class="nm">${esc(r.name)}</div>
+    <div class="nm"><span class="rno">${r.no}</span>${esc(r.name)}</div>
     <div class="mt"><span class="du">${r.cfg.track} m · ${plural(r.laps || 0, 'lap')}${r.dur ? ' · ' + fmtT(r.dur) : ''}</span><span class="sp"></span>
       <button class="btn xs quiet" data-load="${i}">Load</button><button class="btn xs quiet" data-rn="${i}">Rename</button><button class="btn xs ${delArmed === i ? 'armed' : 'danger'}" data-del="${i}">${delArmed === i ? 'Delete?' : 'Delete'}</button></div></div>`;
-  $('#simfileslist').innerHTML = (REC && S.t > 0 ? `<div class="crow rec"><div class="nm"><span class="dot"></span>${raceName(REC)}</div>
+  $('#simfileslist').innerHTML = (REC && S.t > 0 && !RACES.some(x => x.id === REC.id) ? `<div class="crow rec"><div class="nm"><span class="dot"></span>${raceName(REC)}</div>
       <div class="mt"><span class="du">recording · lap ${dispLap()}</span></div></div>` : '')
     + (RACES.length ? RACES.map((r, i) => row(r, i)).join('') : '<div class="hint">No saved race. Play one and press New.</div>');
   if (renaming != null) { const el = $('#rnin'); if (el && document.activeElement !== el) { el.focus(); el.select(); } }
 
   $('#simstartlist').innerHTML = `<div class="ksub">Entered riders<span class="sp"></span><button class="btn xs quiet" id="rosteradd"${lock}>Add</button><button class="btn xs quiet${startListEditing ? ' on' : ''}" id="rosteredit"${lock}>Edit</button></div>`
-    + RIDERS.map(([bib, name, nat, color], i) => `<div class="rosterrow${startListEditing ? ' editing' : ''}">
+    + sortedRoster().map(({ e: [bib, name, nat, color], i }) => `<div class="rosterrow${startListEditing ? ' editing' : ''}">
       <input type="color" class="swatch" data-ri="${i}" data-f="color" value="${color}" title="Change color"${lock}>
       <input class="bib" data-ri="${i}" data-f="bib" value="${bib}"${startListEditing ? '' : ' readonly'}${lock}>
       <input class="name" data-ri="${i}" data-f="name" value="${name}"${startListEditing ? '' : ' readonly'}${lock}>
@@ -2316,7 +2536,21 @@ function tickRail() {
     row.el.classList.toggle('piloted', !!po);
     row.el.classList.toggle('gone', r.mode === 'out' || S.withdrawn.has(r.bib));
     if (document.activeElement !== row.v) row.v.value = r.spd.toFixed(1);
-    for (const k of ['up', 'down', 'gain', 'lose']) row.b[k].classList.toggle('on', !!po && po.kind === k);
+    const mission = po && po.kind !== 'spd' && po.kind !== 'follow' ? po.kind : null;
+    for (const k of ['up', 'down', 'gain', 'lose']) {
+      const b = row.b[k], lit = mission === k;
+      b.classList.toggle('on', lit);
+      // The lit button fills from left to right with the ground its mission has left to cover, so the operator sees
+      // where it is without reading a number — the operator, 28 October 2026, option A of the mockup.
+      b.style.setProperty('--prog', lit ? Math.round((po.prog || 0) * 100) + '%' : '0%');
+    }
+    // An arrow with nowhere to go does not light: the leading group has nothing ahead of it, the last group nothing
+    // behind. Clicking it did nothing at all and said nothing — the operator, 28 October 2026: « ok ». An arrow that
+    // is not the mission under way is out too, for as long as that mission runs.
+    for (const [k, dir] of [['up', -1], ['down', 1]]) {
+      const n = neighbourGroup(r.bib, dir);
+      row.b[k].disabled = mission ? mission !== k : (!n || !n.length);
+    }
   }
 }
 
@@ -2337,50 +2571,58 @@ $('#simplay').addEventListener('click', () => {
 $('#simpause').addEventListener('click', () => {
   if (!S.started) return;
   S.factor = 0;
+  saveRec();   // a pause is a good moment to put the race in the list, orders given or not
   syncSeg(); railDirty = true; dirty = true; render();
 });
 // Restart replays the race that is loaded, from its start: same riders, same track, same recorded orders. It saves
 // nothing and opens nothing — the operator, 28 October 2026: « le bouton Restart doit redémarrer la course ».
 $('#simrestart').addEventListener('click', () => {
-  if (!S.started && !(REC && REC.acts.length)) return;   // nothing loaded and nothing run: there is no race to restart
-  const acts = (REC ? REC.acts : []).map(a => ({ ...a }));
-  reset();
+  if (!S.started && !curActs().length) return;   // nothing loaded and nothing run: there is no race to restart
+  // Replaying a race the operator ran himself turns it into a replay of that race: it is already in the list, kept
+  // up to date there, so there is nothing left to record.
+  const src = LOADED || (REC ? RACES.find(x => x.id === REC.id) : null);
+  const acts = (src ? src.acts : curActs()).map(a => ({ ...a }));
+  saveRec(); reset();
+  LOADED = src || { name: 'this race', acts }; REC = null;
   S.replay = acts.map(a => ({ ...a })).sort((a, b) => a.t - b.t);
-  REC = newRec(); REC.acts = acts;
-  logEvent('RACE', 'Restart · the same race replayed from its start', false);
+  logEvent('RACE', 'Replay · ' + LOADED.name, false);
   syncSeg(); railDirty = true; dirty = true; render();
 });
 // … and a race of its own: the current one is saved, an empty one opens on the configuration shown. This is what
 // Restart did until the build 74 — « Il faut ajouter un bouton pour faire une nouvelle course » (same day).
 $('#simnew').addEventListener('click', () => {
-  commitRec(); reset(); REC = newRec();
+  saveRec(); reset(); LOADED = null; REC = newRec();
   syncSeg(); railDirty = true; dirty = true; render();
 });
 function rewind30() {
   if (!S.started) return;
   const target = Math.max(0, S.t - 30);
-  const keep = REC.acts.filter(a => a.t <= target);
+  const keep = curActs().filter(a => a.t <= target);
   reset();
   S.started = true;
-  REC.acts = keep;
+  if (REC) REC.acts = keep;
   S.replay = keep.map(a => ({ ...a })).sort((a, b) => a.t - b.t);
   let guard = 0;
   while (S.t < target && !S.finished && guard++ < 400000) { replayTick(); step(FIXED); detectNow(); }
   S.factor = lastFactor > 0 ? lastFactor : 1;
+  saveRec();
   logEvent('RACE', 'Rewound 30 s · back to ' + fmtT(S.t), false);
   syncSeg(); railDirty = true; dirty = true; render();
 }
 $('#simrewind').addEventListener('click', rewind30);
 // Every rider back in the bunch at the bunch's pace, piloted or not.
+// The button says what it does and does what it says: EVERY RIDER RIDES THE BUNCH'S SPEED. The operator, 28 October
+// 2026: « son libellé ne dis pas qu'il va les remettre dans le peloton, il dit que tous les coureurs doivent rouler
+// à la vitesse du peloton. c'est ça que je veux ». So nobody is moved and nobody changes place on the track: each
+// rider's slot becomes where he already is, and from there he rides the pace. An order in progress stops, because an
+// order is precisely a rider NOT riding the bunch's speed.
 function syncAllToBunchPace() {
   const live = S.riders.filter(r => r.mode !== 'out' && r.mode !== 'off').map(r => r.bib);
   if (live.length) doAct('free', live);
-  // Everyone keeps the place he is in — his slot becomes where he already is — so nobody has to sprint or sit up to
-  // get back to a slot he left. Then every rider rides the pace, which is what the button says.
-  const inB = S.riders.filter(r => r.mode === 'bunch' && r.lapTrue === 0);
-  if (inB.length) {
-    const ref = inB.reduce((a, r) => a + r.dist, 0) / inB.length;
-    for (const r of S.riders) if (r.mode === 'bunch') { r.offset = round1(r.dist - ref - TRACK * r.lapTrue); r.spd = CFG.pace; }
+  for (const r of S.riders) {
+    if (r.mode !== 'bunch') continue;
+    r.offset = round1(r.dist - S.anchor - TRACK * r.lapTrue);
+    r.spd = CFG.pace;
   }
   railDirty = true; dirty = true; render();
 }
@@ -2396,33 +2638,33 @@ function applyRosterEdit(i, field, value) {
   } else if (field === 'color') {
     RIDERS[i][3] = value;
   }
-  reset(); REC = newRec(); railDirty = true; dirty = true; render();
+  reset(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
 }
 function addRosterRider() {
   if (S.started) return;
   const used = new Set(RIDERS.map(x => x[0])); let bib = 1; while (used.has(bib)) bib++;
   const palette = ['#0284c7', '#c8102e', '#f97316', '#eab308', '#9f1239', '#1d4ed8', '#16a34a', '#d62828', '#4b5563', '#06b6d4', '#22c55e', '#111827', '#ef4444', '#ec4899', '#1e3a8a', '#15803d'];
   RIDERS.push([bib, 'NEW RIDER', '—', palette[RIDERS.length % palette.length]]);
-  reset(); REC = newRec(); railDirty = true; dirty = true; render();
+  reset(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
 }
 function removeRosterRider(i) {
   if (S.started || RIDERS.length <= 2 || !RIDERS[i]) return;
   RIDERS.splice(i, 1);
-  reset(); REC = newRec(); railDirty = true; dirty = true; render();
+  reset(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
 }
 function commitRailInput(el) {
   const v = parseFloat(String(el.value).replace(',', '.'));
   if (el.id === 'cfglaps') {
-    if (!S.started && isFinite(v)) { CFG.laps = Math.max(2, Math.min(400, Math.round(v))); CFG.sprints = Math.min(CFG.sprints, CFG.laps); applyCfg(); REC = newRec(); railDirty = true; dirty = true; }
+    if (!S.started && isFinite(v)) { CFG.laps = Math.max(2, Math.min(400, Math.round(v))); CFG.sprints = Math.min(CFG.sprints, CFG.laps); applyCfg(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; }
     render();
   } else if (el.id === 'cfgsprints') {
-    if (!S.started && isFinite(v)) { CFG.sprints = Math.max(1, Math.min(CFG.laps, Math.round(v))); applyCfg(); REC = newRec(); railDirty = true; dirty = true; }
+    if (!S.started && isFinite(v)) { CFG.sprints = Math.max(1, Math.min(CFG.laps, Math.round(v))); applyCfg(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; }
     render();
   } else if (el.id === 'cfgpace') {
     setPace(v);
     render();
   } else if (el.dataset.k === 'gap') {
-    if (!S.started && isFinite(v)) { CFG.gap = Math.max(0, Math.min(Math.round(TRACK / 4), Math.round(v))); applyCfg(); REC = newRec(); railDirty = true; dirty = true; }
+    if (!S.started && isFinite(v)) { CFG.gap = Math.max(0, Math.min(Math.round(TRACK / 4), Math.round(v))); applyCfg(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; }
     render();
   } else if (el.closest('.rosterrow')) {
     applyRosterEdit(+el.dataset.ri, el.dataset.f, el.value);
@@ -2443,8 +2685,13 @@ $('#rail').addEventListener('keydown', e => {
   else if (e.key === 'Escape') { e.target.blur(); }
 });
 $('#rail').addEventListener('click', e => {
-  const b = e.target.closest('[data-sim],[data-cfg],[data-col],[data-track],[data-load],[data-del],[data-rn],[data-rnok],[data-rncancel],[data-rosterdel],#syncspeeds,#rosteradd,#rosteredit');
+  const b = e.target.closest('[data-sim],[data-cfg],[data-col],[data-sort],[data-track],[data-load],[data-del],[data-rn],[data-rnok],[data-rncancel],[data-rosterdel],#syncspeeds,#rosteradd,#rosteredit');
   if (!b || b.disabled) return;
+  // Un clic sur un en-tête trie sur cette colonne ; un second clic sur le même en-tête inverse l'ordre.
+  if (b.dataset.sort) {
+    simSort = simSort && simSort.key === b.dataset.sort ? { key: b.dataset.sort, dir: -simSort.dir } : { key: b.dataset.sort, dir: 1 };
+    railDirty = true; render(); return;
+  }
   if (b.dataset.track) return setTrack(+b.dataset.track);
   if (b.dataset.cfg) return cfgStep(b.dataset.cfg, +b.dataset.d);
   if (b.dataset.load != null) { const r = RACES[+b.dataset.load]; if (r) loadRace(r); return; }
@@ -2490,7 +2737,7 @@ $('#simfile').addEventListener('change', e => {
 // An empty name is refused in silence: the row keeps the one it had rather than becoming nameless.
 function commitRename(i) {
   const el = $('#rnin'), v = el ? el.value.trim() : '';
-  if (v && RACES[i] && v !== RACES[i].name) { logEvent('OP', 'Race renamed · ' + RACES[i].name + ' → ' + v, false); RACES[i].name = v; saveRaces(); }
+  if (v && RACES[i] && v !== RACES[i].name) { logEvent('OP', 'Race renamed · ' + RACES[i].name + ' → ' + v, false); RACES[i].name = v; RACES[i].named = true; saveRaces(); }
   renaming = null; railDirty = true; render();
 }
 document.addEventListener('keydown', e => {
@@ -2500,21 +2747,22 @@ document.addEventListener('keydown', e => {
 });
 function saveRaceFile(r) { download('race-' + r.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-|-$/g, '').slice(0, 60) + '.json', JSON.stringify(r, null, 1), 'application/json'); }
 function loadRace(r) {
-  commitRec();
+  saveRec();
   // a race saved before the geometry was derived carries a and b instead of the gap: read the gap back out of a
   const c = { ...DEF, ...r.cfg };
   if (r.cfg && r.cfg.gap == null && r.cfg.a != null) c.gap = Math.max(0, Math.round(c.track - r.cfg.a));
   delete c.tape; CFG = c; applyCfg();
   reset();
   S.replay = (r.acts || []).map(a => ({ ...a })).sort((a, b) => a.t - b.t);
-  REC = newRec(); REC.acts = (r.acts || []).map(a => ({ ...a }));
+  LOADED = r; REC = null;
   S.hideOnStart = true;   // the rail stays until the operator starts the race, then steps out of the way
   railHide(false); syncSeg(); railDirty = true; dirty = true; render();
 }
 
 // ---------- loop ----------
 window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, markDirty: () => { dirty = true; } };
-applyCfg(); reset(); REC = newRec(); railDirty = true; render();
+loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
+syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();
 // the race advances in fixed steps of FIXED seconds whatever the speed, so 1x, 4x and 16x run the same race;
 // lap detection looks at every step (at 16x a frame is 0.8 s of race time, longer than the 0.3 s touch window)

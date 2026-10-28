@@ -151,8 +151,15 @@ elle se renomme, elle s'efface, et l'un comme l'autre tiennent au rechargement �
 > « il faut pouvoir trier la liste des coureurs par BIB, NOC alphabétique, ou nom
 > alphabétique. un clic sur l'en-tête inverse l'ordre »
 
-**Fini quand** les trois tris marchent et qu'un second clic sur le même en-tête inverse
-l'ordre.
+✅ **Fait à la build 83.** Les trois en-têtes — **BIB**, **Nat**, **Name** — se cliquent. Un
+clic trie la liste sur cette colonne ; un second clic sur le même en-tête inverse l'ordre.
+BIB trie par numéro, Nat et Name alphabétiquement. Tant qu'aucun en-tête n'a été cliqué, la
+liste reste dans l'ordre de la liste de départ.
+
+C'est un **ordre d'affichage** et rien d'autre : `S.riders` n'est jamais réordonné, parce que
+c'est lui qui porte la course. Vérifié qu'un ordre donné depuis une ligne va bien au coureur
+de cette ligne, liste triée par nom à l'envers : le +lap de la troisième ligne est parti au
+BIB 70, et c'est la jauge de cette ligne-là qui s'est allumée.
 
 ### c. Une course de 24 coureurs
 
@@ -242,6 +249,120 @@ aucune non-conformité.
 
 **Si un bug apparaît, il vient ici**, avec ce qu'on a vu, le build, et comment le reproduire —
 pas dans `pitfalls.md`, qui ne garde que les erreurs **comprises et corrigées**.
+
+---
+
+## 8. Les vitesses du simulateur
+
+Signalé par l'opérateur le 28 octobre 2026 après essai. Ses mots et ses décisions sont au §16
+des règles ; les mesures sont au §17 de `mesures.md`.
+
+### a. Le peloton ralentissait tout seul
+
+✅ **Corrigé à la build 76.** Le peloton se repérait sur **son propre milieu**, qui se déplace
+dès qu'un coureur le quitte en emportant sa place ; ceux qui restaient corrigeaient alors un
+écart que personne n'avait ouvert, et ne le rattrapaient jamais. Mesuré : allure demandée
+15,0 m/s, peloton à **14,888 m/s** à partir de la 50ᵉ seconde, définitivement. Le peloton se
+repère maintenant sur un point qui roule **l'allure affichée**, posé au départ et que rien
+d'autre ne fait bouger.
+
+### b. « Sync all to bunch pace »
+
+✅ **Corrigé à la build 76.** Le bouton fait ce que dit son libellé : tous les coureurs
+roulent à la vitesse du peloton, chacun **là où il est**, sans être déplacé ni remis en place.
+
+### c. Les flèches qui ne menaient nulle part
+
+✅ **Corrigé à la build 76.** ↑ est éteinte pour un coureur du groupe de tête, ↓ pour un
+coureur que personne ne suit. Elles ne répondaient rien du tout avant.
+
+### d. La progression d'un ordre
+
+> « je voudrais aussi que quand on utilise les touche haut, bas, lap+ et lap- ces boutons
+> s'allument mais doivent afficher une progression jusqu'à l'accomplissement de leur mission,
+> et une fois la mission accomplie ils s'éteignent et la vitesses de leurs coureurs se
+> synchronise sur le groupe qu'ils cherchait à atteindre (et qu'ils ont atteint) »
+
+La maquette a été proposée le 28 octobre 2026, avec deux formes au choix et la question de la
+vitesse d'arrivée. L'opérateur a pris la **jauge dans le bouton** et la **vitesse du groupe
+réellement rejoint** (§16 des règles).
+
+✅ **Codé à la build 77.** Le bouton allumé se remplit sur la distance qui reste à couvrir,
+s'éteint quand la mission est accomplie, et le coureur prend alors la vitesse du groupe qu'il
+vient de rejoindre et la tient tant que ce groupe existe. Mesuré au §18 de `mesures.md`.
+
+**Ce qui n'est vrai que pour ↑ et ↓.** Pour `+lap` et `−lap`, le groupe rejoint est le
+peloton, et le coureur y revient **en une trentaine de secondes** au lieu d'instantanément :
+il doit rouler jusqu'à sa place dans le peloton, et sa vitesse descend progressivement vers
+l'allure pendant ce temps. Le lui donner instantanément a été essayé et **retiré** : en le
+laissant à l'endroit exact où il a bouclé son tour, le logiciel proposait la perte de tour des
+BIB 4 et 11 au tour 14 alors que la simulation ne la constate qu'au tour 25 — 195 secondes
+d'avance. À confirmer avec l'opérateur (`regles-operateur.md` §15).
+
+---
+
+## 9. Rejouer une course de la liste
+
+Signalé par l'opérateur le 28 octobre 2026 : « Je ne parviens pas à rejouer celles de la
+liste. » Ses mots et ses décisions sont au §16 des règles, les mesures au §19 de
+`mesures.md`.
+
+✅ **Corrigé à la build 78.** Une course chargée se rejoue et **n'enregistre rien**. Avant,
+elle était rejouée et réenregistrée en même temps : chaque Load déposait une copie en haut de
+la liste, et au bout de trois essais l'opérateur chargeait des copies au lieu de sa course.
+
+✅ **Une course menée à la main s'enregistre toute seule**, dès le premier ordre donné, et se
+tient à jour dans la liste à chaque ordre, à chaque pause et à l'arrivée. Il n'y a rien à
+cliquer, et pas de bouton *Save* : « Il faut soit qu'elle s'enregistre toute seule soit un
+bouton "Save" ».
+
+✅ **L'écran dit laquelle des deux choses se passe** : le point rouge *REC* pour une course
+que l'opérateur mène, « Playing · *nom* » pour une course de la liste qu'on rejoue. Jamais les
+deux.
+
+✅ **Les symboles Play et Pause sont dessinés**, plus écrits : ils sont au centre de leurs
+boutons.
+
+✅ **Chaque course porte un numéro** (build 79), visible sur sa ligne, et la relecture affiche
+« Playing race *x* » en #1CC634. Le numéro est **celui de la course**, pas son rang dans la
+liste : une course le garde quand une autre est effacée au-dessus d'elle ou quand une
+nouvelle la repousse vers le bas, pour que « Playing race 3 » désigne toujours la même course.
+Si l'opérateur voulait le rang dans la liste, c'est une ligne à changer.
+
+✅ **« PLAYING RACE *x* » s'écrit d'une seule taille, en majuscules** (build 80). Le numéro
+était à 14 px contre 11 px pour les mots : il dépassait de la ligne.
+
+✅ **Les réglages du simulateur sont gardés** (build 86) : liste de départ, piste et appairage
+des transpondeurs. Ils survivent à *New* et au rechargement de la page.
+
+✅ **Le tri est reporté sur la vue Start list** (build 85) : l'ordre choisi sur les en-têtes
+de la vue Simulation est celui des deux vues. L'édition et le retrait d'un coureur continuent
+de viser le bon : chaque ligne garde son rang d'origine dans la liste de départ, quel que soit
+l'ordre dans lequel on la regarde.
+
+✅ **La ligne Pace est passée sous la liste des coureurs** (build 84), après le dernier
+participant. Les deux commandes marchent au même endroit qu'avant : le pas de 0,1 m/s sur
+*Pace*, et *Sync all to bunch pace* qui arrête les ordres en cours.
+
+✅ **Le champ est de grandeur fixe** (build 82) : 120 px, de la course vide à la relecture,
+sans jamais bouger de place.
+
+✅ **« REC » et « PLAYING RACE *x* » sont un seul champ** (build 81). En deux champs, celui
+qui ne s'affichait pas gardait quand même sa boîte — 39,3 px retenus pour rien — et la ligne
+de l'horloge sortait 48 px plus large que celle du transport.
+
+✅ **Les boutons ne se chevauchent plus** (build 81). C'était **ça**, le défaut que l'opérateur
+signalait depuis la build 78 : les huit boutons demandaient 476 px pour 460, les trois groupes
+étaient écrasés et leurs boutons débordaient **sous leurs voisins** — ❚❚ sous ×1 de 12,3 px,
+×16 sous Replay de 16,6 px. Un symbole paraît décentré quand le bouton d'à côté lui recouvre
+un bord. Sur sa décision, **Replay et New sont passés sur la ligne de l'horloge**.
+
+✅ **Les symboles de la barre de transport sont centrés sur leur encre** (build 80), vérifié
+**simulateur déplié**, comme l'opérateur l'a demandé. Ce qui tenait le défaut en vie : la
+correction était mesurée au démarrage, **avant que la police soit chargée**, donc sur les
+lettres d'une police de secours — elle poussait « ×4 », « Replay » et « New » de 0,9 px vers
+la gauche, c'est-à-dire qu'elle **créait** le décalage qu'elle devait corriger. La mesure
+attend maintenant `document.fonts.ready`.
 
 ---
 

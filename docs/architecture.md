@@ -663,3 +663,147 @@ donnée une fois par `--tph` pour la barre du haut et une fois pour le rail.
 
 Le point REC se pilote dans `syncSeg()`, à côté des boutons lecture et pause, sur le même
 `playing` qu'eux — une seule source, donc il ne peut pas désaccorder.
+
+---
+
+## 16. Comment le peloton tient sa vitesse
+
+**Le repère est un point, pas une moyenne (build 76).** `S.anchor` est posé au `reset()` à
+l'endroit où le peloton démarre, et `step()` l'avance de `CFG.pace * dt` à chaque pas. Rien
+d'autre ne le touche. Chaque coureur hors ordre vise `anchor + TRACK * lapTrue + offset` et
+corrige sa vitesse proportionnellement à l'écart, bornée à ±1,6 m/s.
+
+Jusqu'à la build 75, ce repère était la **moyenne des coureurs encore dans le peloton**. Un
+départ déplaçait donc la moyenne, et l'écart ainsi créé ne se refermait jamais : le champ
+entier roulait en permanence sous l'allure demandée (`mesures.md` §17). Une moyenne sur un
+ensemble qui change ne peut pas servir de repère fixe ; un point qui roule l'allure, si.
+
+**`syncAllToBunchPace()`** libère les ordres, puis, pour chaque coureur encore dans le
+peloton, pose sa place là où il se trouve déjà et sa vitesse à l'allure. Personne ne bouge,
+tout le monde roule l'allure — ce que dit le libellé, et rien de plus (§16 des règles).
+
+**Les flèches ↑ et ↓** interrogent `neighbourGroup()` à chaque tic de `tickRail()` et sont
+désactivées quand il ne rend rien, c'est-à-dire pour le groupe de tête vers l'avant et pour le
+dernier groupe vers l'arrière. Un coureur déjà sous ordre garde ses boutons actifs : ils
+montrent son ordre en cours.
+
+**La progression d'un ordre (build 77).** `progress(po, now, goal)` pose `po.gap0` au premier
+pas de l'ordre et tient `po.prog` entre 0 et 1 : `1 - gap / gap0`. Elle se mesure sur
+**l'écart qui reste**, jamais sur le terrain parcouru, parce que le but d'un ordre `up` ou
+`down` bouge lui aussi — un groupe qui remonte de derrière dépasse le terrain déjà couvert, et
+une jauge comptant les mètres du coureur se remplissait pendant qu'il était encore loin
+(`mesures.md` §18). `tickRail()` lit `po.prog` et le pose en `--prog` sur le bouton allumé,
+dont un `::before` large de `--prog` remplit le fond.
+
+**Le mode `follow` (build 77).** `endPilot(r, mates)` regarde le groupe visé : s'il n'est fait
+que de coureurs du peloton ordinaire, le coureur y est rendu comme avant ; sinon il reçoit
+`{ kind: 'follow', bibs }` et `pilotStep` lui **copie la vitesse moyenne du groupe** à chaque
+pas, jusqu'à ce que ce groupe n'existe plus. Aucun bouton n'est allumé pour `follow` : la
+mission est finie, c'est un état, pas un ordre.
+
+---
+
+## 17. Enregistrer et rejouer
+
+**`REC` ou `LOADED`, jamais les deux (build 78).** `REC` est la course que l'opérateur mène
+lui-même ; `LOADED` est une course prise dans la liste et rejouée. `loadRace()` pose `LOADED`
+et met `REC` à `null` ; `recAct()` n'écrit que si `REC` existe, donc **une course chargée
+n'enregistre rien**, y compris les ordres que l'opérateur donne pendant sa relecture.
+Jusqu'à la build 77 `loadRace()` ouvrait un `REC` contenant déjà les ordres de la course
+chargée, et le `commitRec()` du Load suivant en déposait une copie dans la liste
+(`mesures.md` §19). `curActs()` rend les ordres de l'un ou de l'autre, pour `Replay` et pour
+le retour de 30 s.
+
+**`saveRec()` remplace `commitRec()`.** Chaque `REC` porte un `id` ; `saveRec()` cherche cet
+`id` dans `RACES` et **remplace la ligne** au lieu d'en ajouter une. Elle est appelée à chaque
+ordre enregistré, à chaque pause, au retour de 30 s et à l'arrivée. La course de l'opérateur
+est donc dans la liste dès son premier ordre et s'y tient à jour toute seule — il n'y a ni
+bouton *Save*, ni rien à cliquer pour garder une course (§16 des règles). Le nom suit les
+ordres donnés, sauf si l'opérateur a renommé la course lui-même : `commitRename()` pose alors
+`named` et `saveRec()` n'y touche plus.
+
+**L'écran.** `syncSeg()` allume le point `REC` sur `playing && REC`, et `#simplaying` sur
+`LOADED` seul. Les deux occupent la même place et s'excluent.
+
+**Play et Pause sont des dessins.** Deux `<svg>` de 12 × 12 dans le bouton, `fill:currentColor`,
+à la place des caractères `&#9654;` et `&#10073;&#10073;`. Un glyphe de police porte ses propres
+approches et ne tombe pas au centre de son cadre quel que soit le `padding` ; un dessin carré
+centré dans le bouton ne peut pas être décalé. Le triangle porte une correction optique de
+0,4 unité vers la droite, parce qu'un triangle plein pointant à droite paraît à gauche
+(`mesures.md` §19).
+
+**Le numéro de course (build 79).** `raceNo()` rend le plus grand numéro de la liste plus un ;
+`numberRaces()` en donne un à toute course qui n'en a pas, au chargement de `localStorage` —
+c'est ce qui rattrape les courses enregistrées avant la build 79. `saveRec()` garde le numéro
+de la ligne qu'elle remplace et n'en attribue un que pour une course neuve. Rien ne
+renumérote : effacer une course ne touche pas les autres. Le numéro est le nom stable d'une
+course, là où son rang dans la liste bouge tout le temps.
+
+**Le vert de la relecture** est le jeton `--play`, #1CC634, donné par l'opérateur. Il ne sert
+qu'à « Playing race *x* » ; `--acc` reste le bleu de l'interface.
+
+**Le centrage sur l'encre (build 80).** `centreInk()` mesure, bouton par bouton, de combien
+l'**encre** d'un libellé tombe à côté du milieu de son bouton — la boîte englobante des
+`path`/`rect` pour un dessin, `actualBoundingBoxLeft/Right` lu sur un canevas pour du texte —
+et décale d'autant **le libellé, jamais le bouton** : déplacer le bouton emporte son cadre et
+son encre ensemble et ne change rien. Un libellé sans élément propre reçoit un
+`<span class="ink">` pour avoir une boîte à déplacer. Deux conditions, apprises à la dure
+(`mesures.md` §21) : la mesure attend `document.fonts.ready`, sans quoi elle lit les lettres
+d'une police de secours et pose une correction fausse ; et elle est gardée en cache, les
+libellés de cette barre ne changeant jamais.
+
+**Les deux lignes de la barre (build 81).** La ligne du transport porte ⏮ 30s, ▶, ❚❚ et les
+trois vitesses — 361 px pour 460. La ligne de l'horloge porte l'horloge, le point REC ou
+« PLAYING RACE *x* », puis *Replay* et *New* — environ 360 px pour 460. Les deux groupes
+`.seg` ne sont plus comprimés, donc aucun bouton ne déborde sous son voisin
+(`mesures.md` §22). Toute addition à l'une de ces deux lignes doit se remesurer : c'est la
+compression d'un `.seg`, invisible en soi, qui décale les symboles.
+
+**Le champ d'état (build 81).** `#simstate` est seul à dire ce qui se passe : `syncSeg()` lui
+met la classe `playing` et « Playing race *x* » si `LOADED`, la classe `recdot` et le point
+rouge si une course est menée et jouée, la classe `off` sinon. Les classes `.recdot` et
+`.playing` ne sont plus que deux habillages du même élément. Deux champs voisins, dont l'un
+seulement s'affiche, retiennent la place des deux dès que le champ caché garde sa boîte —
+c'est ce qui élargissait la ligne de l'horloge (`mesures.md` §22).
+
+**Sa grandeur est fixe (build 82).** `#simstate` fait `flex:0 0 120px`, et `.off` le rend
+invisible **sans lui reprendre sa place** : un champ qui disparaît ferait glisser l'horloge et
+les boutons à chaque départ et à chaque pause. 120 px tiennent « PLAYING RACE 888 », le plus
+long des trois contenus (`mesures.md` §22).
+
+---
+
+## 18. L'ordre d'affichage de la liste des coureurs
+
+`simSort` vaut `null` tant qu'aucun en-tête n'a été cliqué, puis `{key, dir}`.
+`sortedRiders()` rend `S.riders` tel quel, ou une **copie** triée — jamais le tableau
+lui-même : `S.riders` porte la course, et le réordonner reviendrait à changer la course pour
+changer un affichage. Un clic sur un en-tête trie sur sa colonne, un second clic sur le même
+en-tête retourne `dir`. `railRows` reste indexé par dossard, donc les commandes d'une ligne
+vont au coureur de cette ligne quel que soit l'ordre affiché (`mesures.md` §23).
+
+**Les deux vues partagent l'ordre (build 85).** `simCmp()` écrit la comparaison une fois ;
+`sortedRiders()` s'en sert pour la vue Simulation, `sortedRoster()` pour la vue Start list.
+`sortedRoster()` rend des paires `{e, i}` où `i` est le **rang d'origine dans `RIDERS`** :
+c'est lui que portent `data-ri` et `data-rosterdel`, donc éditer ou retirer un coureur ne
+dépend jamais de l'ordre dans lequel la liste est regardée (`mesures.md` §23).
+
+---
+
+## 19. Les réglages du simulateur
+
+`tct.sim.setup` garde trois choses : `cfg` (longueur du tour, tours, sprints, distance
+Finish → Pursuit A, allure), `riders` (la liste de départ entière) et l'appairage
+transpondeur ↔ dossard, plus les transpondeurs libres. `loadSetup()` est appelé **avant**
+`applyCfg()` au démarrage ; les valeurs écrites dans le fichier ne servent donc que la
+première fois, quand il n'y a rien de gardé.
+
+`saveSetup()` tient l'appairage **en mémoire** (`TPMAP`, `TPSPARE`) en même temps que sur le
+disque, parce que c'est lui que `reset()` relit et qu'une course neuve ne recharge pas la
+page : sans cela, le premier *New* ramenait l'appairage d'origine (`mesures.md` §24).
+`reset()` donne à chaque coureur le transpondeur gardé, ou le premier numéro libre s'il vient
+d'être ajouté, et refuse deux fois le même numéro.
+
+`saveTpIfSetup()` n'enregistre l'appairage que si la course n'a pas commencé : ce que
+l'opérateur change avant le départ est un réglage, ce qu'il change pendant est un fait de
+cette course.
