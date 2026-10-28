@@ -240,6 +240,40 @@ qui vidait un champ puis appelait `blur()` concluait à un bug de la page alors 
 allait bien. Retenu : `Entrée` valide par lui-même (`dataset.done` évite la double
 validation), et un test de saisie passe par un vrai événement.
 
+**D14. `renderOval` à chaque image, même immobile, ralentissait à 24 coureurs.** Contrairement
+à `detect` (D12, qui doit rester appelé à chaque pas), dessiner l'ovale est un travail
+d'affichage pur : il coûte plus cher à mesure que le nombre de coureurs grandit (chaque
+coureur place sa pastille en la comparant à toutes celles déjà placées, §14 d'`architecture.md`),
+et était refait 20 fois par seconde que la course avance ou non. Retenu (build 88) :
+`renderStrip`/`renderOval` ne redessinent que si `dirty`, si `ovalDirty`, ou tant que la
+course avance (`S.started && S.factor > 0 && !S.finished`) ; **ne pas réutiliser `dirty`
+pour le survol timeline → ovale**, car cela redéclenchait aussi la reconstruction complète de
+la timeline à chaque passage de souris — d'où le fanion séparé `ovalDirty`. **Mesuré
+insuffisant seul** : à ×1 avec 24 coureurs la course avance en continu, donc cette condition
+est de toute façon vraie à chaque image — voir D15 pour la vraie cause du ralenti mesuré par
+l'opérateur.
+
+**D15. `pt(s)` interrogeait le tracé SVG en direct (`path.getPointAtLength`) à chaque appel —
+mesuré à environ 350 fois par image à 24 coureurs, 93 % du temps de `render()` (~46 ms sur un
+budget de 50 ms), pour placer chaque coureur sans chevauchement et tracer chaque bande de
+groupe (§14 d'`architecture.md`). La course elle-même ne retardait pas (le temps de course
+mesuré restait à moins de 1 % du temps réel écoulé), mais le fil principal était occupé en
+quasi-continu : un clic de l'opérateur attendait alors 1 à 2,5 secondes avant d'être pris en
+compte. Retenu (build 89) : le tracé `#trackpath` ne change jamais une fois la page chargée
+(son `d` est figé dans le HTML) — ses points sont donc échantillonnés **une seule fois**, au
+chargement (`pathTable`, 2000 points), et `pt(s)` interpole dans cette table au lieu
+d'interroger le SVG en direct. **Ne pas revenir à `path.getPointAtLength()` dans `pt(s)` ou
+dans une boucle appelée par image** : c'est exactement ce qui rendait l'ovale coûteux à mesure
+que le nombre de coureurs grandissait.
+
+**D16. `serve.js` ne connaissait pas le type `.css`.** En sortant le style dans
+`styles.css` (build 90), le serveur local le servait en `application/octet-stream` (son
+repli par défaut pour toute extension qu'il ne reconnaît pas) — un navigateur strict refuse
+d'appliquer une feuille de style sous ce type, et la page apparaîtrait sans aucun style, sans
+erreur bien visible. Retenu : `serve.js` sert `.css` en `text/css`. **Tout nouveau fichier
+statique extrait du prototype (un autre `.js`, une image, …) doit vérifier que `serve.js` lui
+donne le bon type** avant de le charger par balise.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été

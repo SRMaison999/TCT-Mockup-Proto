@@ -5,8 +5,18 @@
 dans `mesures.md`. L'index « quelle règle, codée où, quel statut » est
 `cas-de-course.md`.
 
-Un seul fichier (**build 74**) : CSS, HTML, puis un script dans une fermeture immédiate.
-Aucune dépendance. Tout l'état vit dans l'objet `S`, recréé par `reset()`.
+**Trois fichiers statiques, chargés par balise, sans empaquetage** (`styles.css` et
+`flags.js` extraits à la build 90, pour que le HTML reste maniable) :
+- `styles.css` : tout le CSS, repris sans changement.
+- `flags.js` : les drapeaux SVG des nations (`FLAGS`, `flag()`, et leurs sept helpers
+  `fv`/`fh`/`fb`/`fd`/`ft`/`fstar`/`fu`) — une donnée pure, sans dépendance, chargée avant
+  le script principal pour que `flag()` existe quand celui-ci en a besoin.
+- `timeline-prototype.html` : le HTML, puis le script principal dans une fermeture
+  immédiate. C'est le seul des trois à contenir l'état et la logique de la course.
+
+Les trois partagent la portée globale du navigateur (aucun module ES, aucun `import`) :
+l'ordre des balises `<script>` est ce qui garantit que `flags.js` s'exécute avant le script
+principal. Tout l'état de la course vit dans l'objet `S`, recréé par `reset()`.
 
 **Le harnais de test.** Le script expose
 
@@ -44,6 +54,29 @@ Les tape switches reposent sur cette séparation et la tiennent **par la structu
 `S.taps[i]` ne contient **que des instants**, sans dossard, parce que c'est tout ce qu'une
 bande de contact produit ; qui a fait le contact vit dans `S.tapeTruth[i]`, au même titre
 que `r.dist`. Un `grep tapeTruth` dans un chemin logiciel saute donc aux yeux.
+
+**Vérifié (investigation du 28 octobre 2026) : la séparation est tenue partout, sauf un seul
+endroit.** `measured()` (c'est elle qui construit ce que l'écran affiche à partir de ce que
+le logiciel sait) ne lit jamais `r.dist` ni `r.spd` directement, à une exception : la ligne
+`if (!r.rec) { out.set(r.bib, { pos: r.dist, spd: r.spd, read: true }); continue; }`. Elle ne
+joue que pour un coureur qui n'a **encore jamais eu de lecture de boucle**, et seulement
+dans deux cas :
+
+1. **Au tout début de la course**, avant que chaque coureur ait franchi sa première boucle
+   (0 à environ 2 s de course selon sa place sur la grille).
+2. **Après un « Reinstate »** (un coureur remis en course après un ABD/DNF), qui remet
+   `r.rec` à vide jusqu'à sa prochaine lecture.
+
+**Ce n'est pas une fuite à corriger.** L'opérateur, 28 octobre 2026 : dans le cas 1, la
+position de départ (deux colonnes, entre Pursuit A et la ligne) est un fait que l'opérateur
+connaît et pourrait saisir lui-même (un ordre d'appel), pas un secret du simulateur — et rien
+ne se décide (ni groupe, ni tour, ni points) sur ces quelques secondes. Dans le cas 2, la
+position se corrige dès la lecture suivante, sans conséquence sur l'intervalle. **À garder en
+tête pour le jour où le matériel réel remplace le simulateur** : ce sera le seul endroit à
+revoir — la position de départ viendra alors d'une saisie opérateur (ordre d'appel), pas de
+`r.dist` ; partout ailleurs, `measured()`, `computeGroups()` et `detect()` consomment déjà
+exactement le type de données (lectures de boucles, contacts de tape switch) que le matériel
+réel produira.
 
 ## 2. État `S`
 
@@ -101,7 +134,8 @@ Variables de module hors de `S` : `lastDetect` et `lastTl` (instants du dernier 
 de la dernière reconstruction de la timeline, remis à −1 par `reset()` : sans cela un
 Restart empêchait les propositions de réapparaître), `lastG` (les blocs de la dernière
 image, pour que rien n'ait à rappeler `computeGroups`), `lastFactor`, `REC` (les actes
-enregistrés), `simTab`, `simCols`, `railDirty`.
+enregistrés), `simTab`, `simCols`, `railDirty`, `ovalDirty` (un survol de ligne de la
+timeline demande un redessin de l'ovale même course à l'arrêt, §3).
 
 ## 3. Flux d'une image
 
@@ -120,8 +154,13 @@ enregistrés), `simTab`, `simCols`, `railDirty`.
      depuis le dernier appel, ce qui n'arrive qu'à l'arrêt. Si le nombre de propositions
      change, `G` est recalculé dans la même image.
    - `renderTimeline(G)` et `renderLog()` seulement si `dirty`, ou une fois par seconde en
-     simulation, **jamais pendant un glisser** ; `renderStrip` et `renderOval` à chaque
-     image.
+     simulation, **jamais pendant un glisser**.
+   - `renderStrip` et `renderOval` seulement si `dirty`, si `ovalDirty` (survol d'une ligne
+     de la timeline, qui met en relief le coureur sur l'ovale sans rien faire d'autre), ou
+     tant que la course avance (`S.started && S.factor > 0 && !S.finished`) — jamais à
+     l'arrêt sans raison : à 24 coureurs, redessiner l'ovale (ses trois files sans
+     chevauchement, §14) à chaque image même immobile coûtait cher pour rien (`pitfalls.md`
+     D14).
    - `spTick()` ouvre, envoie et ferme les sprints (§9).
 
 Toute action de l'opérateur met `dirty = true` puis appelle `render()`.
@@ -556,8 +595,17 @@ mesures qui en viennent sont marquées comme telles dans `mesures.md`.
 distance de course de `CFG.gap` avant de la poser dessus :
 
 ```js
-pt(s) = path.getPointAtLength(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN)
+pt(s) = pathPoint(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN)
 ```
+
+**`pt(s)` n'interroge plus le SVG en direct (build 89).** Le `d` de `#trackpath` est figé
+dans le HTML et ne change jamais pendant une session : ses points sont donc échantillonnés
+une seule fois au chargement (`pathTable`, 2000 points sur toute la longueur du tracé), et
+`pathPoint(len)` interpole dans cette table. Avant la build 89, chaque appel passait par
+`path.getPointAtLength()`, une méthode native qui, appelée plusieurs centaines de fois par
+image à 24 coureurs (chaque coureur essaie jusqu'à 15 positions candidates avant de trouver la
+sienne sans chevauchement, chaque bande de groupe trace plusieurs points), occupait 93 % du
+temps de `render()` — mesuré, `pitfalls.md` D15.
 
 Pursuit A vaut `TRACK − gap`, donc `s + gap` y vaut exactement un tour : il tombe à
 l'origine du tracé, au milieu de la ligne droite. Le contour ayant une symétrie de
