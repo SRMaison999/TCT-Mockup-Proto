@@ -562,8 +562,17 @@ mesures qui en viennent sont marquées comme telles dans `mesures.md`.
 distance de course de `CFG.gap` avant de la poser dessus :
 
 ```js
-pt(s) = path.getPointAtLength(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN)
+pt(s) = pathPoint(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN)
 ```
+
+**`pt(s)` n'interroge plus le SVG en direct (build 89).** Le `d` de `#trackpath` est figé
+dans le HTML et ne change jamais pendant une session : ses points sont donc échantillonnés
+une seule fois au chargement (`pathTable`, 2000 points sur toute la longueur du tracé), et
+`pathPoint(len)` interpole dans cette table. Avant la build 89, chaque appel passait par
+`path.getPointAtLength()`, une méthode native qui, appelée plusieurs centaines de fois par
+image à 24 coureurs (chaque coureur essaie jusqu'à 15 positions candidates avant de trouver la
+sienne sans chevauchement, chaque bande de groupe trace plusieurs points), occupait 93 % du
+temps de `render()` — mesuré, `pitfalls.md` D15.
 
 Pursuit A vaut `TRACK − gap`, donc `s + gap` y vaut exactement un tour : il tombe à
 l'origine du tracé, au milieu de la ligne droite. Le contour ayant une symétrie de

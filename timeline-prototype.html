@@ -340,7 +340,7 @@ body.sprintmode #scard{display:flex}
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 88</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 89</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
@@ -1355,6 +1355,17 @@ const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
 const OVAL_W = 60, HW = OVAL_W / 2;
 $('#trackband').setAttribute('stroke-width', OVAL_W);
 const PATHLEN = path.getTotalLength();
+// The oval's `d` is fixed in the markup and never rewritten at runtime, so its geometry can be sampled once
+// instead of asking the live SVG path for a point every time one is needed. At 24 riders, placing every rider
+// without overlap (§14) and tracing every group's band called the native getPointAtLength() several hundred
+// times PER IMAGE — the single biggest cost in renderOval, measured directly: see pitfalls.md D15.
+const PATH_SAMPLES = 2000;
+const pathTable = Array.from({ length: PATH_SAMPLES + 1 }, (_, i) => path.getPointAtLength(i / PATH_SAMPLES * PATHLEN));
+function pathPoint(len) {
+  const clamped = Math.max(0, Math.min(PATHLEN, len)), f = clamped / PATHLEN * PATH_SAMPLES, i = Math.floor(f), frac = f - i;
+  const a = pathTable[i], b = pathTable[Math.min(PATH_SAMPLES, i + 1)];
+  return { x: a.x + (b.x - a.x) * frac, y: a.y + (b.y - a.y) * frac };
+}
 let drag = null, dirty = true, ovalDirty = true, railDirty = true, lastDetect = 0, lastTl = -1, lastG = null;
 
 // a BIB chip with, in its corner, the rider's real number of finish-line crossings
@@ -1681,7 +1692,7 @@ const bandsG = $('#bands');
 // falls on the opposite point by symmetry, which puts Pursuit B at the middle of the back straight — for every track
 // length and every gap. The finish line lands where it really is: gap metres past Pursuit A, no longer at an invented
 // 12 m from the middle of the straight, which is what made the two pursuits look out of line (pitfalls A14).
-function pt(s) { return path.getPointAtLength(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN); }
+function pt(s) { return pathPoint(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN); }
 function normalAt(s) { const p = pt(s), q = pt(s + 0.5); const nx = -(q.y - p.y), ny = q.x - p.x, nl = Math.hypot(nx, ny) || 1; return { p, nx: nx / nl, ny: ny / nl }; }
 function arcPath(s0, s1) {   // a stroke along the track from s0 back to s1 (s1 ≤ s0 in race distance; drawn in track direction)
   const n = Math.max(2, Math.ceil((s0 - s1) / 4)); let d = '';
@@ -2613,7 +2624,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 88';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 89';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

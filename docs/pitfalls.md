@@ -248,7 +248,23 @@ et était refait 20 fois par seconde que la course avance ou non. Retenu (build 
 `renderStrip`/`renderOval` ne redessinent que si `dirty`, si `ovalDirty`, ou tant que la
 course avance (`S.started && S.factor > 0 && !S.finished`) ; **ne pas réutiliser `dirty`
 pour le survol timeline → ovale**, car cela redéclenchait aussi la reconstruction complète de
-la timeline à chaque passage de souris — d'où le fanion séparé `ovalDirty`.
+la timeline à chaque passage de souris — d'où le fanion séparé `ovalDirty`. **Mesuré
+insuffisant seul** : à ×1 avec 24 coureurs la course avance en continu, donc cette condition
+est de toute façon vraie à chaque image — voir D15 pour la vraie cause du ralenti mesuré par
+l'opérateur.
+
+**D15. `pt(s)` interrogeait le tracé SVG en direct (`path.getPointAtLength`) à chaque appel —
+mesuré à environ 350 fois par image à 24 coureurs, 93 % du temps de `render()` (~46 ms sur un
+budget de 50 ms), pour placer chaque coureur sans chevauchement et tracer chaque bande de
+groupe (§14 d'`architecture.md`). La course elle-même ne retardait pas (le temps de course
+mesuré restait à moins de 1 % du temps réel écoulé), mais le fil principal était occupé en
+quasi-continu : un clic de l'opérateur attendait alors 1 à 2,5 secondes avant d'être pris en
+compte. Retenu (build 89) : le tracé `#trackpath` ne change jamais une fois la page chargée
+(son `d` est figé dans le HTML) — ses points sont donc échantillonnés **une seule fois**, au
+chargement (`pathTable`, 2000 points), et `pt(s)` interpole dans cette table au lieu
+d'interroger le SVG en direct. **Ne pas revenir à `path.getPointAtLength()` dans `pt(s)` ou
+dans une boucle appelée par image** : c'est exactement ce qui rendait l'ovale coûteux à mesure
+que le nombre de coureurs grandissait.
 
 ## F. Sprints
 
