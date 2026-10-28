@@ -376,6 +376,124 @@ Sur la géométrie des boucles :
 piste qui décide, le plus souvent 10 m. Ce qui est obligatoire, c'est que les deux Pursuits
 soient face à face. Tout le reste en découle.
 
+**28 octobre 2026 — la forme de l'ovale dessiné.** L'opérateur a jugé le dessin du prototype
+faux à l'œil :
+
+> il n'y a pas de vérité, c'est le constructeur de la piste qui décide de la forme. Ce qui
+> est sûr c'est que je n'ai jamais vu une piste avec des lignes droites aussi courtes que
+> celle de l'app !
+
+Puis, sur ce qui donne la forme :
+
+> pour trouver la bonne forme, je pense qu'il faut s'intéresser aux rayons des virages. 23°
+> est un rayon utilisé sur des pistes appréciées des coureurs
+
+Il a donné le Vélodrome National de Saint-Quentin-en-Yvelines comme référence : **250 m**,
+**8 m de large**, inclinaison des virages **44° à 44,6°**, inclinaison des lignes droites
+**13°**, et **rayon des virages constant de 23 m**. Ces chiffres sont une précision sur une
+piste réelle ; seul le dernier a été demandé en dessin.
+
+Et enfin la décision, qui est celle qui fait foi :
+
+> Ecoute on va utiliser le même modèle pour toutes les longueurs de piste. Et ce sera un
+> modèle où les lignes droites font 55m
+
+Donc : **une seule forme pour les quatre longueurs de piste**, celle dont les lignes droites
+mesurent **55 m sur une piste de 250 m**. Les 23 m de Saint-Quentin ne sont pas la mesure
+retenue — ils ont servi à chercher, l'opérateur a tranché sur 55 m. Ce que cette forme donne
+sur chaque longueur de piste est dans `mesures.md` §14.
+
+Puis, sur la largeur de la piste dessinée :
+
+> peux-tu rendre la piste un peu plus large ?
+
+Aucune largeur n'a été énoncée. La bande dessinée a été portée à une largeur qui vaut
+**7,86 m sur une piste de 250 m**, ce qui la place entre les deux largeurs réelles qu'il a
+données lui-même : les **7,5 m** du haut de ce paragraphe et les **8 m** de
+Saint-Quentin-en-Yvelines. Le chiffre est dans `mesures.md` §14 et reste à confirmer à l'œil.
+
+**28 octobre 2026 — les marquages, et la norme UCI comme référence.** L'opérateur a fourni
+le détail des marquages d'un vélodrome homologué UCI, puis a demandé :
+
+> dessine la cote d'azur, les lignes longitudinales, les lignes de 200m et 100m en blanc et
+> la ligne Finish telle que décrite dans les infos que je t'ai donné
+
+**C'est donc la norme qu'il a fournie qui fait foi pour le dessin**, et elle est reprise ici
+parce qu'il l'a versée au dossier lui-même :
+
+| Marquage | Cote |
+|---|---|
+| Largeur de piste | 7 à 8 m sur une 250 m internationale ; 5 à 10 m autorisés ; **constante sur tout le périmètre** |
+| Côte d'azur | bande plate **sous** le bord intérieur, largeur **≥ 10 %** de la largeur de piste |
+| Ligne noire, dite de mensuration | **0,20 m** au-dessus de la côte d'azur ; c'est elle qui donne la longueur exacte de la piste |
+| Ligne rouge, dite des sprinteurs | **0,85 m** au-dessus de la ligne noire, ou 1/3 de la largeur si la piste fait 8 m ou plus |
+| Ligne bleue, dite des stayers | au **tiers supérieur** de la piste |
+| Ligne d'arrivée | trait **noir de 4 cm** centré sur une bande **blanche de 60 cm** |
+| Ligne des 200 m | blanche, **toute la largeur**, exactement 200 m avant l'arrivée |
+| Ligne des 100 m | blanche, **la moitié de la largeur**, exactement 100 m avant l'arrivée |
+| Lignes de poursuite | deux lignes **blanches** au milieu de chaque ligne droite |
+
+Les deux dernières lignes de ce tableau confirment ce qui avait déjà été codé le même jour.
+Ce que le dessin en fait, et à quelles cotes, est dans `mesures.md` §14.
+
+**Ce qui n'est pas dans la norme fournie** : l'épaisseur des lignes longitudinales, et la
+moitié de piste que couvre la ligne des 100 m. Elles sont dessinées respectivement à 0,20 m
+et depuis la côte d'azur vers le haut — ce sont des choix de dessin, pas des règles, et ils
+sont signalés comme tels dans `cas-de-course.md`.
+
+**28 octobre 2026 — ce qu'il a corrigé sur le premier dessin.** Il a d'abord demandé ce
+qu'étaient les marques orange en travers de la piste : ce sont les **tape switches**. Puis,
+mot pour mot :
+
+> * la cote d'azur doit être dans un bleu plus foncé
+> * la ligne bleue des stayers doit être plus visible, on ne la voit pas bien.
+> * peut-être que la piste devrait être plus claire
+> * la ligne noire de Finish doit être de la même largeur que les lignes blanches des
+>   Pursuit. La ligne blanche du Finish doit être élargie
+> * il n'e faut pas dessiner les tape switch
+
+Le dernier point est une règle de dessin, pas une suppression de mesure : **les tape
+switches continuent d'être comptés** — l'onglet Track montre leurs contacts — ils ne sont
+simplement plus peints sur l'ovale. Les quatre autres points sont des couleurs et des
+épaisseurs ; aucune cote n'a été énoncée, et celles qui ont été retenues sont dans
+`mesures.md` §14. Codé à la **build 70**.
+
+**28 octobre 2026 — sa deuxième relecture.** Mot pour mot :
+
+> * Les lignes longitudinales rouge et bleue doivent être plus foncées ! On ne les voit pas
+>   bien !
+> * La côte d'azur un peu plus foncée aussi
+> * La ligne blanche du Finish doit être encore élargie
+
+Trois réglages de plus, toujours sans cote énoncée. Codé à la **build 71** ; les valeurs
+retenues sont dans `mesures.md` §14.
+
+**28 octobre 2026 — sa troisième relecture.** Mot pour mot :
+
+> * le bleu des lignes de stayers et cote d'azur doit être plutôt comme celui du badge du
+>   coureur n°3
+> * les lignes perpendiculaires doivent démarrer en haut de la cote d'azur et vont jusqu'en
+>   haut de la piste, sans déborder
+
+Le premier point donne enfin une couleur **énoncée** : celle du dossard du coureur n° 3,
+`#1d4ed8`, prise telle quelle pour la côte d'azur et pour la ligne des stayers. Le second
+fixe l'étendue des traits en travers — arrivée, deux poursuites, 200 m — **du haut de la
+côte d'azur au haut de la piste**, c'est-à-dire exactement la largeur roulable, sans le
+débord d'une unité qu'ils avaient de chaque côté depuis la build 69. Codé à la **build 72**.
+
+**28 octobre 2026 — son dernier réglage.** Mot pour mot :
+
+> ok c'est bien. maintenant il faut juste éclaircir un peu la côte d'azur. L'autre ligne
+> bleue est très bien
+
+Donc : la ligne des stayers **reste** au bleu du dossard du n° 3, validé, et seule la côte
+d'azur s'en éclaircit. « Un peu » n'est pas une cote ; la valeur retenue est dans
+`mesures.md` §14. Codé à la **build 73**.
+
+Il a demandé le même jour **la distance Pursuit A – Finish telle que le dessin la montre**.
+Elle vaut **10 m**, c'est-à-dire exactement le `gap` du simulateur : le dessin ne l'invente
+plus depuis la build 69, il la suit (`mesures.md` §14).
+
 Sur une piste de 250 m, dans le sens de course, repère 0 m = ligne d'arrivée :
 
 | Point | Position | Identifie le coureur |

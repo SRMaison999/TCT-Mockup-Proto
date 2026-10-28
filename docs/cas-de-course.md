@@ -28,6 +28,8 @@ silencieusement optimiste.
 | 13 | **Coureur sans transpondeur qui roule seul** | `regles-operateur.md` §11 | `tapeLone()`, `tapeFix()`, `tapeTrack()`, `S.noTpRec` | `mesures.md` §9 | **Codé build 59** |
 | 14 | **Deux transpondeurs inversés** | `regles-operateur.md` §11 | `tpById()` dans `step()`, `swapTp()` | `mesures.md` §10 | **Codé build 60** |
 | 15 | **Mise en place et tour de lancement** | `regles-operateur.md` §12 | — | — | **Pas codé.** Ni la phase dans le simulateur, ni la vérification des transpondeurs, ni les propositions. Le travail à faire est détaillé dans `travaux.md` §1 |
+| 16 | **Les deux Pursuits face à face sur l'ovale** | `regles-operateur.md` §9 | `#trackpath` ancré au milieu de la ligne droite d'arrivée, `pt()` décalé de `CFG.gap` | `pitfalls.md` A14 · `mesures.md` §14 | **Conforme**, corrigé build 69. Les deux repères tombent au milieu de leur ligne droite pour les quatre longueurs de piste et tout `gap` |
+| 17 | **Les marquages de la piste** | `regles-operateur.md` §9, tableau de la norme UCI | les quatre rectangles longitudinaux du décor, et `renderMarks()` pour les traits en travers | `mesures.md` §14 | **Conforme**, codé build 69, couleurs, épaisseurs et étendue des traits revues builds 70 à 73 sur ses quatre relectures du 28 octobre 2026. Côte d'azur, lignes noire, rouge et bleue à leur cote ; arrivée en trait noir sur bande blanche, ni l'un ni l'autre à sa cote réelle ; 200 m et 100 m en blanc ; tape switches **pas dessinés** |
 
 ---
 
@@ -75,6 +77,19 @@ quelle, produisait des fausses alertes — mais ils ne viennent pas de lui.
    (`every`, soit `dS < min`). Signalé comme à confirmer dans `regles-operateur.md` §15.
 5. **Chaque passage de sprint est jugé une seule fois, à l'instant où il est lu.** Celui-ci
    découle de l'énoncé lui-même, mais il n'a pas été dicté.
+6. **L'épaisseur des lignes longitudinales de la piste**, posée à 0,20 m. La norme fournie
+   par l'opérateur donne leur position, jamais leur épaisseur.
+7. **La moitié de piste que couvre la ligne des 100 m** : dessinée depuis la côte d'azur
+   vers le haut. La norme dit « la moitié de la largeur » sans dire laquelle ; le sens
+   retenu est celui du §9, où les bandes partent du bas de la piste.
+8. **Les deux cotes de la ligne d'arrivée sont celles de l'écran, pas celles de la norme.**
+   Le trait noir prend la largeur des lignes de poursuite, contre lesquelles il se lit, et
+   la bande blanche vaut cinq fois ce trait. Tranché par l'opérateur le 28 octobre 2026
+   après avoir vu le premier tracé, mais il a demandé un rendu, pas des chiffres : les
+   chiffres sont de nous (`mesures.md` §14).
+9. **Les couleurs de la piste, de la côte d'azur et de la ligne des stayers.** L'opérateur
+   a demandé « plus clair », « plus foncé », « plus visible » ; les valeurs retenues sont
+   dans `mesures.md` §14 et n'ont pas été dictées.
 
 ---
 

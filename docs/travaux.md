@@ -193,27 +193,39 @@ une course enregistrée comme les autres, qu'on charge, rejoue, renomme et suppr
 chargé avant ; la course de référence apparaît dans l'onglet Files comme les autres ; et le
 poste 6a s'applique à elle aussi.
 
-### b. Les deux boucles de poursuite ne sont pas en face l'une de l'autre sur l'ovale
+### b. Deux étiquettes de l'ovale sortent du cadre
 
-> « sur l'ovale les lignes de poursuite doivent être exactement en face l'une de l'autre. Ce
-> n'est pas le cas actuellement »
+**Constaté à la build 69**, en mesurant le dessin, pas signalé par l'opérateur.
 
-C'est la règle de `regles-operateur.md` §9 : les deux boucles sont **exactement à une
-demi-longueur de piste** l'une de l'autre, chacune au milieu de sa ligne droite.
+Quand le leader et son groupe sont dans le **virage de gauche**, deux étiquettes sont
+tracées à gauche du cadre et se retrouvent coupées : « LEADER · BIB n » et le nom du groupe,
+par exemple « Break 1 · 1 · lap gained? ». Le `viewBox` de l'ovale commence à x = 0 ; les
+deux textes sont posés à x = −24 et x = −48.
 
-**Ce qui est vérifié à la build 68** : dans le modèle, les positions sont exactes —
-`applyCfg()` calcule Pursuit B à exactement une demi-piste de Pursuit A. **Le défaut est donc
-dans le dessin de l'ovale**, pas dans les distances : le tracé convertit une distance en point
-sur un contour arrondi, et une demi-piste de distance n'y tombe pas en face.
+**Ce n'est pas nouveau.** La build 68 les posait déjà à x = −20 et x = −44 au même instant
+de course : la largeur de piste de la build 69 ajoute 4 unités, elle n'a pas créé le défaut.
 
-**Fini quand** les deux repères sont visuellement en face l'un de l'autre sur l'ovale, pour
-250 m comme pour les autres longueurs de piste.
+**Pour le reproduire** : charger la course de référence, la jouer jusqu'au **tour 11** — BIB
+12 est alors seul en échappée dans le virage de gauche.
+
+**Fini quand** aucune étiquette de l'ovale n'est tracée hors du cadre, à aucun moment de la
+course de référence.
 
 ### Le reste
 
+Les bandes de tape dessinées du mauvais côté de la piste — un poste que ce fichier a porté
+le 28 octobre 2026 — n'ont plus d'objet : l'opérateur a demandé le même jour que **les tape
+switches ne soient pas dessinés du tout** (`regles-operateur.md` §9). Ils restent comptés.
+
+Les deux boucles de poursuite pas en face l'une de l'autre sur l'ovale — le poste que ce
+fichier portait jusqu'au 28 octobre 2026 — sont **corrigées à la build 69**, en même temps
+que la forme de l'ovale et sa largeur, que l'opérateur a tranchées le même jour
+(`regles-operateur.md` §9). La cause était ailleurs que là où ce fichier la cherchait :
+c'est `pitfalls.md` A14, et les chiffres sont dans `mesures.md` §14.
+
 Aucun autre bug connu au 28 octobre 2026. La course de référence tourne de bout en bout sans
 erreur de console, les deux propositions de tour tombent aux instants attendus, les quatre
-sprints sont jugés et le classement sort (`mesures.md` §12 et §13).
+sprints sont jugés et le classement sort (`mesures.md` §12, §13 et §14).
 
 Les écarts connus entre le code et la règle ne sont **pas** ici : ils sont dans le tableau de
 `cas-de-course.md`, chacun avec son statut et sa date. Au 28 octobre 2026 ce tableau ne porte

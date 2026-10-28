@@ -5,7 +5,7 @@
 dans `mesures.md`. L'index « quelle règle, codée où, quel statut » est
 `cas-de-course.md`.
 
-Un seul fichier (**build 68**) : CSS, HTML, puis un script dans une fermeture immédiate.
+Un seul fichier (**build 73**) : CSS, HTML, puis un script dans une fermeture immédiate.
 Aucune dépendance. Tout l'état vit dans l'objet `S`, recréé par `reset()`.
 
 **Le harnais de test.** Le script expose
@@ -308,8 +308,8 @@ produit aucune lecture.
 - **`renderOval(G, M)`** : bandes (`#bands`), coureurs sur trois files (dossards de rayon
   15, sans marque de tours) avec un pas minimal de 32 px, étiquettes à l'extérieur avec
   évitement de collisions (`putLabel`), leader nommé. `pt(s)` et `normalAt(s)` projettent
-  une distance de course sur le tracé SVG `#trackpath` (arrivée à x = 585, sens de course :
-  bas vers la droite). `renderMarks()` calcule les repères des boucles et des bandes depuis
+  une distance de course sur le tracé SVG `#trackpath`, qui **commence au milieu de la ligne
+  droite d’arrivée**, là où se trouve Pursuit A (§14) ; sens de course : bas vers la droite. `renderMarks()` calcule les repères des boucles et des bandes depuis
   la distance de course, ils ne sont plus dessinés en dur.
 - **Inéligibles sur l'ovale** : `noPts` = `S.inelig`, plus les coureurs du sprint ouvert
   dont le rang brut est 1 à 4 et la raison `lap down`. Dessinés en rouge (`#FF5C5C`), anneau
@@ -551,12 +551,61 @@ de patch. **Dépassée depuis la build 53**, qui code tout cela dans le prototyp
 reste à la build 52 patchée, comme point de comparaison, et n'a plus d'autre usage. Les
 mesures qui en viennent sont marquées comme telles dans `mesures.md`.
 
-## 14. Un écart cosmétique de l'ovale
+## 14. Le dessin de l'ovale
 
-Les repères des boucles et des bandes sont calculés (`renderMarks()`) depuis la distance de
-course, donc exacts les uns par rapport aux autres et par rapport aux coureurs. Mais le
-dessin de la piste est un **décor fixe** dont la ligne droite a son milieu à 12 m de la
-ligne d'arrivée. Avec `gap = 10 m`, les deux Pursuits tombent donc à 2 m du milieu des
-lignes droites peintes, soit une trentaine de pixels d'écart horizontal : à l'œil elles n'ont
-pas l'air tout à fait face à face, alors qu'elles le sont exactement en distance de course.
-L'ovale reste un décor indicatif, comme il l'était déjà pour la longueur de piste.
+**Le tracé est ancré sur Pursuit A, pas sur la ligne d'arrivée (build 69).** Le contour
+`#trackpath` **commence au milieu de la ligne droite d'arrivée**, et `pt(s)` décale la
+distance de course de `CFG.gap` avant de la poser dessus :
+
+```js
+pt(s) = path.getPointAtLength(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN)
+```
+
+Pursuit A vaut `TRACK − gap`, donc `s + gap` y vaut exactement un tour : il tombe à
+l'origine du tracé, au milieu de la ligne droite. Le contour ayant une symétrie de
+rotation d'un demi-tour, Pursuit B — une demi-piste plus loin — tombe au point diamétralement
+opposé, c'est-à-dire au milieu de l'autre ligne droite. Les deux boucles sont donc **face à
+face par construction, pour toute longueur de piste et tout `gap`**, ce qu'exige
+`regles-operateur.md` §9. La ligne d'arrivée se place à ses `gap` mètres réels après
+Pursuit A, au lieu d'être posée à 12 m du milieu de la ligne droite comme elle l'était
+jusqu'à la build 68.
+
+**La forme du décor vient de l'opérateur** (`regles-operateur.md` §9, 28 octobre 2026) :
+une seule forme pour les quatre longueurs de piste, celle dont les lignes droites font 55 m
+sur une 250 m. En pixels, les trois rectangles concentriques et le tracé font **340 de haut
+pour 760 de large**, soit un rayon de virage de 170 et 420 de ligne droite — 44,0 % du tour.
+Les chiffres par longueur de piste sont dans `mesures.md` §14.
+
+**La largeur dessinée de la piste a une seule source**, `OVAL_W` (60 unités SVG, demi-largeur
+`HW`), écrite dans le décor lui-même au chargement (`#trackband`). Tout ce qui se pose sur la
+piste la lit : les traits en travers, qui vont d'un bord à l'autre (`−HW` → `+HW`, build 72,
+sans débord), la moitié que couvre la ligne des 100 m, les deux bords de la bande d'un
+groupe et son épaisseur
+(`OVAL_W+2`), et le retrait que gardent les étiquettes de boucle dans l'anneau intérieur.
+Changer ce seul nombre suffit, et rien ne peut diverger.
+
+**Les marquages sont donnés en mètres, pas en pixels.** `renderMarks()` pose
+`PXM = PATHLEN / TRACK`, l'échelle du dessin, et un trait peint s'écrit avec sa cote réelle
+dès qu'il en a une. Les quatre lignes longitudinales sont des rectangles du décor, posés à
+leur distance du bord intérieur. Un trait tracé **en travers** de la piste a son épaisseur
+dans le sens de la marche, ce qu'une simple `<line>` suffit à rendre.
+
+**La ligne d'arrivée fait exception et se donne en unités**, sur décision de l'opérateur du
+28 octobre 2026 : `FIN_BLACK` vaut 2, la largeur des deux lignes de poursuite contre
+lesquelles le trait noir se lit, et la bande blanche vaut `FIN_BLACK * 5`. Ses 4 cm réels
+vaudraient 0,3 unité, qu'aucun écran ne rend, et ses 60 cm de bande seraient alors trop
+minces autour de lui pour se lire comme une bande.
+
+**Les tape switches ne sont pas dessinés** (même décision). Ce sont des capteurs, pas de la
+peinture : les deux qui ne sont pas dans une boucle tombent sous les lignes des 200 m et
+des 100 m, les trois autres sous un trait de boucle. Seules leurs étiquettes restent, et
+`tapeCount()` continue de les compter — c'est un retrait de dessin, pas de mesure.
+
+Les lignes du 200 m lancé suivent la même règle que `buildTapes()` et en reprennent les deux
+cas particuliers : rien sur une piste de **166 m**, et sur une **200 m** le départ du 200
+tombe sur la ligne d'arrivée, qui porte déjà sa marque. La ligne des 200 m traverse toute la
+largeur, celle des 100 m la moitié.
+
+`pt()` et `normalAt()` ne sont lus que par `renderMarks()` et `renderOval()` : **le dessin
+de l'ovale n'entre dans aucune mesure**. Changer la forme, la largeur ou les marquages ne
+peut donc rien déplacer dans les groupes, les tours, les sprints ou les bandes.

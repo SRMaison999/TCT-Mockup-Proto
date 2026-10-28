@@ -5,7 +5,7 @@
 :root{color-scheme:dark;
   --bg:#121416;--panel:#1b1e21;--deep:#0f1113;--line:#2d3237;--line2:#3a4046;
   --fg:#ECEAE4;--muted:#9a9890;--dim:#5f5c55;
-  --acc:#4F8CFF;--acc-soft:#1b2a4a;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#9a7140;
+  --acc:#4F8CFF;--acc-soft:#1b2a4a;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#b5884e;
   --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);overflow:hidden}
@@ -306,7 +306,7 @@ body.sprintmode #scard{display:flex}
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 68</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 73</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
@@ -328,10 +328,12 @@ body.sprintmode #scard{display:flex}
       <div class="strip" id="strip"></div>
       <div class="oval">
         <svg viewBox="0 0 980 590" role="img" aria-label="Track view" id="oval">
-          <rect x="110" y="95" width="760" height="400" rx="200" fill="#15181b" stroke="#9a7140" stroke-width="40"/>
-          <rect x="127" y="112" width="726" height="366" rx="183" fill="none" stroke="#3b7fae" stroke-width="4"/>
-          <rect x="118" y="103" width="744" height="384" rx="192" fill="none" stroke="#e05555" stroke-width="1"/>
-          <path id="trackpath" d="M585,495 H670 A200,200 0 0 0 670,95 H310 A200,200 0 0 0 310,495 H585" fill="none" stroke="none"/>
+          <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#15181b" stroke="#b5884e" stroke-width="60"/>
+          <rect x="143" y="158" width="694" height="274" rx="137" fill="none" stroke="#3b6ae8" stroke-width="6"/>
+          <rect x="138.5" y="153.5" width="703" height="283" rx="141.5" fill="none" stroke="#111111" stroke-width="1.5"/>
+          <rect x="132" y="147" width="716" height="296" rx="148" fill="none" stroke="#a32020" stroke-width="1.5"/>
+          <rect x="100" y="115" width="780" height="360" rx="180" fill="none" stroke="#1d4ed8" stroke-width="2"/>
+          <path id="trackpath" d="M490,465 H700 A170,170 0 0 0 700,125 H280 A170,170 0 0 0 280,465 H490" fill="none" stroke="none"/>
           <g id="marks"></g>
           <g id="bands"></g>
           <g id="riders"></g>
@@ -1229,6 +1231,11 @@ function syncUndo() { const b = $('#undo'); b.disabled = !S.undo.length; b.title
 // ---------- rendering ----------
 const tlbody = $('#tlbody'), tbar = $('#tbar'), strip = $('#strip'), logrows = $('#logrows');
 const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
+// The drawn width of the track, in SVG units, and the half-width everything on the oval measures from: the loop
+// lines across it, the edges of a group's band, the tape strips on its outer half, and the clearance the infield
+// labels keep from its inner edge. Written into the decor itself so there is one number, not two that drift apart.
+const OVAL_W = 60, HW = OVAL_W / 2;
+$('#trackband').setAttribute('stroke-width', OVAL_W);
 const PATHLEN = path.getTotalLength();
 let drag = null, dirty = true, railDirty = true, lastDetect = 0, lastTl = -1, lastG = null;
 
@@ -1347,7 +1354,13 @@ function renderStrip(G) {
 
 // ---------- the oval: the same race as the timeline, drawn on the track, and editable the same way ----------
 const bandsG = $('#bands');
-function pt(s) { return path.getPointAtLength((((s % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN); }
+// The drawn path STARTS at the middle of the home straight, and that is where Pursuit A belongs: the operator's rule is
+// that the two pursuits sit at the middle of their own straight, half a lap apart (regles-operateur.md 9). Pursuit A is
+// CFG.gap before the line, so the race distance is shifted by the gap before being laid on the contour. Half a lap then
+// falls on the opposite point by symmetry, which puts Pursuit B at the middle of the back straight — for every track
+// length and every gap. The finish line lands where it really is: gap metres past Pursuit A, no longer at an invented
+// 12 m from the middle of the straight, which is what made the two pursuits look out of line (pitfalls A14).
+function pt(s) { return path.getPointAtLength(((((s + CFG.gap) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN); }
 function normalAt(s) { const p = pt(s), q = pt(s + 0.5); const nx = -(q.y - p.y), ny = q.x - p.x, nl = Math.hypot(nx, ny) || 1; return { p, nx: nx / nl, ny: ny / nl }; }
 function arcPath(s0, s1) {   // a stroke along the track from s0 back to s1 (s1 ≤ s0 in race distance; drawn in track direction)
   const n = Math.max(2, Math.ceil((s0 - s1) / 4)); let d = '';
@@ -1362,8 +1375,31 @@ function renderMarks() {
   const line = (s, from, to, col, w) => { const a = normalAt(s); return `<line x1="${(a.p.x + a.nx * from).toFixed(1)}" y1="${(a.p.y + a.ny * from).toFixed(1)}" x2="${(a.p.x + a.nx * to).toFixed(1)}" y2="${(a.p.y + a.ny * to).toFixed(1)}" stroke="${col}" stroke-width="${w}"/>`; };
   const label = (s, off, col, size, w, txt) => { const a = normalAt(s); return `<text x="${(a.p.x + a.nx * off).toFixed(1)}" y="${(a.p.y + a.ny * off + 4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="${size}"${w ? ' font-weight="600"' : ''} fill="${col}">${txt}</text>`; };
   let h = '';
-  for (const s of LOOPS) { const fin = s === 0, col = fin ? '#FF5C5C' : '#ECEAE4'; h += line(s, -21, 21, col, fin ? 3 : 2) + label(s, -36, col, 12, fin, LOOPNAME[s]); }
-  for (const T of TAPES) { h += line(T.pos, 10, 20, '#F2A33A', 3); if (T.loop == null) h += label(T.pos, -30, '#F2A33A', 10, false, T.name); }
+  const PXM = PATHLEN / TRACK;   // the drawing's scale, in units per metre: every painted line below is given in metres
+  const FIN_BLACK = 2;           // the black line of the finish: the width of a pursuit line, which is what it is read against
+  for (const s of LOOPS) {
+    const fin = s === 0, col = fin ? '#FF5C5C' : '#ECEAE4';
+    // The finish line is painted: a black line centred on a white band. A line laid ACROSS the track has its
+    // stroke running along the direction of travel, so the stroke width IS the band's depth. Neither keeps its
+    // real size here, and on the operator's call (28 October 2026): the real 4 cm black line would be 0.3 unit,
+    // which no screen shows, so it takes the width of the two pursuit lines; and the real 60 cm band is then too
+    // thin to read as a band around it, so it is widened to eight times the black line.
+    if (fin) h += line(s, -HW, HW, '#FFFFFF', FIN_BLACK * 8) + line(s, -HW, HW, '#111111', FIN_BLACK);
+    else h += line(s, -HW, HW, col, 2);   // the two pursuit lines are white and cross the whole width
+    h += label(s, -(HW + 16), col, 12, fin, LOOPNAME[s]);
+  }
+  // The painted lines of the flying 200 m, white. The 200 m crosses the whole width, the 100 m only half of it,
+  // from the côte d'azur up. A 166 m track has neither; on a 200 m the start falls on the finish line, which
+  // carries its own mark already — the same two cases buildTapes() handles for the strips.
+  if (TRACK !== 166) for (const [back, full] of [[200, true], [100, false]]) {
+    const s = round1(((TRACK - back) % TRACK + TRACK) % TRACK);
+    if (s < 0.05) continue;
+    h += line(s, -HW, full ? HW : 0, '#FFFFFF', 1.5);
+  }
+  // The tape switches are NOT drawn (operator, 28 October 2026). They are sensors, not paint: the two that are not
+  // in a loop sit under the 200 m and 100 m lines, which are painted above, and the other three under a loop line.
+  // They go on being counted all the same — the Track tab shows their contacts.
+  for (const T of TAPES) { if (T.loop == null) h += label(T.pos, -(HW + 10), '#FFFFFF', 10, false, T.name); }
   $('#marks').innerHTML = h;
 }
 function renderOval(G, M) {
@@ -1380,10 +1416,10 @@ function renderOval(G, M) {
     const sHead = leaderS - rows[0].behind, sTail = leaderS - rows[rows.length - 1].behind;
     const colour = g.pending || g.op ? '#4F8CFF' : g === G.bunch ? '#ECEAE4' : '#F2A33A';
     const d = arcPath(sHead + 7, sTail - 7);
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.22" stroke-width="42" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
+    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.22" stroke-width="${OVAL_W + 2}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
     bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="2"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none" transform="translate(0,0)"/>`;
     // crisp edges on both sides of the track
-    for (const side of [-21, 21]) {
+    for (const side of [-(HW + 1), HW + 1]) {
       const n = Math.max(2, Math.ceil((sHead - sTail + 14) / 4)); let e = '';
       for (let i = 0; i <= n; i++) { const s = sTail - 7 + (sHead - sTail + 14) * i / n, a = normalAt(s); e += (i ? ' L' : 'M') + (a.p.x + a.nx * side).toFixed(1) + ',' + (a.p.y + a.ny * side).toFixed(1); }
       bands += `<path d="${e}" fill="none" stroke="${colour}" stroke-opacity="0.85" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
@@ -2115,7 +2151,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 68';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 73';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

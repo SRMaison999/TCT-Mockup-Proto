@@ -380,3 +380,140 @@ erreur de console, et le classement identique à celui de la build 67 — 15 (19
 ligne de différence est un relevé de contacts de tape switch, qui dépend du découpage en
 images de la boucle d'affichage et non des règles. Le pas-à-pas, lui, est déterministe et
 donne exactement la même chose aux deux builds.
+
+---
+
+## 14. La forme de l'ovale et les deux Pursuits face à face, build 69
+
+Mesuré le 28 octobre 2026 en lisant les repères **dans le DOM** du prototype, pour les
+quatre longueurs de piste et pour deux valeurs de `gap`. Le milieu des lignes droites
+peintes est à **x = 490** dans le `viewBox` de l'ovale ; un repère est en face de l'autre
+quand les deux y tombent.
+
+**Ce que la build 68 dessinait.** Piste 250 m, `gap` 10 m : Pursuit A à **x = 505,9**,
+Pursuit B à **x = 474,1**. Chacun à **2 m du milieu de sa ligne droite**, des côtés
+opposés, soit **4 m d'écart** à l'œil. L'erreur venait de la ligne d'arrivée, dessinée à
+**12 m avant le milieu** de la ligne droite d'arrivée — un chiffre qui n'était la mesure de
+personne. Elle grandissait avec le `gap` : sur une 333 m à `gap` 80 m, Pursuit A tombait à
+**x = 141,8** et Pursuit B à **x = 838,2**, à l'opposé l'un de l'autre sur la largeur.
+
+**Ce que la build 69 dessine.** Pursuit A et Pursuit B à **x = 490,0** dans les cinq cas
+mesurés — 166, 200, 250 et 333 m à `gap` 10 m, et 250 m à `gap` 25 m. La ligne d'arrivée
+suit le `gap` : x = 566,3 à 10 m, x = 574,0 à 25 m sur une 250 m.
+
+**La distance Pursuit A – Finish, relue sur le dessin** le 28 octobre 2026 à la demande de
+l'opérateur, piste 250 m : Pursuit A à **x = 490,0**, Finish à **x = 566,3**, soit
+**76,3 unités**. À 7,633 unités par mètre, cela fait **9,996 m**, l'écart venant de
+l'arrondi d'affichage à une décimale. C'est exactement le `gap` du simulateur : le dessin ne
+pose plus cette distance lui-même, il la lit.
+
+**La forme retenue**, celle de `regles-operateur.md` §9 : 760 px de large, **340 px de
+haut**, donc un rayon de virage de 170 px et 420 px de ligne droite. Le tour fait
+**1 908,3 px**, dont **44,02 %** en lignes droites, contre 36,4 % à la build 68.
+
+| Piste | Ligne droite | Rayon de virage |
+|---|---|---|
+| 166 m | 36,54 m | 14,79 m |
+| 200 m | 44,02 m | 17,82 m |
+| **250 m** | **55,02 m** | **22,27 m** |
+| 333 m | 73,29 m | 29,67 m |
+
+Les 55 m demandés par l'opérateur tombent donc à **3 cm près**, le reste de l'écart venant
+de l'arrondi de la hauteur à 340 px entiers. Pour mémoire, la build 68 valait 45,5 m de
+ligne droite et 25,3 m de rayon sur une 250 m, et Saint-Quentin-en-Yvelines a un rayon
+constant de 23 m, qui donnerait 52,7 m de ligne droite.
+
+**La largeur de la piste dessinée**, portée de 40 à **60 unités SVG** à la demande de
+l'opérateur. Comme une seule forme sert aux quatre longueurs de piste, ce que vaut cette
+largeur en mètres dépend de la longueur affichée :
+
+| Piste | 40 unités, build 68 | **60 unités, build 69** |
+|---|---|---|
+| 166 m | 3,48 m | **5,22 m** |
+| 200 m | 4,19 m | **6,29 m** |
+| **250 m** | 5,24 m | **7,86 m** |
+| 333 m | 6,98 m | **10,47 m** |
+
+Sur la 250 m, les 7,86 m tombent entre les deux largeurs réelles énoncées par l'opérateur,
+7,5 m et 8 m (`regles-operateur.md` §9). Les trois coureurs de front sont posés à **±24
+unités** de l'axe : ils étaient hors de la bande tant qu'elle ne faisait que ±20, ils sont
+dedans à ±30.
+
+**Les marquages, relus dans le DOM après tracé**, piste 250 m, où 1 m vaut 7,633 unités.
+Les distances sont comptées depuis le **bord intérieur** de la piste :
+
+| Marquage | Cote demandée | Cote mesurée dans le dessin |
+|---|---|---|
+| Côte d'azur | ≥ 10 % de 7,86 m, sous le bord intérieur | **0,79 m** d'épaisseur, de 0 à −0,79 m |
+| Ligne noire (mensuration) | 0,20 m | **0,20 m** |
+| Ligne rouge (sprinteurs) | 1,05 m | **1,05 m** |
+| Ligne bleue (stayers) | tiers supérieur, soit 5,24 m | **5,24 m** |
+| Bande blanche de l'arrivée | pas de cote donnée | **2,10 m** dans le sens de la marche, build 71 |
+| Trait noir de l'arrivée | la largeur d'une ligne de poursuite | **0,26 m**, comme Pursuit A et B |
+
+**La ligne d'arrivée ne garde aucune de ses deux cotes réelles**, sur décision de
+l'opérateur du 28 octobre 2026 : le trait noir prend la largeur des deux lignes de
+poursuite, contre lesquelles il se lit, parce que ses 4 cm vaudraient 0,3 unité qu'aucun
+écran ne rend ; et la bande blanche, trop mince autour de lui à ses 60 cm, est portée à
+**huit fois le trait noir** à la build 71, après deux élargissements. L'épaisseur des lignes longitudinales, que la norme ne donne
+pas, est posée à 0,20 m.
+
+**Les couleurs, après ses deux relectures du 28 octobre 2026.** Aucune n'a été énoncée ; ce sont
+les valeurs retenues, à confirmer à l'œil :
+
+| Élément | Build 69 | Build 70 | Build 71 | Build 72 | **Build 73** |
+|---|---|---|---|---|---|
+| Piste | `#9a7140` | **`#b5884e`**, plus clair | inchangée | inchangée | inchangée |
+| Côte d'azur | `#7ec8e3` | `#2e86ab` | `#1a5f80` | `#1d4ed8` | **`#3b6ae8`**, éclaircie |
+| Ligne des sprinteurs | `#e05555`, 1,5 unité | inchangée | **`#a32020`**, foncée | inchangée | inchangée |
+| Ligne des stayers | `#3b7fae`, 1,5 unité | `#4aa8e0`, 2 unités | `#1668a0` | **`#1d4ed8`**, le dossard du n° 3 | **validée telle quelle** |
+| Trait noir de l'arrivée | 1 unité | **2 unités** | inchangé | inchangé | inchangé |
+| Bande blanche de l'arrivée | 0,60 m, soit 4,58 unités | 10 unités | **16 unités**, soit 2,10 m | inchangée | inchangée |
+| Bandes de tape | 3 unités, `#F2A33A` | **plus dessinées** | — | — | — |
+
+Les deux lignes longitudinales ont été éclaircies à la build 70 puis foncées à la build 71,
+parce qu'elles se lisaient mal sur la piste devenue plus claire. À la **build 72**, la côte
+d'azur et la ligne des stayers prennent le seul bleu que l'opérateur ait jamais nommé, celui
+du dossard du coureur n° 3 : `#1d4ed8`, lu dans la table `RIDERS`. À la **build 73** il
+valide ce bleu pour la ligne des stayers et demande la côte d'azur « un peu » plus claire :
+elle passe à `#3b6ae8`, le même bleu éclairci, pour que les deux restent de la même famille.
+Seule l'épaisseur de la ligne des stayers a bougé depuis la build 69, et elle reste à
+2 unités.
+
+**L'étendue des traits en travers, build 72.** Relue dans le DOM : la bande de piste de la
+ligne droite d'arrivée va de **y = 435 à y = 495**, et le trait d'arrivée comme celui de
+Pursuit A vont désormais de **435 à 495** eux aussi — la largeur roulable exactement. La
+côte d'azur occupe **429 à 435**, donc son haut est bien le point de départ des traits. Ils
+débordaient de **1 unité de chaque côté** depuis la build 69. La ligne des 100 m garde sa
+moitié de largeur, de la côte d'azur au milieu de la piste.
+
+**Les lignes du 200 m lancé, par longueur de piste.** Comptées sur les traits blancs
+transversaux réellement tracés, course non démarrée :
+
+| Piste | Traits blancs | Lesquels |
+|---|---|---|
+| 166 m | **1** | la bande d'arrivée seule — pas de 200 m lancé |
+| 200 m | **2** | arrivée et 100 m ; le départ du 200 tombe sur la ligne |
+| 250 m | **3** | arrivée, 200 m, 100 m |
+| 333 m | **3** | arrivée, 200 m, 100 m |
+
+La bande d'arrivée fait désormais **16 unités quelle que soit la longueur de piste**, ce
+qui lui donne 1,39 m sur une 166 m, 1,68 m sur une 200 m, 2,10 m sur une 250 m et 2,79 m
+sur une 333 m. Elle est lue comme un repère à l'écran, plus comme une cote.
+
+**Les tape switches ne sont plus dessinés** (`regles-operateur.md` §9). Vérifié dans le
+DOM après le tracé : **zéro** trait `#F2A33A` dans `#marks`. Les deux qui ne sont pas dans
+une boucle gardent leur étiquette, « départ du 200 m » et « intermédiaire du 200 m », et
+leurs contacts continuent d'être comptés dans l'onglet Track.
+
+**Le reste de la course ne bouge pas.** `pt()` et `normalAt()` ne sont lus que par
+`renderMarks()` et `renderOval()` : aucune mesure ne les traverse. Vérifié sur la course de
+référence chargée depuis Files, dans les deux régimes :
+
+- **Pas-à-pas** (`factor = 0`) : **13 485 pas**, durée **674,2 s**, deux propositions et
+  deux seulement — `lap:12:1` à **165,5 s** et `lap:4,11:-1` à **458 s**. Exactement les
+  builds 66, 67 et 68.
+- **Boucle d'affichage réelle à ×16** : course menée à son terme en 42 s de temps réel,
+  **aucune erreur de console**, quatre sprints jugés, deux propositions laissées ouvertes,
+  26 lignes de journal. Classement par les points des sprints seuls : **15 (19) · 12 (15) ·
+  23 (8) · 4 (6) · 11 (4) · 46 (3)** — identique aux builds 67 et 68.

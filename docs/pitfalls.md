@@ -110,6 +110,25 @@ l'application ? » Un rapport de bug n'est pas une autorisation de récrire la r
 montre le diagnostic, on cite la règle telle qu'elle est écrite, on propose, **et on code
 après son accord.**
 
+**A14. Chercher dans le calcul un défaut qui était dans le décor.** L'opérateur signale que
+les deux Pursuits ne sont pas en face l'une de l'autre sur l'ovale. `travaux.md` soupçonnait
+la conversion d'une distance en point sur un contour arrondi. C'était faux : le contour a
+une symétrie de rotation d'un demi-tour, donc deux points séparés d'une demi-piste y tombent
+**toujours** diamétralement opposés — ils l'étaient déjà. Ce que l'œil voyait, c'est qu'ils
+n'étaient pas au **milieu de leur ligne droite**, et cela parce que le tracé commençait à la
+ligne d'arrivée, posée à 12 m du milieu de la ligne droite d'arrivée. Ce 12 m n'était la
+mesure de personne : il venait du point de départ du chemin SVG, écrit à la main.
+
+Retenu : **ancrer le dessin sur ce que la règle impose** — Pursuit A au milieu de la ligne
+droite (`regles-operateur.md` §9) — et laisser la ligne d'arrivée se placer à ses `gap`
+mètres réels. Corrigé build 69, chiffres dans `mesures.md` §14.
+
+Deux leçons au-delà du dessin. **« En face » et « diamétralement opposé » ne sont pas la
+même chose** : sur un ovale, deux points opposés par rotation ne sont alignés que s'ils sont
+au milieu des lignes droites. Et **une piste suspectée n'est pas une cause** : la piste
+notée dans `travaux.md` a été vérifiée avant d'être suivie, et elle était fausse. Un poste
+de `travaux.md` donne ce qu'on a vu, pas le verdict.
+
 ## B. Propositions
 
 **B1. Un bloc à part jusqu'à validation, puis fusion.** Le coureur qui venait de prendre ou

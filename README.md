@@ -54,7 +54,7 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 
 | Fichier | Rôle |
 |---|---|
-| `timeline-prototype.html` | **Le prototype** (un seul fichier, aucune dépendance). L'en-tête affiche « build N », incrémenté à chaque publication ; actuellement **build 68**. Publié sur https://claude.ai/artifact/4dcfPEf9XmK7xQ4QDVfcJ4 |
+| `timeline-prototype.html` | **Le prototype** (un seul fichier, aucune dépendance). L'en-tête affiche « build N », incrémenté à chaque publication ; actuellement **build 73**. Publié sur https://claude.ai/artifact/4dcfPEf9XmK7xQ4QDVfcJ4 |
 | `maquette-groupes.html` | Maquette des décisions du 25 octobre 2026, dérivée du prototype, **conservée comme témoin** : les décisions ont depuis été codées dans le prototype. `maquette-groupes.jpg` en est une capture |
 | `maquette-simulateur.html` | Maquette de l'écran de **simulateur de courses de test** (composer un scénario). Maquette seule, pas de moteur |
 | `console-course-aux-points.html` | Première maquette, abandonnée pour son interface, mais dont le **moteur d'inférence** a été validé et doit être repris dans l'implémentation réelle (voir `docs/concept.md`) |
