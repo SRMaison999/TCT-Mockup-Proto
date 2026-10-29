@@ -1416,6 +1416,12 @@ Sur la première version, le badge du peloton se posait sur ses propres coureurs
 37. **Un badge ne recouvre jamais un coureur.** Il se tient au-delà de la **bulle** de son
     groupe, pas à une profondeur fixe depuis le bord de la piste.
 
+Puis, les badges s'étant trouvés trop loin :
+
+> maintenant les badges sont un peu trop éloignés des bulles je trouve
+
+38. **Un badge se tient au plus près de sa bulle**, sans jamais couvrir un coureur.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

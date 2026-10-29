@@ -1346,6 +1346,17 @@ sa propre tête de peloton. Deux causes, et la seconde ne se voyait que dans les
    seul : **59** recouvrements sur 4 880 paires badge/coureur. Les deux ensemble : **0** sur
    4 832 paires, 93 images échantillonnées.
 
+**Un badge au plus près de sa bulle**, build 103. Le dégagement se calculait sur le **coin** du
+badge, son point le plus avancé vers la piste. Or le long de la ligne, qui passe par son milieu,
+la distance est tout autre : dans la partie **oblique** d'un virage, le coin avance de **40
+unités** là où le bord du badge n'en avance que **17**. L'écart paraissait donc énorme sans
+l'être.
+
+Le badge se pose maintenant sur la distance **le long de la ligne**, et ses coins sont rattrapés
+par un test explicite contre les coureurs — ce qu'un badge ne doit jamais couvrir — qui le
+repousse par pas de 12 unités seulement, autant de fois qu'il le faut. Resserré sans ce test, il
+revenait **4** fois sur un coureur en 4 752 paires ; avec lui, **0**.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

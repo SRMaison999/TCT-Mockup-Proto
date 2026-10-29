@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 102</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 103</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1418,7 +1418,7 @@ function renderOval(G, M) {
   // 80 to 95 units of margin before its own edge, and a name pushed out to clear another one ran off it. Inside
   // there are 105 units in the curves and 48 on the straights — measured — which is why the two loop buttons went
   // out: they were the only thing in the way, and they are the ones that never move.
-  const NAME_STEP = -18, NAME_TRIES = 3;   // a badge never wanders more than 54 units deeper to clear another
+  const NAME_STEP = -12, NAME_TRIES = 6;   // short steps: a badge moves only as far as it must to be clear
   const PANEL = (() => { const f = $('#ifpanel'); return f ? { x: +f.getAttribute('x'), y: +f.getAttribute('y'), w: +f.getAttribute('width'), h: +f.getAttribute('height') } : null; })();
   const hitsPanel = (x, y, w) => PANEL && x + w > PANEL.x - 4 && x - w < PANEL.x + PANEL.w + 4 && y > PANEL.y - 12 && y < PANEL.y + PANEL.h + 12;
   const placed = [];
@@ -1436,10 +1436,19 @@ function renderOval(G, M) {
     // It also clears the BUBBLE and not the edge of the track: a wide bubble, the bunch's, reaches deeper into the
     // infield than the ring does.
     const reach = Math.abs(a.nx) * tw + Math.abs(a.ny) * th;
-    let depth = Math.min(-(HW + 8) - reach, bu.mid - bu.halfW - 6 - reach), lx = 0, ly = 0;
+    // Placed on its CORNER's clearance, a badge sits far too low in the slanted part of a curve: there the corner
+    // reaches 40 units towards the track where the badge's own edge, on the line, reaches 17. So it is placed on
+    // the distance ALONG THE LINE, and the corners are caught afterwards by an explicit test against the riders —
+    // who are the thing a badge must never cover.
+    const rayT = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9);
+    const hitsRider = (x, y) => all.some(it => {
+      const qx = Math.max(x - tw, Math.min(it.cx, x + tw)), qy = Math.max(y - th, Math.min(it.cy, y + th));
+      return Math.hypot(it.cx - qx, it.cy - qy) < 17;          // 15 is the dot, 2 of air
+    });
+    let depth = Math.min(-(HW + 4) - rayT, bu.mid - bu.halfW - 2 - rayT), lx = 0, ly = 0;
     for (let k = 0; k < NAME_TRIES; k++) {
       lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;
-      if (!placed.some(q => Math.abs(q.x - lx) < q.tw + tw + 6 && Math.abs(q.y - ly) < 22) && !hitsPanel(lx, ly, tw)) break;
+      if (!placed.some(q => Math.abs(q.x - lx) < q.tw + tw + 6 && Math.abs(q.y - ly) < 22) && !hitsPanel(lx, ly, tw) && !hitsRider(lx, ly)) break;
       depth += NAME_STEP;
     }
     placed.push({ x: lx, y: ly, tw });
@@ -2349,7 +2358,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 102';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 103';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
