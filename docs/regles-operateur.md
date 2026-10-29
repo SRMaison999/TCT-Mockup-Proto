@@ -1807,3 +1807,11 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
 96. **La timeline reste à sa largeur utile** (176 px). L'élargir à 290 px ne remplissait rien :
     une ligne ne porte qu'un dossard, un drapeau et un code pays, et la moitié droite restait
     vide. Essayé, regardé, abandonné.
+
+97. **La carte permanente porte toutes les commandes du sprint.** « on ne peut pas trier les
+    coureurs de la liste de la carte sprint par BIB ni par NOC. De plus il existait beaucoup
+    plus d'options qu'actuellement dans les cartes de sprint. Il faut les restaurer ! » Hors
+    sprint, la carte montre le **prochain** sprint, avec le tour jugé et ses flèches, la saisie
+    manuelle, l'ordre mesuré, l'enregistrement, le mode Live, la place suivante, les non
+    éligibles et le tri de la liste de départ. **Seuls `Send` et `Close` manquent avant la
+    cloche** : il n'y a rien à envoyer et rien à fermer.

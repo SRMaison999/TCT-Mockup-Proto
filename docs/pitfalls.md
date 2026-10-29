@@ -333,6 +333,13 @@ zone du bas est repassée **au-dessus** de l'ovale sans qu'aucune erreur ne soit
 que les mesures de hauteur ne bougent. Retenu : **en changeant de mode de disposition, relever
 les positions, pas seulement les tailles.**
 
+**D23. Une garde écrite pour un cas devenue fausse quand le cas change.** Le gestionnaire de
+clic de la carte du sprint commençait par `if (S.sprintOpen == null) return` -- juste, tant que
+la carte n'existait que pendant un sprint. Dès que la carte est devenue permanente, cette ligne
+a rendu **toute** la carte inerte hors sprint : le tri de la liste de départ par dossard ou par
+pays ne répondait plus, sans aucune erreur. Retenu : **en rendant permanent ce qui était
+conditionnel, relire les gardes qui portaient sur la condition.**
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été

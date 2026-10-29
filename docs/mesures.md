@@ -1890,3 +1890,20 @@ refaits :
   pays ; la moitié droite de chaque ligne restait vide. Revenue à 176 px.
 - **Sortir la barre d'actions de la zone du bas pour la mettre à côté de l'ovale** : en
   1440 × 900 la piste tombait à 438 × 196, soit le quart de sa surface. Abandonné.
+
+## 46. Les commandes de la carte du sprint — build 140
+
+Relevé des commandes de `#scard`, carte ouverte et carte en attente, et comparaison avec la
+build 118 (avant que la carte devienne permanente) :
+
+| | Build 118, sprint ouvert | Build 140, sprint ouvert | Build 140, hors sprint |
+|---|---|---|---|
+| Familles de commandes | clear, close, detected, live, manual, ne, send, shift, sort, target | **les mêmes** | les mêmes **sauf** close et send |
+| Boutons | ← → Manual, Detected order, Clear and record, Live, Live · waiting, Close, Not eligible, 1 2 3 4, BIB, NOC | **les mêmes** | les mêmes sauf Live · waiting et Close |
+
+Rien n'avait donc disparu de la carte **ouverte** ; c'est la carte **permanente** qui était
+livrée sans aucune commande.
+
+Vérifié au clic, hors sprint : le tri par pays réordonne la liste (`ESP FRA GBR NED SLO` →
+`BEL BRA COL DEN ESP`) et le retour par dossard la rétablit ; la flèche → fait passer le tour
+jugé de 10 à 11 et la flèche ← le ramène.

@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 139</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 140</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2080,23 +2080,18 @@ function startListHtml(k, seq, tgt, fin, N) {
   return h + '</div></div>';
 }
 
-// Hors sprint, la carte reste en place et annonce le prochain : « il faut conserver la carte des sprints en
-// permanence » (l'opérateur, 29 octobre 2026). Elle ne porte alors aucune commande -- rien n'est à juger -- mais
-// garde ses places vides et la liste de départ entière.
-function waitingCardHtml() {
-  const lap = dispLap(), n = nextSprintNum(lap), left = sprintLap(n) - lap;
-  const head = S.finished ? 'RACE FINISHED' : 'SPRINT ' + n;
-  const sub = S.finished ? '' : left <= 0 ? 'this lap' : plural(left, 'lap') + ' to go';
-  let h = `<div class="sh"><b>${head}</b><span class="lapn">${sub}</span><span class="sp"></span><span class="cnt">waiting for the bell</span></div>`;
-  h += '<div class="sbody"><div class="sleft"><div class="shd"><span></span><span>BIB</span><span>NOC</span><span>drag to reorder</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">';
-  for (let p = 1; p <= SEND_PLACES; p++) h += `<div class="srow empty"><span class="pl">${p}</span><span></span><span class="nm">—</span><span></span><span></span><span></span></div>`;
-  h += '</div></div>' + startListHtml(null, [], 0, false, 0) + '</div>';
-  return h;
-}
+// La carte montre le sprint ouvert, ou, hors sprint, le PROCHAIN -- et elle garde alors toutes ses commandes :
+// « il existait beaucoup plus d'options qu'actuellement dans les cartes de sprint. Il faut les restaurer ! »
+// (l'opérateur, 29 octobre 2026). Seules « Send » et « Close » disparaissent avant la cloche : il n'y a rien à
+// envoyer et rien à fermer. Tout le reste -- le tour jugé, la saisie manuelle, l'ordre mesuré, l'enregistrement,
+// le mode Live, la place suivante, le tri de la liste de départ -- se règle d'avance sur le prochain sprint.
+function sprintShown() { return S.sprintOpen != null ? S.sprintOpen : nextSprintNum(dispLap()); }
 function renderCard() {
-  const k = S.sprintOpen; document.body.classList.toggle('sprintmode', k != null);
-  if (k == null) { scard.innerHTML = waitingCardHtml(); return; }
+  const open = S.sprintOpen != null; document.body.classList.toggle('sprintmode', open);
+  const k = sprintShown();
+  if (k == null || k > NSPRINTS) { scard.innerHTML = ''; return; }
   const s = sp(k), O = spOrder(k), seq = O.seq, fin = isFinal(k), st = spSendState(k);
+  const toGo = sprintLap(k) - dispLap();
   const inRace = S.riders.filter(r => !S.withdrawn.has(r.bib)), N = fin ? Math.max(inRace.length, seq.length) : SEND_PLACES;
   const focused = document.activeElement && document.activeElement.id === 'sinp', inpVal = focused ? document.activeElement.value : (s.manualText || '');
   let cnt = '';
@@ -2108,8 +2103,8 @@ function renderCard() {
   let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>${fin ? `<span class="lapn">Lap ${LAPS} · points ×2</span>` : `<button class="btn xs quiet" data-sact="shift:-1" title="Judge this sprint on the previous lap">←</button><span class="lapn">Lap ${s.lap}</span><button class="btn xs quiet" data-sact="shift:1" title="Judge this sprint on the next lap">→</button>`}
     <span style="width:8px"></span><button class="btn xs${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵  or  bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}
     <button class="btn xs quiet" data-sact="detected" title="Back to the order the loops measured">Detected order</button><button class="btn xs quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>${s.recordFrom != null ? '<span class="pill acc">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}
-    <span class="cnt">${cnt}</span><span class="sp"></span>
-    <button class="btn xs${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button><button class="btn xs ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button><button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button></div>`;
+    <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
+    <button class="btn xs${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button>${open ? `<button class="btn xs ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button><button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
   h += '<div class="sbody"><div class="sleft">';
   // riders without transponder: place them in advance
   for (const [bib] of S.noTp) {
@@ -2155,7 +2150,7 @@ function renderCard() {
 }
 // one click handler for the card
 scard.addEventListener('click', e => {
-  const t = e.target.closest('[data-sact]'); if (!t) return; const k = S.sprintOpen; if (k == null) return;
+  const t = e.target.closest('[data-sact]'); if (!t) return; const k = sprintShown(); if (k == null || k > NSPRINTS) return;
   const [act, a, b] = t.dataset.sact.split(':'), s = sp(k);
   if (act === 'shift') { pushUndo(spLabel(k) + ' lap shift'); spShift(k, +a); }
   else if (act === 'manual') { s.manual = !s.manual; dirty = true; render(); const i = $('#sinp'); if (i) i.focus(); return; }
@@ -2163,7 +2158,7 @@ scard.addEventListener('click', e => {
   else if (act === 'clear') { pushUndo(spLabel(k) + ' clear and record'); spClearRecord(k); }
   else if (act === 'live') { s.live = !s.live; S.liveMode = s.live; logEvent('SPRINT', spLabel(k) + (s.live ? ' · live: every place leaves as it is read' : ' · manual sending: nothing leaves without Send') + ' · operator', true); }
   else if (act === 'send') { if (!s.live) { pushUndo(spLabel(k) + ' send'); spSend(k, 'send'); } }
-  else if (act === 'close') spClose(k);
+  else if (act === 'close') { if (S.sprintOpen != null) spClose(k); }
   else if (act === 'target') s.target = +a;
   else if (act === 'photo') { pushUndo(spLabel(k) + ' photo confirmed'); spPhotoOk(k, +a); }
   else if (act === 'remove') { pushUndo(spLabel(k) + ' remove BIB ' + a); spRemove(k, +a); }
@@ -2175,7 +2170,7 @@ scard.addEventListener('click', e => {
   else if (act === 'sort') S.slSort = a;
   dirty = true; render();
 });
-scard.addEventListener('dblclick', e => { const row = e.target.closest('.slrow'); const k = S.sprintOpen; if (!row || k == null) return; const bib = +row.dataset.sl; if (S.withdrawn.has(bib)) return; pushUndo(spLabel(k) + ' place BIB ' + bib); spInsert(k, bib, spTarget(k), 'double-click'); dirty = true; render(); });
+scard.addEventListener('dblclick', e => { const row = e.target.closest('.slrow'); const k = sprintShown(); if (!row || k == null || k > NSPRINTS) return; const bib = +row.dataset.sl; if (S.withdrawn.has(bib)) return; pushUndo(spLabel(k) + ' place BIB ' + bib); spInsert(k, bib, spTarget(k), 'double-click'); dirty = true; render(); });
 scard.addEventListener('input', e => { if (e.target.id === 'sinp') { const k = S.sprintOpen; if (k != null) sp(k).manualText = e.target.value; e.target.classList.remove('err'); } });
 scard.addEventListener('keydown', e => {
   if (e.target.id === 'stgt') { if (e.key === 'Enter') { const k = S.sprintOpen, v = parseInt(e.target.value, 10); if (k != null && v >= 1) { sp(k).target = v; dirty = true; render(); } } return; }
@@ -2491,7 +2486,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 139';
+  $('#buildno').textContent = 'build 140';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
