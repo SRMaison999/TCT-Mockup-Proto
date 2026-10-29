@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 131</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 132</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1434,8 +1434,15 @@ function renderOval(G, M) {
     const mine = all.filter(it => it.g === g); if (!mine.length) return;
     // The width is the riders' OWN spread across the track, not the widest lane in use: two riders side by side were
     // inheriting the bunch's width because one of them sat in an outer lane. So the bubble is centred on them.
+    // La bulle ne déborde pas de la piste non plus (l'opérateur, 29 octobre 2026 : « oui rentre la bulle aussi »).
+    // Ses deux bords sont donc calculés puis ramenés dans la demi-largeur HW, et son milieu s'en déduit : borner la
+    // seule demi-largeur ne suffirait pas, une bulle décentrée dépasserait encore d'un côté.
     const offs = mine.map(it => laneOff[it.lane]), oMin = Math.min(...offs), oMax = Math.max(...offs);
-    const mid = (oMin + oMax) / 2, halfW = (oMax - oMin) / 2 + DOT_R + BUB_M;
+    // On borne à HW moins 2 : le trait de 1,5 qui dessine le bord est centré dessus, et la bande suit la courbe
+    // par segments, ce qui ajoute quelques dixièmes dans les virages. Mesuré : 31,2 en bornant à HW tout rond.
+    const BUB_HW = HW - 2;
+    const lo = Math.max(-BUB_HW, oMin - DOT_R - BUB_M), hi = Math.min(BUB_HW, oMax + DOT_R + BUB_M);
+    const mid = (lo + hi) / 2, halfW = (hi - lo) / 2;
     const pad = (DOT_R + BUB_M) / PXM_B;                       // the same margin along the track, given in metres
     const sHead = Math.max(...mine.map(it => it.s)), sTail = Math.min(...mine.map(it => it.s));
     const colour = groupColor(g, G);   // the bubble carries the group's own colour, the same one its timeline box has
@@ -2481,7 +2488,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 131';
+  $('#buildno').textContent = 'build 132';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

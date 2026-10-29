@@ -1773,3 +1773,7 @@ mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les é
     piste ». Le rayon d'un dossard passe de 15 à 10 et l'écart des files de 24 à 19, si bien
     qu'un coureur de la file extérieure atteint 29 pour une demi-piste de 30. Il en atteignait
     **39** auparavant, soit 9 au-delà du bord.
+
+90. **La bulle d'un groupe ne déborde pas non plus.** « oui rentre la bulle aussi ». Ses deux
+    bords sont calculés puis ramenés dans la piste, et son milieu s'en déduit -- borner la
+    seule largeur ne suffisait pas, une bulle décentrée dépassait encore d'un côté.

@@ -1806,5 +1806,20 @@ atteint `LANE + DOT_R` depuis l'axe.
 Relevé sur 60 images d'un tour, en mesurant la distance de chaque dossard au tracé de la piste :
 **débordement maximal 29,2** pour 30 permis, et **0 paire de dossards qui se chevauchent**.
 
-La bulle d'un groupe, qui se mesure sur ses coureurs (`LANE + DOT_R + BUB_M`), passe de 43 à
-33 : elle dépasse encore la piste de 3 unités, ce qui est voulu — c'est un halo.
+### La bulle rentrée dans la piste — build 132
+
+La bulle se mesurait sur ses coureurs (`LANE + DOT_R + BUB_M`), soit 43 avant la build 131 et
+33 après : elle dépassait encore. Ses deux bords sont maintenant **ramenés dans la piste**, et
+son milieu s'en déduit.
+
+Borner la seule demi-largeur ne suffit pas : une bulle décentrée -- un groupe sur la file du
+milieu et la file extérieure -- dépasse encore du côté large. Et borner les bords à `HW` tout
+rond laisse encore **31,2**, parce que le trait de 1,5 qui dessine le bord est centré dessus et
+que la bande suit la courbe par segments. La borne est donc `HW − 2`.
+
+Relevé sur 60 images d'un tour, distance au tracé de la piste, bord du trait compris :
+
+| | Mesuré | Permis |
+|---|---|---|
+| Dossard le plus éloigné | 29,1 | 30 |
+| Bord de bulle le plus éloigné | **29,3** | 30 |
