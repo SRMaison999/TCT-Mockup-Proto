@@ -1166,12 +1166,19 @@ seul tenant, **73 lignes**, et la disposition en est sortie seule.
 | Étage | Boîte | Dégagement |
 |---|---|---|
 | Bouton Pursuit B | y 256 → 281 | 33 px au-dessus du panneau |
-| Panneau, trois lignes d'une seule largeur | y 314 → 402, contenu **395** | 7 px de marge |
+| Panneau, **quatre boîtes égales deux par deux** | centre (417, 296) dans un ovale de 833 × 620 | — |
 | Bouton Pursuit A | y 426 → 451 | 24 px sous le panneau |
 | `LAP` + `TO GO`, contre la piste, centrés sur la ligne d'arrivée | y 457 → 481 | 6 px sous lui |
 
 Pursuit A recule d'un cran parce qu'il partage la ligne droite d'arrivée avec les deux
 compteurs, qui prennent le bord de piste : ce sont eux qui doivent être « près de la ligne ».
+
+**La cinquième lecture, et la faute qu'elle a révélée.** L'opérateur a redit que la disposition
+ne allait pas. En comparant la capture à **sa propre maquette**, la cause était là : il avait
+dessiné un **bloc compact de quatre boîtes, deux par deux**, et j'avais livré **trois bandes
+pleine largeur empilées**. Ce n'était pas un défaut de réglage, c'était son dessin remplacé par
+le mien sans que je m'en aperçoive. Le panneau est revenu à sa forme : `LEADER` et le prochain
+sprint sur la première ligne, l'horloge et le bouton de départ sur la seconde.
 
 **Un défaut trouvé à l'œil et non par la mesure** : le champ du leader s'était rangé à côté de
 l'horloge, laissant le bouton de départ seul à la ligne suivante — alors que l'opérateur les

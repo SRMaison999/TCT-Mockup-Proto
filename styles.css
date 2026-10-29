@@ -343,15 +343,15 @@ body.sprintmode #scard{display:flex}
    - A foreignObject catches the pointer over its whole RECTANGLE, transparent or not. The frames are therefore
      see-through and only what is drawn takes the pointer. */
 
-/* The panel: three rows of one height, the middle one split between the clock and the start button. */
-.ifg{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:var(--sans)}
-.ifb{display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;box-sizing:border-box;
+/* The panel: four equal boxes, two by two, as the operator drew them. NOT three full-width bands — that was mine,
+   not his, and it is what made the screen look like a pile. */
+.ifg{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-family:var(--sans)}
+.ifb{display:flex;align-items:center;gap:7px;height:34px;padding:0 10px;box-sizing:border-box;
   background:var(--deep);border:1px solid var(--line);border-radius:4px;white-space:nowrap;overflow:hidden}
 .ifb .ifk{font:600 10px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
 .ifb .ifv{font:600 18px var(--mono);font-variant-numeric:tabular-nums}
 .ifb .ifv.sm{font-size:13px}
 .ifb .ifu{font:500 11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
-#ifleadb,#ifnext{grid-column:1 / -1}
 .ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 5px;
   border-radius:3px;font:600 13px var(--mono);color:#fff;background:var(--line2)}
 .ifclock{justify-content:center}
@@ -375,7 +375,7 @@ body.sprintmode #scard{display:flex}
 /* The lap counter and the laps to go, side by side on the finish line itself. Being held back from the outputs is
    shown by the ZONE going red — there is no field that says so — and a very small button makes the change. */
 .togorow{display:flex;justify-content:center;gap:6px;height:100%}
-.togorow .ifb{flex:0 0 auto;width:auto;height:100%}
+.togorow .ifb{flex:0 0 auto;width:auto;height:30px}
 .ifstep{display:none;gap:3px}
 #iftogo.manual .ifstep{display:inline-flex}
 .ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
