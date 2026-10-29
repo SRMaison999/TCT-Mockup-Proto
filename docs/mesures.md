@@ -1525,3 +1525,14 @@ qu'ils sont là.
 
 Couleurs des bordures gauches relevées sur les deux blocs : `rgb(49, 211, 135)` pour
 `1-Leaders`, `rgb(52, 180, 244)` pour `2-Bunch` — les couleurs de leurs bulles sur l'ovale.
+
+## 29. Ce que l'en-tête d'un bloc porte après le nettoyage — build 115
+
+Relevé sur les deux blocs de la même course qu'au §28 :
+
+| Bloc | En-tête lu dans le DOM |
+|---|---|
+| Groupe de tête | `1-Leaders` · `3 riders` · `leader` |
+| Peloton | `2-Bunch` · `13 riders` · `−7 m` |
+
+Dépassement d'un en-tête, d'une ligne de coureur, du corps de la colonne : 0 px.

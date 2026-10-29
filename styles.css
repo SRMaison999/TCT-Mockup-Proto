@@ -48,9 +48,6 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .fld .u{font:500 12px var(--mono);color:var(--muted)}
 /* timeline */
 .tl{width:292px;flex:0 0 292px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-width:0}
-.tl .hd{display:flex;align-items:baseline;gap:8px;padding:8px 10px 6px;border-bottom:1px solid var(--line)}
-.tl .hd .lbl{color:var(--fg)}
-.tl .hd .note{color:var(--muted);font-size:11px;margin-left:auto}
 .tl .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column}
 .tgrp{border:1px solid var(--line2);border-radius:4px;background:#17191c;padding:3px 4px 4px}
 .tgrp.lead{border-color:var(--fg)}
@@ -121,16 +118,15 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .tgap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;color:var(--muted);font:500 12px var(--mono);padding:0 6px;min-height:22px;border-radius:3px}
 .tgap::before,.tgap::after{content:"";height:1px;background:var(--line2)}
 .tgap.over{background:var(--acc-soft);color:var(--fg)}
-.tgap .nz{display:none;font:600 12px var(--sans);color:var(--acc)}
+.tgap .nz{font:600 12px var(--sans);color:var(--dim)}   /* lisible en permanence (opérateur, 29 octobre 2026) */
 .tgap{min-height:30px;margin:2px 0;border:1px dashed transparent}
 body.dragging .tgap{border-color:var(--acc);background:#161c2a}
-body.dragging .tgap .nz{display:inline}
+body.dragging .tgap .nz{color:var(--acc)}
 body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .tier{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 4px 3px}
 .tier:first-child{padding-top:2px}
 .wd{border:1px solid var(--line2);border-radius:4px;background:#141618;padding:3px 4px 4px;margin-top:6px;opacity:.85}
 .wd .trow{cursor:default;grid-template-columns:34px 22px 36px minmax(0,1fr) 34px auto}
-.gh .gno{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:3px;background:var(--line);color:var(--fg);font:500 11px var(--mono)}
 .gh .ggap{flex:0 0 auto;font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
 .tbar{border-top:1px solid var(--line);padding:6px 10px 8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;align-items:center;font-size:12px;color:var(--muted);box-sizing:border-box}
 .tbar b{color:var(--fg)}

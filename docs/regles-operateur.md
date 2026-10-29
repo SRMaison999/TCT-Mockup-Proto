@@ -1556,3 +1556,17 @@ chaque ligne de coureur **trois** : le dossard, le drapeau et le code pays.
 55. **Une ligne de coureur ne porte plus son nom.** Le nom reste dans l'infobulle de la ligne
     et dans le classement. Les marqueurs d'état — hors piste, sans transpondeur, non lu, hors
     sprint, sans points — restent sur la ligne : leur retrait n'a pas été demandé.
+
+**29 octobre 2026, sur une capture annotée en rouge.** Trois choses de plus quittent la
+timeline, et une reste :
+
+56. **La colonne n'a plus d'en-tête.** Le titre « Lap timeline » et la note « measured
+    positions · laps as validated » sont retirés.
+57. **La pastille du numéro de groupe est retirée.** Le nom la contient déjà : `1-Leaders`,
+    `2-Bunch`. Le numéro reste calculé, c'est son affichage en double qui disparaît.
+58. **La bande entre deux blocs ne porte plus l'écart** « 2 m · 0,1 s ». L'écart d'un groupe
+    est déjà dans son en-tête.
+59. **La zone de dépôt reste, et devient permanente.** Mot pour mot : « on pourrait les laisser
+    visibles en permanence ». Elle était écrite seulement pendant un glisser ; elle est
+    maintenant lisible tout le temps, en gris, et passe à la couleur d'accent au glisser.
+60. **Le nombre de coureurs n'est plus suivi de « with the bunch » ni de « with BIB … ».**
