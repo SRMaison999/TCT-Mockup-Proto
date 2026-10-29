@@ -148,7 +148,7 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .gh .ggap{flex:0 0 auto;font:600 9px var(--mono);color:#121416;font-variant-numeric:tabular-nums}
 /* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
    et à droite de la timeline (l'opérateur, 29 octobre 2026). */
-.acts{grid-row:2;grid-column:1;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
+.acts{grid-row:2;grid-column:1;position:relative;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
 .acts .tbar{flex:1 1 280px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px 12px}
 /* Les deux dispositions, au choix depuis la barre du haut. */
 .below{grid-row:2;min-height:0;display:grid;gap:8px;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
@@ -183,7 +183,7 @@ body.lay-side .acts .tbar{flex:0 0 auto;width:100%}
 .tbar .selinfo{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;
   padding-bottom:6px;border-bottom:1px solid var(--line)}
 .tbar .selinfo > span,.tbar .selinfo > b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tbar .selinfo .clr{margin-left:auto;flex:0 0 auto;padding:4px 10px}
+.tbar .selinfo .clr{margin-left:auto;flex:0 0 auto;padding:4px 10px;margin-right:62px}
 .tbar .grpb{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .tbar .grpb .btn{padding:7px 13px;font-size:13px;border-radius:4px}
 .tbar .grpb .btn.xs{padding:7px 13px;font-size:13px;border-radius:4px}
@@ -347,9 +347,9 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .cfgfield{display:flex;align-items:center;gap:8px}
 .clock{font:600 18px var(--mono);color:var(--fg);background:#17191c;border:1px solid var(--line2);border-radius:4px;padding:3px 12px;font-variant-numeric:tabular-nums}
 /* the transport block, once moved into the top bar by railHide */
-/* La barre du haut est pleine en 1440 avec le rail ouvert : sans cette ligne le sélecteur était comprimé à 2 px
-   de large, donc invisible et incliquable. Mesuré. */
-#layseg{flex:0 0 auto}
+/* Le sélecteur des deux dispositions : dans le coin haut droit du panneau des actions, c'est-à-dire dans la zone
+   qu'il commande. La ligne de sélection lui réserve sa place pour qu'il ne la recouvre pas. */
+#layseg{position:absolute;top:9px;right:10px;z-index:2}
 #layseg .btn{font-family:var(--mono);letter-spacing:-1px}
 .bar #simtransport{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .bar #simtransport .sh{padding:0;gap:6px}

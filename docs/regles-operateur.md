@@ -1730,11 +1730,14 @@ proposer (§14, point 1 et point 3).
 > qu'offrir cette flexibilité à l'utilisateur est très intéressante
 
 82. **La zone sous l'ovale prend toute la place que l'ovale laisse**, et se dispose de deux
-    manières, au choix de l'utilisateur depuis la barre du haut :
+    manières, au choix de l'utilisateur :
     - **les propositions au-dessus, les actions en dessous**, toutes deux sur toute la largeur ;
     - **les actions en colonne à gauche**, les propositions à leur droite.
-83. **C'est un choix de l'utilisateur, pas un réglage d'essai.** Il reste dans la barre du
-    haut, il ne disparaîtra pas.
+83. **C'est un choix de l'utilisateur, pas un réglage d'essai.** Il ne disparaîtra pas.
+    **Son sélecteur est dans le coin haut droit du panneau des actions**, c'est-à-dire dans la
+    zone qu'il commande. Il avait d'abord été mis dans la barre du haut : « mais le sélecteur
+    de disposition de actions et propositions se trouve dans la barre en haut de l'écran ? !
+    C'est ridicule ! » (29 octobre 2026).
 
 ### Les commandes respirent
 

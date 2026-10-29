@@ -1845,3 +1845,10 @@ la mesure, qu'aucune capture n'avait montrés :
 
 Quand la barre est pleine, c'est le mot « RACE LEADER » qui cède — de 85 px à 0 dans le cas le
 plus serré — et non le bouton `Race log`.
+
+### Le sélecteur dans le panneau des actions — build 134
+
+Vérifié dans les deux dispositions, en 1440 : le sélecteur est **dans** le panneau des actions
+(coin haut droit, à 9 px du haut et 10 px de la droite), il ne recouvre jamais le bouton
+`Clear` -- la ligne de sélection lui réserve 62 px -- et la bascule fonctionne dans les deux
+sens. La barre du haut, débarrassée de lui, ne déborde plus dans aucun état.
