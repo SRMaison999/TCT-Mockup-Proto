@@ -47,15 +47,23 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .fld .v.sm{font-size:14px}
 .fld .u{font:500 12px var(--mono);color:var(--muted)}
 /* timeline */
-.tl{width:292px;flex:0 0 292px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-width:0}
-.tl .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column}
-.tgrp{border:1px solid var(--line2);border-radius:4px;background:#17191c;padding:3px 4px 4px}
+.tl{width:118px;flex:0 0 118px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-width:0}
+.tl .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:5px 4px;display:flex;flex-direction:column}
+.tgrp{border:1px solid var(--line2);border-radius:4px;background:#17191c;padding:0 0 3px;overflow:hidden}
 .tgrp.lead{border-color:var(--fg)}
 .tgrp.pinned{border-color:var(--acc)}
 .tgrp.incident{border-color:var(--crit);border-style:dashed}
 .tgrp.over{background:var(--acc-soft)}
-.gh{display:flex;align-items:center;gap:6px;height:24px;padding:0 4px;font:500 12px var(--sans);color:var(--muted);white-space:nowrap}
-.gh .gi{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* L'en-tête d'un bloc : une bande à la couleur du groupe, sur deux lignes, cliquable en entier pour sélectionner
+   tout le groupe (son croquis du 29 octobre 2026). */
+.gh{display:flex;flex-direction:column;gap:1px;padding:3px 5px 4px;margin-bottom:3px;cursor:pointer;
+  background:var(--gcol, var(--line));color:#121416;font:500 12px var(--sans)}
+.gh .ghl{display:flex;align-items:center;gap:4px;min-width:0}
+.gh .gn{flex:1 1 auto;min-width:0;font:700 12px var(--sans);text-transform:uppercase;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#121416}
+.gh .gx{flex:0 0 auto;padding:0 3px;height:15px;line-height:13px;background:transparent;border-color:#12141633;color:#121416}
+.gh .pill{margin-top:2px;align-self:flex-start}
+.gh .gi{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font:600 10px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:#121416cc}
 .gq{display:flex;align-items:center;gap:6px;height:24px;padding:0 4px;font:500 12px var(--sans);color:#c9d6f5;white-space:nowrap}
 .gq span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .gh b{color:var(--fg);font-size:12px;letter-spacing:.04em;cursor:pointer}
@@ -72,35 +80,38 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .gh span b{color:#8FB4FF}
 .btn.ok{background:#143824;border-color:var(--good);color:var(--good);font-weight:700}
 .trow .lap .btn.ok{padding:0 5px;height:18px;line-height:16px;margin-left:3px}
-.trow{touch-action:none;display:grid;grid-template-columns:34px 22px 36px minmax(0,1fr) 0 auto;gap:6px;align-items:center;height:26px;padding:0 4px;border-radius:3px;cursor:grab;user-select:none}
+.trow{touch-action:none;display:grid;grid-template-columns:34px 20px minmax(0,1fr) auto;gap:4px;align-items:center;height:26px;padding:0 4px;border-radius:3px;cursor:grab;user-select:none}
 .trow{position:relative}
 .trow:hover{background:#20242a}
-.trow .ra{display:none;position:absolute;left:40px;right:3px;top:2px;gap:2px;background:#20242a;justify-content:flex-end}
-.trow:hover .ra{display:flex}
+.trow:hover{background:#262b33}
 .trow.sel{background:var(--acc-soft);box-shadow:inset 2px 0 0 var(--acc)}
 .trow.hl{background:#262b33}
 .trow.dragging{opacity:.4}
 .dragghost{position:fixed;z-index:50;pointer-events:none;background:var(--acc);color:#0b1020;font:600 12px var(--sans);padding:3px 9px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .trow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.trow .noc{font:600 13px var(--mono);letter-spacing:.04em;color:var(--fg)}
+.trow .noc{font:600 13px var(--mono);letter-spacing:.02em;color:var(--fg);overflow:hidden}
+.trow.marked .noc{color:var(--warn)}
 .trow .flag{width:22px;height:15px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 .trow .nm small{font-size:11px;margin-left:4px;color:var(--warn)}
 .trow .nm small.crit{color:var(--crit)}
-.trow .lap{font:600 12px var(--mono);text-align:right;white-space:nowrap}
+.trow .lap{font:600 12px var(--mono);text-align:right;white-space:nowrap;display:flex;align-items:center;gap:2px}
 .trow .lap{cursor:pointer}
 .trow .lap .up{color:var(--good)}.trow .lap .down{color:var(--warn);margin-left:3px}.trow .lap .pend{color:#8FB4FF;margin-left:3px}
 .ledger .ctr{display:inline-flex;align-items:center;gap:4px}
 .ledger .ctr .k{font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
 .ledger .ctr b{min-width:14px;text-align:center;font:600 13px var(--mono)}
 .ledger .ctr b.up{color:var(--good)}.ledger .ctr b.down{color:var(--warn)}
-.ledger .pal{display:inline-flex;gap:3px;align-items:center;margin-left:6px}
+.ledger .pal{display:inline-flex;flex-wrap:wrap;gap:3px;align-items:center;margin-left:0}
 .ledger .sw{width:16px;height:16px;border-radius:3px;border:2px solid transparent;padding:0;cursor:pointer}
 .ledger .sw.on{border-color:var(--fg)}
 .ledger input[type=color]{width:22px;height:20px;padding:0;border:1px solid var(--line2);border-radius:3px;background:none;margin-left:4px;cursor:pointer}
-.ledger{margin:2px 4px 6px 38px;border:1px solid var(--line2);border-radius:4px;background:#141618;padding:4px 6px;font-size:12px}
-.ledger .lh{display:flex;align-items:center;gap:8px;height:24px;color:var(--muted)}
+/* Le panneau des compteurs vit maintenant dans la colonne des actions, large de 268 px : tout y passe à la ligne
+   plutôt que de déborder. */
+.ledger{grid-column:1 / -1;margin:2px 0 0;border:1px solid var(--line2);border-radius:4px;background:#141618;padding:4px 6px;font-size:12px}
+.ledger .lh{display:flex;align-items:center;flex-wrap:wrap;gap:6px;row-gap:3px;min-height:24px;color:var(--muted)}
 .ledger .lh b{color:var(--fg)}
 .ledger .lh .r{margin-left:auto;display:flex;gap:3px}
+.ledger .lh .k.lbl{font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .ledger .ll{display:grid;grid-template-columns:52px 50px minmax(0,1fr) auto;gap:8px;align-items:center;height:24px;border-top:1px solid var(--line)}
 .ledger .ll .who{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ledger .ll.off span{text-decoration:line-through;color:var(--dim)}
@@ -108,17 +119,15 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 /* A group's box wears the colour of its bubble on the oval (operator, 29 October 2026): a band down its left edge,
    and its name in the same colour, so the eye joins the two views without reading a word. This comes AFTER the
    state rules above, which also set border-color: declared before them it was silently overridden — pitfalls D17. */
-.tgrp.hascol{border-left:4px solid var(--gcol)}
-.tgrp.hascol .gh > b{color:var(--gcol)}
 /* The group's name on the oval wears the project's own typeface, the same one its name in the timeline box wears.
    Written as an SVG font-family attribute it carried « IBM Plex Sans » ALONE, with no fallback list, so wherever
    the web font had not loaded it — and it alone — dropped to the browser's default serif. */
 .glabel{font:700 15px var(--sans)}
 .trow .g{font:500 12px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tgap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;color:var(--muted);font:500 12px var(--mono);padding:0 6px;min-height:22px;border-radius:3px}
+.tgap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:5px;color:var(--muted);font:500 10px var(--mono);padding:0 2px;min-height:18px;border-radius:3px}
 .tgap::before,.tgap::after{content:"";height:1px;background:var(--line2)}
 .tgap.over{background:var(--acc-soft);color:var(--fg)}
-.tgap .nz{font:600 12px var(--sans);color:var(--dim)}   /* lisible en permanence (opérateur, 29 octobre 2026) */
+.tgap .nz{font:600 9px var(--sans);letter-spacing:.02em;color:var(--dim)}   /* lisible en permanence (opérateur, 29 octobre 2026) */
 .tgap{min-height:30px;margin:2px 0;border:1px dashed transparent}
 body.dragging .tgap{border-color:var(--acc);background:#161c2a}
 body.dragging .tgap .nz{color:var(--acc)}
@@ -126,8 +135,8 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .tier{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 4px 3px}
 .tier:first-child{padding-top:2px}
 .wd{border:1px solid var(--line2);border-radius:4px;background:#141618;padding:3px 4px 4px;margin-top:6px;opacity:.85}
-.wd .trow{cursor:default;grid-template-columns:34px 22px 36px minmax(0,1fr) 34px auto}
-.gh .ggap{flex:0 0 auto;font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.wd .trow{cursor:default;grid-template-columns:34px 20px minmax(0,1fr) auto}
+.gh .ggap{flex:0 0 auto;font:600 10px var(--mono);color:#121416;font-variant-numeric:tabular-nums}
 /* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
    et à droite de la timeline (l'opérateur, 29 octobre 2026). */
 .acts{min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px}
@@ -145,7 +154,7 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr) var(--logh, 300px);gap:10px}
 /* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
    place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
-.right{display:none;flex:0 0 auto;width:clamp(560px, 40%, 700px);min-height:0}
+.right{display:none;flex:0 0 auto;width:clamp(420px, 26%, 460px);min-height:0}
 body.sprintmode .right{display:flex}
 .oval{flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .oval svg{width:100%;height:100%;display:block;touch-action:none;user-select:none}
@@ -183,14 +192,14 @@ body.sprintmode #scard{display:flex}
 .sh input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:3px 8px;width:150px}
 .sh input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .sh input.err{border-color:var(--crit);background:#2a1414}
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(300px,1fr) minmax(220px,270px);gap:18px;padding:6px 10px 8px;overflow:auto}
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(230px,1fr) minmax(166px,180px);gap:18px;padding:6px 10px 8px;overflow:auto}
 .sleft,.sright{min-width:0;display:flex;flex-direction:column}
-.shd{display:grid;grid-template-columns:30px 34px 40px minmax(0,1fr) 66px 28px 28px;gap:6px;align-items:center;height:20px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
-.shd.sl{grid-template-columns:34px 40px minmax(0,1fr) 72px}
+.shd{display:grid;grid-template-columns:30px 34px 44px minmax(0,1fr) 56px 28px 28px;gap:6px;align-items:center;height:20px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
+.shd.sl{grid-template-columns:34px 44px minmax(0,1fr)}
 .shd > span{overflow:hidden;text-overflow:ellipsis}
 .shd .srt{cursor:pointer}
 .shd .srt.on{color:#8FB4FF}
-.srow{display:grid;grid-template-columns:30px 34px 40px minmax(0,1fr) 66px 28px 28px;gap:6px;align-items:center;height:28px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
+.srow{display:grid;grid-template-columns:30px 34px 44px minmax(0,1fr) 56px 28px 28px;gap:6px;align-items:center;height:28px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
 .srow .pl{font:600 13px var(--mono);color:var(--muted);cursor:pointer;white-space:nowrap}
 .srow .pl.tgt{color:var(--acc)}
 .srow .noc{font:600 13px var(--mono);letter-spacing:.04em}
@@ -228,7 +237,7 @@ body.sprintmode #scard{display:flex}
 .stgt .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
 .stgt input{font:600 14px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:2px 6px;width:64px}
 .slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.slrow{display:grid;grid-template-columns:34px 40px minmax(0,1fr) 80px;gap:6px;align-items:center;flex:0 0 auto;height:26px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
+.slrow{display:grid;grid-template-columns:34px 44px minmax(0,1fr);gap:6px;align-items:center;flex:0 0 auto;height:26px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
 .slrow .noc{font:600 13px var(--mono);letter-spacing:.04em}
 .slrow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .slrow .st{font:500 11px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}
@@ -486,26 +495,13 @@ body.sprintmode #scard{display:flex}
    ------------------------------------------------------------------------------------------------------------ */
 .vrow{flex-wrap:wrap;gap:4px}
 
-/* 1. La carte du sprint resserrée : 540 px au lieu de 700, en rendant aux colonnes la place de leur texte. */
-body.v-tight .right{width:clamp(520px, 30%, 560px)}
-body.v-tight .sbody{grid-template-columns:minmax(286px,1fr) minmax(196px,220px);gap:14px}
-body.v-tight .shd,body.v-tight .srow{grid-template-columns:28px 34px 40px minmax(0,1fr) 46px 26px 26px;gap:5px}
-body.v-tight .shd.sl,body.v-tight .slrow{grid-template-columns:34px 40px minmax(0,1fr) 50px;gap:5px}
-
-/* 2. La colonne des actions devient une barre sous l'ovale, sur toute la largeur. */
+/* 1. La colonne des actions devient une barre sous l'ovale, sur toute la largeur. */
 body.v-actsbottom .mid{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto var(--logh, 300px)}
 body.v-actsbottom .acts{grid-row:2;grid-column:1;flex-direction:row;align-items:flex-start;flex-wrap:wrap}
 body.v-actsbottom .acts .tbar{flex:1 1 360px}
 body.v-actsbottom .props{flex:1 1 300px;overflow:visible}
 body.v-actsbottom .log{grid-row:3}
 
-/* 3. La timeline se replie pendant le sprint ; l'onglet la ramène jusqu'à la fermeture de la carte. */
-.tlshow{display:none;flex:0 0 16px;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);
-  border-radius:4px;color:var(--muted);font:600 14px var(--sans);cursor:pointer;padding:0}
-.tlshow:hover{color:var(--fg);border-color:var(--acc)}
-body.sprintmode.v-foldtl:not(.tlopen) .tl{display:none}
-body.sprintmode.v-foldtl:not(.tlopen) .tlshow{display:flex}
-
-/* 4. Le bandeau des passages se replie pendant le sprint. */
+/* 2. Le bandeau des passages se replie pendant le sprint. */
 body.sprintmode.v-nolog{--logh:0px}
 body.sprintmode.v-nolog .log{display:none}

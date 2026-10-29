@@ -1613,3 +1613,36 @@ je la trouve beaucoup trop petite verticalement parlant ».
     repliée, passages repliés. **Elles sont temporaires** : une fois son choix fait, la
     disposition retenue est écrite en dur et les interrupteurs disparaissent.
 67. **L'écran doit tenir en 1440 px de large.** C'est la taille des ordinateurs de service.
+
+### La timeline étroite, et les actions au clic
+
+**29 octobre 2026.** Il a redessiné la timeline et l'a transmise en deux captures. Mot pour
+mot :
+
+> je n'ai besoin de consulter les noms des coureurs qu'à un seul endroit : la liste
+> "Standings". Pas besoin dans la carte Sprint.
+
+> Replier la timeline ne me plait pas beaucoup, en revanche on peut la réduire de beaucoup
+> dans la largeur. [...] Avec une timeline aussi étroite toutes les actions individuelles
+> passent par un clic sur sur un coureur et la fenêtre d'option dans la colonne d'action
+> disponible. Et je pense qu'on devrait aussi pouvoir sélectionner le groupe en cliquant dans
+> son en-tête et là aussi les actions disponibles devraient être proposées pour application au
+> groupe entier
+
+68. **Le nom d'un coureur ne s'affiche que dans Standings.** Il quitte la carte du sprint :
+    l'ordre, la liste de départ, les non éligibles, les retirés et le bandeau des coureurs sans
+    transpondeur ne portent plus que le dossard et le code pays. Le nom reste dans l'infobulle
+    de chaque ligne.
+69. **La timeline fait 118 px de large.** Son en-tête de bloc est une bande à la couleur du
+    groupe, sur deux lignes : le nom en capitales, puis le nombre de coureurs et l'écart. Une
+    ligne de coureur porte son dossard, son drapeau et son code pays, rien d'autre.
+70. **Les actions individuelles passent par un clic sur le coureur.** Les boutons qui
+    apparaissaient au survol de sa ligne sont supprimés ; la colonne des actions propose
+    `Laps…` et `Leader` dès qu'un seul coureur est sélectionné, et les compteurs de tours et
+    le choix de couleur s'y ouvrent.
+71. **Un clic sur l'en-tête d'un bloc sélectionne le groupe entier**, et les actions de la
+    colonne s'appliquent alors à tout le groupe.
+
+**Un point à confirmer** : son croquis montre le nom du groupe en blanc sur un bleu soutenu.
+La bande porte la couleur du groupe, celle de sa bulle sur l'ovale, avec le texte en sombre --
+exactement comme les badges de l'ovale qu'il a validés. À dire s'il préfère son bleu.

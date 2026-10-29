@@ -1603,3 +1603,27 @@ Trois faits en ressortent :
   replier la timeline ne coûte aucune hauteur.
 - **La carte resserrée ne vaut qu'au-dessus de son plancher** : 560 px en 1920, 520 en 1440.
   Le nom d'un coureur y passe de 120 à 66 px dans l'ordre et de 90 à 73 px dans la liste.
+
+## 33. La timeline étroite et la carte sans noms — build 119
+
+Ovale dessiné pendant un sprint ouvert, après le passage de la timeline à 118 px et le retrait
+des noms de la carte.
+
+| | 1920 × 1080 | 1440 × 900 |
+|---|---|---|
+| Avant (build 118, aucun essai actif) | 596 × 359 | 253 × 152 |
+| **Build 119, aucun essai actif** | **1010 × 608** | **570 × 343** |
+| avec les actions sous l'ovale | 953 × 574 | 654 × 394 |
+| avec les actions sous l'ovale et sans les passages | 1288 × 775 | 848 × 511 |
+
+La carte du sprint passe de 700 à **460 px** (420 en 1440). La colonne de la timeline passe de
+292 à **120 px**. En 1440, l'ovale gagne ainsi **5,1 fois** sa surface d'avant.
+
+Curiosité à connaître : en 1920, **descendre les actions sous l'ovale fait perdre** 1010 → 953.
+La colonne ne valait plus que 278 px de largeur alors que la barre coûte 128 px de hauteur, et
+l'ovale y était déjà limité par la hauteur. Les deux essais ne valent donc ensemble que si les
+passages se replient aussi.
+
+Vérifié au clic : un coureur sélectionné donne 13 actions dans la colonne, dont `Laps…` et
+`Leader` ; un clic sur l'en-tête du bloc sélectionne les 16 coureurs et laisse les 11 actions
+de groupe. Aucun débordement, et la liste de départ reste entière.

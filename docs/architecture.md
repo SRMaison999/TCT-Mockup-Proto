@@ -337,12 +337,12 @@ produit aucune lecture.
 
 ## 8. Rendu
 
-- **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · marqueurs
-  d'état · tours), boutons de survol (`.ra`), panneau de compteurs et de couleur
-  (`.ledger`), zones de dépôt (`.tgap`, toujours lisibles), section Withdrawn, barre de
-  sélection (`#tbar`). La ligne d'un coureur ne porte pas son nom ; il est dans son
-  infobulle. L'en-tête du bloc porte le nom du groupe, le nombre de coureurs et l'écart
-  (`.ggap`), et rien d'autre. La marque de tours n'apparaît que sur les coureurs en attente
+- **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · marque de
+  proposition), zones de dépôt (`.tgap`, toujours lisibles), section Withdrawn, barre de
+  sélection (`#tbar`). La colonne fait **118 px** : la ligne d'un coureur ne porte ni son nom
+  ni de bouton, tout est dans son infobulle et dans la colonne des actions. L'en-tête du bloc
+  (`.gh`) est une bande à la couleur du groupe, sur deux lignes, cliquable en entier pour
+  sélectionner le groupe (`data-selgroup`). La marque de tours n'apparaît que sur les coureurs en attente
   de validation. **Attention** : `.trow` est aussi le nom des lignes du panneau des
   transpondeurs, dont les règles sont portées par `#simtp` (`pitfalls.md` D20).
 - **`renderOval(G, M)`** : bandes (`#bands`), coureurs sur trois files (dossards de rayon
@@ -358,6 +358,14 @@ produit aucune lecture.
 - **Interactions** : clics délégués sur `#tlbody`, `#tbar`, `#logrows` ; glisser au pointeur
   (`pointerdown/move/up`) sur la timeline et sur l'ovale, avec une étiquette fantôme ; sur
   l'ovale, sélection et actions de groupe **au relâchement** du pointeur.
+
+### La colonne des actions
+
+`#tbar` ne porte plus seulement les actions d'une sélection : quand elle ne contient **qu'un
+seul coureur**, elle ajoute `Laps…` et `Leader`, et le panneau des compteurs et de la couleur
+(`.ledger`) s'ouvre à sa suite. Ces trois choses étaient sur la ligne du coureur, au survol
+(`.ra`), et ont disparu avec la timeline étroite. La délégation de clic `onStripClick` est
+donc attachée à `#tlbody`, à `#propcard` **et** à `#tbar`.
 
 ### La colonne de droite
 
