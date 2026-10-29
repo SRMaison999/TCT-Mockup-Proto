@@ -396,6 +396,18 @@ où il est lu** ; une liste des coureurs déjà jugés sert de verrou. Corollair
 sens : un passage lu pendant l'inéligibilité reste grisé jusqu'à la fermeture du sprint — le
 coureur reprend une place par une **seconde** ligne, il ne transforme pas la première.
 
+**F12. Le filtre qui rejugeait les passages après coup.** La règle F10 dit que chaque passage
+est jugé **une seule fois**, à l'instant où il est lu, et que le verrou est la liste des
+coureurs déjà jugés. Le code posait bien ce verrou (`s.greyed`) pour **griser** la ligne, mais
+le filtre qui construit le classement portait, lui, sur `s.lapped` -- l'inéligibilité de
+**l'instant présent**. Conséquence : un coureur lu alors qu'il était éligible **disparaissait
+du classement** dès qu'il devenait inéligible plus tard dans le sprint, sans rang et sans ligne
+grisée, puisqu'il n'était pas dans le verrou. Écarté du résultat et annoncé nulle part.
+Constaté par l'opérateur le 29 octobre 2026 : « des coureurs non éligibles ont été ignorés (ce
+qui est correct pour le classement) mais jamais annoncés comme non éligibles ». **Retenu : le
+verrou doit servir aux deux usages, l'affichage et le classement ; un seul des deux qui lit
+l'instant présent suffit à rejuger le passé.**
+
 **F11. L'affichage grisé n'est que de l'affichage.** La tentation était de passer le sprint
 d'un modèle « un coureur, une place » à un modèle « un passage, une ligne ». L'opérateur a
 cadré la demande lui-même (`regles-operateur.md` §8). Retenu : le sprint continue

@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 145</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 146</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1917,13 +1917,19 @@ function spOrder(k) {
   const notEligible = read.filter(e => spWhy(k, e.bib)).map(e => ({ ...e, why: spWhy(k, e.bib) }));
   // A crossing read while the rider was not eligible carries no place: it stays where it was read, greyed.
   // He takes a place again once he is eligible, behind the riders placed ahead of him in the timeline.
-  const greyNow = new Set(s.lapped || []), greyEver = s.greyed || [];
+  // Chaque passage est jugé UNE SEULE FOIS, à l'instant où il est lu (pitfalls F10) : le verrou est `s.greyed`,
+  // la liste des coureurs dont le passage a été lu pendant leur inéligibilité. Le filtre portait sur `s.lapped`,
+  // l'inéligibilité de l'instant présent, ce qui rejugeait les passages après coup : un coureur lu alors qu'il
+  // était éligible disparaissait du classement dès qu'il devenait inéligible -- écarté du résultat et annoncé
+  // nulle part, puisque sa ligne n'était pas grisée non plus. C'est ce que l'opérateur a constaté le
+  // 29 octobre 2026 : « des coureurs non éligibles ont été ignorés mais jamais annoncés comme non éligibles ».
+  const greyEver = s.greyed || [];
   const greyed = read.filter(e => greyEver.includes(e.bib));
-  const eligible = read.filter(e => !spWhy(k, e.bib) && !greyNow.has(e.bib));
+  const eligible = read.filter(e => !spWhy(k, e.bib) && !greyEver.includes(e.bib));
   const byBibT = new Map(eligible.map(e => [e.bib, e]));
   let seq;
   if (s.order) {
-    seq = s.order.filter(b => !spWhy(k, b) && !greyNow.has(b)).map(b => { const e = byBibT.get(b); return e ? { ...e } : { bib: b, t: null, raw: 0, manual: true }; });
+    seq = s.order.filter(b => !spWhy(k, b) && !greyEver.includes(b)).map(b => { const e = byBibT.get(b); return e ? { ...e } : { bib: b, t: null, raw: 0, manual: true }; });
     for (const e of eligible) if (!s.order.includes(e.bib)) seq.push({ ...e });
   } else seq = eligible.map(e => ({ ...e }));
   // The rank consequence, as the operator wrote it: in the complete result of an intermediate sprint or of the
@@ -2498,7 +2504,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 145';
+  $('#buildno').textContent = 'build 146';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

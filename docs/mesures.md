@@ -1920,3 +1920,18 @@ jugé de 10 à 11 et la flèche ← le ramène.
 
 Vérifié : les quatre boutons sont bien sur une seule ligne, la carte ne déborde ni en largeur
 ni en hauteur, et la liste de départ reste entière.
+
+## 48. Les passages inéligibles dans la carte — build 146
+
+Cas forcé sur un sprint ouvert, par le harnais `window.__proto` : deux coureurs déclarés
+inéligibles **avant** leur passage, et un coureur déjà classé déclaré inéligible **après** le
+sien.
+
+| | Avant la correction | Après |
+|---|---|---|
+| Coureur inéligible au moment de son passage | ligne grisée « no points », sans rang | **identique** : `12 SUI no points`, `52 ITA no points` |
+| Coureur classé qui devient inéligible ensuite | **disparaît du classement**, sans rang et sans ligne grisée | **garde sa place** (`1:15` reste premier) |
+| Compteur « Not eligible » | 0 | 0 -- il ne compte que les écartés par l'opérateur |
+
+Les lignes grisées se placent dans l'ordre des passages : les deux coureurs ci-dessus ayant
+franchi après les cinq premiers, leurs lignes suivent les cinq places.
