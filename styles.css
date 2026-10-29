@@ -428,3 +428,9 @@ body.sprintmode #scard{display:flex}
 
 #ifpanel,.ifg,.ifrow,.armwrap{pointer-events:none}
 .ifb,.startb,.ifsb,.armb,.srcrow,.pick,.togobox{pointer-events:auto}
+/* The fields left the inside of the oval on 29 October 2026: the ring between the track and the panel was 48 units
+   and a badge needs every one of them, so a group's name had nowhere to go. The block keeps its three rows and sits
+   above the oval; what, if anything, goes back inside is for the operator to say. */
+.panelbar{flex:0 0 auto;display:flex;justify-content:center;background:var(--panel);border:1px solid var(--line);
+  border-radius:4px;padding:8px}
+.panelbar .ifg{width:auto}

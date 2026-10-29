@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 106</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 108</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -24,6 +24,31 @@
     </section>
 
     <section class="mid">
+      <div class="panelbar" id="ifpanel">
+        <div class="ifg">
+        <div class="ifrow">
+        <button class="startb" id="startbtn">ARM START</button>
+        <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
+        <button class="startb finb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
+        </div>
+        <div class="ifrow">
+        <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
+        <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
+        </div>
+        <div class="ifrow">
+        <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
+        <div class="togobox">
+        <div class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
+        <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
+        <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
+        <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></div>
+        <div class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
+        <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></div>
+        <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
+        </div>
+        </div>
+        </div>
+      </div>
       <div class="oval">
         <svg viewBox="0 0 980 590" role="img" aria-label="Track view" id="oval">
           <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#8a8a8a" stroke="#b5884e" stroke-width="60"/>
@@ -40,31 +65,6 @@
           <g id="infield">
             <foreignObject id="armfo1" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
             <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="ifpanel" x="245" y="203" width="490" height="184">
-              <div xmlns="http://www.w3.org/1999/xhtml" class="ifg">
-                <div class="ifrow">
-                  <button class="startb" id="startbtn">ARM START</button>
-                  <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
-                  <button class="startb finb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
-                </div>
-                <div class="ifrow">
-                  <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
-                  <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
-                </div>
-                <div class="ifrow">
-                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
-                  <div class="togobox">
-                    <div class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
-                      <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
-                      <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
-                      <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></div>
-                    <div class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
-                      <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></div>
-                    <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
-                  </div>
-                </div>
-              </div>
-            </foreignObject>
           </g>
         </svg>
       </div>
@@ -1419,8 +1419,6 @@ function renderOval(G, M) {
   // there are 105 units in the curves and 48 on the straights — measured — which is why the two loop buttons went
   // out: they were the only thing in the way, and they are the ones that never move.
   const NAME_STEP = -12, NAME_TRIES = 6;   // short steps: a badge moves only as far as it must to be clear
-  const PANEL = (() => { const f = $('#ifpanel'); return f ? { x: +f.getAttribute('x'), y: +f.getAttribute('y'), w: +f.getAttribute('width'), h: +f.getAttribute('height') } : null; })();
-  const hitsPanel = (x, y, w) => PANEL && x + w > PANEL.x - 4 && x - w < PANEL.x + PANEL.w + 4 && y > PANEL.y - 12 && y < PANEL.y + PANEL.h + 12;
   const placed = [];
   for (const bu of bubbles) {                       // bubbles are in race order, so the front group is placed first
     const a = normalAt(bu.sMid);
@@ -1443,7 +1441,7 @@ function renderOval(G, M) {
     // This one is a smooth function of the angle, so the badge slides round the curve. Its corners may come near a
     // rider in the slanted part of a curve; they never land on the pack, which is what he objected to.
     const rayT = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9);
-    const GAP = 17;   // the visible gap between a bubble and its badge, the same all the way round the velodrome
+    const GAP = 14;   // the visible gap between a bubble and its badge, the same all the way round the velodrome
     let depth = Math.min(-(HW + GAP) - rayT, bu.mid - bu.halfW - GAP - rayT), lx = 0, ly = 0;
     // When a group is being overtaken its badge gets out of the way, as the operator asked. It has two freedoms,
     // and it needs both: going DEEPER into the infield — lengthening its line, which is what he described — and,
@@ -1455,14 +1453,16 @@ function renderOval(G, M) {
     // riders of a different group, which the depth-only version could not do.
     const clearOf = (x, y) => !placed.some(q => Math.abs(q.x - x) < q.tw + tw + 6 && Math.abs(q.y - y) < 2 * th + 6)
       && all.every(it => { const dx = Math.max(0, Math.abs(it.cx - x) - tw), dy = Math.max(0, Math.abs(it.cy - y) - th); return dx * dx + dy * dy >= 289; });
-    let slide = 0;
+    // The fields left the infield on 29 October 2026 and all of it is the badges' now: there is nothing in there
+    // to avoid any more. A badge that finds no clear spot keeps its NORMAL place rather than the last and most
+    // extreme one tried — thrown to an extreme, a badge used to vanish under the panel, bubble and line still
+    // drawn and name gone, which is what the operator saw.
+    lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;      // the normal place, and the fallback
     outer2: for (let k = 0; k < NAME_TRIES; k++) {
       for (const sv of [0, 34, -34, 68, -68]) {
         const d2 = depth + k * NAME_STEP;
         const x = a.p.x + a.nx * d2 + tgx * sv, y = a.p.y + a.ny * d2 + tgy * sv;
-        if (k && !sv && hitsPanel(x, y, tw)) continue;          // never step into the panel
-        if (clearOf(x, y)) { depth = d2; slide = sv; lx = x; ly = y; break outer2; }
-        lx = x; ly = y;                                        // keep the last tried spot if nothing is ever clear
+        if (clearOf(x, y)) { lx = x; ly = y; break outer2; }
       }
     }
     placed.push({ x: lx, y: ly, tw });
@@ -2379,7 +2379,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 106';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 108';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

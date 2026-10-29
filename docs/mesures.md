@@ -1409,6 +1409,30 @@ liberté qui manquait, et un contrôle contre les coureurs a dû lui être ajout
 porter un badge au-dessus des coureurs d'un **autre** groupe — 7 cas sur 4 784 avant ce
 contrôle, **0** après.
 
+**Il n'y avait pas la place pour les deux**, build 108. L'opérateur a signalé un badge manquant :
+sa bulle et sa ligne étaient tracées, son nom avait disparu. Il était passé **sous le bloc des
+champs**, qui est peint après les noms et les recouvre.
+
+La mesure a montré que ce n'était pas un défaut de placement mais un manque de place :
+
+| | |
+|---|---|
+| Anneau libre entre la piste et le bloc, en haut et en bas | **48 unités** |
+| Ce qu'un badge y demande : débord de la bulle (13) + écart (14) + demi-badge le long de la ligne (12) + demi-hauteur (12) | **51 unités** |
+| Anneau libre sur les côtés | 105 unités |
+
+Trois tentatives pour loger les badges quand même, toutes mesurées :
+
+| Tentative | Résultat |
+|---|---|
+| Interdire le bloc comme position | aucune position acceptable sur les lignes droites : le badge saute de repli en repli, **12,4 unités par image** |
+| Repli sur la dernière position essayée | le badge part à l'extrême et **disparaît** sous le bloc — le défaut signalé |
+| Repli sur la position normale | le badge reste visible, mais **77 images sur 204** le montrent partiellement sous le bloc |
+
+D'où la décision de l'opérateur de sortir le bloc. Avec l'intérieur libre, la mesure devient
+nette : ligne de **9,5 unités, saut de 0,00 d'une image à l'autre**, et **zéro** badge sur un
+coureur en 1 760 paires.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

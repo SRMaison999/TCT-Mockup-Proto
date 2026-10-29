@@ -1436,6 +1436,21 @@ Sur sa question « et quid des groupes qui se dépassent ? » :
     panneau**, en glissant le long de la piste. Sa ligne suit alors la direction réelle de sa
     bulle à lui.
 
+### Les champs ressortent de l'ovale
+
+**29 octobre 2026.** Devant la place manquante — l'anneau entre la piste et le bloc des champs
+mesure 48 unités, et un badge en demande exactement 48 — mot pour mot :
+
+> ok alors on va les sortir de l'ovale, et on verra plus tard si on peut y remettre quelquechose
+
+41. **Le bloc des champs quitte l'intérieur de l'ovale** et se pose au-dessus de lui, dans sa
+    forme actuelle. L'intérieur est rendu aux badges.
+42. **Ce qui pourra y retourner n'est pas décidé** : « on verra plus tard ». Ne rien y remettre
+    sans qu'il le dise.
+
+Cela remplace le point 34 du même jour pour le bloc des champs seulement ; les **noms de
+groupes**, eux, restent à l'intérieur de l'ovale, ce qui était tout l'objet de ce déplacement.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :
