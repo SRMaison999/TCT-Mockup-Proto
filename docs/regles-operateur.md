@@ -1255,6 +1255,15 @@ autres, au titre du « supprime les toutes ».
     Les bandes de groupe restent, et un groupe se sélectionne toujours en cliquant sa bande.
 20. **Les annotations sont à refaire entièrement.** Ce qui précède n'est que le déblaiement.
 
+L'étiquette « No points » lui a été montrée, puisqu'il ne l'avait jamais vue à l'écran. Sa
+réponse, mot pour mot : « ok supprime ça aussi ». Le texte était déjà parti ; ce qui restait de
+cette étiquette, ce sont les **marques rouges sur la pastille** du coureur inéligible — un
+contour épaissi et un anneau clignotant.
+
+21. **Rien ne marque plus un coureur inéligible sur l'ovale** : ni texte, ni contour, ni anneau.
+    **La mesure est intacte** — l'éligibilité continue d'être calculée et la carte du sprint
+    continue de griser sa ligne (§8). C'est le dessin qui est retiré, pas la règle.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

@@ -149,8 +149,6 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .fld.acc{background:var(--acc-soft)}
 .fld.acc .v,.fld.acc .k{color:#c9d6f5}
 .chip.notp{border:1px dashed #8FB4FF}
-@keyframes blink{50%{opacity:0}}
-@media (prefers-reduced-motion:no-preference){.blink{animation:blink 1s steps(2,start) infinite}}
 #scard{display:none;flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--acc);border-radius:4px;flex-direction:column;overflow:hidden}
 body.sprintmode .oval{display:none}
 body.sprintmode .log{display:none}

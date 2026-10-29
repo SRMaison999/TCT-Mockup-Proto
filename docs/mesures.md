@@ -1220,9 +1220,18 @@ précédent, où le cadre rognait. La hauteur disponible n'est d'ailleurs pas bo
 mais par **les deux boutons de leader**, posés au milieu de chaque ligne droite, donc exactement
 au-dessus et au-dessous du panneau.
 
-**Aucune annotation ne subsiste sur l'ovale**, build 93. Compté dans le DOM en pleine course,
-groupes séparés et écarts ouverts : **zéro** élément `<text>` dans `#oval` en dehors des dossards
-tracés dans les pastilles, et `#ovlabels` vide.
+**Aucune annotation ne subsiste sur l'ovale**, build 94. Compté dans le DOM en pleine course,
+groupes séparés et écarts ouverts :
+
+| Ce qui est compté | Relevé |
+|---|---|
+| `<text>` dans `#oval` hors les dossards des pastilles | **0** |
+| Contenu de `#ovlabels` | **vide** |
+| Anneaux clignotants `.blink` | **0** |
+| Contours de pastille en `#FF5C5C` | **0** |
+| `S.inelig`, la mesure | **toujours calculé** |
+
+La dernière ligne est celle qui compte : le dessin est parti, la règle est intacte.
 
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :

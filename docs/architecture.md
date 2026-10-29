@@ -675,8 +675,11 @@ Deux pièges s'y sont révélés, tous deux mesurés et non vus :
 build 93). `renderOval()` ne produit plus que des bandes et des pastilles ; `#ovlabels` reste
 vide, et `putLabel()`, qui écartait les étiquettes les unes des autres, est supprimé avec elles.
 Ce qui est parti : le libellé du leader, le nom de chaque groupe avec son effectif et son statut,
-l'écart entre groupes, et l'étiquette « No points » avec son pointillé. `S.inelig` continue de
-marquer la pastille du coureur — c'est le texte qui est retiré, pas la mesure. **Les annotations
+l'écart entre groupes, et l'étiquette « No points » avec son pointillé. **Build 94** : les deux
+marques rouges qui disaient la même chose sur la pastille — contour épaissi et anneau clignotant
+— partent avec elle, et avec elles le `Set` `noPts`, la classe `.blink` et son animation.
+`S.inelig` est **inchangé** : l'éligibilité se calcule toujours et la carte du sprint grise
+toujours la ligne du coureur. C'est le dessin qui est retiré, pas la règle. **Les annotations
 sont à refaire entièrement** : ne pas en remettre une au passage.
 
 **Aucun repère de l'ovale n'est nommé** (`regles-operateur.md` §9, 29 octobre 2026, build 91).
