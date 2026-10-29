@@ -662,6 +662,10 @@ Deux pièges s'y sont révélés, tous deux mesurés et non vus :
   tel quel, le cadre du panneau avalait les clics destinés aux boutons de la piste et à la piste
   elle-même. Les cadres sont donc en `pointer-events:none`, et seules les boîtes et les boutons
   reprennent le pointeur.
+- **La profondeur des boutons de leader se dérive de leur hauteur**, jamais à la main :
+  `HW + hauteur/2 + 6`. Les poser à une profondeur choisie à l'œil a déjà mis le bouton du bas
+  **sur la piste** le jour où on l'a rapproché du bord pour gagner de la hauteur. Le dégagement
+  vaut 6 unités de chaque côté, et il reste vrai si la hauteur du bouton change.
 - **`syncArm()` tourne à chaque image.** Il ne cherche donc rien dans le document : les trois
   boutons sont trouvés une fois, les trois lignes vertes seulement quand `renderMarks()` vient de
   reconstruire `#marks`, et un bouton dont l'état n'a pas changé n'est pas touché. C'est la même

@@ -1261,9 +1261,10 @@ function renderMarks() {
   LOOPS.forEach((s0, i) => {
     const fo = $('#armfo' + i); if (!fo) return;
     const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
-    // Both buttons sit against their own straight, as close to the track as they can: the panel between them needs
-    // every unit of height it can get, and the measurement said so — the content was 236 units for a frame of 198.
-    const deep = HW + 16;
+    // A button must sit WHOLLY inside the track, never biting into it. Its depth is therefore derived from its own
+    // height — half of it, plus a margin — and not set by hand: a hand-set depth is exactly what put the lower
+    // button on the track when it was moved closer to gain room for the panel.
+    const deep = HW + ht / 2 + 6;
     fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
     fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
   });

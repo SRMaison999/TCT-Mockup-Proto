@@ -1202,6 +1202,19 @@ puis **trop grand**. Ce n'était pas une question de goût mais une cote, et une
 La leçon vaut au-delà de ce panneau : un croquis que l'opérateur fournit à la taille de l'écran
 **est une cotation**, pas une suggestion.
 
+**Les boutons de leader mordaient sur la piste**, signalé par l'opérateur sur la capture. En les
+rapprochant du bord pour gagner de la hauteur, leur profondeur avait été posée à la main à
+`HW + 16` alors qu'ils mesurent 36 de haut : leur bord tombait donc **2 unités au-delà du bord
+intérieur**. La profondeur se dérive maintenant de la hauteur du bouton, `HW + hauteur/2 + 6`,
+et le défaut ne peut plus revenir. Dégagements relevés, en unités de piste :
+
+| | Dégagement |
+|---|---|
+| Bouton Pursuit B au bord intérieur du haut | **6,0** |
+| Bouton Pursuit A au bord intérieur du bas | **6,0** |
+| Panneau sous le bouton Pursuit B | **6,0** |
+| Panneau au-dessus du bouton Pursuit A | **6,0** |
+
 Résultat : **184 unités de contenu dans un cadre de 184**, contre 236 dans 198 à l'essai
 précédent, où le cadre rognait. La hauteur disponible n'est d'ailleurs pas bornée par l'ovale
 mais par **les deux boutons de leader**, posés au milieu de chaque ligne droite, donc exactement
