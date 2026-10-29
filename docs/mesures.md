@@ -1718,3 +1718,14 @@ velodrome dessiné à l'écran.
 Le gain n'est pas d'abord la taille : c'est que **l'écran ne bouge plus**. Jusqu'ici, ouvrir un
 sprint faisait disparaître la piste, puis la réduisait à 9 % de sa surface. Elle garde
 maintenant exactement la même taille, sprint ou pas, et la carte est là en permanence.
+
+### L'ovale calé en haut — build 126
+
+| | 1440 × 900 | 1920 × 1080 |
+|---|---|---|
+| Haut de la piste, depuis le haut de la page | 134 px | 174 px |
+| Vide au-dessus de la piste, dans le panneau | 75 px (la bande du bouton `SET NEXT`) | 115 px |
+| Vide sous la piste, dans le panneau | 341 px | 333 px |
+| Piste dessinée | 755 × 338 | 1146 × 513 |
+
+Le vide est désormais **entièrement sous l'ovale**, et non plus réparti de part et d'autre.

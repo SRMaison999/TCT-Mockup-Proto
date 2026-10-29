@@ -1705,3 +1705,7 @@ largeur à l'ovale : l'opérateur ne l'avait ni demandé ni vu proposer, et l'a 
 « qui t'a demandé de mettre la carte de sprint sur une colonne ? ». Remis en l'état à la
 build 125. La largeur rendue à l'ovale ne justifie pas de changer un écran validé sans le
 proposer (§14, point 1 et point 3).
+
+81. **L'ovale est calé en haut de son panneau.** Mot pour mot : « REMONTE L'OVALE SUR LA
+    PAGE ». Son dessin ne se centre plus verticalement : le haut de la piste est à 134 px du
+    haut de la page en 1440, contre 250 px auparavant. Tout le vide passe donc sous l'ovale.
