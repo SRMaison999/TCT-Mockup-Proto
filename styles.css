@@ -206,7 +206,9 @@ body.lay-side .acts .tbar{flex:0 0 auto;width:100%}
 .mid{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
 /* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
    place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
-.right{display:flex;flex:0 0 auto;width:clamp(420px, 29%, 560px);min-height:0}
+/* La carte tient trois colonnes : l'ordre, les coureurs, les commandes. A 1440 elle prend sa largeur sur l'ovale,
+   l'operateur l'a autorise le 29 octobre 2026 -- et elle est alors la meme que sur un ecran de 1920. */
+.right{display:flex;flex:0 0 auto;width:clamp(500px, 29%, 560px);min-height:0}
 /* L'ovale prend exactement ce que la zone du bas lui laisse : ni plafond, qui recréerait du vide, ni proportions
    imposées, qui en recréeraient aussi. Son dessin est calé en haut de son panneau. */
 /* Sans cadre ni fond : quand le dessin ne remplit pas la largeur, la place libre est le fond de la page et non
@@ -255,76 +257,80 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .sh input.err{border-color:var(--crit);background:#2a1414}
 /* La carte respire comme les actions : lignes plus hautes, marges plus larges, et la rangée « place suivante »
    sous l'ordre, à gauche, où la place ne manque pas. */
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(230px,1fr) minmax(176px,190px);gap:20px;padding:10px 12px 12px;overflow:auto}
-.sleft,.sright{min-width:0;display:flex;flex-direction:column}
-/* Le titre de l'ordre, avec le rappel du glisser, et les trois commandes qui agissent sur lui, sous lui. */
-.ssec{display:flex;align-items:baseline;gap:10px;padding:0 4px 7px;font:600 11px var(--sans);letter-spacing:.06em;
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 78px 172px;gap:9px;padding:7px 8px;overflow:hidden}
+.sleft,.sright,.sctl{min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ssec{display:flex;align-items:baseline;gap:7px;padding:0 2px 4px;font:600 11px var(--sans);letter-spacing:.06em;
   text-transform:uppercase;color:var(--muted)}
 .ssec .hint{font:500 11px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
-.sord{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
-.sord .btn{padding:7px 13px;font-size:13px}
-.sord input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);
-  border-radius:3px;padding:6px 10px;flex:1 1 160px;min-width:0}
-
-.shd{display:grid;grid-template-columns:32px 38px 46px minmax(0,1fr) 58px 30px 30px;gap:8px;align-items:center;height:24px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
-.shd.sl{grid-template-columns:38px 46px minmax(0,1fr)}
+/* Aucune colonne souple vide : chaque colonne porte quelque chose, et l'ecart se cale a droite. */
+.shd{display:grid;grid-template-columns:22px 32px 38px minmax(0,1fr) 22px 22px;gap:5px;align-items:center;height:19px;white-space:nowrap;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 2px}
+.shd.sl{grid-template-columns:32px minmax(0,1fr)}
 .shd > span{overflow:hidden;text-overflow:ellipsis}
 .shd .srt{cursor:pointer}
 .shd .srt.on{color:#8FB4FF}
-.srow{display:grid;grid-template-columns:32px 38px 46px minmax(0,1fr) 58px 30px 30px;gap:8px;align-items:center;height:36px;padding:0 6px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
+/* Les lignes respirent quand la course le permet et se serrent quand les 24 coureurs arrivent. */
+.srows,.slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto}
+.srow{display:grid;grid-template-columns:22px 32px 38px minmax(0,1fr) 22px 22px;gap:5px;align-items:center;flex:1 1 26px;min-height:26px;max-height:34px;padding:0 2px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
 .srow .pl{font:600 13px var(--mono);color:var(--muted);cursor:pointer;white-space:nowrap}
 .srow .pl.tgt{color:var(--acc)}
 .srow .noc{font:600 13px var(--mono);letter-spacing:.04em}
-.srow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srow .nm small{font-size:11px;margin-left:5px;color:var(--muted)}
-.srow .gp{font:500 12px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.srow .gp{font:500 12px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .srow .ic{display:flex;align-items:center;justify-content:center}
-.srow .ic .btn.xs{padding:0 5px;height:18px;line-height:16px}
+.srow .ic .btn.xs{padding:0 4px;height:18px;line-height:16px}
 .srow.sent{background:#143824}
 .srow.cam{background:#3a1515}
 .srow.cam .gp{color:#ffb3b3}
-.srow.held{border-left:3px solid #8FB4FF;background:#161c2a}
+.srow.held{box-shadow:inset 3px 0 0 #8FB4FF;background:#161c2a}
 .srow.held .gp{color:#8FB4FF}
-.srow.empty .pl{color:var(--dim)}
-.srow.empty .nm{color:var(--dim)}
+.srow.empty .pl,.srow.empty .gp{color:var(--dim)}
 .srow.over{box-shadow:inset 0 2px 0 var(--acc)}
 .srow[data-bib]{cursor:grab}
 .srow.dragging{opacity:.4}
-.sdrop{height:10px;border-radius:3px}
-.sdrop.over{box-shadow:inset 0 2px 0 var(--acc)}
-.sne{display:flex;align-items:center;gap:8px;height:28px;border-top:1px solid var(--line);padding:0 4px;margin-top:2px}
 .srow.grey{color:var(--dim)}
-.srow.grey .noc,.srow.grey .nm,.srow.grey .why{color:var(--dim)}
-.srow.grey .why{grid-column:5 / 7;font:500 11px var(--sans);text-align:right;white-space:nowrap}
+.srow.grey .noc{color:var(--dim)}
+.srow.grey .why{grid-column:4/6;font:500 10px var(--sans);text-align:right;white-space:nowrap;color:var(--dim)}
 .srow.grey .chip{opacity:.45}
-.srow.ne{height:24px;font-size:12px;color:var(--muted)}
-.srow.ne .nm{color:var(--muted)}
-.srow.ne .why{grid-column:5 / 7;font:500 11px var(--sans);color:var(--warn);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nts{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;margin:2px 0 4px;background:#2a2410;border:1px solid var(--warn);border-radius:3px;font-size:12px}
-.nts .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nts .nm small{color:var(--warn);margin-left:6px}
-/* Deux lignes voulues : le libellé et la place en cours, puis les quatre boutons. Sur une seule, ils passaient à
-   la ligne tout seuls et la rangée était illisible. Elle reste sous l'ordre, à portée de l'œil. */
-.stgt{display:flex;flex-direction:column;align-items:stretch;gap:10px;margin:14px 0 0;padding:10px 12px 12px;
-  border:1px solid var(--acc);border-radius:4px;background:#161c2a}
-.stgt .sthead{display:flex;align-items:center;gap:12px}
-.stgt .stbtns{display:flex;flex-wrap:wrap;gap:8px}
-.stgt .k{font:600 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#c9d6f5;white-space:nowrap}
-.stgt b{font:600 20px var(--mono);color:var(--acc);margin:0 6px 0 0;min-width:46px}
-.stgt .btn{padding:7px 14px;font-size:13px}
-.stgt .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
-.stgt input{font:600 14px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:2px 6px;width:64px}
-.slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.slrow{display:grid;grid-template-columns:38px 46px minmax(0,1fr);gap:8px;align-items:center;flex:0 0 auto;height:30px;padding:0 6px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
+/* La bande de depot ferme la colonne de l'ordre : elle vaut zero quand les 24 places sont prises. */
+.sdrop{flex:0 0 auto;height:24px;margin:4px 1px 0;border:1px dashed var(--line2);border-radius:4px}
+.sdrop.over{box-shadow:inset 0 2px 0 var(--acc);border-color:var(--acc)}
+.slrow{display:grid;grid-template-columns:32px minmax(0,1fr);gap:5px;align-items:center;flex:1 1 26px;min-height:26px;max-height:34px;padding:0 2px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
 .slrow .noc{font:600 13px var(--mono);letter-spacing:.04em}
-.slrow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.slrow .st{font:500 11px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}
 .slrow.placed .chip{opacity:.4}
-.slrow.placed .nm{color:var(--muted)}
+.slrow.placed .noc{color:var(--muted)}
 .slrow.out{color:var(--dim)}
-.slrow.out .nm{color:var(--dim)}
-.slrow.out .st{color:var(--warn)}
+.slrow.out .noc{color:var(--dim)}
 .slrow:hover{background:#20242a}
+/* La colonne des commandes : un pave par chose a faire, chacun avec son titre et son air. */
+.sctl{gap:9px;overflow:auto}
+.sctl .blk{display:flex;flex-direction:column;gap:7px;border:1px solid var(--line);border-radius:4px;padding:7px 8px 8px;background:var(--deep);min-width:0;flex:0 0 auto}
+.sctl .blk.acc{border-color:var(--acc);background:#161c2a}
+.sctl .blk.notp{border-color:var(--warn)}
+.sctl .blk.last{margin-top:auto}
+.sctl .bh{display:flex;align-items:baseline;gap:6px;justify-content:space-between;font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.sctl .blk.acc .bh{color:#c9d6f5}
+.sctl .blk.notp .bh{color:var(--warn)}
+.sctl .bh .hint{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+.sctl .br{display:flex;align-items:center;gap:6px;min-width:0}
+.sctl .br .btn{flex:1 1 auto;padding:6px 9px;font-size:12px;text-align:center}
+.sctl .br.lap .btn{flex:0 0 auto;padding:5px 9px}
+.sctl .br .who{display:flex;align-items:center;gap:6px;min-width:0}
+.sctl .br .who .noc{font:600 13px var(--mono);letter-spacing:.04em}
+.sctl .lapn2{font:600 17px var(--mono);color:var(--fg);flex:1 1 auto;text-align:center}
+.sctl .btn.wide{width:100%;text-align:center;padding:7px 8px;font-size:12px}
+.sctl .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.sctl .btn.sentok{background:#143824;border-color:var(--good);color:var(--good);font-weight:600}
+.sctl .btn.send{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.sctl .pl4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.sctl .pl5{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.sctl .pl4 .btn,.sctl .pl5 .btn{padding:6px 0;font-size:12px}
+.sctl input{font:600 13px var(--mono);color:var(--fg);background:var(--bg);border:1px solid var(--line2);border-radius:3px;padding:7px 8px;min-width:0;width:100%;box-sizing:border-box}
+.sctl input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.sctl input.err{border-color:var(--crit);background:#2a1414}
+.sctl .nerow{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--muted)}
+.sctl .nerow .noc{font:600 12px var(--mono)}
+.sctl .nerow .why{margin-left:auto;font:500 10px var(--sans);color:var(--warn);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sctl .hint{font:500 10px var(--sans);color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+
 /* sprints and standings tabs in the bottom panel */
 .lrow.spr{cursor:pointer}
 .lrow.spr:hover{background:#20242a}

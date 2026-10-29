@@ -582,3 +582,37 @@ n'ont été vérifiées que sur cas forcé (`mesures.md` §6 et §7).
 **À construire** : décaler le décrochage des deux coureurs lâchés pour qu'ils se trouvent
 entre le peloton et la ligne **au moment précis** où un sprint s'ouvre. Un seul scénario
 exercerait les deux règles.
+
+
+### D24 · Recopier une position sans se demander ce qu'elle fait là
+
+Le bloc des coureurs sans transpondeur était émis entre le titre `ORDER` et l'en-tête de
+colonnes de l'ordre (build 147, `renderCard`, ligne 2134). En redessinant la carte, je l'ai
+repris **tel quel**, avec son commentaire d'origine, dans quatre maquettes successives. Il a
+fallu que l'opérateur demande « pourquoi tu positionnes le cadre jaune du coureur GBR27 là où
+tu l'as positionné ? » pour que je regarde : il repoussait tout l'ordre et séparait un titre de
+son propre en-tête.
+
+**La règle** : une maquette qui reprend du code existant hérite aussi de ses défauts. Chaque
+élément recopié se justifie à nouveau, ou se déplace.
+
+### A13 · Répondre à une question par une modification
+
+À cette même question -- « pourquoi est-il là ? » -- j'ai répondu en le **supprimant**, et en
+inventant au passage une interaction (cliquer un coureur de la liste pour le placer) que
+personne n'avait demandée et qui effaçait une distinction réelle : la place donnée à un coureur
+sans transpondeur est **retenue** jusqu'au passage suivant ou jusqu'à `Send`.
+
+**La règle** : une question sur un comportement n'est pas une autorisation de le changer. On
+explique, on propose, on attend (`regles-operateur.md` §14.3).
+
+### A14 · Écrire du texte que personne n'a demandé
+
+Sous les boutons du bloc, j'avais ajouté « la place est retenue jusqu'au passage suivant, ou
+jusqu'à Send ». Deux fautes d'un coup : du texte inventé dans une interface où chaque libellé
+est décidé, et **du français dans une interface entièrement en anglais**. Même faute pour
+« déposer ici » dans la zone de dépôt.
+
+**La règle** : avant de livrer, relire tous les textes visibles d'une maquette et vérifier
+qu'ils viennent de la documentation ou de la build en cours, et qu'ils sont dans la langue de
+l'interface.

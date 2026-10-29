@@ -1988,3 +1988,36 @@ Construit le 29 octobre 2026, à la demande de l'opérateur. Il comble le manque
 qui laisse largement le temps d'ouvrir un sprint dessus. C'est pour cela que les quatre
 tentatives précédentes échouaient : elles attendaient que la fenêtre tombe d'elle-même sur un
 sprint, au lieu d'amener le sprint sur la fenêtre.
+
+
+## §51 · La carte de sprint en trois colonnes (build 148)
+
+Mesuré dans le prototype, rail du simulateur replié, course de référence.
+
+| | 1440 × 1080 | 1920 × 1080 |
+|---|---|---|
+| Carte | **500 px** | **548 px** |
+| Colonne de l'ordre | 877 px de haut, **33 lignes de 26 px** | idem |
+| Colonne des coureurs | 930 px de haut, **35 lignes** | idem |
+| Piste, carte à 420 (avant) | 705 × 315 | — |
+| Piste, carte à 500 (après) | **634 × 283**, soit 16 % de moins | — |
+
+Les vingt-quatre coureurs d'une course pleine tiennent donc dans les deux colonnes **sans
+défilement**, avec neuf lignes de marge dans l'ordre et onze dans la liste. Les lignes sont
+élastiques : 26 px au plus serré, 34 px quand la course laisse de la place.
+
+**Largeurs utiles**, qui expliquent pourquoi rien n'est souple pour rien : la ligne de l'ordre
+demande 22 + 32 + 38 + l'écart + 22 + 22 ; la ligne de la liste, 32 + la nation. La colonne des
+commandes fait 172 px, ce qui tient `1st` à `4th` sur une rangée et `1st` à `5th` sur deux.
+
+**Contrôle automatique** : un script Playwright parcourt tous les éléments de la carte et
+compare `scrollWidth` à `clientWidth`, puis `scrollHeight` à `clientHeight` pour les trois
+zones défilantes. Il est à zéro dans les quatre états vérifiés -- avant la cloche, sprint
+ouvert, coureur sans transpondeur, sprint final -- aux deux largeurs.
+
+**Boutons essayés un par un en course** (×16 jusqu'à l'ouverture du sprint 1, tour 10), avec
+l'état relu après chaque clic : `Live` (aller et retour), `1st`…`4th`, `←` et `→` du tour jugé,
+`Manual` puis la saisie « 15 4 11 » validée par Entrée -- l'ordre devient `[15, 4, 11]` et la
+place suivante passe à 4 --, `Detected` qui le rend aux boucles, `Clear and record`, les tris
+`BIB` et `NOC`, `Not eligible`, le double-clic dans la liste qui place le coureur, le `×` qui
+le retire, et `Close`. Aucune erreur JavaScript, aucun débordement après manipulation.

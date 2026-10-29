@@ -458,3 +458,34 @@ La pastille `no pts` de la timeline, le suffixe `· NO PTS` du badge de l'ovale,
 sans rang et le compteur `Not eligible` sont donc **vérifiés en course**, et non plus en
 apparence. Le manque signalé par `mesures.md` §6 et `travaux.md` §2 depuis la build 53 est
 comblé.
+
+
+## 12. La carte de sprint en trois colonnes — **livrée, build 148**
+
+L'opérateur a redessiné la carte le 29 octobre 2026, par-dessus une capture, et ses règles sont
+consignées dans `regles-operateur.md` §104 à §109. Ce qui est en place :
+
+- **trois colonnes** : l'ordre, les coureurs, les commandes. Plus de pied de carte ;
+- **aucune colonne souple vide** : la ligne de l'ordre porte place, dossard, nation, écart calé
+  à droite et ses deux icônes ; la liste porte dossard et nation, sans colonne de rang ;
+- **les commandes dans leur colonne**, dans l'ordre voulu : tour jugé, envoi, source de
+  l'ordre, place suivante, saisie manuelle ;
+- **les coureurs sans transpondeur** dans la bande libre, sous la saisie manuelle, avec leurs
+  cinq places et sans `not placed` ;
+- **`Not eligible` au bas de la colonne**, puisque c'est une commande et non une ligne de
+  classement ;
+- la carte fait **500 px à 1440** et prend sa largeur sur l'ovale, avec l'accord de
+  l'opérateur.
+
+Mesures et contrôles : `mesures.md` §51. Les trois pièges nés de ce travail : `pitfalls.md`
+D24, A13 et A14.
+
+**Ce qui reste décidé mais non remis en cause** (« laisse comme ça », 29 octobre 2026) : le
+titre `SENDING` au-dessus de `Live` et `Send`, la place suivante écrite en petit dans le titre
+de son pavé, les boutons `1st` à `4th` même quand la place annoncée dépasse la quatrième (voir
+§10, toujours ouvert), et la disparition du pavé `Judged on` au sprint final.
+
+**Non modifié au sprint final** : la place suivante y reste un champ libre, comme avant, car
+il faut pouvoir viser n'importe quel rang jusqu'au vingt-quatrième. La maquette montrait les
+quatre boutons ; les remplacer aurait retiré une possibilité que personne n'a demandé de
+retirer.

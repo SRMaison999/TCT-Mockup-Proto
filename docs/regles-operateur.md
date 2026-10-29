@@ -1852,3 +1852,36 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
      - **sur l'ovale**, le badge de son groupe le dit : `1-Bunch · 2 NO PTS` quand une partie
        du groupe est concernée, `· NO PTS` quand tout le groupe l'est. C'est la seule marque
        qui revient sur la piste depuis le retrait des annotations.
+
+104. **La carte de sprint se range en trois colonnes.** Le 29 octobre 2026, l'opérateur a
+     redessiné la carte par-dessus une de mes captures : à gauche l'ordre, au milieu les
+     coureurs, à droite **une colonne de commandes**, et non un pied de carte. Ses mots sur
+     l'état précédent : « tes cartes sont nulles. regarde celle-ci ». Dans sa colonne de
+     droite, de haut en bas : le tour jugé, l'envoi, la source de l'ordre, la place suivante,
+     la saisie manuelle avec son champ.
+
+105. **Aucune colonne ne porte du vide.** « il y a la zone jaune complètement inutilisée, et
+     la zone encadrée en vert qui donne une info redondante (le classement qui est déjà
+     affiché à gauche) » (29 octobre 2026). Donc : la ligne de l'ordre n'a plus de colonne
+     souple -- place, dossard, nation, écart calé à droite, et les deux icônes -- et **la
+     liste des coureurs perd sa colonne de rang** : le grisé dit qui est placé.
+
+106. **La carte peut prendre sa largeur sur l'ovale.** « si prendre à l'ovale c'est bien car
+     ça permet de disposer des éléments différemment » (29 octobre 2026). Elle fait donc 500
+     px sur un écran de 1440, et la piste y passe de 705 × 315 à 634 × 283.
+
+107. **Les coureurs sans transpondeur se placent depuis la colonne des commandes.** Leur bloc
+     était au-dessus de l'ordre, où il repoussait les places et séparait le titre `ORDER` de
+     son propre en-tête de colonnes. À la question « tu ne vois pas un autre endroit où il
+     pourrait être sans gêner personne ? », la réponse de l'opérateur est **la bande libre au
+     bas de la colonne des commandes** -- le seul endroit vide dans tous les états de la
+     course, y compris quand les vingt-quatre places sont prises.
+
+108. **`not placed` est supprimé.** « not placed est totalement inutile » (29 octobre 2026).
+     Le bloc ne garde que les cinq places.
+
+109. **L'interface est en anglais, et rien ne s'y explique.** J'avais écrit, de ma propre
+     initiative, « la place est retenue jusqu'au passage suivant, ou jusqu'à Send » sous les
+     boutons, et « déposer ici » dans la zone de dépôt. Sa réaction : « Qu'est-ce c'est que
+     texte ??? ». Les deux sont retirés : du texte inventé, et en français dans une interface
+     qui n'est qu'en anglais.

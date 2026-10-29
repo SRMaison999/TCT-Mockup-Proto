@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 147</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 148</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2089,10 +2089,13 @@ const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo c
 function startListHtml(k, seq, tgt, fin, N) {
   const sort = S.slSort || 'bib', list = [...S.riders].sort((a, b) => sort === 'noc' ? (a.nat.localeCompare(b.nat) || a.bib - b.bib) : a.bib - b.bib);
   let h = '<div class="sright">';
-  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' ▴' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' ▴' : ''}</span><span>${list.length} riders</span></div><div class="slrows">`;
+  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' \u25b4' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' \u25b4' : ''}</span></div><div class="slrows">`;
   for (const r of list) {
     const e = k == null ? null : seq.find(x => x.bib === r.bib), w = S.withdrawn.get(r.bib), why = (k == null || e) ? null : spWhy(k, r.bib);
-    h += `<div class="slrow${e ? ' placed' : ''}${why ? ' out' : ''}" data-sl="${r.bib}" title="${r.name}${k == null ? '' : ' · double-click: ' + ordinal(tgt) + ' · drag onto the order'}">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span><span class="st">${e ? ordinal(e.place) + (e.held ? ' · held' : '') : w ? w.code : why ? why.replace(' · operator', '') : S.noTp.has(r.bib) ? 'no tp' : ''}</span></div>`;
+    // La colonne du rang a ete retiree : elle recopiait l'ordre affiche juste a gauche (l'operateur, 29 octobre 2026).
+    // Le grise dit qu'il est place, le pointille qu'il n'a pas de transpondeur, le fonce qu'il ne marque pas ici.
+    const ttl = r.name + (w ? ' \u00b7 ' + w.code : e ? ' \u00b7 ' + ordinal(e.place) + (e.held ? ' \u00b7 held' : '') : why ? ' \u00b7 ' + why.replace(' \u00b7 operator', '') : S.noTp.has(r.bib) ? ' \u00b7 no transponder' : '') + (k == null ? '' : ' \u00b7 double-click: ' + ordinal(tgt) + ' \u00b7 drag onto the order');
+    h += `<div class="slrow${e ? ' placed' : ''}${(why || w) ? ' out' : ''}" data-sl="${r.bib}" title="${ttl}">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span></div>`;
   }
   return h + '</div></div>';
 }
@@ -2125,22 +2128,13 @@ function renderCard() {
     const across = O.read.length, toRank = inRace.length, notp = inRace.filter(r => S.noTp.has(r.bib) && !seq.some(e => e.bib === r.bib)).map(r => r.bib);
     cnt = seq.length >= toRank ? toRank + ' ranked · finish complete' : S.riders.length + ' started' + Object.entries(codes).map(([c, n]) => ' · ' + n + ' ' + c).join('') + ' · ' + toRank + ' to rank · ' + across + ' across' + (notp.length ? ' · BIB ' + notp.join(', ') + ' to place by hand' : '');
   }
-  let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>${fin ? `<span class="lapn">Lap ${LAPS} · points ×2</span>` : `<button class="btn xs quiet" data-sact="shift:-1" title="Judge this sprint on the previous lap">←</button><span class="lapn">Lap ${s.lap}</span><button class="btn xs quiet" data-sact="shift:1" title="Judge this sprint on the next lap">→</button>`}
+  // Trois colonnes (l'operateur, 29 octobre 2026) : l'ordre a gauche, les coureurs au milieu, les commandes a droite.
+  // Plus de pied de carte : tout ce qui est une commande vit dans la colonne de droite, et rien ne repousse l'ordre.
+  let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>
     <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
-    <button class="btn xs${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button>${open ? `<button class="btn xs ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button><button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
-  // Les trois commandes qui agissent sur l'ordre vivent AVEC l'ordre, dans la colonne de gauche, et non coincées
-  // en haut de la carte (l'opérateur, 29 octobre 2026). Le titre rappelle que les lignes se glissent pour être
-  // remises dans l'ordre -- ce que le glisser fait toujours.
+    ${open ? `<button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
   h += '<div class="sbody"><div class="sleft"><div class="ssec">Order<span class="hint">drag a line to reorder</span></div>';
-  // riders without transponder: place them in advance
-  for (const [bib] of S.noTp) {
-    if (S.withdrawn.has(bib) || s.notpDismiss.includes(bib) || seq.some(e => e.bib === bib)) continue;
-    if (lappedAt(k, bib)) continue;
-    const r = S.riders.find(x => x.bib === bib), g = lastG && lastG.groups.find(g => g.bibs.includes(bib));
-    if (!r) continue;                  // ce dossard n'est plus dans la course : il n'a rien à dire sur cette carte
-    h += `<div class="nts" title="${r.name}">${chip(r, 'notp')}<span class="noc">${r.nat}</span><span class="nm"><small>no transponder${g ? ' · in ' + groupName(g) : ''}</small></span>${[1, 2, 3, 4, 5].map(p => `<button class="btn xs" data-sact="hold:${bib}:${p}" title="BIB ${bib} will be ${ordinal(p)}: held until the next rider is read, or Send">${ordinal(p)}</button>`).join('')}<button class="btn xs quiet" data-sact="notpdismiss:${bib}" title="Not in the first places of this sprint">not placed</button></div>`;
-  }
-  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span></span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
+  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
   const tgt = spTarget(k);
   // the crossings read while the rider was not eligible: kept where they were read, greyed, with no place
   const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
@@ -2152,29 +2146,60 @@ function renderCard() {
   for (const g of grey) rows.push({ g });
   for (const row of rows) {
     if (row.g) { const gr = S.riders.find(x => x.bib === row.g.bib);
-      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span></div>`;
+      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
       continue; }
     const e = row.e, place = row.place;
-    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span class="nm">—</span><span></span><span></span><span></span></div>`; continue; }
+    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
     const r = S.riders.find(x => x.bib === e.bib), cls = e.held ? 'held' : e.photo ? 'cam' : e.sent ? 'sent' : '';
-    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc" title="${r.name}">${r.nat}</span><span class="nm">${S.noTp.has(e.bib) && !e.held ? '<small>no tp</small>' : ''}</span>
-      <span class="gp">${e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : ''}</span>
-      <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">Send</button>' : ''}</span>
+    const mark = e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : '';
+    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span>
+      <span class="gp">${mark}</span>
+      <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" title="Photo finish: confirm" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">↑</button>' : ''}</span>
       <span class="ic"><button class="btn xs quiet" data-sact="remove:${e.bib}" title="Out of this order">×</button></span></div>`;
   }
-  h += `<div class="sdrop" data-place="${seq.length + 1}"></div></div>`;
+  h += `</div><div class="sdrop" data-place="${seq.length + 1}" title="Drop a rider here to add him to the order"></div></div>`;
+  h += startListHtml(k, seq, tgt, fin, N);
+  // ---- la colonne des commandes ----
+  h += '<div class="sctl">';
+  if (!fin) h += `<div class="blk"><span class="bh">Judged on<span class="hint">now lap ${dispLap()}</span></span>
+    <div class="br lap"><button class="btn" data-sact="shift:-1" title="Judge this sprint on the previous lap">←</button><span class="lapn2">Lap ${s.lap}</span><button class="btn" data-sact="shift:1" title="Judge this sprint on the next lap">→</button></div></div>`;
+  h += `<div class="blk"><span class="bh">Sending</span>
+    <div class="br"><button class="btn${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button>
+    ${open ? `<button class="btn ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button>` : '<button class="btn quiet" disabled title="Nothing to send before the bell">Send</button>'}</div></div>`;
+  h += `<div class="blk"><span class="bh">Order source</span>
+    <button class="btn wide quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>
+    <button class="btn wide${s.manual ? ' quiet' : ' on'}" data-sact="detected" title="Back to the order the loops measured">Detected</button>
+    ${s.recordFrom != null ? '<span class="pill acc" style="text-align:center">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}</div>`;
+  h += `<div class="blk acc" title="Where the next rider goes: double-click in the list of riders, or a bib typed in the Manual box">
+    <span class="bh">Next place<span class="hint">${ordinal(tgt)}</span></span>
+    ${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">`
+          : `<div class="pl4">${[1, 2, 3, 4].map(p => `<button class="btn${tgt === p ? ' on' : ''}" data-sact="target:${p}">${ordinal(p)}</button>`).join('')}</div>`}</div>`;
+  h += `<div class="blk"><span class="bh">Manual</span>
+    <button class="btn wide${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>
+    ${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}</div>`;
+  // Les coureurs sans transpondeur : dans la bande libre de cette colonne, et non au-dessus de l'ordre (l'operateur,
+  // 29 octobre 2026) -- la ils repoussaient l'ordre et separaient son titre de son en-tete de colonnes.
+  if (!fin) for (const [bib] of S.noTp) {
+    if (S.withdrawn.has(bib) || s.notpDismiss.includes(bib) || seq.some(e => e.bib === bib)) continue;
+    if (lappedAt(k, bib)) continue;
+    const r = S.riders.find(x => x.bib === bib), g = lastG && lastG.groups.find(g => g.bibs.includes(bib));
+    if (!r) continue;                  // ce dossard n'est plus dans la course : il n'a rien à dire sur cette carte
+    h += `<div class="blk notp" title="${r.name}"><span class="bh">No transponder</span>
+      <div class="br"><span class="who">${chip(r, 'notp')}<span class="noc">${r.nat}</span></span>${g ? '<span class="hint">in ' + groupName(g) + '</span>' : ''}</div>
+      <div class="pl5">${[1, 2, 3, 4, 5].map(p => `<button class="btn" data-sact="hold:${bib}:${p}" title="BIB ${bib} will be ${ordinal(p)}: held until the next rider is read, or Send">${ordinal(p)}</button>`).join('')}</div></div>`;
+  }
   if (!fin) {
     const ne = O.notEligible;
-    h += `<div class="sne"><button class="btn xs quiet" data-sact="ne">Not eligible · ${ne.length}${S.neOpen ? ' ▴' : ' ▾'}</button>${s.excluded.length && !ne.length ? '<span class="lbl" style="color:var(--dim)">ignored: ' + bibList(s.excluded) + '</span>' : ''}</div>`;
-    if (S.neOpen) for (const e of ne) { const r = S.riders.find(x => x.bib === e.bib); h += `<div class="srow ne"><span class="pl">${ordinal(e.raw)}</span>${chip(r)}<span class="noc" title="${r.name}">${r.nat}</span><span class="why">${e.why}</span><span class="ic">${e.rule ? '' : '<button class="btn xs quiet" data-sact="reinstate:' + e.bib + '" title="Rank him after all">↩</button>'}</span></div>`; }
+    h += `<div class="blk last"><span class="bh">Not ranked</span>
+      <button class="btn wide quiet" data-sact="ne">Not eligible · ${ne.length}${S.neOpen ? ' ▴' : ' ▾'}</button>
+      ${S.neOpen ? ne.map(e => { const r = S.riders.find(x => x.bib === e.bib);
+        return `<div class="nerow" title="${r.name} · ${e.why}">${chip(r)}<span class="noc">${r.nat}</span><span class="why">${ordinal(e.raw)}</span>${e.rule ? '' : '<button class="btn xs quiet" data-sact="reinstate:' + e.bib + '" title="Rank him after all">↩</button>'}</div>`; }).join('') : ''}
+      ${s.excluded.length && !ne.length ? '<span class="hint">ignored: ' + bibList(s.excluded) + '</span>' : ''}</div>`;
   } else if (S.withdrawn.size) {
-    for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); h += `<div class="srow ne"><span class="pl"></span>${chip(r)}<span class="noc" title="${r.name}">${r.nat}</span><span class="why">${w.code} · Lap ${w.lap} · not ranked</span><span></span></div>`; }
+    h += `<div class="blk last"><span class="bh">Not ranked</span>${[...S.withdrawn].map(([bib, w]) => { const r = S.riders.find(x => x.bib === bib);
+      return `<div class="nerow" title="${r.name}">${chip(r)}<span class="noc">${r.nat}</span><span class="why">${w.code} · Lap ${w.lap}</span></div>`; }).join('')}</div>`;
   }
-  h += `<div class="sord"><button class="btn${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵  or  bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}<button class="btn quiet" data-sact="detected" title="Back to the order the loops measured">Detected order</button><button class="btn quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>${s.recordFrom != null ? '<span class="pill acc">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}</div>`;
-  h += `<div class="stgt" title="Where the next rider goes: double-click in the start list, or a bib typed in the Manual box">
-    <span class="sthead"><span class="k">Next place</span><b>${ordinal(tgt)}</b></span>
-    <span class="stbtns">${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">` : [1, 2, 3, 4].map(p => `<button class="btn${tgt === p ? ' on' : ''}" data-sact="target:${p}">${ordinal(p)}</button>`).join('')}</span></div>`;
-  h += '</div>' + startListHtml(k, seq, tgt, fin, N) + '</div>';
+  h += '</div></div>';
   scard.innerHTML = h;
   if (focused) { const i = $('#sinp'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
 }
@@ -2195,7 +2220,6 @@ scard.addEventListener('click', e => {
   else if (act === 'reinstate') { pushUndo(spLabel(k) + ' rank BIB ' + a); spReinstate(k, +a); }
   else if (act === 'sendheld') { pushUndo(spLabel(k) + ' send BIB ' + a); spSend(k, s.live ? 'live' : 'send', [+a]); }
   else if (act === 'hold') { pushUndo(spLabel(k) + ' BIB ' + a + ' ' + ordinal(+b)); spHold(k, +a, +b); }
-  else if (act === 'notpdismiss') { s.notpDismiss.push(+a); logEvent('SPRINT', spLabel(k) + ' · BIB ' + a + ' · no transponder · not in the first places · operator', true); }
   else if (act === 'ne') S.neOpen = !S.neOpen;
   else if (act === 'sort') S.slSort = a;
   dirty = true; render();
@@ -2516,7 +2540,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 147';
+  $('#buildno').textContent = 'build 148';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
