@@ -1852,3 +1852,23 @@ Vérifié dans les deux dispositions, en 1440 : le sélecteur est **dans** le pa
 (coin haut droit, à 9 px du haut et 10 px de la droite), il ne recouvre jamais le bouton
 `Clear` -- la ligne de sélection lui réserve 62 px -- et la bascule fonctionne dans les deux
 sens. La barre du haut, débarrassée de lui, ne déborde plus dans aucun état.
+
+## 44. L'équilibre de l'écran — build 136
+
+La piste dessinée et la zone du bas, rail masqué :
+
+| Fenêtre | Piste build 134 | **Piste build 136** | Zone du bas | La barre d'actions défile | Vide sous elle |
+|---|---|---|---|---|---|
+| 1910 × 900 | 1035 × 464 | **803 × 359** | 302 px | non | 10 px |
+| 1440 × 900 | 886 × 397 | **710 × 318** | 302 px | non | 10 px |
+| 1920 × 1080 | 1323 × 592 | **1081 × 484** | 302 px | non | 10 px |
+
+La piste perd donc 40 % de sa surface, et la timeline gagne 42 % de largeur -- 118 → 168 px --
+avec des éléments à l'échelle. Avec 24 coureurs en deux groupes la colonne demande 810 px pour
+830 disponibles en 1440 : elle tient toujours sans défiler.
+
+**Un piège rencontré en chemin** : en passant la colonne centrale d'une grille à une boîte
+flexible, l'ordre du document reprend la main sur `grid-row`. La zone du bas, écrite avant
+l'ovale dans le document et placée en seconde rangée par la grille, est repassée **au-dessus**
+de l'ovale sans qu'aucune erreur ne soit levée. Corrigé en remettant le bloc dans l'ordre du
+document.

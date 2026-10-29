@@ -1784,3 +1784,17 @@ mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les é
 91. **La disposition en colonne est celle par défaut.** « je préfère la deuxième disposition,
     garde-la par défaut » : les actions à gauche, les propositions à droite. L'autre reste à un
     clic dans la barre du haut.
+
+### L'équilibre entre l'ovale, la timeline et les actions
+
+**29 octobre 2026.** Sur une capture en 1910 × 900 : « je ne suis pas satisfait du résultat
+final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », puis « et il faut
+éviter que action doive scroller pour être vue entièrement ! ».
+
+92. **La zone du bas prend la hauteur dont elle a besoin, l'ovale prend ce qui reste.** La
+    barre d'actions ne défile jamais : c'est elle qui fixe sa hauteur, pas l'inverse.
+93. **La timeline passe de 118 à 168 px**, et ses éléments grandissent avec elle : la ligne
+    d'un coureur de 22 à 28 px, son dossard de 19 à 24, son code pays de 12 à 14 px, l'en-tête
+    d'un bloc de 30 à 38.
+94. **L'ovale n'a ni plafond ni proportions imposées.** L'un et l'autre recréaient du vide. Il
+    prend exactement la place laissée, son dessin calé en haut de son panneau.

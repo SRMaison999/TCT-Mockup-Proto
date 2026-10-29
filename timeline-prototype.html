@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 134</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 136</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -52,15 +52,6 @@
       <!-- Sous l'ovale, les propositions et les actions. Elles se disposent de deux manières, au choix de
            l'utilisateur (l'opérateur, 29 octobre 2026) : les propositions au-dessus des actions, ou les actions en
            colonne à gauche des propositions. Dans les deux cas la zone prend toute la place laissée par l'ovale. -->
-      <div class="below">
-        <div class="props" id="propcard"></div>
-        <section class="acts" aria-label="Actions">
-          <div class="tbar" id="tbar"></div>
-          <!-- Le sélecteur des deux dispositions est DANS la zone qu'il commande, pas dans la barre du haut
-               (l'opérateur, 29 octobre 2026). -->
-          <span class="seg" id="layseg" title="Where the proposals and the actions go, under the oval"><button class="btn xs quiet" data-lay="stack" title="Proposals above, actions below">&#9647;&#9473;</button><button class="btn xs on" data-lay="side" title="Actions on the left, proposals on the right">&#9475;&#9647;</button></span>
-        </section>
-      </div>
 
       <div class="oval">
         <svg viewBox="63 49 854 492" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Track view" id="oval">
@@ -103,6 +94,16 @@
             <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
           </g>
         </svg>
+      </div>
+
+      <div class="below">
+        <div class="props" id="propcard"></div>
+        <section class="acts" aria-label="Actions">
+          <div class="tbar" id="tbar"></div>
+          <!-- Le sélecteur des deux dispositions est DANS la zone qu'il commande, pas dans la barre du haut
+               (l'opérateur, 29 octobre 2026). -->
+          <span class="seg" id="layseg" title="Where the proposals and the actions go, under the oval"><button class="btn xs quiet" data-lay="stack" title="Proposals above, actions below">&#9647;&#9473;</button><button class="btn xs on" data-lay="side" title="Actions on the left, proposals on the right">&#9475;&#9647;</button></span>
+        </section>
       </div>
     </section>
 
@@ -2490,7 +2491,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 134';
+  $('#buildno').textContent = 'build 136';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
