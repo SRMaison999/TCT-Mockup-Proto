@@ -417,3 +417,25 @@ attend maintenant `document.fonts.ready`.
    `pitfalls.md`.
 4. **Ce qui attend une décision de l'opérateur reste dans `regles-operateur.md` §15**, jamais
    ici.
+
+
+## 10. La « place suivante » compte au-delà des places qui comptent
+
+**Constaté en jouant quatre sprints, le 29 octobre 2026**, à la demande de l'opérateur
+(« essaie peut-être d'enregistrer quelques sprints et tu verras toi même ce qui est confortable
+et ce qui ne l'est pas »).
+
+La rangée `NEXT PLACE` annonce **6th, 8th, 5th, 7th, 10th, 12th** selon les sprints, alors que
+la carte ne montre que **cinq places** et que les boutons n'offrent que `1st` à `4th`. Le
+champ compte les positions de l'ordre mesuré **complet** -- tous les coureurs lus sur la
+ligne -- et non les places qui rapportent des points.
+
+Deux lectures possibles, à trancher par l'opérateur :
+
+- **la carte juge cinq places** : la place suivante ne devrait jamais dépasser la cinquième, et
+  quand les cinq sont prises, le champ devrait le dire plutôt qu'annoncer une douzième place ;
+- **la carte suit tout l'ordre de passage** : alors ce sont les boutons qu'il faut compléter,
+  et la liste de départ qui affiche déjà des rangs jusqu'au onzième est cohérente.
+
+**Rien n'est codé en attendant.** Le sprint final n'est pas concerné : il classe tout le
+peloton, et la place suivante y est juste.

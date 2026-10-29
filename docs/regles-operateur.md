@@ -1834,3 +1834,7 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
      glisser un coureur de la liste de départ le place. Le rappel avait été retiré avec
      l'en-tête de colonne tronqué « D… » ; il est rendu, en clair, au-dessus de l'ordre :
      « ORDER · drag a line to reorder ».
+
+102. **Un sprint fermé ne revient pas dans la carte.** Juste après `Close`, la carte
+     réaffichait « SPRINT 1 · waiting for the bell » -- le sprint que l'on venait de clore.
+     Elle montre maintenant le prochain sprint **non jugé**.

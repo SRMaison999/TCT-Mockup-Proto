@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 144</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 145</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2084,7 +2084,15 @@ function startListHtml(k, seq, tgt, fin, N) {
 // (l'opérateur, 29 octobre 2026). Seules « Send » et « Close » disparaissent avant la cloche : il n'y a rien à
 // envoyer et rien à fermer. Tout le reste -- le tour jugé, la saisie manuelle, l'ordre mesuré, l'enregistrement,
 // le mode Live, la place suivante, le tri de la liste de départ -- se règle d'avance sur le prochain sprint.
-function sprintShown() { return S.sprintOpen != null ? S.sprintOpen : nextSprintNum(dispLap()); }
+// Hors sprint, la carte montre le prochain sprint NON JUGÉ : celui que l'on vient de fermer ne revient pas, sinon
+// la carte réaffichait « SPRINT 1 · waiting for the bell » juste après l'avoir clos.
+function sprintShown() {
+  if (S.sprintOpen != null) return S.sprintOpen;
+  const lap = dispLap();
+  for (let k = 1; k <= NSPRINTS; k++) { const t = S.sprints[k]; if (!(t && t.closed) && sprintLap(k) >= lap) return k; }
+  for (let k = 1; k <= NSPRINTS; k++) { const t = S.sprints[k]; if (!(t && t.closed)) return k; }
+  return NSPRINTS;
+}
 function renderCard() {
   const open = S.sprintOpen != null; document.body.classList.toggle('sprintmode', open);
   const k = sprintShown();
@@ -2490,7 +2498,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 144';
+  $('#buildno').textContent = 'build 145';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
