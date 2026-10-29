@@ -1872,3 +1872,21 @@ flexible, l'ordre du document reprend la main sur `grid-row`. La zone du bas, é
 l'ovale dans le document et placée en seconde rangée par la grille, est repassée **au-dessus**
 de l'ovale sans qu'aucune erreur ne soit levée. Corrigé en remettant le bloc dans l'ordre du
 document.
+
+## 45. L'écran sans cadre autour de l'ovale — build 139
+
+Fenêtre de 1910 × 900, celle de l'opérateur, rail masqué :
+
+| Disposition | Piste dessinée | Place libre de part et d'autre de la piste | La barre d'actions défile |
+|---|---|---|---|
+| Build 136 | 803 × 359 | **2 bandes encadrées de 190 px** | non |
+| **139, empilée** | **979 × 438** | aucune : le dessin remplit la largeur | non |
+| **139, en colonne** | 806 × 361 | aucune ; la place libre est celle des propositions, à droite des actions | non |
+
+Deux essais faits, regardés et abandonnés en chemin, qui sont consignés pour ne pas être
+refaits :
+
+- **Élargir la timeline à 290 px** : une ligne ne porte qu'un dossard, un drapeau et un code
+  pays ; la moitié droite de chaque ligne restait vide. Revenue à 176 px.
+- **Sortir la barre d'actions de la zone du bas pour la mettre à côté de l'ovale** : en
+  1440 × 900 la piste tombait à 438 × 196, soit le quart de sa surface. Abandonné.

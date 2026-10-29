@@ -318,6 +318,21 @@ Corrigé en préfixant les règles du panneau par `#simtp`. Même famille que F5
 que D17 : **la cascade tranche par l'ordre à spécificité égale**, donc une classe courte se
 porte sur un conteneur, et on vérifie la valeur calculée, jamais la règle écrite.
 
+**D21. Mesurer des chiffres sans regarder l'écran.** Trois builds de suite ont été livrées sur
+des mesures correctes — aucun débordement, rien qui défile, la bonne hauteur partout — alors
+que l'écran, lui, montrait deux grands rectangles vides de part et d'autre de la piste.
+L'opérateur : « je veux qu'avant de faire des commits à tout va, tu regardes le résultat et te
+pose la question si le résultat est correct ». Les mesures disent qu'une règle est respectée ;
+elles ne disent pas que l'écran est bon. **Retenu : prendre la capture, la regarder, et se
+demander ce qu'un opérateur en penserait, avant de commiter.**
+
+**D22. `grid-row` ne survit pas au passage en boîte flexible.** La colonne centrale est passée
+d'une grille à un `flex-direction:column` ; les `grid-row:1` et `grid-row:2` qui ordonnaient
+l'ovale et la zone du bas sont devenus inertes, et l'ordre du document a repris la main. La
+zone du bas est repassée **au-dessus** de l'ovale sans qu'aucune erreur ne soit levée et sans
+que les mesures de hauteur ne bougent. Retenu : **en changeant de mode de disposition, relever
+les positions, pas seulement les tailles.**
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été

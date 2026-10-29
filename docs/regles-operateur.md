@@ -1798,3 +1798,12 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
     d'un bloc de 30 à 38.
 94. **L'ovale n'a ni plafond ni proportions imposées.** L'un et l'autre recréaient du vide. Il
     prend exactement la place laissée, son dessin calé en haut de son panneau.
+
+95. **L'ovale n'a plus de cadre.** L'opérateur a entouré en rouge, le 29 octobre 2026, deux
+    rectangles vides de part et d'autre de la piste : « toute cette place est inutilisée alors
+    que dans le même temps la timeline est très serrée ». Ces rectangles étaient l'intérieur du
+    panneau de l'ovale, que son dessin ne remplissait pas. Sans cadre ni fond, la place libre
+    autour de la piste est le fond de la page.
+96. **La timeline reste à sa largeur utile** (176 px). L'élargir à 290 px ne remplissait rien :
+    une ligne ne porte qu'un dossard, un drapeau et un code pays, et la moitié droite restait
+    vide. Essayé, regardé, abandonné.
