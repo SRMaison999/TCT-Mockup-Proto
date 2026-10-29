@@ -507,9 +507,22 @@ qui lui donne 1,39 m sur une 166 m, 1,68 m sur une 200 m, 2,10 m sur une 250 m e
 sur une 333 m. Elle est lue comme un repère à l'écran, plus comme une cote.
 
 **Les tape switches ne sont plus dessinés** (`regles-operateur.md` §9). Vérifié dans le
-DOM après le tracé : **zéro** trait `#F2A33A` dans `#marks`. Les deux qui ne sont pas dans
-une boucle gardent leur étiquette, « départ du 200 m » et « intermédiaire du 200 m », et
-leurs contacts continuent d'être comptés dans l'onglet Track.
+DOM après le tracé : **zéro** trait `#F2A33A` dans `#marks`. Leurs contacts continuent
+d'être comptés dans l'onglet Track, où ils gardent leur nom.
+
+**Aucun repère n'est nommé sur l'ovale**, build 91 (`regles-operateur.md` §9, 29 octobre
+2026). Compté dans le DOM après le tracé, piste 250 m, les deux fois sur une course vide
+**et** sur la course de référence chargée depuis l'onglet Files :
+
+| Build | `<text>` dans `#marks` | Lesquels |
+|---|---|---|
+| 90 | **5** | « Finish », « Pursuit B », « Pursuit A », « 200 m start », « 100 m intermediate » |
+| 91 | **0** | — |
+
+Les deux chiffres sont les mêmes course vide et course chargée : le tracé des repères ne
+dépend pas de la course. Les traits, eux, sont tous encore là — la ligne noire sur
+bande blanche de l'arrivée, les deux lignes blanches des poursuites, et les lignes des 200 m
+et 100 m.
 
 **Le reste de la course ne bouge pas.** `pt()` et `normalAt()` ne sont lus que par
 `renderMarks()` et `renderOval()` : aucune mesure ne les traverse. Vérifié sur la course de

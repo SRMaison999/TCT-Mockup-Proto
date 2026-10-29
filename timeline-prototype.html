@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 90</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 91</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
@@ -1145,12 +1145,11 @@ function arcPath(s0, s1) {   // a stroke along the track from s0 back to s1 (s1 
   return d;
 }
 // The marks on the oval are computed, not drawn once: the operator sets the finish-to-pursuit gap, so a hard-coded
-// line would lie. Each loop gets a line across the track, each tape switch a short strip on the outer half of it —
-// the three that sit in a loop therefore show as a strip inside that loop's line. normalAt points outwards, so the
-// labels, which belong in the infield as before, take a negative offset.
+// line would lie. Each loop gets a line across the track. NOTHING here is captioned: the operator asked on
+// 29 October 2026 that the names Finish, Pursuit A, Pursuit B, 200 m and 100 m intermediate be taken off the oval.
+// The marks stay painted, only their text is gone — do not put a label back without him asking for it.
 function renderMarks() {
   const line = (s, from, to, col, w) => { const a = normalAt(s); return `<line x1="${(a.p.x + a.nx * from).toFixed(1)}" y1="${(a.p.y + a.ny * from).toFixed(1)}" x2="${(a.p.x + a.nx * to).toFixed(1)}" y2="${(a.p.y + a.ny * to).toFixed(1)}" stroke="${col}" stroke-width="${w}"/>`; };
-  const label = (s, off, col, size, w, txt) => { const a = normalAt(s); return `<text x="${(a.p.x + a.nx * off).toFixed(1)}" y="${(a.p.y + a.ny * off + 4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="${size}"${w ? ' font-weight="600"' : ''} fill="${col}">${txt}</text>`; };
   let h = '';
   const PXM = PATHLEN / TRACK;   // the drawing's scale, in units per metre: every painted line below is given in metres
   const FIN_BLACK = 2;           // the black line of the finish: the width of a pursuit line, which is what it is read against
@@ -1163,7 +1162,6 @@ function renderMarks() {
     // thin to read as a band around it, so it is widened to eight times the black line.
     if (fin) h += line(s, -HW, HW, '#FFFFFF', FIN_BLACK * 8) + line(s, -HW, HW, '#111111', FIN_BLACK);
     else h += line(s, -HW, HW, col, 2);   // the two pursuit lines are white and cross the whole width
-    h += label(s, -(HW + 16), col, 12, fin, LOOPNAME[s]);
   }
   // The painted lines of the flying 200 m, white. The 200 m crosses the whole width, the 100 m only half of it,
   // from the côte d'azur up. A 166 m track has neither; on a 200 m the start falls on the finish line, which
@@ -1173,10 +1171,10 @@ function renderMarks() {
     if (s < 0.05) continue;
     h += line(s, -HW, full ? HW : 0, '#FFFFFF', 1.5);
   }
-  // The tape switches are NOT drawn (operator, 28 October 2026). They are sensors, not paint: the two that are not
-  // in a loop sit under the 200 m and 100 m lines, which are painted above, and the other three under a loop line.
-  // They go on being counted all the same — the Track tab shows their contacts.
-  for (const T of TAPES) { if (T.loop == null) h += label(T.pos, -(HW + 10), '#FFFFFF', 10, false, T.name); }
+  // The tape switches are NOT drawn (operator, 28 October 2026), and since the 29th they are not named either.
+  // They are sensors, not paint: the two that are not in a loop sit under the 200 m and 100 m lines, which are
+  // painted above, and the other three under a loop line. They go on being counted all the same — the Track tab
+  // shows their contacts, by name.
   $('#marks').innerHTML = h;
 }
 function renderOval(G, M) {
@@ -2069,7 +2067,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 90';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 91';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

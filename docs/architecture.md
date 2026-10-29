@@ -627,8 +627,7 @@ Les chiffres par longueur de piste sont dans `mesures.md` §14.
 piste la lit : les traits en travers, qui vont d'un bord à l'autre (`−HW` → `+HW`, build 72,
 sans débord), la moitié que couvre la ligne des 100 m, les deux bords de la bande d'un
 groupe et son épaisseur
-(`OVAL_W+2`), et le retrait que gardent les étiquettes de boucle dans l'anneau intérieur.
-Changer ce seul nombre suffit, et rien ne peut diverger.
+(`OVAL_W+2`). Changer ce seul nombre suffit, et rien ne peut diverger.
 
 **Les marquages sont donnés en mètres, pas en pixels.** `renderMarks()` pose
 `PXM = PATHLEN / TRACK`, l'échelle du dessin, et un trait peint s'écrit avec sa cote réelle
@@ -644,8 +643,14 @@ minces autour de lui pour se lire comme une bande.
 
 **Les tape switches ne sont pas dessinés** (même décision). Ce sont des capteurs, pas de la
 peinture : les deux qui ne sont pas dans une boucle tombent sous les lignes des 200 m et
-des 100 m, les trois autres sous un trait de boucle. Seules leurs étiquettes restent, et
-`tapeCount()` continue de les compter — c'est un retrait de dessin, pas de mesure.
+des 100 m, les trois autres sous un trait de boucle. `tapeCount()` continue de les compter —
+c'est un retrait de dessin, pas de mesure.
+
+**Aucun repère de l'ovale n'est nommé** (`regles-operateur.md` §9, 29 octobre 2026, build 91).
+`renderMarks()` ne pose plus que des `<line>` : l'assistant `label()` qui écrivait « Finish »,
+« Pursuit A », « Pursuit B », « 200 m start » et « 100 m intermediate » est supprimé, et `#marks` ne
+contient plus un seul `<text>`. `LOOPNAME` et `T.name` restent lus ailleurs — l'en-tête du
+leader, les propositions, l'onglet Track — et ne bougent pas.
 
 Les lignes du 200 m lancé suivent la même règle que `buildTapes()` et en reprennent les deux
 cas particuliers : rien sur une piste de **166 m**, et sur une **200 m** le départ du 200

@@ -490,6 +490,20 @@ Donc : la ligne des stayers **reste** au bleu du dossard du n° 3, validé, et s
 d'azur s'en éclaircit. « Un peu » n'est pas une cote ; la valeur retenue est dans
 `mesures.md` §14. Codé à la **build 73**.
 
+**29 octobre 2026 — les repères de l'ovale ne portent plus leur nom.** Sur une capture de la
+build 90, où il a entouré en rouge les cinq textes posés sur le dessin, mot pour mot :
+
+> commençons par l'ovale :
+>
+> * retire tous les textes encerclés en rouge
+
+Les cinq textes entourés sont **« Finish »**, **« Pursuit A »**, **« Pursuit B »**,
+**« 200 m start »** — que sa capture montre coupé en « 200 m » — et **« 100 m intermediate »**.
+Seuls les **textes** sont entourés : les traits qu'ils nommaient —
+la ligne noire sur bande blanche de l'arrivée, les deux lignes blanches des poursuites, et les
+lignes des 200 m et 100 m — restent peints, et les tape switches restent comptés. Codé à la
+**build 91**.
+
 Il a demandé le même jour **la distance Pursuit A – Finish telle que le dessin la montre**.
 Elle vaut **10 m**, c'est-à-dire exactement le `gap` du simulateur : le dessin ne l'invente
 plus depuis la build 69, il la suit (`mesures.md` §14).
