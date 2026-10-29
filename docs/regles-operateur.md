@@ -1689,4 +1689,9 @@ Puis, sur son propre croquis :
 77. **L'ovale est collé en haut de l'écran, et les propositions ont une ligne à elles**, entre
     l'ovale et les actions. Mot pour mot : « Il y a beaucoup de place en hauteur au-dessus et
     en-dessous de l'ovale ! Monte l'ovale sur l'écran et place les propositions dans une ligne
-    entre l'ovale et les actions ». L'ovale ne fait plus que la hauteur de son dessin.
+    entre l'ovale et les actions ».
+78. **Rien ne se laisse vide sous les actions.** Mot pour mot : « Pourquoi laisses-tu un espace
+    vide en-dessous des actions ??? ». Une première version réservait en permanence la hauteur
+    de la ligne des propositions, pour que l'ovale ne saute pas quand il en arrive une : **il
+    l'a refusé**. L'ovale prend donc toute la hauteur que les deux lignes du bas lui laissent,
+    et il se redimensionne à l'arrivée d'une proposition.

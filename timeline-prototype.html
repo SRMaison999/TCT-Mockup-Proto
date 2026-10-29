@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 122</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 123</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -56,7 +56,7 @@
       </section>
 
       <div class="oval">
-        <svg viewBox="0 0 980 590" role="img" aria-label="Track view" id="oval">
+        <svg viewBox="0 0 980 590" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Track view" id="oval">
           <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#8a8a8a" stroke="#b5884e" stroke-width="60"/>
           <rect x="143" y="158" width="694" height="274" rx="137" fill="none" stroke="#3b6ae8" stroke-width="6"/>
           <rect x="138.5" y="153.5" width="703" height="283" rx="141.5" fill="none" stroke="#111111" stroke-width="1.5"/>
@@ -2441,7 +2441,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 122';
+  $('#buildno').textContent = 'build 123';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

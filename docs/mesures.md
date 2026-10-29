@@ -1668,19 +1668,20 @@ Vérifié au clic : un ✓ de coureur fait passer la carte de trois dossards à 
 journal « BIB 7 · laps gained 0 → 1 · effect Lap 21 · validated proposal ». Les deux autres
 restent en attente.
 
-## 36. L'ovale collé en haut — build 122
+## 36. L'ovale collé en haut, rien de vide sous les actions — build 123
 
 Fenêtre de 1440 × 900, rail masqué.
 
 | | Sans proposition | Avec une proposition |
 |---|---|---|
-| Ovale dessiné | 1158 × 697 | 850 × 512 (sprint ouvert) |
-| Haut de l'ovale | y = 58 | y = 58 |
-| Place vide au bas de la page | 95 px | 159 px |
+| Panneau de l'ovale | 1280 × 782 | 850 × 662 (sprint ouvert) |
+| Ovale dessiné | **1280 × 771** | 850 × 512 |
+| Place vide sous les actions | **10 px** (la marge de la page) | **10 px** |
 
-Le haut de l'ovale **ne bouge pas** : le plafond de hauteur réserve en permanence la ligne des
-propositions, qu'il y en ait une ou non. Les 95 px vides du bas sont le prix de cette
-stabilité -- sans la réserve, l'ovale sauterait de 95 px à l'instant où une proposition
-arrive, c'est-à-dire au moment où l'opérateur regarde la piste.
+La build 122 réservait la hauteur de la ligne des propositions pour que l'ovale ne saute pas :
+95 px restaient vides sous les actions et l'opérateur l'a refusé. L'ovale prend maintenant
+toute la hauteur disponible, son dessin calé en haut de son panneau
+(`preserveAspectRatio="xMidYMin meet"`), et il se redimensionne quand une proposition arrive.
 
-En 1920 × 1080, l'ovale dessiné passe à 1382 × 832 hors sprint.
+Hors sprint, le dessin gagne encore : 697 → **771 px** de haut en 1440. Pendant un sprint, il
+reste limité par sa largeur, et les 150 px qui restent sont dans le panneau, sous la piste.
