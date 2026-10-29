@@ -253,6 +253,14 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
    sous l'ordre, à gauche, où la place ne manque pas. */
 .sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(230px,1fr) minmax(176px,190px);gap:20px;padding:10px 12px 12px;overflow:auto}
 .sleft,.sright{min-width:0;display:flex;flex-direction:column}
+/* Le titre de l'ordre, avec le rappel du glisser, et les trois commandes qui agissent sur lui, sous lui. */
+.ssec{display:flex;align-items:baseline;gap:10px;padding:0 4px 7px;font:600 11px var(--sans);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted)}
+.ssec .hint{font:500 11px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.sord{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.sord .btn{padding:7px 13px;font-size:13px}
+.sord input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);
+  border-radius:3px;padding:6px 10px;flex:1 1 160px;min-width:0}
 
 .shd{display:grid;grid-template-columns:32px 38px 46px minmax(0,1fr) 58px 30px 30px;gap:8px;align-items:center;height:24px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
 .shd.sl{grid-template-columns:38px 46px minmax(0,1fr)}

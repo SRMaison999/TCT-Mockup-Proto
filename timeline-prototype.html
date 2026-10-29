@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 143</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 144</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2100,11 +2100,12 @@ function renderCard() {
     cnt = seq.length >= toRank ? toRank + ' ranked · finish complete' : S.riders.length + ' started' + Object.entries(codes).map(([c, n]) => ' · ' + n + ' ' + c).join('') + ' · ' + toRank + ' to rank · ' + across + ' across' + (notp.length ? ' · BIB ' + notp.join(', ') + ' to place by hand' : '');
   }
   let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>${fin ? `<span class="lapn">Lap ${LAPS} · points ×2</span>` : `<button class="btn xs quiet" data-sact="shift:-1" title="Judge this sprint on the previous lap">←</button><span class="lapn">Lap ${s.lap}</span><button class="btn xs quiet" data-sact="shift:1" title="Judge this sprint on the next lap">→</button>`}
-    <span style="width:8px"></span><button class="btn xs${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵  or  bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}
-    <button class="btn xs quiet" data-sact="detected" title="Back to the order the loops measured">Detected order</button><button class="btn xs quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>${s.recordFrom != null ? '<span class="pill acc">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}
     <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
     <button class="btn xs${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button>${open ? `<button class="btn xs ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button><button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
-  h += '<div class="sbody"><div class="sleft">';
+  // Les trois commandes qui agissent sur l'ordre vivent AVEC l'ordre, dans la colonne de gauche, et non coincées
+  // en haut de la carte (l'opérateur, 29 octobre 2026). Le titre rappelle que les lignes se glissent pour être
+  // remises dans l'ordre -- ce que le glisser fait toujours.
+  h += '<div class="sbody"><div class="sleft"><div class="ssec">Order<span class="hint">drag a line to reorder</span></div>';
   // riders without transponder: place them in advance
   for (const [bib] of S.noTp) {
     if (S.withdrawn.has(bib) || s.notpDismiss.includes(bib) || seq.some(e => e.bib === bib)) continue;
@@ -2143,6 +2144,7 @@ function renderCard() {
   } else if (S.withdrawn.size) {
     for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); h += `<div class="srow ne"><span class="pl"></span>${chip(r)}<span class="noc" title="${r.name}">${r.nat}</span><span class="why">${w.code} · Lap ${w.lap} · not ranked</span><span></span></div>`; }
   }
+  h += `<div class="sord"><button class="btn${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵  or  bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}<button class="btn quiet" data-sact="detected" title="Back to the order the loops measured">Detected order</button><button class="btn quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>${s.recordFrom != null ? '<span class="pill acc">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}</div>`;
   h += `<div class="stgt" title="Where the next rider goes: double-click in the start list, or a bib typed in the Manual box">
     <span class="sthead"><span class="k">Next place</span><b>${ordinal(tgt)}</b></span>
     <span class="stbtns">${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">` : [1, 2, 3, 4].map(p => `<button class="btn${tgt === p ? ' on' : ''}" data-sact="target:${p}">${ordinal(p)}</button>`).join('')}</span></div>`;
@@ -2488,7 +2490,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 143';
+  $('#buildno').textContent = 'build 144';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

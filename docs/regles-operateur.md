@@ -1823,3 +1823,14 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
     passer **sous l'ordre**, à gauche, où la place ne manque pas. Elle tient sur deux lignes
     voulues -- le libellé et la place en cours, puis les quatre boutons `1st` à `4th` à taille
     normale -- au lieu de passer à la ligne toute seule dans 170 px.
+
+100. **Les commandes qui agissent sur l'ordre vivent avec l'ordre.** « Les boutons Manual,
+     Detected order, Clear and record ne sont pas obligés d'être coincés tout en haut de la
+     carte ». Ils passent sous l'ordre, dans la colonne de gauche, à taille normale et espacés.
+     L'en-tête de la carte ne garde que l'identité du sprint -- son numéro, le tour jugé et ses
+     flèches, le compte à rebours -- et `Live`, `Send` et `Close`.
+101. **L'ordre porte son titre et le rappel du glisser.** « réordrer par drag est toujours
+     possible non ? » -- oui, il l'est toujours : glisser une ligne de l'ordre la déplace,
+     glisser un coureur de la liste de départ le place. Le rappel avait été retiré avec
+     l'en-tête de colonne tronqué « D… » ; il est rendu, en clair, au-dessus de l'ordre :
+     « ORDER · drag a line to reorder ».
