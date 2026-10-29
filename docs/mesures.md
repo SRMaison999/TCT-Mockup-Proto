@@ -1233,6 +1233,21 @@ groupes séparés et écarts ouverts :
 
 La dernière ligne est celle qui compte : le dessin est parti, la règle est intacte.
 
+**La taille d'une bulle de groupe**, build 96. L'opérateur a entouré en noir sur une capture la
+taille qu'il voulait, puis signalé que celle du dernier groupe restait trop grande. Deux erreurs
+successives, et la seconde était la plus instructive :
+
+| Essai | Ce qui dimensionnait la bulle | Ce que ça donnait |
+|---|---|---|
+| build 95 | toute la largeur de piste, et **7 m** au-delà de chaque extrémité | une bande qui déborde partout |
+| premier correctif | le **couloir le plus écarté** occupé par un de ses membres | deux coureurs côte à côte héritaient de **la largeur du peloton** |
+| build 96 | l'**étalement réel** de ses membres, et la bulle est centrée sur eux | elle serre le groupe |
+
+Les cotes : demi-largeur = (couloir max − couloir min) / 2 + **15** (le rayon d'une pastille)
++ **4** de marge ; même marge le long de la piste, convertie en mètres. Une bulle n'est donc plus
+centrée sur l'axe de la piste mais sur **ses propres coureurs**, ce qui a demandé un tracé
+d'arc décalé (`arcPathOff`).
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

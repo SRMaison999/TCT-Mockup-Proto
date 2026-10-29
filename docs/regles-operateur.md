@@ -1319,6 +1319,18 @@ Et sa correction, le même jour, sur un cas qui avait été mal lu :
     une ligne, et **le groupe dépassé allonge la sienne** pour que deux noms ne se chevauchent
     pas.
 
+Sur la première version codée, il a entouré en noir la taille qu'il veut pour les bulles :
+
+> j'ai entouré en noir pour indiquer la taille des bulles telle que je les voudrais.
+
+Puis, la bulle du dernier groupe restant trop grande :
+
+> là c'est pas mal sauf la bulle 3-Last qui est encore trop grande
+
+27. **La bulle serre les coureurs qu'elle contient.** Elle ne couvre ni toute la largeur de la
+    piste ni plusieurs mètres au-delà du premier et du dernier : elle se mesure **sur ses propres
+    membres**, en largeur comme en longueur. Les cotes retenues sont dans `mesures.md` §26.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

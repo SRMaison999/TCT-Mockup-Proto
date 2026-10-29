@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 95</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 96</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1252,6 +1252,13 @@ function arcPath(s0, s1) {   // a stroke along the track from s0 back to s1 (s1 
   for (let i = 0; i <= n; i++) { const p = pt(s1 + (s0 - s1) * i / n); d += (i ? ' L' : 'M') + p.x.toFixed(1) + ',' + p.y.toFixed(1); }
   return d;
 }
+// the same stroke, carried `off` units to the side: a group's bubble sits on ITS riders, which are rarely centred
+function arcPathOff(s0, s1, off) {
+  if (!off) return arcPath(s0, s1);
+  const n = Math.max(2, Math.ceil((s0 - s1) / 4)); let d = '';
+  for (let i = 0; i <= n; i++) { const a = normalAt(s1 + (s0 - s1) * i / n); d += (i ? ' L' : 'M') + (a.p.x + a.nx * off).toFixed(1) + ',' + (a.p.y + a.ny * off).toFixed(1); }
+  return d;
+}
 // The marks on the oval are computed, not drawn once: the operator sets the finish-to-pursuit gap, so a hard-coded
 // line would lie. Each loop gets a line across the track. NOTHING here is captioned: the operator asked on
 // 29 October 2026 that the names Finish, Pursuit A, Pursuit B, 200 m and 100 m intermediate be taken off the oval.
@@ -1304,24 +1311,8 @@ function renderMarks() {
 function renderOval(G, M) {
   let bands = '', dots = '', labels = '';
   const leaderS = G.leader.pos, bubbles = [];
-  // 1. bands: one per group drawn on the track, except a block that rides inside the bunch (its riders carry their marks)
+  // 1. which groups get a bubble. A block riding inside the bunch keeps none: its riders carry their own marks.
   const drawn = G.groups.filter(g => !g.incident && g.rows.some(x => !x.m.off) && !(g !== G.bunch && G.bunch && g.cluster === G.bunchCluster && !g.op));
-  G.groups.forEach((g, gi) => {
-    if (!drawn.includes(g)) return;
-    const rows = g.rows.filter(x => !x.m.off).sort((a, b) => a.behind - b.behind);
-    const sHead = leaderS - rows[0].behind, sTail = leaderS - rows[rows.length - 1].behind;
-    const colour = groupColor(g, G);   // the bubble carries the group's own colour, the same one its timeline box has
-    bubbles.push({ g, gi, sMid: (sHead + sTail) / 2, colour });
-    const d = arcPath(sHead + 7, sTail - 7);
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.32" stroke-width="${OVAL_W + 2}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="2"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none" transform="translate(0,0)"/>`;
-    // crisp edges on both sides of the track
-    for (const side of [-(HW + 1), HW + 1]) {
-      const n = Math.max(2, Math.ceil((sHead - sTail + 14) / 4)); let e = '';
-      for (let i = 0; i <= n; i++) { const s = sTail - 7 + (sHead - sTail + 14) * i / n, a = normalAt(s); e += (i ? ' L' : 'M') + (a.p.x + a.nx * side).toFixed(1) + ',' + (a.p.y + a.ny * side).toFixed(1); }
-      bands += `<path d="${e}" fill="none" stroke="${colour}" stroke-opacity="0.85" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
-    }
-  });
   // 2. riders: lanes computed over every rider on the track, in track order, so that nobody hides anybody
   const all = [];
   for (const g of G.groups) for (const x of g.rows) if (!x.m.off) all.push({ x, g, s: leaderS - x.behind, along: ((((leaderS - x.behind) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN });
@@ -1338,6 +1329,31 @@ function renderOval(G, M) {
     }
     placedPts.push({ x: best.cx, y: best.cy }); it.cx = best.cx; it.cy = best.cy; it.lane = best.lane;
   }
+
+  // 1 bis. the bubbles, drawn now that every rider has his lane: the operator wants them to HUG the riders they
+  // hold (29 October 2026, his black outlines), not to span the whole width of the track for seven metres beyond
+  // each end. So each bubble is measured on its own members — the widest lane they occupy, and the distance from
+  // the first of them to the last — plus the radius of a dot and a small margin.
+  const DOT_R = 15, BUB_M = 4, PXM_B = PATHLEN / TRACK;
+  G.groups.forEach((g, gi) => {
+    if (!drawn.includes(g)) return;
+    const mine = all.filter(it => it.g === g); if (!mine.length) return;
+    // The width is the riders' OWN spread across the track, not the widest lane in use: two riders side by side were
+    // inheriting the bunch's width because one of them sat in an outer lane. So the bubble is centred on them.
+    const offs = mine.map(it => laneOff[it.lane]), oMin = Math.min(...offs), oMax = Math.max(...offs);
+    const mid = (oMin + oMax) / 2, halfW = (oMax - oMin) / 2 + DOT_R + BUB_M;
+    const pad = (DOT_R + BUB_M) / PXM_B;                       // the same margin along the track, given in metres
+    const sHead = Math.max(...mine.map(it => it.s)), sTail = Math.min(...mine.map(it => it.s));
+    const colour = groupColor(g, G);   // the bubble carries the group's own colour, the same one its timeline box has
+    bubbles.push({ g, gi, sMid: (sHead + sTail) / 2, colour, halfW, mid });
+    const d = arcPathOff(sHead + pad, sTail - pad, mid);
+    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.48" stroke-width="${(halfW * 2).toFixed(1)}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
+    for (const side of [mid - halfW, mid + halfW]) {            // the two sides of the bubble, in its own colour
+      const n = Math.max(2, Math.ceil((sHead - sTail + 2 * pad) / 4)); let e = '';
+      for (let i = 0; i <= n; i++) { const sv = sTail - pad + (sHead - sTail + 2 * pad) * i / n, a = normalAt(sv); e += (i ? ' L' : 'M') + (a.p.x + a.nx * side).toFixed(1) + ',' + (a.p.y + a.ny * side).toFixed(1); }
+      bands += `<path d="${e}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
+    }
+  });
   for (const it of all) {
     const { x, s, cx, cy } = it, { p, nx, ny } = normalAt(s);
     const isLead = x.r.bib === G.leaderBib, sel = S.selection.has(x.r.bib);
@@ -1369,7 +1385,8 @@ function renderOval(G, M) {
       depth += NAME_STEP;
     }
     placed.push({ x: lx, y: ly });
-    const from = { x: a.p.x + a.nx * (HW + 4), y: a.p.y + a.ny * (HW + 4) };
+    const edge = bu.mid + bu.halfW + 3;   // the line starts at the bubble's own outer edge, wherever it sits
+    const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
     labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * 9).toFixed(1)}" y2="${(ly - a.ny * 9).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
     labels += `<text x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Sans" font-size="15" font-weight="700" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${groupName(bu.g, G)}</text>`;
   }
@@ -2271,7 +2288,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 95';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 96';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
