@@ -1753,5 +1753,5 @@ mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les é
 88. **Tous les éléments de la timeline sont plus bas** : la ligne d'un coureur passe de 26 à
     22 px, l'en-tête d'un bloc de 35 à 30, la bande de dépôt de 32 à 16. Son libellé passe de
     « Drop here: new group » à « new group » -- à 118 px de large il tenait sur deux lignes, il
-    en tient maintenant une. **C'est un texte validé qui change** : à dire s'il le veut
-    rétabli.
+    en tient maintenant une. **Confirmé par l'opérateur le 29 octobre 2026** : « non c'est bien
+    comme ça, garde "new group" ».
