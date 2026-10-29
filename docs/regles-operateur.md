@@ -490,6 +490,20 @@ Donc : la ligne des stayers **reste** au bleu du dossard du n° 3, validé, et s
 d'azur s'en éclaircit. « Un peu » n'est pas une cote ; la valeur retenue est dans
 `mesures.md` §14. Codé à la **build 73**.
 
+**29 octobre 2026 — les repères de l'ovale ne portent plus leur nom.** Sur une capture de la
+build 90, où il a entouré en rouge les cinq textes posés sur le dessin, mot pour mot :
+
+> commençons par l'ovale :
+>
+> * retire tous les textes encerclés en rouge
+
+Les cinq textes entourés sont **« Finish »**, **« Pursuit A »**, **« Pursuit B »**,
+**« 200 m start »** — que sa capture montre coupé en « 200 m » — et **« 100 m intermediate »**.
+Seuls les **textes** sont entourés : les traits qu'ils nommaient —
+la ligne noire sur bande blanche de l'arrivée, les deux lignes blanches des poursuites, et les
+lignes des 200 m et 100 m — restent peints, et les tape switches restent comptés. Codé à la
+**build 91**.
+
 Il a demandé le même jour **la distance Pursuit A – Finish telle que le dessin la montre**.
 Elle vaut **10 m**, c'est-à-dire exactement le `gap` du simulateur : le dessin ne l'invente
 plus depuis la build 69, il la suit (`mesures.md` §14).
@@ -747,6 +761,27 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
   tour de 195 secondes (`travaux.md` §8d). À trancher.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
+
+### Cinq points tranchés le 29 octobre 2026
+
+Ses réponses, mot pour mot, et ce qu'elles ferment :
+
+| Question | Sa réponse | Ce qui est fait |
+|---|---|---|
+| Le bouton `Auto` du leader | « le bouton AUTO je m'en fous » | Il reste où il est, dans la barre du haut. Rien n'est codé. |
+| Le simulateur dans une autre fenêtre | « tu m'as dit que ce n'était pas possible » | Abandonné. Le simulateur reste dans la page, derrière son bouton. |
+| La place du badge du sprint | « le badge du sprint est dans l'ovale, il n'y a pas de problème ! » | Il reste dans l'intérieur de l'ovale. |
+| Le compteur `LAP 21 / 40` | « le LAP 21 / 40 est dans l'ovale, il n'y a pas de problème ! » | Il reste dans l'intérieur de l'ovale. |
+| Le nom des groupes d'incident | « le nom des groupes d'incident > CRASH » | `CRASH`, en capitales et sans numéro. |
+
+**Ce qui n'a pas été demandé** : un groupe d'ennui mécanique garde son propre mot,
+`MECHANICAL`, en capitales et sans numéro lui aussi. Il n'a rien dit à son sujet, et l'appeler
+`CRASH` dirait une chose fausse sur la course.
+
+**Où ce nom se lit** : dans l'en-tête du bloc de la timeline et dans la barre de sélection. Un
+groupe d'incident n'a **pas de bulle sur l'ovale** -- ses coureurs sont dessinés avec les
+autres (`renderOval`, filtre `drawn`) -- donc le nom n'y apparaît pas. La question portait sur
+l'ovale ; la réponse s'applique partout où le nom s'affiche.
 
 ---
 
@@ -1021,3 +1056,832 @@ Les trois se retrouvent dans la course suivante, et au rechargement de la page. 
 > il faut donc en créer une liste beaucoup plus importante
 
 29. **Toute nation que l'opérateur entre a son drapeau.** La liste en couvre 205.
+
+---
+
+## 17. L'écran de course : l'intérieur de l'ovale, le départ, les tours restants
+
+Cette section vient après le §16 pour la même raison que lui : ne renuméroter aucune autre.
+
+**29 octobre 2026 — la bande d'état descend à l'intérieur de l'ovale.** Mot pour mot :
+
+> Retirons la ligne des boutons au-dessus de l'ovale et plaçons les dans l'ovale
+
+Sa maquette montrait quatre boîtes à l'intérieur de l'ovale, un bouton rouge **ARM START**, et
+les boutons de désignation du leader posés **sur la piste**, chacun à sa boucle. Six points
+qu'elle ne tranchait pas lui ont été soumis ; ses réponses, mot pour mot, font le reste de
+cette section.
+
+### Le compteur de tours de course
+
+> oui tu as raison il faut l'afficher quelque part
+
+C'est la réponse sur `LAP 2 / 40`, absent de sa maquette. Il reste affiché ; **où**, il ne l'a
+pas dit.
+
+### Les propositions
+
+Sur la première maquette, il avait répondu « Attends la prochaine étape de mes propositions ».
+L'étape est venue le même jour, et elle tranche : **le champ est retiré** (voir ci-dessous).
+
+### D'où viennent les tours restants
+
+> oui il faut trouver un moyen d'indiquer que "38" to go provient de la connexion avec le lap
+> counter manuel ou si il provient de l'appli. Si il provient de l'appli i y a deux modes
+> possibles : automatique (l'appli calcule et affiche le nombre de tours restants) ou manuel.
+> En mode manuel il faut donc des boutons pour incrémenter et décrémenter. Et enfin il faut un
+> moyen de ne pas exporter le nombre de laps to go sur aucune des outputs en cas de problèmes.
+
+Trois provenances, donc : **le lap counter** relié à la piste, **l'application en automatique**,
+**l'application à la main**. En manuel, deux boutons incrémentent et décrémentent. Et le nombre
+peut être **retenu de toutes les sorties**.
+
+### Le départ de la course
+
+L'opérateur a confirmé la portée de ce qui suit, mot pour mot : « oui je t'ai décrit le
+workflow de départ des courses **du futur logiciel** ». Ce n'est donc pas une description du
+simulateur du prototype. Son énoncé, mot pour mot :
+
+> Armer le départ de la course. Une fois armé le bouton passe en vert et le label devient
+> "START ARMED" et on peut soit cliquer dessus pour trig le départ de la course ou faire en
+> sorte qu'une impulsion externe (comme un bouton pressoir) connectée à l'appli trig le départ
+> de la course. A ce moment là le running time de l'horloge démarre. Le bouton "START ARMED"
+> devient FALSE START" en gris et si on clique dessus une première fois le bouton va devenir un
+> peu plus grand et plus foncé et il faut recliquer une deuxième fois pour valider le faux
+> départ. Quand un faux départ est validé, le bouton revient sur "ARM START" en rouge.
+
+Quatre états, dans cet ordre : **ARM START** en rouge → **START ARMED** en vert → le départ,
+par le bouton **ou par une impulsion externe**, et l'horloge part → **FALSE START** en gris →
+un premier clic l'agrandit et le fonce, un second valide le faux départ et tout revient à
+**ARM START** en rouge.
+
+### Les trois boutons de désignation du leader
+
+> je ne sais pas quoi faire avec ce bouton "Auto". En revanche, les 3 boutons "SET LEADER"
+> doivent être renommés "SET NEXT AS NEW LEADER" et quand on a cliqué dessus le bouton et la
+> ligne de Pursuit ou de finish affiliée passe en vert en attendant le passage d'un coureur.
+> Dès qu'un coureur est passé, le bouton et la ligne redevienne de leur couleur normale mais
+> dans le bouton s'affiche le n° de dossard du nouveau leader pendant quelques secondes
+
+**Le sort du bouton `Auto` n'est pas tranché** — il reste où il est en attendant. « Quelques
+secondes » n'est pas une cote et aucune ne lui a été demandée : la valeur retenue est un choix
+d'affichage, signalé comme tel dans `cas-de-course.md`.
+
+### Sa deuxième lecture, le même jour
+
+Devant la première version codée, mot pour mot :
+
+> ah non mais ça ne va pas du tout !
+>
+> * le champ "Proposals" tu le retire
+> * le bouton qui arme le start et l'horloge doivent être côte à côte. Le texte "Race time" doit
+>   être supprimé.
+> * Les laps to go doivent être affichés près de la ligne Finish. Et il faut afficher les
+>   commandes relatives au mode sélectionné sinon il y a des boutons inutiles
+> * dans le champ LEADER, retire "56.9 km/h from the track"
+> * Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne
+>   très visible et immanquable
+
+Cinq décisions, donc :
+
+1. **Le champ des propositions disparaît.**
+2. **L'horloge et le bouton qui arme le départ sont côte à côte**, et l'horloge n'est plus
+   titrée « RACE TIME ».
+3. **Les tours restants s'affichent près de la ligne d'arrivée**, plus dans le panneau. Et
+   **seules les commandes du mode choisi s'affichent** : les boutons `−` et `+` n'existent qu'en
+   mode manuel.
+4. **Le champ du leader ne porte que son dossard** : ni la vitesse, ni la façon dont il a été
+   désigné.
+5. **À deux tours du prochain sprint, le champ devient immanquable.** Aucune couleur n'a été
+   énoncée ; celle qui est retenue est dans `mesures.md` §26.
+
+### Un mot qui n'est pas le sien
+
+Le 29 octobre 2026, devant une version où l'intérieur de l'ovale était appelé « gazon » jusque
+dans le titre de cette section, mot pour mot :
+
+> Et arrête avec ton "gazon" ! il n'y a pas de gazon dans un vélodrome !!!!!!
+
+Le mot n'avait jamais été le sien. Le sien, le 27 octobre, est au §12 : « la zone en béton,
+plate, immédiatement à l'intérieur de l'ovale de la piste en bois ». **On dit l'intérieur de
+l'ovale.** Corrigé dans les quatre documents qui portaient le mot.
+
+### Sa troisième lecture, le même jour
+
+Mot pour mot :
+
+> * Les tours "2/40" doivent être proches des "38 TO GO"
+> * pour éviter de créer un champ EXPORTED, il faut plutôt que le zone des laps to go devienne
+>   rouge. Pour changer entre exporté et non exporté il faut je pense un tout petit bouton
+> * Les boutons "SET NEXT AS NEW LEADER" renomme les "SET NEXT AS LEADER" sur deux lignes.
+>   supprime celui de la ligne Finish
+
+Ce que cela fixe :
+
+6. **Le compteur de tours de course est à côté des tours restants**, donc près de la ligne
+   d'arrivée et non plus dans le panneau. Cela répond à la question laissée ouverte plus haut.
+7. **Il n'y a pas de champ qui dit « exporté »** : c'est **la zone des tours restants qui
+   devient rouge** quand ils sont retenus. Un **tout petit bouton** fait la bascule.
+8. **Les boutons s'appellent « SET NEXT AS LEADER », sur deux lignes**, et **celui de la boucle
+   Finish est supprimé** : il n'en reste que deux, Pursuit A et Pursuit B.
+
+### Sa maquette du 29 octobre 2026
+
+Devant une version qu'il jugeait encore ratée, il a dessiné lui-même ce qu'il voulait. Mot pour
+mot :
+
+> Quelquechose comme ça ...
+
+Ce que la maquette montre, et qui fait foi :
+
+9. **Trois rangées, chacune centrée**, et non une grille de cases égales :
+   - `ARM START` · l'horloge · **`ARM FINISH`** ;
+   - `LAP 5 / 40` · `NEXT SPRINT 1 in 5 laps` ;
+   - `LEADER 15`, et à sa droite le bloc des tours restants.
+10. **`ARM FINISH`** est un bouton **neuf**, posé à droite de l'horloge, en neutre et non en
+    rouge. **Ce qu'il fait n'a pas été énoncé** (§15).
+11. **Les deux provenances s'affichent ensemble, chacune avec sa valeur** — « AUTO / MANU − 36 »
+    et « LAP COUNTER − 35 » — et **un sélecteur choisit celle qui alimente `TO GO`**. C'est
+    exactement sa règle du §13 : un désaccord se signale avec les deux valeurs. Un petit bouton
+    bascule l'application entre son propre comptage et le comptage à la main.
+12. **`TO GO` est une boîte verte** sous les deux provenances. Elle devient rouge quand les tours
+    restants sont retenus des sorties (point 7 ci-dessus).
+13. **L'intérieur de l'ovale est gris clair** sur cette maquette, alors qu'il était noir. C'est
+    la réponse au « Je ne sais pas encore » laissé plus haut.
+
+### Sa relecture du bloc des tours restants
+
+Sur une capture du bloc tel qu'il avait été codé, mot pour mot :
+
+> je ne t'ai pas dessiné ça comme ça ! le bouton carré n'a pas besoin d'être là. Le mode
+> export/non export change quand on clique dans la zone verte (ou rouge). A côté de LAP COUNTER
+> il faut afficher le nombre de tours du lap counter que l'on récupère dans l'appli (en
+> l'ocurrence 40)
+
+Puis, le même jour :
+
+> du coup le texte TO GO 40 peut être agrandi pour remplir sa place disponible
+
+Ce que cela fixe :
+
+14. **Il n'y a aucun bouton dans la boîte `TO GO`.** C'est **la zone elle-même qui se clique**
+    pour retenir les tours restants des sorties, ou les y renvoyer.
+15. **La ligne `LAP COUNTER` porte le nombre de tours reçu du compteur**, à côté de son nom,
+    comme la ligne de l'application porte le sien.
+16. **Le texte de `TO GO` remplit sa boîte**, la place n'étant plus disputée par un bouton.
+
+### Ce que fait `ARM FINISH`, et l'échelle du panneau
+
+Mot pour mot, le 29 octobre 2026 :
+
+> arm finish arme la ligne d'arrivée pour que le running time de l'horloge s'arrête au passage
+> du vainqueur à la toute fin de la course.
+
+Et, sur la mise en page :
+
+> Mais le layout est moche ! Mon croquis de mauvaise qualité que j'ai créé avec Paint et que je
+> t'ai transmis est plus joli que le tien
+
+Ce que cela fixe :
+
+17. **`ARM FINISH` arme la ligne d'arrivée.** Armée, elle **arrête le running time de l'horloge
+    au passage du vainqueur**, à la toute fin de la course. Les coureurs derrière lui continuent
+    de franchir la ligne ; l'horloge, elle, ne compte plus.
+18. **Le panneau se lit à l'échelle de son croquis.** Devant une version agrandie au jugé, et
+    toujours fausse, il a renvoyé sa capture avec trois mots : « utilise cette échelle ». Sa
+    capture est au rapport 1:1 avec le dessin, donc ses boîtes se **relèvent** au lieu de
+    s'estimer ; les cotes relevées sont dans `mesures.md` §26. **Un croquis qu'il fournit à la
+    taille de l'écran est une cotation**, pas une suggestion.
+
+### Les annotations qui suivent les coureurs
+
+**29 octobre 2026.** Mot pour mot :
+
+> Pour la suite il va falloir refaire complètement les annotations qui suivent les coureurs sur
+> l'ovale. Dans un premier temps on va retrier les annotations et textes actuels.
+> Je les ai entourés en rose foncé sur ces captures. Regarde si il en existe d'autre encore et
+> supprime les toutes
+
+Les textes entourés sur ses deux captures sont **le libellé du leader** (« LEADER · BIB 1 »),
+**le nom de chaque groupe avec son effectif et son statut** (« Chase 1 · 2 », « Break 1 · 3 »,
+« Bunch · 13 · lap gained? ») et **l'écart entre deux groupes** (« 65 m · 3.9 s »).
+
+Une quatrième de la même famille n'apparaissait sur aucune des deux, faute de coureur concerné :
+l'étiquette **« No points »** reliée au dossard par un pointillé. Elle est retirée avec les
+autres, au titre du « supprime les toutes ».
+
+19. **Aucun texte n'est tracé sur l'ovale**, hors le dossard qui est dans la pastille du coureur.
+    Les bandes de groupe restent, et un groupe se sélectionne toujours en cliquant sa bande.
+20. **Les annotations sont à refaire entièrement.** Ce qui précède n'est que le déblaiement.
+
+L'étiquette « No points » lui a été montrée, puisqu'il ne l'avait jamais vue à l'écran. Sa
+réponse, mot pour mot : « ok supprime ça aussi ». Le texte était déjà parti ; ce qui restait de
+cette étiquette, ce sont les **marques rouges sur la pastille** du coureur inéligible — un
+contour épaissi et un anneau clignotant.
+
+21. **Rien ne marque plus un coureur inéligible sur l'ovale** : ni texte, ni contour, ni anneau.
+    **La mesure est intacte** — l'éligibilité continue d'être calculée et la carte du sprint
+    continue de griser sa ligne (§8). C'est le dessin qui est retiré, pas la règle.
+
+### Les groupes sur l'ovale : bulles, noms et couleurs
+
+**29 octobre 2026.** Sur son croquis, mot pour mot :
+
+> maintenant ce que l'on va faire pour représenter les groupe sur l'ovale, c'est créer une bulle
+> autour des coureurs d'un groupe. Chaque bulle aura une autre couleur qui correspondra à la
+> couleur de sa box dans la timeline.
+>
+> La dénomination actuelle des groupes ne va pas du tout. On va faire comme suit :
+>
+> * Si il y a un groupe en tête de course  > 1-Leader ou 1-Leaders (selon le nombre de membres
+>   du groupe)
+> * Si il y a un groupe autre que le peloton derrière les leaders  > 2-Chase
+> * Si il y a encore un autre groupe autre que le peloton derrière 2-Chase  >  3-Chase
+>
+> et ainsi de suite si il y a d'autres groupes entre les leaders et le peloton....
+>
+> * Peloton > 4-Bunch (le numéro 4 est dans cet exemple utilisé car j'ai déjà les groupes 1 à 3
+>   devant le peloton)
+> * Si il y a un groupe derrière le peloton > 5-Behind
+> * Si il y a un tout dernier groupe > 6-Last
+>
+> Pour indiquer les noms des groupe sur l'ovale il faudra que les groupes soient marqués par une
+> bulle ou une sorte de halo autour des coureurs avec une ligne vers un texte indiquant le nom du
+> groupe. Cette ligne qui sépare le groupe du nom du groupe devra toujours faire en sorte que le
+> nom du groupe soit affiché à l'extérieur de la piste, en tout temps et avec la même marge tout
+> autour du vélodrome.
+>
+> Tous les groupes doivent avoir le nom de leur groupe en dehors de la piste avec la même marge.
+>
+> Si un groupe en dépasse un autre, il faut momentanément que le group qui se fait dépasser
+> allonge la ligne qui sépare la bulle du nom de groupe afin que les nom de groupes ne se
+> chevauchent pas
+
+Et sa correction, le même jour, sur un cas qui avait été mal lu :
+
+> Un seul groupe derrière le peloton 5-Behind — jamais Last tout seul > FAUX ! Un seul groupe
+> derrière le peloton ça doit être "x-Last"
+>
+> Les groupe d'incidents je n'y ai pas encore réfléchi, mais je pense que ce sera "CRASH" sans
+> numéro
+
+22. **Un groupe porte son rang dans la course, compté depuis la tête**, puis ce qu'il est.
+23. **Le tout dernier groupe est toujours `Last`**, même s'il est seul derrière le peloton.
+    `Behind` ne sert donc qu'à un groupe qui en a encore un derrière lui.
+24. **Les groupes d'incident n'ont pas de numéro** et gardent leur nom. **Ce nom n'est pas
+    tranché** : « je n'y ai pas encore réfléchi » (§15).
+25. **Chaque groupe a sa couleur**, la même sur sa bulle et sur sa boîte de timeline.
+26. **Le nom est à la même marge tout autour**, relié à sa bulle par une ligne, et **le groupe
+    dépassé allonge la sienne** pour que deux noms ne se chevauchent pas. *(Le « hors de la
+    piste » de cet énoncé est remplacé le même jour : voir le point 34.)*
+
+Sur la première version codée, il a entouré en noir la taille qu'il veut pour les bulles :
+
+> j'ai entouré en noir pour indiquer la taille des bulles telle que je les voudrais.
+
+Puis, la bulle du dernier groupe restant trop grande :
+
+> là c'est pas mal sauf la bulle 3-Last qui est encore trop grande
+
+27. **La bulle serre les coureurs qu'elle contient.** Elle ne couvre ni toute la largeur de la
+    piste ni plusieurs mètres au-delà du premier et du dernier : elle se mesure **sur ses propres
+    membres**, en largeur comme en longueur. Les cotes retenues sont dans `mesures.md` §26.
+
+Puis, sur la typographie de ces noms :
+
+> Maintenant il faut utiliser une police qui correspond à notre projet pour les noms des groupes
+
+28. **Le nom d'un groupe est écrit dans la police du projet**, la même que celle de son nom dans
+    la boîte de timeline.
+
+Sur une capture rapprochée, deux défauts relevés par lui :
+
+> 1. la ligne qui sépare la bulle du nom passe derrière le texte au lieu de s'arrêter au moment
+>    d'atteindre le texte. Cela a pour conséquence de rendre le texte flou
+> 2. il reste encore le cercle vert indiquant le leader hérité de l'ancienne version
+
+29. **La ligne s'arrête où le nom commence.** Elle ne passe jamais derrière lui.
+30. **Rien ne marque le leader sur l'ovale.** L'anneau vert et la barre verte en travers de la
+    piste faisaient partie des annotations retirées ; ils avaient été laissés derrière. Le champ
+    `LEADER` du panneau le nomme.
+
+### Les couleurs des groupes
+
+**29 octobre 2026.** Mot pour mot :
+
+> Et puis il faut aussi toujours utiliser les mêmes couleurs pour les groupes. Je propose les
+> couleurs suivantes, dis-moi ce que tu en penses :
+>
+> Leader(s) - Vert
+> Peloton - Bleu
+> Last - Rouge
+> tous les autres groupes dans l'ordre chronologiques de la course des nuances allant du vert au
+> rouge
+
+Devant la remarque que le peloton coupe un dégradé vert→rouge unique, sa correction :
+
+> Dans ce cas étale un dégradé entre vert et bleu pour les groupes devant le peloton et un
+> dégradé entre bleu et rouge pour les groupes derrière le peloton
+
+Et la contrainte qui décide des teintes exactes :
+
+> je ne sais pas quelles couleurs utiliser pour faire bien. ce que je sais c'est qu'il faut
+> éviter les couleurs se rapprochant de celle de la piste
+
+31. **La couleur d'un groupe dépend de son rôle, pas de son rang** : elle ne change donc pas
+    parce qu'un autre groupe apparaît devant lui. **Vert** en tête, **bleu** au peloton,
+    **rouge** en queue.
+32. **Deux dégradés, pivotant sur le peloton** : vert → bleu devant lui, bleu → rouge derrière.
+33. **Aucune teinte ne doit se rapprocher de celle de la piste.** Les valeurs retenues sont dans
+    `mesures.md` §26 ; elles ne lui ont pas été demandées, il a seulement posé la contrainte.
+
+### Les noms passent à l'intérieur de l'ovale
+
+**29 octobre 2026.** D'abord le constat :
+
+> regarde ici les textes sont trop éloignés de la piste
+
+Puis sa question, qui a décidé de la suite :
+
+> je me demandais > et si nous mettions les textes de groupes à l'intérieur de la piste plutôt
+> qu'à l'extérieur ?
+
+34. **Le nom d'un groupe s'affiche à l'intérieur de l'ovale**, et non plus à l'extérieur. Le
+    §17 point 26 — « toujours hors de la piste » — est **remplacé** par celui-ci ; la marge
+    constante tout autour, elle, reste.
+35. **Les deux boutons `SET NEXT AS LEADER` passent à l'extérieur de la piste.** Ils étaient la
+    seule chose qui occupait l'intérieur au milieu de chaque ligne droite, là où un nom doit
+    pouvoir se poser. Ils ne bougent jamais, le nom suit son groupe : c'est au nom qu'il faut
+    la place.
+
+### Les noms dans des badges
+
+**29 octobre 2026.** Mot pour mot :
+
+> on peut voir que les lignes séparant les bulles des textes ne s'arrêtent pas au texte, elles
+> continuent derrière le texte. Je me demande si ce ne serait pas mieux si les textes étaient
+> insérés dans des sortes de badges...
+
+36. **Le nom d'un groupe est posé dans un badge** à la couleur du groupe, et la ligne s'arrête
+    au bord du badge.
+
+Sur la première version, le badge du peloton se posait sur ses propres coureurs :
+
+> Mais là ce n'est pas bien !
+
+37. **Un badge ne recouvre jamais un coureur.** Il se tient au-delà de la **bulle** de son
+    groupe, pas à une profondeur fixe depuis le bord de la piste.
+
+Puis, les badges s'étant trouvés trop loin :
+
+> maintenant les badges sont un peu trop éloignés des bulles je trouve
+
+38. **Un badge se tient au plus près de sa bulle**, sans jamais couvrir un coureur.
+
+Puis, sur une séquence de cinq images prises dans le même virage :
+
+> Ca ne va pas bien. voici une séquence de 5 images dans le virage
+
+39. **L'écart entre une bulle et son badge est le même en tout point du vélodrome**, et ne
+    change pas d'une image à l'autre.
+
+Sur sa question « et quid des groupes qui se dépassent ? » :
+
+40. **Un badge qui gênerait un autre s'écarte**, d'abord en s'enfonçant vers le centre comme
+    l'opérateur l'a décrit, et, **quand il n'y a plus de profondeur disponible avant le
+    panneau**, en glissant le long de la piste. Sa ligne suit alors la direction réelle de sa
+    bulle à lui.
+
+### Les champs ressortent de l'ovale
+
+**29 octobre 2026.** Devant la place manquante — l'anneau entre la piste et le bloc des champs
+mesure 48 unités, et un badge en demande exactement 48 — mot pour mot :
+
+> ok alors on va les sortir de l'ovale, et on verra plus tard si on peut y remettre quelquechose
+
+41. **Le bloc des champs quitte l'intérieur de l'ovale** et se pose au-dessus de lui, dans sa
+    forme actuelle. L'intérieur est rendu aux badges.
+42. **Ce qui pourra y retourner n'est pas décidé** : « on verra plus tard ». Ne rien y remettre
+    sans qu'il le dise.
+
+Il l'a dit le même jour, mot pour mot :
+
+> bon c'est pas trop mal comme ça.
+>
+> Je pense qu'on peut remettre à l'intérieur la ligne des boutons ARM START - HORLOGE - ARM
+> FINISH et en dessous le champ LEADER
+
+43. **Retournent à l'intérieur de l'ovale** : la rangée `ARM START` · horloge · `ARM FINISH`,
+    et le champ `LEADER` en dessous. **Rien d'autre.** Le compteur de tours, le prochain sprint
+    et les tours restants restent au-dessus de l'ovale.
+
+Cela remplace le point 34 du même jour pour le bloc des champs seulement ; les **noms de
+groupes**, eux, restent à l'intérieur de l'ovale, ce qui était tout l'objet de ce déplacement.
+
+### Sa page redessinée
+
+**29 octobre 2026.** Il a redessiné la page entière et l'a transmise : « J'ai redessiné toute la
+page ». Ce qu'elle montre, et ses réponses aux cinq points qu'elle laissait ouverts :
+
+44. **L'intérieur de l'ovale reste gris.** Il l'avait dessiné noir : « c'était pour voir ce que
+    ça donnait. Peut-être que c'est plus lisible en gris ».
+45. **La timeline ne porte plus les noms des coureurs** — dossard, drapeau et code pays
+    seulement. « Confirmé ».
+46. **Le badge du prochain sprint passe à l'orange à deux tours**, comme le champ qu'il
+    remplace. **Sa place n'est pas acquise** : « il est possible que je le déplace plus tard ».
+47. **L'horloge de course n'est que dans l'ovale.** Celle de la barre du haut est **celle du
+    simulateur**, et elles ne montrent pas la même chose : depuis `ARM FINISH`, l'horloge de
+    course se fige sur le vainqueur pendant que la lecture continue.
+48. **Le simulateur ne s'ouvre que par son bouton**, et pourrait même s'ouvrir dans une autre
+    fenêtre.
+49. **L'intérieur de l'ovale reprend les tours restants** : la rangée du départ, puis les deux
+    provenances à côté de `LAP` et `TO GO`, puis `LEADER` et le prochain sprint en badges. La
+    barre au-dessus de l'ovale disparaît.
+
+### Son deuxième dessin de l'intérieur
+
+**29 octobre 2026.** Mot pour mot : « j'ai tenté de redessiné différemment l'intérieur d'ovale,
+regarde la capture ». Elle montre **trois colonnes côte à côte** : le départ (armement, horloge,
+arrivée) empilé verticalement ; les deux provenances et les tours restants ; puis le leader et
+le prochain sprint.
+
+Et, devant deux libellés qui passaient à la ligne :
+
+> Si nécessaire on peut réduire la taille des polices, des boutons d'armage, de l'horloge
+
+50. **L'intérieur de l'ovale est en trois colonnes**, dans cet ordre.
+51. **Les tailles peuvent se réduire** pour que tout tienne : polices, boutons d'armage,
+    horloge. Les valeurs retenues sont dans `mesures.md` §26.
+
+**Le compteur de tours de course ne figure pas sur ce dessin.** Il est gardé, en tête de la
+troisième colonne, parce qu'il avait demandé qu'il soit affiché quelque part (point 1 de cette
+section). À confirmer ou à retirer.
+
+Puis, sur le libellé de ce champ, mot pour mot :
+
+> le champ "NEXT SPRINT 3 in 6 laps" peut se renommer ainsi "SPRINT 3 - 6 LAPS"
+
+52. **Le prochain sprint s'écrit `SPRINT n - x LAPS`.** Le mot « NEXT » disparaît, et le nombre
+    de tours est en majuscules. Au tour du sprint : `SPRINT n - THIS LAP`.
+
+### Le simulateur dans une autre fenêtre
+
+Sa proposition : « On peut même imaginer que le simulateur s'ouvre dans une autre fenêtre »,
+puis « Cela supprimerait ces boutons ».
+
+**Ce qui a été répondu, et qui reste à trancher par lui** : le prototype est un fichier autonome
+qu'il ouvre souvent par double-clic, donc en `file://`, et deux fenêtres `file://` ne peuvent
+pas se parler en JavaScript — Chrome leur donne des origines opaques. Il faudrait passer par le
+serveur ou faire transiter l'état par le stockage du navigateur. La contre-proposition est de
+garder le simulateur dans la page mais **en recouvrement**, refermable entièrement, ce qui donne
+le même écran sans boutons de test. **Non tranché** (§15).
+
+### La couleur de l'intérieur de l'ovale
+
+Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :
+
+> Je ne sais pas encore
+
+Il reste donc **tel qu'il est**, et la question est ouverte (§15).
+
+### La barre du haut
+
+**29 octobre 2026.** Son dessin de la page entière place dans l'en-tête ce qui vivait jusque-là
+dans le rail du simulateur : le transport (`⏮ 30s`, lecture, pause, `×1`/`×4`/`×16`), l'horloge
+du simulateur, le champ unique qui dit `REC` ou `PLAYING RACE n`, puis `Replay` et `New`.
+
+53. **Le transport du simulateur est dans la barre du haut, en permanence.** Masquer le rail ne
+    déplace plus rien : le rail se réduit à son bouton `Simulator` et les commandes de lecture
+    restent là où elles sont. Le titre « Lap timeline · prototype » laisse la place ; le
+    sous-titre, qui porte le numéro de build, reste.
+
+### La timeline compacte
+
+**29 octobre 2026.** Sa page redessinée montre une colonne de timeline resserrée : chaque bloc
+de groupe porte **quatre choses** — son numéro, son nom, le nombre de coureurs et l'écart — et
+chaque ligne de coureur **trois** : le dossard, le drapeau et le code pays.
+
+54. **L'en-tête d'un bloc ne porte que ces quatre champs.** La mention « race leader » qui
+    suivait le nombre de coureurs a été retirée : le champ de l'écart dit déjà « leader » pour
+    le groupe de tête, et la colonne resserrée coupait le texte. **Écart par rapport à un
+    comportement validé, signalé le 29 octobre 2026 ; à confirmer ou à rétablir.**
+55. **Une ligne de coureur ne porte plus son nom.** Le nom reste dans l'infobulle de la ligne
+    et dans le classement. Les marqueurs d'état — hors piste, sans transpondeur, non lu, hors
+    sprint, sans points — restent sur la ligne : leur retrait n'a pas été demandé.
+
+**29 octobre 2026, sur une capture annotée en rouge.** Trois choses de plus quittent la
+timeline, et une reste :
+
+56. **La colonne n'a plus d'en-tête.** Le titre « Lap timeline » et la note « measured
+    positions · laps as validated » sont retirés.
+57. **La pastille du numéro de groupe est retirée.** Le nom la contient déjà : `1-Leaders`,
+    `2-Bunch`. Le numéro reste calculé, c'est son affichage en double qui disparaît.
+58. **La bande entre deux blocs ne porte plus l'écart** « 2 m · 0,1 s ». L'écart d'un groupe
+    est déjà dans son en-tête.
+59. **La zone de dépôt reste, et devient permanente.** Mot pour mot : « on pourrait les laisser
+    visibles en permanence ». Elle était écrite seulement pendant un glisser ; elle est
+    maintenant lisible tout le temps, en gris, et passe à la couleur d'accent au glisser.
+60. **Le nombre de coureurs n'est plus suivi de « with the bunch » ni de « with BIB … ».**
+
+### La colonne de droite
+
+**29 octobre 2026.** Sa page redessinée place la carte du sprint et la liste de départ
+**côte à côte, à droite de l'ovale**, sur toute la hauteur.
+
+61. **La carte du sprint s'ouvre dans une colonne de droite.** Elle n'existe que pendant un
+    sprint ; hors sprint, l'ovale et le journal reprennent toute la largeur.
+62. **L'ovale et le journal restent visibles pendant un sprint.** Jusqu'ici la carte les
+    masquait tous les deux. **Écart par rapport à un comportement validé**, imposé par son
+    dessin, qui montre les trois ensemble.
+
+### La barre d'actions
+
+**29 octobre 2026.** Mot pour mot : « La barre d'actions et la carte de proposition sont
+prévues à gauche de l'ovale, à droite de la timeline, et non pas au-dessus de l'ovale ».
+
+63. **Une colonne d'actions sépare la timeline de l'ovale.** Elle porte la barre de sélection
+    en haut, et sous elle les cartes de proposition.
+64. **Les propositions quittent les blocs de la timeline.** Elles s'écrivaient dans l'en-tête
+    du groupe concerné ; elles sont maintenant rassemblées dans cette colonne. Ce qui reste
+    sur la ligne du coureur : sa marque « +1 ? » / « −1 ? » et son ✓, qu'il avait demandés.
+65. **Le journal passe sous les deux colonnes**, comme sur son dessin.
+
+### Quatre dispositions à essayer pendant un sprint
+
+**29 octobre 2026.** Devant le choix de la place de la carte du sprint, mot pour mot :
+
+> je voudrais voir toutes les propositions, je ne peux pas me décider sans les essayer
+
+Et sur la taille de fenêtre :
+
+> Là je travaille depuis la maison et mon écran à une largeur de 1920, mais habituellement les
+> ordinateurs de service ont une largeur de 1440. Mais les opérateurs peuvent s'adapter
+
+Il a par ailleurs écarté la piste du bandeau du bas : « je n'aime pas beaucoup la vue du bas,
+je la trouve beaucoup trop petite verticalement parlant ».
+
+66. **Les quatre dispositions sont livrées comme des interrupteurs d'essai**, dans le rail du
+    simulateur, combinables librement : carte resserrée, actions sous l'ovale, timeline
+    repliée, passages repliés. **Elles sont temporaires** : une fois son choix fait, la
+    disposition retenue est écrite en dur et les interrupteurs disparaissent.
+67. **L'écran doit tenir en 1440 px de large.** C'est la taille des ordinateurs de service.
+
+### La timeline étroite, et les actions au clic
+
+**29 octobre 2026.** Il a redessiné la timeline et l'a transmise en deux captures. Mot pour
+mot :
+
+> je n'ai besoin de consulter les noms des coureurs qu'à un seul endroit : la liste
+> "Standings". Pas besoin dans la carte Sprint.
+
+> Replier la timeline ne me plait pas beaucoup, en revanche on peut la réduire de beaucoup
+> dans la largeur. [...] Avec une timeline aussi étroite toutes les actions individuelles
+> passent par un clic sur sur un coureur et la fenêtre d'option dans la colonne d'action
+> disponible. Et je pense qu'on devrait aussi pouvoir sélectionner le groupe en cliquant dans
+> son en-tête et là aussi les actions disponibles devraient être proposées pour application au
+> groupe entier
+
+68. **Le nom d'un coureur ne s'affiche que dans Standings.** Il quitte la carte du sprint :
+    l'ordre, la liste de départ, les non éligibles, les retirés et le bandeau des coureurs sans
+    transpondeur ne portent plus que le dossard et le code pays. Le nom reste dans l'infobulle
+    de chaque ligne.
+69. **La timeline fait 118 px de large.** Son en-tête de bloc est une bande à la couleur du
+    groupe, sur deux lignes : le nom en capitales, puis le nombre de coureurs et l'écart. Une
+    ligne de coureur porte son dossard, son drapeau et son code pays, rien d'autre.
+70. **Les actions individuelles passent par un clic sur le coureur.** Les boutons qui
+    apparaissaient au survol de sa ligne sont supprimés ; la colonne des actions propose
+    `Laps…` et `Leader` dès qu'un seul coureur est sélectionné, et les compteurs de tours et
+    le choix de couleur s'y ouvrent.
+71. **Un clic sur l'en-tête d'un bloc sélectionne le groupe entier**, et les actions de la
+    colonne s'appliquent alors à tout le groupe.
+
+La bande et son texte sont **relevés sur son croquis**, pas décidés : le fond y est en
+`rgb(51, 180, 244)`, qui est la couleur du peloton et celle de sa bulle sur l'ovale, et le
+texte en noir. Le prototype rend `rgb(52, 180, 244)` sur du texte sombre. Rien n'est à
+confirmer : c'est son dessin.
+
+### Les passages quittent la page
+
+**29 octobre 2026.** Sa décision, mot pour mot :
+
+> Il faut retirer complètement la vue "Crossings" "Decisions" "Sprints" "Standings" de la page
+> et l'offrir comme possibilité mais en allant l chercher dans un menu, éventuellement la barre
+> tout en haut de la page par exemple.
+> Et la barre d'action prend la place de cette vue. Elle n'a pas besoin d'être très haute
+
+72. **Le bandeau des passages n'est plus affiché en permanence.** Il s'ouvre par le bouton
+    `Race log` de la barre du haut, par-dessus l'écran de course, et se referme par `Close` ou
+    par la touche Échap. Ses quatre onglets sont inchangés.
+73. **La barre d'actions prend sa place, sous l'ovale, et reste courte** : 34 px en 1920, 60 px
+    en 1440, où elle passe sur deux lignes.
+74. **Le numéro de build a un champ à lui dans la barre du haut.** Le sous-titre se laisse
+    couper quand la barre se resserre ; le numéro, jamais.
+
+Les interrupteurs d'essai sont retirés : son choix est fait et la disposition est écrite en
+dur.
+
+### La carte d'une proposition
+
+**29 octobre 2026.** Devant une carte qui alignait les dossards dans une phrase, mot pour mot :
+
+> mais je n'aime pas la façon dont tu les présentes. je préfère ma façon car on a besoin de
+> prendre connaissance des BIB impliqués très rapidement
+
+Puis, sur son propre croquis :
+
+> effectivement il faut ajouter le code nation et le drapeau à ma proposition
+
+75. **Les dossards d'une proposition sont empilés, sous un en-tête `BIB`**, à gauche de la
+    carte, chacun avec son drapeau et son code pays. Le titre, les boutons `✓ all` et `✕` et le
+    tour concerné sont à droite.
+76. **Le ✓ de chaque coureur est à côté du sien, dans la carte.** Il était sur sa ligne dans la
+    timeline ; à 118 px de large, il lui mangeait son code pays (« 52 · I ✓ »). La ligne porte
+    désormais une marque bleue, sans bouton, et le ✓ valide toujours ce coureur seul.
+
+77. **L'ovale est collé en haut de l'écran, et les propositions ont une ligne à elles**, entre
+    l'ovale et les actions. Mot pour mot : « Il y a beaucoup de place en hauteur au-dessus et
+    en-dessous de l'ovale ! Monte l'ovale sur l'écran et place les propositions dans une ligne
+    entre l'ovale et les actions ».
+78. **Rien ne se laisse vide sous les actions.** Mot pour mot : « Pourquoi laisses-tu un espace
+    vide en-dessous des actions ??? ». Une première version réservait en permanence la hauteur
+    de la ligne des propositions, pour que l'ovale ne saute pas quand il en arrive une : **il
+    l'a refusé**. L'ovale prend donc toute la hauteur que les deux lignes du bas lui laissent,
+    et il se redimensionne à l'arrivée d'une proposition.
+
+79. **La carte des sprints reste à l'écran en permanence.** Mot pour mot : « il faut conserver
+    la carte des sprints en permanence ». Hors sprint elle annonce le prochain -- `SPRINT n ·
+    x laps to go · waiting for the bell` -- garde ses places vides et la liste de départ
+    entière, et ne porte aucune commande puisque rien n'est à juger.
+**La carte reste sur deux colonnes.** Elle avait été empilée sur une seule, pour rendre de la
+largeur à l'ovale : l'opérateur ne l'avait ni demandé ni vu proposer, et l'a refusé --
+« qui t'a demandé de mettre la carte de sprint sur une colonne ? ». Remis en l'état à la
+build 125. La largeur rendue à l'ovale ne justifie pas de changer un écran validé sans le
+proposer (§14, point 1 et point 3).
+
+81. **L'ovale est calé en haut de son panneau.** Mot pour mot : « REMONTE L'OVALE SUR LA
+    PAGE ». Son dessin ne se centre plus verticalement : le haut de la piste est à 134 px du
+    haut de la page en 1440, contre 250 px auparavant. Tout le vide passe donc sous l'ovale.
+
+### Les deux dispositions de la zone sous l'ovale
+
+**29 octobre 2026.** Deux croquis, et mot pour mot :
+
+> On peut positionner les actions et propositions de deux manières différentes. Je trouve
+> qu'offrir cette flexibilité à l'utilisateur est très intéressante
+
+82. **La zone sous l'ovale prend toute la place que l'ovale laisse**, et se dispose de deux
+    manières, au choix de l'utilisateur :
+    - **les propositions au-dessus, les actions en dessous**, toutes deux sur toute la largeur ;
+    - **les actions en colonne à gauche**, les propositions à leur droite.
+83. **C'est un choix de l'utilisateur, pas un réglage d'essai.** Il ne disparaîtra pas.
+    **Son sélecteur est dans le coin haut droit du panneau des actions**, c'est-à-dire dans la
+    zone qu'il commande. Il avait d'abord été mis dans la barre du haut : « mais le sélecteur
+    de disposition de actions et propositions se trouve dans la barre en haut de l'écran ? !
+    C'est ridicule ! » (29 octobre 2026).
+
+### Les commandes respirent
+
+**29 octobre 2026.** Mot pour mot :
+
+> je ne sais pas comment te faire comprendre qu'il ne faut PAS tout serrer ! Pour les humains
+> c'est très difficile à s'y retrouver ! Les actions présentent beaucoup de boutons tous très
+> rapprochés les uns des autres, et alors même qu'il y a beaucoup de place sur la page !
+
+Puis, sur la carte de proposition : « et c'est la même chose pour les propositions ! ».
+
+84. **Les boutons des actions et des propositions sont à taille normale**, pas en petit
+    format : 13 px de texte, 7 px de marge intérieure verticale, 13 px horizontale.
+85. **Ils sont espacés** : 8 px entre deux boutons d'une même famille, 10 px entre deux
+    familles, qui vont chacune à la ligne. La ligne de sélection est séparée du reste par un
+    trait.
+86. **La place disponible se remplit, elle ne se laisse pas serrer.** C'est une règle générale
+    de l'écran, pas un réglage de cette barre.
+
+### La timeline à 24 coureurs
+
+**29 octobre 2026.** Sur la hauteur de la colonne : « est-ce que la hauteur de la timeline sera
+suffisante pour les courses avec 24 coureurs, répartis dans plusieurs groupes ? ». Devant les
+mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les éléments**.
+
+87. **L'en-tête d'un bloc est collant.** Quand la colonne défile, le nom du groupe, son nombre
+    de coureurs et son écart restent visibles au-dessus de ses coureurs.
+88. **Tous les éléments de la timeline sont plus bas** : la ligne d'un coureur passe de 26 à
+    22 px, l'en-tête d'un bloc de 35 à 30, la bande de dépôt de 32 à 16. Son libellé passe de
+    « Drop here: new group » à « new group » -- à 118 px de large il tenait sur deux lignes, il
+    en tient maintenant une. **Confirmé par l'opérateur le 29 octobre 2026** : « non c'est bien
+    comme ça, garde "new group" ».
+
+89. **Un dossard sur la piste ne doit pas en déborder.** Mot pour mot : « il faudrait réduire
+    la taille des badges des coureurs sur la piste. De façon à ce qu'ils ne débordent pas de la
+    piste ». Le rayon d'un dossard passe de 15 à 10 et l'écart des files de 24 à 19, si bien
+    qu'un coureur de la file extérieure atteint 29 pour une demi-piste de 30. Il en atteignait
+    **39** auparavant, soit 9 au-delà du bord.
+
+90. **La bulle d'un groupe ne déborde pas non plus.** « oui rentre la bulle aussi ». Ses deux
+    bords sont calculés puis ramenés dans la piste, et son milieu s'en déduit -- borner la
+    seule largeur ne suffisait pas, une bulle décentrée dépassait encore d'un côté.
+
+91. **La disposition en colonne est celle par défaut.** « je préfère la deuxième disposition,
+    garde-la par défaut » : les actions à gauche, les propositions à droite. L'autre reste à un
+    clic dans la barre du haut.
+
+### L'équilibre entre l'ovale, la timeline et les actions
+
+**29 octobre 2026.** Sur une capture en 1910 × 900 : « je ne suis pas satisfait du résultat
+final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », puis « et il faut
+éviter que action doive scroller pour être vue entièrement ! ».
+
+92. **La zone du bas prend la hauteur dont elle a besoin, l'ovale prend ce qui reste.** La
+    barre d'actions ne défile jamais : c'est elle qui fixe sa hauteur, pas l'inverse.
+93. **La timeline passe de 118 à 168 px**, et ses éléments grandissent avec elle : la ligne
+    d'un coureur de 22 à 28 px, son dossard de 19 à 24, son code pays de 12 à 14 px, l'en-tête
+    d'un bloc de 30 à 38.
+94. **L'ovale n'a ni plafond ni proportions imposées.** L'un et l'autre recréaient du vide. Il
+    prend exactement la place laissée, son dessin calé en haut de son panneau.
+
+95. **L'ovale n'a plus de cadre.** L'opérateur a entouré en rouge, le 29 octobre 2026, deux
+    rectangles vides de part et d'autre de la piste : « toute cette place est inutilisée alors
+    que dans le même temps la timeline est très serrée ». Ces rectangles étaient l'intérieur du
+    panneau de l'ovale, que son dessin ne remplissait pas. Sans cadre ni fond, la place libre
+    autour de la piste est le fond de la page.
+96. **La timeline reste à sa largeur utile** (176 px). L'élargir à 290 px ne remplissait rien :
+    une ligne ne porte qu'un dossard, un drapeau et un code pays, et la moitié droite restait
+    vide. Essayé, regardé, abandonné.
+
+97. **La carte permanente porte toutes les commandes du sprint.** « on ne peut pas trier les
+    coureurs de la liste de la carte sprint par BIB ni par NOC. De plus il existait beaucoup
+    plus d'options qu'actuellement dans les cartes de sprint. Il faut les restaurer ! » Hors
+    sprint, la carte montre le **prochain** sprint, avec le tour jugé et ses flèches, la saisie
+    manuelle, l'ordre mesuré, l'enregistrement, le mode Live, la place suivante, les non
+    éligibles et le tri de la liste de départ. **Seuls `Send` et `Close` manquent avant la
+    cloche** : il n'y a rien à envoyer et rien à fermer.
+
+98. **La carte du sprint respire comme les actions.** « DONNE DE L'AIR ! Il y a énormément de
+    place en-dessous du classement ». La ligne d'une place passe de 28 à 36 px, celle de la
+    liste de départ de 26 à 30, les marges de la carte de 6 à 10 px.
+99. **La rangée « place suivante » quitte la colonne étroite de la liste de départ** pour
+    passer **sous l'ordre**, à gauche, où la place ne manque pas. Elle tient sur deux lignes
+    voulues -- le libellé et la place en cours, puis les quatre boutons `1st` à `4th` à taille
+    normale -- au lieu de passer à la ligne toute seule dans 170 px.
+
+100. **Les commandes qui agissent sur l'ordre vivent avec l'ordre.** « Les boutons Manual,
+     Detected order, Clear and record ne sont pas obligés d'être coincés tout en haut de la
+     carte ». Ils passent sous l'ordre, dans la colonne de gauche, à taille normale et espacés.
+     L'en-tête de la carte ne garde que l'identité du sprint -- son numéro, le tour jugé et ses
+     flèches, le compte à rebours -- et `Live`, `Send` et `Close`.
+101. **L'ordre porte son titre et le rappel du glisser.** « réordrer par drag est toujours
+     possible non ? » -- oui, il l'est toujours : glisser une ligne de l'ordre la déplace,
+     glisser un coureur de la liste de départ le place. Le rappel avait été retiré avec
+     l'en-tête de colonne tronqué « D… » ; il est rendu, en clair, au-dessus de l'ordre :
+     « ORDER · drag a line to reorder ».
+
+102. **Un sprint fermé ne revient pas dans la carte.** Juste après `Close`, la carte
+     réaffichait « SPRINT 1 · waiting for the bell » -- le sprint que l'on venait de clore.
+     Elle montre maintenant le prochain sprint **non jugé**.
+
+103. **Un coureur privé de points le dit partout où il apparaît.** « Il faut qu'ils y soient
+     aussi. Il faut aussi que dans le timeline ils soient indiqués comme non éligible quand
+     c'est le cas. Et dans l'ovale aussi. Je verrais bien une info dans le badge de leur
+     groupe » (29 octobre 2026). Donc :
+     - **dans la carte du sprint**, « Not eligible » compte et liste les deux sortes : ceux que
+       l'opérateur a écartés, et ceux que la règle de course a rendus inéligibles au moment de
+       leur passage, avec le motif « no points · not eligible when he crossed ». La flèche de
+       reclassement n'est offerte que pour les premiers : elle ne dégriserait pas un passage ;
+     - **dans la timeline**, sa ligne porte une pastille rouge `no pts` et son code pays passe
+       au rouge ;
+     - **sur l'ovale**, le badge de son groupe le dit : `1-Bunch · 2 NO PTS` quand une partie
+       du groupe est concernée, `· NO PTS` quand tout le groupe l'est. C'est la seule marque
+       qui revient sur la piste depuis le retrait des annotations.
+
+104. **La carte de sprint se range en trois colonnes.** Le 29 octobre 2026, l'opérateur a
+     redessiné la carte par-dessus une de mes captures : à gauche l'ordre, au milieu les
+     coureurs, à droite **une colonne de commandes**, et non un pied de carte. Ses mots sur
+     l'état précédent : « tes cartes sont nulles. regarde celle-ci ». Dans sa colonne de
+     droite, de haut en bas : le tour jugé, l'envoi, la source de l'ordre, la place suivante,
+     la saisie manuelle avec son champ.
+
+105. **Aucune colonne ne porte du vide.** « il y a la zone jaune complètement inutilisée, et
+     la zone encadrée en vert qui donne une info redondante (le classement qui est déjà
+     affiché à gauche) » (29 octobre 2026). Donc : la ligne de l'ordre n'a plus de colonne
+     souple -- place, dossard, nation, écart calé à droite, et les deux icônes -- et **la
+     liste des coureurs perd sa colonne de rang** : le grisé dit qui est placé.
+
+106. **La carte peut prendre sa largeur sur l'ovale.** « si prendre à l'ovale c'est bien car
+     ça permet de disposer des éléments différemment » (29 octobre 2026). Elle fait donc 500
+     px sur un écran de 1440, et la piste y passe de 705 × 315 à 634 × 283.
+
+107. **Les coureurs sans transpondeur se placent depuis la colonne des commandes.** Leur bloc
+     était au-dessus de l'ordre, où il repoussait les places et séparait le titre `ORDER` de
+     son propre en-tête de colonnes. À la question « tu ne vois pas un autre endroit où il
+     pourrait être sans gêner personne ? », la réponse de l'opérateur est **la bande libre au
+     bas de la colonne des commandes** -- le seul endroit vide dans tous les états de la
+     course, y compris quand les vingt-quatre places sont prises.
+
+108. **`not placed` est supprimé.** « not placed est totalement inutile » (29 octobre 2026).
+     Le bloc ne garde que les cinq places.
+
+109. **L'interface est en anglais, et rien ne s'y explique.** J'avais écrit, de ma propre
+     initiative, « la place est retenue jusqu'au passage suivant, ou jusqu'à Send » sous les
+     boutons, et « déposer ici » dans la zone de dépôt. Sa réaction : « Qu'est-ce c'est que
+     texte ??? ». Les deux sont retirés : du texte inventé, et en français dans une interface
+     qui n'est qu'en anglais.

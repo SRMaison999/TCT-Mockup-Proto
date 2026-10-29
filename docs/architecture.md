@@ -337,14 +337,17 @@ produit aucune lecture.
 
 ## 8. Rendu
 
-- **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · nom ·
-  écart · tours), boutons de survol (`.ra`), panneau de compteurs et de couleur
-  (`.ledger`), zones de dépôt (`.tgap`), section Withdrawn, barre de sélection (`#tbar`).
-  L'écart est dans l'en-tête du bloc (`.gno`, `.ggap`), pas sur les lignes de coureurs. La
-  marque de tours n'apparaît que sur les coureurs en attente de validation.
+- **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · marque de
+  proposition), zones de dépôt (`.tgap`, toujours lisibles), section Withdrawn, barre de
+  sélection (`#tbar`). La colonne fait **118 px** : la ligne d'un coureur ne porte ni son nom
+  ni de bouton, tout est dans son infobulle et dans la colonne des actions. L'en-tête du bloc
+  (`.gh`) est une bande à la couleur du groupe, sur deux lignes, cliquable en entier pour
+  sélectionner le groupe (`data-selgroup`). La marque de tours n'apparaît que sur les coureurs en attente
+  de validation. **Attention** : `.trow` est aussi le nom des lignes du panneau des
+  transpondeurs, dont les règles sont portées par `#simtp` (`pitfalls.md` D20).
 - **`renderOval(G, M)`** : bandes (`#bands`), coureurs sur trois files (dossards de rayon
-  15, sans marque de tours) avec un pas minimal de 32 px, étiquettes à l'extérieur avec
-  évitement de collisions (`putLabel`), leader nommé. `pt(s)` et `normalAt(s)` projettent
+  `DOT_R` = 10, files à `LANE` = 19, sans marque de tours) avec un pas minimal de `DOT_GAP` = 24, bulle de groupe à la couleur du
+  groupe et badge de nom **à l'intérieur** de la piste, à marge constante. `pt(s)` et `normalAt(s)` projettent
   une distance de course sur le tracé SVG `#trackpath`, qui **commence au milieu de la ligne
   droite d’arrivée**, là où se trouve Pursuit A (§14) ; sens de course : bas vers la droite. `renderMarks()` calcule les repères des boucles et des bandes depuis
   la distance de course, ils ne sont plus dessinés en dur.
@@ -355,6 +358,34 @@ produit aucune lecture.
 - **Interactions** : clics délégués sur `#tlbody`, `#tbar`, `#logrows` ; glisser au pointeur
   (`pointerdown/move/up`) sur la timeline et sur l'ovale, avec une étiquette fantôme ; sur
   l'ovale, sélection et actions de groupe **au relâchement** du pointeur.
+
+### Le panneau des passages
+
+`#log` n'est plus dans `.mid` : c'est un panneau en `position:fixed`, caché par défaut, ouvert
+par `#logshow` dans la barre du haut et fermé par `#logclose` ou Échap. `renderLog()` sort
+immédiatement quand il est caché, pour ne pas reconstruire ses lignes à chaque image.
+
+### La barre d'actions
+
+Sous l'ovale, `.below` prend toute la hauteur restante et contient la barre de sélection
+(`#tbar`, dans `.acts`) et les cartes de proposition (`#propcard`). Deux dispositions, au choix
+de l'utilisateur depuis `#layseg` dans la barre du haut : par défaut les propositions au-dessus
+des actions, ou, avec la classe de corps `lay-side`, les actions en colonne de 268 px à gauche
+des propositions.
+
+`#tbar` ne porte plus seulement les actions d'une sélection : quand elle ne contient **qu'un
+seul coureur**, elle ajoute `Laps…` et `Leader`, et le panneau des compteurs et de la couleur
+(`.ledger`) s'ouvre à sa suite. Ces trois choses étaient sur la ligne du coureur, au survol
+(`.ra`), et ont disparu avec la timeline étroite. La délégation de clic `onStripClick` est
+donc attachée à `#tlbody`, à `#propcard` **et** à `#tbar`.
+
+### La colonne de droite
+
+`#scard` ne vit plus sous l'ovale mais dans `.right`, une colonne qui n'existe **que**
+pendant un sprint (`body.sprintmode`). La carte y garde sa structure d'origine : l'ordre à
+gauche (`.sleft`), la liste de départ à droite (`.sright`), côte à côte dans `.sbody`.
+Pendant un sprint, **l'ovale et le journal restent affichés** — ils étaient masqués
+jusqu'ici.
 
 ## 9. Sprints
 
@@ -627,8 +658,7 @@ Les chiffres par longueur de piste sont dans `mesures.md` §14.
 piste la lit : les traits en travers, qui vont d'un bord à l'autre (`−HW` → `+HW`, build 72,
 sans débord), la moitié que couvre la ligne des 100 m, les deux bords de la bande d'un
 groupe et son épaisseur
-(`OVAL_W+2`), et le retrait que gardent les étiquettes de boucle dans l'anneau intérieur.
-Changer ce seul nombre suffit, et rien ne peut diverger.
+(`OVAL_W+2`). Changer ce seul nombre suffit, et rien ne peut diverger.
 
 **Les marquages sont donnés en mètres, pas en pixels.** `renderMarks()` pose
 `PXM = PATHLEN / TRACK`, l'échelle du dessin, et un trait peint s'écrit avec sa cote réelle
@@ -644,8 +674,55 @@ minces autour de lui pour se lire comme une bande.
 
 **Les tape switches ne sont pas dessinés** (même décision). Ce sont des capteurs, pas de la
 peinture : les deux qui ne sont pas dans une boucle tombent sous les lignes des 200 m et
-des 100 m, les trois autres sous un trait de boucle. Seules leurs étiquettes restent, et
-`tapeCount()` continue de les compter — c'est un retrait de dessin, pas de mesure.
+des 100 m, les trois autres sous un trait de boucle. `tapeCount()` continue de les compter —
+c'est un retrait de dessin, pas de mesure.
+
+**Les champs d'état sont à l'intérieur de l'ovale, et ils ne sont jamais reconstruits** (`regles-operateur.md`
+§17, build 92). La bande `#strip` au-dessus de l'ovale n'existe plus. Le panneau `#ifpanel`, la
+boîte des tours restants `#togofo` — qui porte aussi le compteur de tours — et les **deux**
+boutons de leader `#armfo1` et `#armfo2` sont des
+`<foreignObject>` **posés une fois dans le HTML**, à l'intérieur du SVG, donc en unités de piste :
+ils restent à l'intérieur de l'ovale à toute taille de fenêtre. `renderStrip()` n'y écrit que du texte et
+des classes — **jamais d'`innerHTML`** —, parce qu'un bouton remplacé entre l'appui et le
+relâchement n'émet aucun clic (`pitfalls.md` D2), et que ce panneau porte des boutons. Leur place
+est calculée par `renderMarks()`, qui ne tourne qu'au réglage de la piste, et non à chaque image.
+
+Deux pièges s'y sont révélés, tous deux mesurés et non vus :
+
+- **Un `foreignObject` capte le pointeur sur tout son rectangle**, transparent ou non. Laissé
+  tel quel, le cadre du panneau avalait les clics destinés aux boutons de la piste et à la piste
+  elle-même. Les cadres sont donc en `pointer-events:none`, et seules les boîtes et les boutons
+  reprennent le pointeur.
+- **La profondeur des boutons de leader se dérive de leur hauteur**, jamais à la main :
+  `HW + hauteur/2 + 6`. Les poser à une profondeur choisie à l'œil a déjà mis le bouton du bas
+  **sur la piste** le jour où on l'a rapproché du bord pour gagner de la hauteur. Le dégagement
+  vaut 6 unités de chaque côté, et il reste vrai si la hauteur du bouton change.
+- **`syncArm()` tourne à chaque image.** Il ne cherche donc rien dans le document : les trois
+  boutons sont trouvés une fois, les trois lignes vertes seulement quand `renderMarks()` vient de
+  reconstruire `#marks`, et un bouton dont l'état n'a pas changé n'est pas touché. C'est la même
+  discipline que les builds 88 et 89.
+
+**Aucune annotation n'est tracée sur l'ovale** (`regles-operateur.md` §17, points 19 et 20,
+build 93). `renderOval()` ne produit plus que des bandes et des pastilles ; `#ovlabels` reste
+vide, et `putLabel()`, qui écartait les étiquettes les unes des autres, est supprimé avec elles.
+Ce qui est parti : le libellé du leader, le nom de chaque groupe avec son effectif et son statut,
+l'écart entre groupes, et l'étiquette « No points » avec son pointillé. **Build 94** : les deux
+marques rouges qui disaient la même chose sur la pastille — contour épaissi et anneau clignotant
+— partent avec elle, et avec elles le `Set` `noPts`, la classe `.blink` et son animation.
+`S.inelig` est **inchangé** : l'éligibilité se calcule toujours et la carte du sprint grise
+toujours la ligne du coureur. C'est le dessin qui est retiré, pas la règle. **Les annotations
+sont à refaire entièrement** : ne pas en remettre une au passage.
+
+**La largeur d'un nom de groupe se mesure, elle ne s'estime pas.** `labelWidth()` interroge
+`getComputedTextLength()` sur `#gmeas`, un élément de texte laissé hors cadre, **une seule fois
+par nom distinct**, et garde le résultat dans une `Map`. `renderOval()` tourne vingt fois par
+seconde : il lit la table, il ne mesure jamais. C'est la même discipline que `pathTable` (D15).
+
+**Aucun repère de l'ovale n'est nommé** (`regles-operateur.md` §9, 29 octobre 2026, build 91).
+`renderMarks()` ne pose plus que des `<line>` : l'assistant `label()` qui écrivait « Finish »,
+« Pursuit A », « Pursuit B », « 200 m start » et « 100 m intermediate » est supprimé, et `#marks` ne
+contient plus un seul `<text>`. `LOOPNAME` et `T.name` restent lus ailleurs — l'en-tête du
+leader, les propositions, l'onglet Track — et ne bougent pas.
 
 Les lignes du 200 m lancé suivent la même règle que `buildTapes()` et en reprennent les deux
 cas particuliers : rien sur une piste de **166 m**, et sur une **200 m** le départ du 200

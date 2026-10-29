@@ -109,6 +109,39 @@ déjà mesuré par `tapeCount()`.
 
 ---
 
+## 4 bis. Ce que l'écran de course montre sans que rien ne le serve
+
+Proposé et codé à la build 92 sur la demande du 29 octobre 2026 (`regles-operateur.md` §17).
+Deux commandes sont à l'écran sans avoir de source derrière elles, et c'est assumé pour le
+moment (`cas-de-course.md`) — mais ce n'est pas fini :
+
+| | Travail | Fini quand |
+|---|---|---|
+| a | **L'impulsion externe du départ.** « faire en sorte qu'une impulsion externe (comme un bouton pressoir) connectée à l'appli trig le départ de la course » | Une entrée extérieure déclenche le départ, et l'écran le montre comme s'il venait du bouton |
+| b | **Le départ de course distinct du `Play` du simulateur.** Aujourd'hui le même geste lance la course et l'horloge ; le tour de lancement, qui sépare les deux, n'est pas construit (§1 ci-dessus) | `START` part au coup de pistolet, et les coureurs peuvent rouler avant |
+| c | **La provenance `LAP COUNTER`.** Elle s'affiche, mais le lap counter relié n'est pas simulé (§5 ci-dessous) | Le nombre affiché vient vraiment du compteur, et un désaccord est signalé avec les deux valeurs (`regles-operateur.md` §13) |
+| c bis | **La valeur du lap counter.** Elle s'affiche, mais aucun compteur relié ne l'alimente : elle reprend le comptage de l'application, donc les deux provenances sont toujours d'accord tant que l'opérateur ne compte pas à la main | Le compteur relié donne sa propre valeur, et un désaccord qu'il n'a pas provoqué lui-même se voit |
+| d | **La retenue à l'export.** Le bouton bascule et la valeur se barre, mais les exports sont des fichiers qui ne la lisent pas encore (§5 ci-dessous) | Aucune sortie ne porte les tours restants quand l'opérateur les retient |
+
+---
+
+## 4 ter. Refaire les annotations de l'ovale
+
+Annoncé par l'opérateur le 29 octobre 2026 : « Pour la suite il va falloir refaire complètement
+les annotations qui suivent les coureurs sur l'ovale » (`regles-operateur.md` §17).
+
+**Le déblaiement est fait** à la build 93 : plus aucun texte n'est tracé sur l'ovale. Ce qui a
+été retiré est listé dans `architecture.md`.
+
+**Ce que l'intérieur de l'ovale porte** est tranché depuis la build 109 : la rangée du départ
+et le champ `LEADER`, et rien d'autre (`regles-operateur.md` §17, point 43).
+
+**Ce qui vient ensuite n'est pas défini** : ni ce qu'une annotation doit dire, ni où elle se
+pose, ni quand elle apparaît. Rien ne se code avant qu'il le dise ou qu'un écran lui soit
+proposé et approuvé (`pitfalls.md` A12, `regles-operateur.md` §14).
+
+---
+
 ## 5. Ce que le prototype ne simule pas du tout
 
 Aucun de ces points n'est un bug : ils n'ont jamais été construits.
@@ -384,3 +417,75 @@ attend maintenant `document.fonts.ready`.
    `pitfalls.md`.
 4. **Ce qui attend une décision de l'opérateur reste dans `regles-operateur.md` §15**, jamais
    ici.
+
+
+## 10. La « place suivante » compte au-delà des places qui comptent
+
+**Constaté en jouant quatre sprints, le 29 octobre 2026**, à la demande de l'opérateur
+(« essaie peut-être d'enregistrer quelques sprints et tu verras toi même ce qui est confortable
+et ce qui ne l'est pas »).
+
+La rangée `NEXT PLACE` annonce **6th, 8th, 5th, 7th, 10th, 12th** selon les sprints, alors que
+la carte ne montre que **cinq places** et que les boutons n'offrent que `1st` à `4th`. Le
+champ compte les positions de l'ordre mesuré **complet** -- tous les coureurs lus sur la
+ligne -- et non les places qui rapportent des points.
+
+Deux lectures possibles, à trancher par l'opérateur :
+
+- **la carte juge cinq places** : la place suivante ne devrait jamais dépasser la cinquième, et
+  quand les cinq sont prises, le champ devrait le dire plutôt qu'annoncer une douzième place ;
+- **la carte suit tout l'ordre de passage** : alors ce sont les boutons qu'il faut compléter,
+  et la liste de départ qui affiche déjà des rangs jusqu'au onzième est cohérente.
+
+**Rien n'est codé en attendant.** Le sprint final n'est pas concerné : il classe tout le
+peloton, et la place suivante y est juste.
+
+
+## 11. Le déclencheur d'inéligibilité — **construit et vérifié, build 147**
+
+Quatre tentatives le 29 octobre 2026 : deux coureurs lâchés pendant quarante tours, deux
+coureurs privés d'un tour par le bouton `−1 lap`, deux coureurs lancés assez vite pour en
+prendre un, et une course menée jusqu'au sprint final. **`S.inelig` est resté vide dans tous
+les cas** : les attardés sont absorbés par le peloton au moment où ils seraient devant lui.
+
+**Le scénario a été construit le même jour** et il fonctionne : la recette est dans
+`mesures.md` §50. L'erreur des quatre tentatives était d'attendre que la fenêtre
+d'inéligibilité tombe d'elle-même sur un sprint ; il faut **amener le sprint sur la fenêtre**,
+avec la flèche ← de la carte, puis couper `Live` et appuyer sur `Clear and record` pour que le
+sprint reste ouvert jusqu'au passage du coureur à un tour.
+
+La pastille `no pts` de la timeline, le suffixe `· NO PTS` du badge de l'ovale, la ligne grisée
+sans rang et le compteur `Not eligible` sont donc **vérifiés en course**, et non plus en
+apparence. Le manque signalé par `mesures.md` §6 et `travaux.md` §2 depuis la build 53 est
+comblé.
+
+
+## 12. La carte de sprint en trois colonnes — **livrée, build 148**
+
+L'opérateur a redessiné la carte le 29 octobre 2026, par-dessus une capture, et ses règles sont
+consignées dans `regles-operateur.md` §104 à §109. Ce qui est en place :
+
+- **trois colonnes** : l'ordre, les coureurs, les commandes. Plus de pied de carte ;
+- **aucune colonne souple vide** : la ligne de l'ordre porte place, dossard, nation, écart calé
+  à droite et ses deux icônes ; la liste porte dossard et nation, sans colonne de rang ;
+- **les commandes dans leur colonne**, dans l'ordre voulu : tour jugé, envoi, source de
+  l'ordre, place suivante, saisie manuelle ;
+- **les coureurs sans transpondeur** dans la bande libre, sous la saisie manuelle, avec leurs
+  cinq places et sans `not placed` ;
+- **`Not eligible` au bas de la colonne**, puisque c'est une commande et non une ligne de
+  classement ;
+- la carte fait **500 px à 1440** et prend sa largeur sur l'ovale, avec l'accord de
+  l'opérateur.
+
+Mesures et contrôles : `mesures.md` §51. Les trois pièges nés de ce travail : `pitfalls.md`
+D24, A13 et A14.
+
+**Ce qui reste décidé mais non remis en cause** (« laisse comme ça », 29 octobre 2026) : le
+titre `SENDING` au-dessus de `Live` et `Send`, la place suivante écrite en petit dans le titre
+de son pavé, les boutons `1st` à `4th` même quand la place annoncée dépasse la quatrième (voir
+§10, toujours ouvert), et la disparition du pavé `Judged on` au sprint final.
+
+**Non modifié au sprint final** : la place suivante y reste un champ libre, comme avant, car
+il faut pouvoir viser n'importe quel rang jusqu'au vingt-quatrième. La maquette montrait les
+quatre boutons ; les remplacer aurait retiré une possibilité que personne n'a demandé de
+retirer.

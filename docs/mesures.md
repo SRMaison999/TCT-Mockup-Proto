@@ -507,9 +507,22 @@ qui lui donne 1,39 m sur une 166 m, 1,68 m sur une 200 m, 2,10 m sur une 250 m e
 sur une 333 m. Elle est lue comme un repère à l'écran, plus comme une cote.
 
 **Les tape switches ne sont plus dessinés** (`regles-operateur.md` §9). Vérifié dans le
-DOM après le tracé : **zéro** trait `#F2A33A` dans `#marks`. Les deux qui ne sont pas dans
-une boucle gardent leur étiquette, « départ du 200 m » et « intermédiaire du 200 m », et
-leurs contacts continuent d'être comptés dans l'onglet Track.
+DOM après le tracé : **zéro** trait `#F2A33A` dans `#marks`. Leurs contacts continuent
+d'être comptés dans l'onglet Track, où ils gardent leur nom.
+
+**Aucun repère n'est nommé sur l'ovale**, build 91 (`regles-operateur.md` §9, 29 octobre
+2026). Compté dans le DOM après le tracé, piste 250 m, les deux fois sur une course vide
+**et** sur la course de référence chargée depuis l'onglet Files :
+
+| Build | `<text>` dans `#marks` | Lesquels |
+|---|---|---|
+| 90 | **5** | « Finish », « Pursuit B », « Pursuit A », « 200 m start », « 100 m intermediate » |
+| 91 | **0** | — |
+
+Les deux chiffres sont les mêmes course vide et course chargée : le tracé des repères ne
+dépend pas de la course. Les traits, eux, sont tous encore là — la ligne noire sur
+bande blanche de l'arrivée, les deux lignes blanches des poursuites, et les lignes des 200 m
+et 100 m.
 
 **Le reste de la course ne bouge pas.** `pt()` et `normalAt()` ne sont lus que par
 `renderMarks()` et `renderOval()` : aucune mesure ne les traverse. Vérifié sur la course de
@@ -1062,3 +1075,982 @@ pas avant — NOR, MAR, RSA, VIE, CAN — et sur un code inventé :
 | XXX | le rectangle gris, comme avant |
 
 **La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
+
+---
+
+## 26. Les champs d'état à l'intérieur de l'ovale — build 92
+
+Proposé le 29 octobre 2026 sur la maquette de l'opérateur, puis repris sur sa deuxième lecture
+du même jour (`regles-operateur.md` §17). Mesuré dans le navigateur, fenêtre 1700 × 1000,
+piste 250 m, `gap` 10 m.
+
+**Les trois défauts de la première version**, trouvés en pilotant la page, pas à l'œil :
+
+| Défaut | Mesure | Cause |
+|---|---|---|
+| Le cadre coupait son contenu | contenu **164 px** dans un cadre de **143 px** | un `foreignObject` rogne ce qui dépasse |
+| Le bouton de départ tombait sur celui de la boucle Finish | `ARM START` x 755→855, Finish x 818→923, y 426→452 contre 432→456 | les deux visaient le même bas de piste |
+| Les clics n'atteignaient pas les boutons de la piste | — | un `foreignObject` capte le pointeur sur **tout son rectangle**, transparent ou non |
+
+**Ce que la build 92 donne**, mêmes conditions. Tout ce qui se pose en bas de l'ovale est
+empilé, et chaque étage dégage le suivant :
+
+| Étage | Boîte | Dégagement |
+|---|---|---|
+| Bouton Pursuit B (en haut) | y 257 → 281 | **26 px** au-dessus du panneau |
+| Panneau | y 307 → 399, contenu **389** | **plus de rognage**, 10 px de marge |
+| Tours restants, sur la ligne d'arrivée | y 403 → 427 | 4 px sous le panneau |
+| Bouton Finish | y 432 → 456 | 5 px sous les tours restants |
+| Bouton Pursuit A | y 457 → 481 | 1 px sous le bouton Finish |
+
+La profondeur différente des deux boutons du bas n'est pas un réglage à l'œil : Finish et
+Pursuit A ne sont séparés que du `gap`, que l'opérateur règle, et à 10 m leurs deux boutons se
+recouvrent de toute leur largeur. Les poser à deux profondeurs les dégage **pour tout `gap`**.
+
+**Les trois provenances des tours restants** répondent : partant de `APP · AUTO` à 40 tours, un
+clic sur la provenance donne `APP · MANUAL` **et fait apparaître les deux boutons `−` et `+`**,
+qui n'existent pas dans les deux autres modes ; `−` donne **39** ; le bouton de sortie donne
+`NOT EXPORTED` et la valeur se barre ; un clic de plus sur la provenance donne `LAP COUNTER`.
+
+**Les quatre états du départ** s'enchaînent : `ARM START` → `START ARMED` → la course part et le
+bouton dit `FALSE START` → un clic dit `CONFIRM FALSE START`. Aucune erreur de console sur tout
+le parcours.
+
+**Le champ du prochain sprint à deux tours.** Mesuré en course : à `in 2 laps`, la classe `hot`
+est bien posée. Le champ passe alors sur le fond **`--warn`, #F2A33A**, texte en #2a1b05, sur
+toute la largeur du panneau. Aucune couleur n'a été énoncée par l'opérateur : celle-ci est celle
+que le projet réserve déjà à ce qui doit se voir.
+
+**Deux défauts de la deuxième version, corrigés au même build** : le champ du sprint ne prenait
+qu'une colonne et tronquait « in 2… », et la boîte des tours restants coupait son bouton à
+« EX ». Le premier prend maintenant toute la largeur, la seconde est passée de 186 à 246 unités.
+
+**La troisième lecture**, le même jour (`regles-operateur.md` §17). Le compteur de tours quitte
+le panneau pour la ligne d'arrivée, la retenue à l'export cesse d'être un champ, et la boucle
+Finish perd son bouton de leader. Mêmes conditions de mesure :
+
+| Étage | Boîte | Dégagement |
+|---|---|---|
+| Bouton Pursuit B | y 256 → 281 | 26 px au-dessus du panneau |
+| Panneau | y 307 → 395, contenu **379** | 16 px de marge |
+| `LAP 7 / 40` + `TO GO 33`, centrés sur la ligne d'arrivée | y 429 → 452 | 34 px sous le panneau |
+| Bouton Pursuit A | y 457 → 482 | 5 px sous eux |
+| Bouton Finish | **supprimé** | — |
+
+La place libérée par le bouton de Finish sert aux deux compteurs, qui se rapprochent de la ligne
+de 30 unités de piste.
+
+**Le défaut que la mesure a trouvé et que l'œil n'aurait pas expliqué** : la zone des tours
+restants était bien rouge — `rgb(255, 92, 92)` relevé sur l'élément — mais **large de 19 px**,
+donc invisible. Une règle plus ancienne, `#togofo .ifb{width:100%}`, écrite quand la boîte était
+seule dans son cadre, donnait toute la largeur à la boîte `LAP` et affamait sa voisine. Les deux
+se dimensionnent maintenant sur leur contenu : 81 px et 156 px.
+
+**La quatrième lecture.** L'opérateur a jugé la disposition « horrible » et a demandé de relire
+ses explications pour y trouver les incohérences. Quatre ont été trouvées, et aucune n'était un
+problème de pixels :
+
+| Incohérence | Ce qu'il avait dit | Ce qui avait été codé |
+|---|---|---|
+| Un libellé inventé | « le bouton va devenir un peu plus grand et plus foncé » | le bouton changeait **aussi** de texte, pour « CONFIRM FALSE START » |
+| Une décision contournée | « dans le champ LEADER, retire "56.9 km/h from the track" » | le texte était passé en infobulle, donc gardé |
+| Un mécanisme mort | « supprime celui de la ligne Finish » | la ligne verte de la boucle Finish continuait d'être tracée, alors que plus aucun bouton ne pouvait l'allumer |
+| Le style empilé par retouches | — | **91 lignes** de style ajoutées en six fois, chaque bloc contredisant le précédent : hauteur de boîte définie deux fois, règles de grille devenues sans objet, sélecteurs visant des éléments supprimés |
+
+La dernière est la cause de la disposition elle-même : une feuille de style écrite par ajouts
+successifs ne donne pas une mise en page, elle donne la somme des hésitations. Réécrite d'un
+seul tenant, **73 lignes**, et la disposition en est sortie seule.
+
+**Ce que la build 92 donne finalement**, mêmes conditions :
+
+| Étage | Boîte | Dégagement |
+|---|---|---|
+| Bouton Pursuit B | y 256 → 281 | 33 px au-dessus du panneau |
+| Panneau, **quatre boîtes égales deux par deux** | centre (417, 296) dans un ovale de 833 × 620 | — |
+| Bouton Pursuit A | y 426 → 451 | 24 px sous le panneau |
+| `LAP` + `TO GO`, contre la piste, centrés sur la ligne d'arrivée | y 457 → 481 | 6 px sous lui |
+
+Pursuit A recule d'un cran parce qu'il partage la ligne droite d'arrivée avec les deux
+compteurs, qui prennent le bord de piste : ce sont eux qui doivent être « près de la ligne ».
+
+**La cinquième lecture, et la faute qu'elle a révélée.** L'opérateur a redit que la disposition
+ne allait pas. En comparant la capture à **sa propre maquette**, la cause était là : il avait
+dessiné un **bloc compact de quatre boîtes, deux par deux**, et j'avais livré **trois bandes
+pleine largeur empilées**. Ce n'était pas un défaut de réglage, c'était son dessin remplacé par
+le mien sans que je m'en aperçoive. Le panneau est revenu à sa forme : `LEADER` et le prochain
+sprint sur la première ligne, l'horloge et le bouton de départ sur la seconde.
+
+**L'échelle, et comment elle a fini par être relevée au lieu d'être devinée.** Il a dit, le
+29 octobre 2026, que son croquis fait à Paint était plus joli que l'écran codé, puis, l'écran
+ayant été agrandi au jugé et jugé pire encore, il a renvoyé sa capture avec trois mots : « utilise
+cette échelle ».
+
+**Sa capture fait 962 px de large pour un `viewBox` de 980** : elle est donc à peu près au
+rapport 1:1 avec les unités de piste, et ses boîtes se lisent **directement** dedans. Relevé sur
+son image :
+
+| Élément | Sur son croquis | Ce qui était codé avant |
+|---|---|---|
+| Hauteur d'une rangée | **≈ 40 u** | 34 puis 44 |
+| Horloge | **≈ 24 px** | 20 puis 30 |
+| Chiffre des tours restants | **≈ 28 px** | 27 puis 33 |
+| Libellé d'un bouton | **≈ 13 px** | 12 puis 15 |
+| Largeur de la première rangée | **≈ 400 u** | 570 |
+
+Les deux essais précédents encadraient sa valeur sans jamais la toucher : d'abord trop petit,
+puis **trop grand**. Ce n'était pas une question de goût mais une cote, et une cote se mesure.
+La leçon vaut au-delà de ce panneau : un croquis que l'opérateur fournit à la taille de l'écran
+**est une cotation**, pas une suggestion.
+
+**Les boutons de leader mordaient sur la piste**, signalé par l'opérateur sur la capture. En les
+rapprochant du bord pour gagner de la hauteur, leur profondeur avait été posée à la main à
+`HW + 16` alors qu'ils mesurent 36 de haut : leur bord tombait donc **2 unités au-delà du bord
+intérieur**. La profondeur se dérive maintenant de la hauteur du bouton, `HW + hauteur/2 + 6`,
+et le défaut ne peut plus revenir. Dégagements relevés, en unités de piste :
+
+| | Dégagement |
+|---|---|
+| Bouton Pursuit B au bord intérieur du haut | **6,0** |
+| Bouton Pursuit A au bord intérieur du bas | **6,0** |
+| Panneau sous le bouton Pursuit B | **6,0** |
+| Panneau au-dessus du bouton Pursuit A | **6,0** |
+
+Résultat : **184 unités de contenu dans un cadre de 184**, contre 236 dans 198 à l'essai
+précédent, où le cadre rognait. La hauteur disponible n'est d'ailleurs pas bornée par l'ovale
+mais par **les deux boutons de leader**, posés au milieu de chaque ligne droite, donc exactement
+au-dessus et au-dessous du panneau.
+
+**Aucune annotation ne subsiste sur l'ovale**, build 94. Compté dans le DOM en pleine course,
+groupes séparés et écarts ouverts :
+
+| Ce qui est compté | Relevé |
+|---|---|
+| `<text>` dans `#oval` hors les dossards des pastilles | **0** |
+| Contenu de `#ovlabels` | **vide** |
+| Anneaux clignotants `.blink` | **0** |
+| Contours de pastille en `#FF5C5C` | **0** |
+| `S.inelig`, la mesure | **toujours calculé** |
+
+La dernière ligne est celle qui compte : le dessin est parti, la règle est intacte.
+
+**La taille d'une bulle de groupe**, build 96. L'opérateur a entouré en noir sur une capture la
+taille qu'il voulait, puis signalé que celle du dernier groupe restait trop grande. Deux erreurs
+successives, et la seconde était la plus instructive :
+
+| Essai | Ce qui dimensionnait la bulle | Ce que ça donnait |
+|---|---|---|
+| build 95 | toute la largeur de piste, et **7 m** au-delà de chaque extrémité | une bande qui déborde partout |
+| premier correctif | le **couloir le plus écarté** occupé par un de ses membres | deux coureurs côte à côte héritaient de **la largeur du peloton** |
+| build 96 | l'**étalement réel** de ses membres, et la bulle est centrée sur eux | elle serre le groupe |
+
+Les cotes : demi-largeur = (couloir max − couloir min) / 2 + **15** (le rayon d'une pastille)
++ **4** de marge ; même marge le long de la piste, convertie en mètres. Une bulle n'est donc plus
+centrée sur l'axe de la piste mais sur **ses propres coureurs**, ce qui a demandé un tracé
+d'arc décalé (`arcPathOff`).
+
+**La ligne du nom s'arrête au bord du texte**, build 98. Elle s'arrêtait à **9 unités du centre**
+du nom, alors qu'un nom de huit caractères en occupe une quarantaine de part et d'autre : elle
+traversait donc le texte, et son trait se mêlait au halo qui rend le nom lisible — d'où le flou
+signalé. Elle s'arrête maintenant au bord de la boîte du nom, mesurée sur la chaîne elle-même
+(4,3 unités par caractère à 15 px gras), quel que soit l'endroit de l'ovale. Vérifié dans le
+DOM, trois groupes : le point d'arrivée de chaque ligne tombe **hors** du rectangle de son texte.
+
+**Plus aucune marque de leader sur l'ovale**, build 98 : zéro ligne et zéro cercle en `#2ED47A`
+dans `#riders`.
+
+**Les couleurs des groupes, build 99** (`regles-operateur.md` §17, points 31 à 33). L'opérateur
+a posé la contrainte — « il faut éviter les couleurs se rapprochant de celle de la piste » — et
+n'a donné aucune teinte. La piste est le bois **#b5884e, teinte 33°** ; c'est exactement là que
+passe un dégradé vert→rouge direct, par le jaune et l'orange. Les deux dégradés qu'il a demandés
+l'évitent d'eux-mêmes :
+
+| | Teinte | Chemin |
+|---|---|---|
+| Tête | **152°** vert | — |
+| Devant le peloton | 152° → 200° | par le turquoise |
+| Peloton | **200°** bleu cyan | écarté du bleu de la piste, #1d4ed8, teinte 222° |
+| Derrière le peloton | 200° → 360° **en montant** | par le violet et le magenta |
+| Queue | **360° = 0°** rouge | — |
+
+Le sens de la seconde rampe n'est pas indifférent : en **descendant** de 200 vers 0, elle
+repasserait par 120, c'est-à-dire par le vert de la tête de course — un groupe lâché prendrait
+la couleur du leader.
+
+Relevé sur quatre groupes forcés : `1-Leader` hsl(152 65% 51%), `2-Bunch` hsl(200 90% 58%),
+`3-Behind` hsl(280 95% 63%), `4-Last` hsl(0 100% 68%).
+
+**Les deux situations que l'opérateur a demandé de forcer**, build 99 :
+
+1. **Quatre groupes et plus.** Deux échappés, le peloton, deux lâchés et un dernier très lâché :
+   la course a montré `1-Leader · 2-Bunch · 3-Behind · 4-Last`, et à un autre moment
+   `1-Bunch · 2-Behind · 3-Behind · 4-Last`, donc **deux groupes `Behind` à la fois**. Le dernier
+   est bien `Last` dans tous les cas.
+2. **Le croisement de deux noms.** Échantillonné sur **91 images** de cette course, **377 paires**
+   de noms examinées : **zéro recouvrement**, et la distance minimale entre deux noms est tombée
+   à **87 unités** — c'est-à-dire juste au-dessus du dégagement de 86 que le code impose, donc le
+   décalage vers l'extérieur a bien joué.
+
+**Les noms à l'intérieur de l'ovale**, build 100. L'opérateur les trouvait trop éloignés de la
+piste et a demandé ce que donnerait l'intérieur. La place disponible, relevée sur le dessin :
+
+| | Place libre |
+|---|---|
+| Dehors, jusqu'au bord du dessin | **80 à 95 unités** |
+| Dedans, dans les virages | **105 unités** |
+| Dedans, sur les lignes droites hors boutons | **48 unités** |
+| Dedans, au milieu d'une ligne droite, sous un bouton de boucle | **6 unités** |
+
+Un nom en demande environ 34. L'intérieur convenait donc partout sauf sous les deux boutons de
+boucle, d'où l'échange : les noms, qui suivent leur groupe, prennent l'intérieur ; les boutons,
+qui ne bougent jamais, prennent l'extérieur et ses marges étroites.
+
+Mesuré avant et après, sur la même course à six groupes forcés :
+
+| | Avant (dehors) | Après (dedans) |
+|---|---|---|
+| Ligne la plus longue | **177 unités** | **113** |
+| Ligne typique | — | 22 à 46 |
+| Recouvrements de noms, sur ~370 paires | 0 | **3** |
+
+Deux défauts corrigés en chemin. La ligne partait du bord **extérieur** de la bulle alors que le
+nom était désormais dedans : elle traversait la bulle et la piste. Et le test de chevauchement
+comparait la **distance entre les centres** de deux noms, ce qui le déclenchait sur des noms qui
+ne se gênaient pas et les projetait loin de la piste en traînant une longue ligne — c'était
+l'autre moitié de ce que l'opérateur voyait. Il compare maintenant leurs **boîtes**.
+
+**Les noms dans des badges**, build 101. L'opérateur voyait la ligne continuer derrière le nom
+et a proposé le badge. La ligne s'arrêtait pourtant déjà au bord de la **boîte** du texte : le
+calcul était juste, mais quand elle arrive en diagonale elle sort par le bord **haut** de cette
+boîte, donc elle vient toucher les lettres et leur halo sombre — à l'œil, elle passe dessous. Un
+bord franc règle la question.
+
+La largeur du badge demandait la largeur **réelle** du nom : estimée à 4,3 unités par caractère,
+elle se trompait assez pour étrangler le texte ou laisser du vide. Elle est mesurée une fois par
+nom sur un élément de texte gardé hors cadre, puis retenue — `renderOval()` tourne vingt fois par
+seconde et ne doit rien mesurer. Relevé : `1-Leaders` 73 unités de texte dans 91 de badge,
+`2-Bunch` 63 dans 81, `3-Last` 48 dans 66.
+
+Vérifié sur les trois groupes : **aucune ligne ne se termine à l'intérieur d'un badge**, et aucun
+texte ne déborde du sien.
+
+**Un badge ne recouvre jamais un coureur**, build 102. L'opérateur a vu celui du peloton posé sur
+sa propre tête de peloton. Deux causes, et la seconde ne se voyait que dans les virages :
+
+1. Le badge se posait à une profondeur **fixe depuis le bord de la piste**, alors que la bulle du
+   peloton descend plus profond que cet anneau : le badge retombait dedans. Il se tient
+   désormais au-delà de la **bulle**.
+2. Un badge est un rectangle **aligné sur l'écran**, mais son dégagement se mesure **le long de
+   la normale**. Ce qu'il avance vers la piste vaut `|nx| × demi-largeur + |ny| × demi-hauteur`,
+   et non la demi-hauteur seule : sur une ligne droite les deux coïncident, mais dans un virage
+   c'est la **largeur** qui pointe vers la piste, environ quatre fois plus. Premier correctif
+   seul : **59** recouvrements sur 4 880 paires badge/coureur. Les deux ensemble : **0** sur
+   4 832 paires, 93 images échantillonnées.
+
+**Un badge au plus près de sa bulle**, build 103. Le dégagement se calculait sur le **coin** du
+badge, son point le plus avancé vers la piste. Or le long de la ligne, qui passe par son milieu,
+la distance est tout autre : dans la partie **oblique** d'un virage, le coin avance de **40
+unités** là où le bord du badge n'en avance que **17**. L'écart paraissait donc énorme sans
+l'être.
+
+Le badge se pose maintenant sur la distance **le long de la ligne**, et ses coins sont rattrapés
+par un test explicite contre les coureurs — ce qu'un badge ne doit jamais couvrir — qui le
+repousse par pas de 12 unités seulement, autant de fois qu'il le faut. Resserré sans ce test, il
+revenait **4** fois sur un coureur en 4 752 paires ; avec lui, **0**.
+
+**L'écart bulle → badge, constant tout autour**, build 105. L'opérateur a fourni cinq images du
+même virage où l'écart variait du simple au triple. Trois causes, toutes des erreurs de signe ou
+de direction, et aucune n'était celle que les premières mesures désignaient :
+
+| Cause | Effet |
+|---|---|
+| Le bout de la ligne se calculait `− normale × t`, hérité de l'époque où les badges étaient **dehors** et la profondeur positive. À l'intérieur elle est négative : la même soustraction envoyait le bout **au-delà** du badge | des lignes de 24 à 96 unités traversant tout |
+| Le test contre le panneau servait de **motif à reculer**, alors que les pas vont vers l'intérieur et que le panneau **est** à l'intérieur : chaque pas aggravait le recouvrement | le badge s'enfonçait de six pas |
+| Le rattrapage des coins par paliers de 12 unités | sauts de 22 unités en moyenne, 60 au pire |
+
+Deux fausses pistes en chemin, écartées par la mesure : la largeur de la bulle, soupçonnée de
+vaciller, est **rigoureusement constante** (86 unités, zéro variation sur 119 images) ; et
+« l'écart au coureur le plus proche » est un mauvais indicateur, puisqu'il change dès qu'un
+**autre** coureur devient le plus proche, même badge immobile.
+
+Mesuré après correction, sur 150 images :
+
+| | Avant | Après |
+|---|---|---|
+| Longueur de la ligne | 24,5 à 96,0 | **12,4 à 12,6** |
+| Saut d'une image à l'autre | 20,8 en moyenne, 70,8 au pire | **0,03 en moyenne, 0,1 au pire** |
+| Badge posé sur un coureur | 30 images sur 150 | **0** |
+
+Il subsiste **1 effleurement sur 1 216 paires** badge/coureur dans le cas à plusieurs groupes :
+un coin de badge frôle un coureur d'un autre groupe. L'éliminer demanderait de dégager le badge
+sur son coin, ce qui ramènerait les sauts — c'est le compromis assumé.
+
+**Deux groupes qui se dépassent**, build 106. L'opérateur a demandé ce que font leurs badges à
+cet instant. La réponse a demandé de forcer le bon cas, car le plus fréquent ne le produit pas :
+
+- **Le peloton qui double un lâché ne produit aucun croisement de badges.** Tant que le lâché
+  roule dans l'amas du peloton, sa bulle n'est **pas tracée** — il n'est montré que par sa
+  pastille, comportement antérieur à ce travail. Il n'y a donc pas deux badges à séparer.
+- **Le vrai cas est une échappée qui double un lâché**, toutes deux hors du peloton. Forcé, il
+  donne 21 images de rapprochement sur 224.
+
+Mesuré sur ce cas :
+
+| | Recouvrements | Distance minimale entre centres |
+|---|---|---|
+| Seuil vertical à 22 unités | **13** sur 30 rapprochements | 11 |
+| Corrigé à 2·demi-hauteur + air | **10** sur 23 | 14 |
+| Avec le glissement le long de la piste | **0** sur 21 | **37** |
+
+Deux défauts trouvés là : le seuil vertical valait **22** alors que deux badges de 24 de haut se
+touchent déjà à 24 — ils étaient déclarés dégagés en se recouvrant. Et la profondeur seule ne
+suffit pas : sur une ligne droite il n'y a que 48 unités avant le panneau, donc deux ou trois
+pas, après quoi le badge n'avait plus où aller. Le glissement latéral lui donne la seconde
+liberté qui manquait, et un contrôle contre les coureurs a dû lui être ajouté, car glisser peut
+porter un badge au-dessus des coureurs d'un **autre** groupe — 7 cas sur 4 784 avant ce
+contrôle, **0** après.
+
+**Il n'y avait pas la place pour les deux**, build 108. L'opérateur a signalé un badge manquant :
+sa bulle et sa ligne étaient tracées, son nom avait disparu. Il était passé **sous le bloc des
+champs**, qui est peint après les noms et les recouvre.
+
+La mesure a montré que ce n'était pas un défaut de placement mais un manque de place :
+
+| | |
+|---|---|
+| Anneau libre entre la piste et le bloc, en haut et en bas | **48 unités** |
+| Ce qu'un badge y demande : débord de la bulle (13) + écart (14) + demi-badge le long de la ligne (12) + demi-hauteur (12) | **51 unités** |
+| Anneau libre sur les côtés | 105 unités |
+
+Trois tentatives pour loger les badges quand même, toutes mesurées :
+
+| Tentative | Résultat |
+|---|---|
+| Interdire le bloc comme position | aucune position acceptable sur les lignes droites : le badge saute de repli en repli, **12,4 unités par image** |
+| Repli sur la dernière position essayée | le badge part à l'extrême et **disparaît** sous le bloc — le défaut signalé |
+| Repli sur la position normale | le badge reste visible, mais **77 images sur 204** le montrent partiellement sous le bloc |
+
+D'où la décision de l'opérateur de sortir le bloc. Avec l'intérieur libre, la mesure devient
+nette : ligne de **9,5 unités, saut de 0,00 d'une image à l'autre**, et **zéro** badge sur un
+coureur en 1 760 paires.
+
+**Ce qui est revenu à l'intérieur**, build 109 (`regles-operateur.md` §17, point 43). La
+rangée du départ et le champ `LEADER` font **84 unités** de haut pour 280 disponibles, et un
+badge se pose à **51 unités** du bord de piste : il reste une quarantaine d'unités de
+dégagement de chaque côté, là où le bloc entier n'en laissait aucune. Mesuré sur 202 images :
+**zéro** badge sous le bloc, **zéro** recouvrement entre badges, **zéro** hors du cadre.
+
+Le bloc n'est jamais une raison de quitter la place normale, seulement un veto sur un badge
+qu'on **pousse** : la ligne flotte alors de 2,5 unités en moyenne dans les parties obliques,
+contre 0,00 avec l'intérieur entièrement vide.
+
+**L'intérieur en trois colonnes**, build 111. Deux cadrages successifs ont été faux parce que
+la largeur avait été estimée au lieu d'être mesurée : à **416** unités le contenu était rogné —
+horloge coupée, `ARM FINISH` amputé — et à **480** deux libellés passaient à la ligne. Les
+colonnes demandent **112 + 130 + 194** plus les écarts.
+
+Sur l'offre de l'opérateur de réduire les tailles, le bloc est passé de **510 × 118** à
+**446 × 92** : boutons d'armage et champs à 28 unités de haut au lieu de 32, horloge à 20 px au
+lieu de 24, chiffre des tours restants à 24 au lieu de 28.
+
+Ce que cela rend aux badges, mesuré sur ~200 images :
+
+| Bloc | Badges partiellement couverts |
+|---|---|
+| 510 × 118 | **23 images**, 4 % du badge en moyenne, 14 % au pire |
+| 446 × 92 | **0** |
+
+**Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
+l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
+
+| État | Fond relevé |
+|---|---|
+| `ARM START` au repos | `rgb(255, 92, 92)` |
+| `START ARMED` | `rgb(28, 198, 52)` |
+| `FALSE START` | `rgb(58, 64, 70)` |
+| `ARM FINISH` au repos | `rgb(15, 17, 19)` |
+| `ARM FINISH` armé | `rgb(28, 198, 52)` |
+| `SET NEXT AS LEADER` armé | `rgb(28, 198, 52)` |
+| Ligne de la boucle armée | `stroke-opacity` à **1** |
+| `TO GO` exporté | `rgb(28, 198, 52)` |
+| `TO GO` retenu | `rgb(255, 92, 92)` |
+
+Avant correction, `ARM FINISH` armé relevait `rgb(15, 17, 19)` — la couleur du repos.
+
+**L'horloge arrêtée sur le vainqueur**, mesurée sur une course de 2 tours, ligne armée avant le
+départ : l'horloge s'est figée à **0:33.7** au passage du premier coureur sur la ligne, elle y
+était encore 2,5 secondes plus tard pendant que la course continuait derrière lui, et la ligne
+s'était désarmée d'elle-même.
+
+**Un défaut trouvé à l'œil et non par la mesure** : le champ du leader s'était rangé à côté de
+l'horloge, laissant le bouton de départ seul à la ligne suivante — alors que l'opérateur les
+veut côte à côte. Le leader prend désormais la ligne entière. Une boîte peut être parfaitement
+placée et parfaitement à la mauvaise place : les deux lectures restent nécessaires.
+
+## 27. La barre du haut après le déménagement du transport — build 113
+
+Fenêtre de 1920 px, prototype ouvert en `file://`, rail du simulateur ouvert puis masqué.
+
+| Mesure | Valeur |
+|---|---|
+| Largeur de la barre | 1427 px |
+| Hauteur de la barre | 38 px |
+| Bloc du transport | 555,3 px de large, de x = 421,4 à x = 976,7 |
+| Dépassement de la barre (`scrollWidth − clientWidth`) | 0 px, rail ouvert comme rail masqué |
+| Dépassement de la page | 0 px (`scrollWidth` = `innerWidth` = 1920) |
+| Position du bloc, rail masqué | identique : x = 421, largeur 555 px |
+
+Le bloc ne bouge plus d'un pixel quand le rail se ferme, puisqu'il ne change plus de parent. Le
+champ d'état garde ses 120 px même vide — c'est ce qui tient l'écart entre l'horloge et
+`Replay`, et c'est voulu : un seul champ dit `REC` ou `PLAYING RACE n` (§17, 28 octobre 2026).
+
+## 28. La timeline resserrée — build 114
+
+Fenêtre de 1920 px, rail du simulateur masqué, course lancée puis un groupe de trois coureurs
+créé à la main pour obtenir deux blocs.
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Largeur de la colonne | 360 px | 292 px |
+| Colonnes d'une ligne de coureur | `34px 24px 36px 1fr 0 62px` | `34px 22px 36px 1fr 0 auto` |
+| Barre d'actions au survol | `left:108px right:66px`, 158 px utiles | `left:40px right:3px`, 220 px utiles |
+| Place demandée par les quatre boutons | 214 px | 214 px |
+| Dépassement d'une ligne, d'un en-tête, du corps | — | 0 px, 0 px, 0 px |
+| Dépassement de la page | — | 0 px |
+
+La barre d'actions du survol laisse **40 px** au dossard, sans quoi plus aucune ligne n'est
+sélectionnable : couvrant toute la largeur, elle interceptait le clic et le transformait en
+« +1 lap ». C'est cette contrainte, et non l'esthétique, qui fixe la largeur de la colonne :
+les quatre boutons demandent 214 px, donc la colonne ne peut pas descendre sous 292 px tant
+qu'ils sont là.
+
+Couleurs des bordures gauches relevées sur les deux blocs : `rgb(49, 211, 135)` pour
+`1-Leaders`, `rgb(52, 180, 244)` pour `2-Bunch` — les couleurs de leurs bulles sur l'ovale.
+
+## 29. Ce que l'en-tête d'un bloc porte après le nettoyage — build 115
+
+Relevé sur les deux blocs de la même course qu'au §28 :
+
+| Bloc | En-tête lu dans le DOM |
+|---|---|
+| Groupe de tête | `1-Leaders` · `3 riders` · `leader` |
+| Peloton | `2-Bunch` · `13 riders` · `−7 m` |
+
+Dépassement d'un en-tête, d'une ligne de coureur, du corps de la colonne : 0 px.
+
+## 30. La colonne de droite — build 116
+
+Fenêtre de 1920 px, rail du simulateur masqué, course menée jusqu'à l'ouverture du sprint 1.
+
+| Mesure | Valeur |
+|---|---|
+| Colonne de droite | 700 px (`flex:0 1 700px`, plancher 560 px) |
+| Ordre du sprint (`.sleft`) | 390 px, dont 120 px pour le nom |
+| Liste de départ (`.sright`) | 270 px, dont 90 px pour le nom |
+| En-tête de la carte | deux lignes, 58 px (il demande 706 px sur une seule) |
+| En-tête du tableau de l'ordre | une ligne, 20 px |
+| Ovale pendant le sprint | 874 px de large |
+| Ovale une fois la carte fermée | 1584 px |
+| Dépassement de la carte, de la liste, de la page | 0 px, 0 px, 0 px |
+
+À 620 px la carte débordait de 88 px, l'en-tête n'ayant pas la place de ses boutons. À
+700 px, il tient sur deux lignes et le nom d'un coureur garde 120 px dans l'ordre.
+
+## 31. La colonne d'actions — build 117
+
+Fenêtre de 1920 px, rail masqué, un coureur lancé 10 m/s plus vite que le peloton pour
+obtenir une proposition de tour gagné.
+
+| Mesure | Valeur |
+|---|---|
+| Timeline | 294 px |
+| Colonne d'actions | 268 px |
+| Barre de sélection | 168 px de haut, aucun dépassement |
+| Cartes de proposition | 524 px de haut, aucun dépassement horizontal |
+| Ovale | 1306 px hors sprint, 736 px pendant un sprint |
+| Journal | 1014 px pendant un sprint, 1584 px hors sprint (il couvre les deux colonnes) |
+| Propositions restées dans la timeline | 0 |
+| Propositions dans la colonne | 1 — « Lap gained? · BIB 52 · Lap 17 » |
+| Dépassement de la page | 0 px |
+
+### Ce que donne une fenêtre de 1440 px
+
+La colonne du sprint tombe à son plancher de 560 px. Le nom d'un coureur n'a plus que 30 px
+dans l'ordre et 43 px dans la liste de départ, contre 120 et 90 à 1920 px. Rien ne déborde et
+rien ne tombe à zéro, mais **les noms y sont coupés** : l'écran est dessiné pour une fenêtre
+large.
+
+## 32. Les seize combinaisons des quatre dispositions — build 118
+
+Ovale dessiné (taille réelle du dessin, proportions gardées), pendant un sprint ouvert. Aucune
+combinaison ne déborde, et la liste de départ reste entière dans toutes.
+
+| Dispositions actives | 1920 × 1080 | 1440 × 900 |
+|---|---|---|
+| aucune (état livré) | 596 × 359 | 253 × 152 |
+| carte resserrée | 736 × 443 | 296 × 178 |
+| passages repliés seuls | 596 × 359 | 253 × 152 |
+| actions sous l'ovale **ou** timeline repliée | 874 × 526 | 531 × 320 |
+| carte resserrée + l'une des deux | 1014 × 610 | 574 × 346 |
+| actions sous l'ovale + timeline repliée | 953 × 574 | 654 × 394 |
+| les trois | 1014 × 610 | 654 × 394 |
+| **les quatre** | **1292 × 778** | **852 × 513** |
+
+Trois faits en ressortent :
+
+- **Replier les passages ne sert à rien seul** : la largeur limite avant la hauteur. Cela ne
+  compte qu'avec les trois autres, et le gain est alors considérable (1014 → 1292).
+- **Replier la timeline et descendre les actions donnent exactement le même gain**, mais
+  replier la timeline ne coûte aucune hauteur.
+- **La carte resserrée ne vaut qu'au-dessus de son plancher** : 560 px en 1920, 520 en 1440.
+  Le nom d'un coureur y passe de 120 à 66 px dans l'ordre et de 90 à 73 px dans la liste.
+
+## 33. La timeline étroite et la carte sans noms — build 119
+
+Ovale dessiné pendant un sprint ouvert, après le passage de la timeline à 118 px et le retrait
+des noms de la carte.
+
+| | 1920 × 1080 | 1440 × 900 |
+|---|---|---|
+| Avant (build 118, aucun essai actif) | 596 × 359 | 253 × 152 |
+| **Build 119, aucun essai actif** | **1010 × 608** | **570 × 343** |
+| avec les actions sous l'ovale | 953 × 574 | 654 × 394 |
+| avec les actions sous l'ovale et sans les passages | 1288 × 775 | 848 × 511 |
+
+La carte du sprint passe de 700 à **460 px** (420 en 1440). La colonne de la timeline passe de
+292 à **120 px**. En 1440, l'ovale gagne ainsi **5,1 fois** sa surface d'avant.
+
+Curiosité à connaître : en 1920, **descendre les actions sous l'ovale fait perdre** 1010 → 953.
+La colonne ne valait plus que 278 px de largeur alors que la barre coûte 128 px de hauteur, et
+l'ovale y était déjà limité par la hauteur. Les deux essais ne valent donc ensemble que si les
+passages se replient aussi.
+
+Vérifié au clic : un coureur sélectionné donne 13 actions dans la colonne, dont `Laps…` et
+`Leader` ; un clic sur l'en-tête du bloc sélectionne les 16 coureurs et laisse les 11 actions
+de groupe. Aucun débordement, et la liste de départ reste entière.
+
+### La couleur de la bande d'en-tête
+
+Relevée au pixel sur le croquis de l'opérateur du 29 octobre 2026 (`images/25.png`, bande des
+28 premières lignes) : fond `rgb(51, 180, 244)` sur 2856 pixels, texte `rgb(0, 0, 0)`. Le
+prototype rend `rgb(52, 180, 244)` -- la couleur du peloton, `hsl(200 90% 58%)`, la même que
+sa bulle sur l'ovale.
+
+## 34. L'écran de course sans le bandeau des passages — build 120
+
+| | 1920 × 1080 | 1440 × 900 |
+|---|---|---|
+| Ovale hors sprint | 1611 × 970 | 1269 × 764 |
+| Ovale pendant un sprint | 1288 × 775 | 848 × 511 |
+| Hauteur de la barre d'actions | 34 px | 60 px (deux lignes) |
+| Carte du sprint | 460 px | 420 px |
+| Dépassement de la barre d'actions, de la page | 0 px, 0 px | 0 px, 0 px |
+
+Le panneau `Race log` ouvert couvre l'écran de la barre du haut au bas de la page. Ses quatre
+onglets donnent 10, 4, 4 et 17 lignes sur la course de contrôle, contre une dizaine de lignes
+visibles dans le bandeau de 300 px qu'il remplace.
+
+Rappel du chemin parcouru sur l'ovale pendant un sprint, en 1440 : **253 × 152** à la
+build 118, **570 × 343** à la build 119, **848 × 511** à la build 120 — soit **dix-huit fois**
+la surface de départ.
+
+## 35. La carte d'une proposition dans la barre d'actions — build 121
+
+Fenêtre de 1440, trois coureurs lancés 8 m/s plus vite que le peloton : ils prennent un tour
+ensemble et donnent une proposition à trois dossards.
+
+| Mesure | Valeur |
+|---|---|
+| Barre d'actions, proposition comprise | 94 px de haut, 848 px de large |
+| Dépassement de la carte, de la page | 0 px, 0 px |
+| Boutons ✓ posés sur les lignes de la timeline | 0 (contre 3 à la build 120, qui coupaient le code pays) |
+
+Vérifié au clic : un ✓ de coureur fait passer la carte de trois dossards à deux et inscrit au
+journal « BIB 7 · laps gained 0 → 1 · effect Lap 21 · validated proposal ». Les deux autres
+restent en attente.
+
+## 36. L'ovale collé en haut, rien de vide sous les actions — build 123
+
+Fenêtre de 1440 × 900, rail masqué.
+
+| | Sans proposition | Avec une proposition |
+|---|---|---|
+| Panneau de l'ovale | 1280 × 782 | 850 × 662 (sprint ouvert) |
+| Ovale dessiné | **1280 × 771** | 850 × 512 |
+| Place vide sous les actions | **10 px** (la marge de la page) | **10 px** |
+
+La build 122 réservait la hauteur de la ligne des propositions pour que l'ovale ne saute pas :
+95 px restaient vides sous les actions et l'opérateur l'a refusé. L'ovale prend maintenant
+toute la hauteur disponible, son dessin calé en haut de son panneau
+(`preserveAspectRatio="xMidYMin meet"`), et il se redimensionne quand une proposition arrive.
+
+Hors sprint, le dessin gagne encore : 697 → **771 px** de haut en 1440. Pendant un sprint, il
+reste limité par sa largeur, et les 150 px qui restent sont dans le panneau, sous la piste.
+
+## 37. Le cadre du dessin — build 125
+
+La piste dessinée, en 1440 × 900 : **755 × 338** contre **659 × 295** à la build 121, à carte
+égale (420 px, deux colonnes). Le gain vient du seul cadre du dessin ; la carte empilée sur une
+colonne, qui portait la piste à 886 × 397, a été refusée par l'opérateur et retirée.
+
+1. **Le cadre du dessin était trop grand.** Relevé sur un tour complet, le dessin occupe
+   `x 67..913` et `y 53..537` ; le cadre disait `0 0 980 590`. Il dit maintenant
+   `63 49 854 492`, soit le contenu plus 4 unités de marge. Vérifié sur 70 images d'un tour :
+   **0 fois** le dessin ne sort du cadre. Un premier essai à `84 38 832 514` coupait la bulle
+   du peloton dans le virage gauche -- les bulles dépassent la piste de 13 unités, ce qu'une
+   estimation ne donne pas et qu'un relevé sur un tour donne.
+2. **Le reste du vide tient à la largeur de la carte, et il est irréductible.** L'ovale est
+   limité par sa largeur dès que la carte est là : avec 420 px de carte il fait 850 px de
+   large, donc 525 de haut pour 755 disponibles. Pour qu'il remplisse la hauteur il lui
+   faudrait 1 222 px, c'est-à-dire une carte de 46 px. **Le vide en hauteur ne peut pas être
+   supprimé tant que la carte est à droite.**
+
+## 38. Ce que la refonte a changé, mesuré — build 125
+
+Même fenêtre (1440 × 900), même script, trois états du prototype. « Piste » est la taille du
+velodrome dessiné à l'écran.
+
+| | En course | Pendant un sprint | Carte visible en course |
+|---|---|---|---|
+| Build 112, avant la refonte | 670 × 300 | **l'ovale disparaissait** | non |
+| Build 118, sa page redessinée | 639 × 286 | 195 × 87 — **9 %** de sa surface | non |
+| **Build 125** | **755 × 338** | **755 × 338 — 100 %** | **oui** |
+
+Le gain n'est pas d'abord la taille : c'est que **l'écran ne bouge plus**. Jusqu'ici, ouvrir un
+sprint faisait disparaître la piste, puis la réduisait à 9 % de sa surface. Elle garde
+maintenant exactement la même taille, sprint ou pas, et la carte est là en permanence.
+
+### L'ovale calé en haut — build 126
+
+| | 1440 × 900 | 1920 × 1080 |
+|---|---|---|
+| Haut de la piste, depuis le haut de la page | 134 px | 174 px |
+| Vide au-dessus de la piste, dans le panneau | 75 px (la bande du bouton `SET NEXT`) | 115 px |
+| Vide sous la piste, dans le panneau | 341 px | 333 px |
+| Piste dessinée | 755 × 338 | 1146 × 513 |
+
+Le vide est désormais **entièrement sous l'ovale**, et non plus réparti de part et d'autre.
+
+## 39. Les deux dispositions sous l'ovale — build 127
+
+Une proposition de tour à trois dossards affichée, rail masqué.
+
+| | 1440 × 900 | 1920 × 1080 |
+|---|---|---|
+| Piste dessinée | 755 × 338 | 1134 × 508 |
+| Haut de la piste | y = 134 | y = 172 |
+| Zone sous l'ovale | 848 × 333 | 1288 × 268 |
+| · propositions, disposition empilée | 848 × 265 | 1288 × 226 |
+| · actions, disposition empilée | 848 × 60 | 1288 × 34 |
+| · actions, disposition en colonne | 268 × 333 | 268 × 268 |
+| · propositions, disposition en colonne | 572 × 333 | 1012 × 268 |
+| Place vide sous les actions | 10 px (la marge de la page) | 10 px |
+
+La zone remplit exactement ce que l'ovale laisse : il n'y a plus de place vide nulle part,
+dans l'une comme dans l'autre disposition.
+
+## 40. Les commandes aérées — build 128
+
+| | Avant | Après |
+|---|---|---|
+| Bouton d'action : texte | 12 px | 13 px |
+| Bouton d'action : marges intérieures | 2 × 7 px | 7 × 13 px |
+| Écart entre deux boutons | 4 px | 8 px |
+| Écart entre deux familles de boutons | 5 px | 10 px, chaque famille à la ligne |
+| Hauteur de la barre d'actions (1440, empilée) | 60 px | 182 px |
+| Carte de proposition : marges intérieures | 5 × 7 px | 12 × 16 px |
+| Carte de proposition : ✓ d'un coureur | 17 px de haut | 29 px |
+
+La barre d'actions occupe maintenant 182 px des 333 px de la zone en 1440, et la carte de
+proposition 143 px. Rien ne déborde dans aucune des deux dispositions, à 1440 comme à 1920.
+
+## 41. La hauteur de la timeline à 24 coureurs — build 129
+
+La hauteur demandée par la colonne se calcule exactement, et la formule a été vérifiée sur un
+cas réel monté à 24 coureurs inscrits :
+
+`hauteur = cadre_du_bloc × G + ligne × R + bande × (G + 1)`
+
+| | Build 128 | Build 129 |
+|---|---|---|
+| Cadre d'un bloc | 43 px | 36 px |
+| Ligne d'un coureur | 26 px | 22 px |
+| Bande de dépôt | 32 px | 16 px |
+| En-tête d'un bloc | 35 px | 30 px |
+| **24 coureurs en 2 groupes** | 806 px (prédit et mesuré) | **648 px (prédit et mesuré)** |
+
+Nombre de groupes qui tiennent sans défiler, avec 24 coureurs :
+
+| | 1440 × 900 (830 px) | 1920 × 1080 (1010 px) |
+|---|---|---|
+| Build 128 | 2 groupes | 4 groupes |
+| **Build 129** | **5 groupes** | **9 groupes** |
+
+Au-delà, la colonne défile, mais l'en-tête du bloc reste collé en haut : vérifié en forçant le
+défilement, après 150 px de défilement l'en-tête est à 3 px du haut de la colonne au lieu
+d'être sorti de l'écran, et il porte toujours son nom, son nombre de coureurs et son écart.
+
+## 42. Les dossards sur la piste — build 131
+
+La piste fait `HW = 30` de demi-largeur dans le dessin. Un dossard posé sur la file extérieure
+atteint `LANE + DOT_R` depuis l'axe.
+
+| | Avant | Après |
+|---|---|---|
+| Rayon d'un dossard (`DOT_R`) | 15 | 10 |
+| Écart des files (`LANE`) | 24 | 19 |
+| Portée depuis l'axe | **39** pour 30 permis | **29** |
+| Écart minimal demandé entre deux dossards | 32 | 24 |
+| Décalages le long de la piste | 0, ±9, ±18 | 0, ±7, ±14 |
+| Taille du numéro | 13 | 10 |
+
+Relevé sur 60 images d'un tour, en mesurant la distance de chaque dossard au tracé de la piste :
+**débordement maximal 29,2** pour 30 permis, et **0 paire de dossards qui se chevauchent**.
+
+### La bulle rentrée dans la piste — build 132
+
+La bulle se mesurait sur ses coureurs (`LANE + DOT_R + BUB_M`), soit 43 avant la build 131 et
+33 après : elle dépassait encore. Ses deux bords sont maintenant **ramenés dans la piste**, et
+son milieu s'en déduit.
+
+Borner la seule demi-largeur ne suffit pas : une bulle décentrée -- un groupe sur la file du
+milieu et la file extérieure -- dépasse encore du côté large. Et borner les bords à `HW` tout
+rond laisse encore **31,2**, parce que le trait de 1,5 qui dessine le bord est centré dessus et
+que la bande suit la courbe par segments. La borne est donc `HW − 2`.
+
+Relevé sur 60 images d'un tour, distance au tracé de la piste, bord du trait compris :
+
+| | Mesuré | Permis |
+|---|---|---|
+| Dossard le plus éloigné | 29,1 | 30 |
+| Bord de bulle le plus éloigné | **29,3** | 30 |
+
+## 43. La barre du haut en 1440 avec le rail ouvert — build 133
+
+En rendant la disposition en colonne celle par défaut, trois défauts de la barre sont apparus à
+la mesure, qu'aucune capture n'avait montrés :
+
+| Défaut | Mesure | Correction |
+|---|---|---|
+| Le sélecteur de disposition était écrasé | **2 px** de large, incliquable | `flex:0 0 auto` |
+| Le champ d'état vide gardait sa place | 120 px pour rien | il ne la prend que lorsqu'il a un texte |
+| Le champ d'état réservait la place du plus long | 120 px pour « REC » qui en demande 44 | il prend la largeur de son texte |
+
+État final, barre de 945 px (rail ouvert) et 1406 px (rail masqué) :
+
+| Texte du champ d'état | Dépassement | `Race log` visible | Sélecteur visible |
+|---|---|---|---|
+| vide | 0 px | oui | oui |
+| `REC` (44 px) | 0 px | oui | oui |
+| `PLAYING RACE 2` (109 px) | 0 px | oui | oui |
+
+Quand la barre est pleine, c'est le mot « RACE LEADER » qui cède — de 85 px à 0 dans le cas le
+plus serré — et non le bouton `Race log`.
+
+### Le sélecteur dans le panneau des actions — build 134
+
+Vérifié dans les deux dispositions, en 1440 : le sélecteur est **dans** le panneau des actions
+(coin haut droit, à 9 px du haut et 10 px de la droite), il ne recouvre jamais le bouton
+`Clear` -- la ligne de sélection lui réserve 62 px -- et la bascule fonctionne dans les deux
+sens. La barre du haut, débarrassée de lui, ne déborde plus dans aucun état.
+
+## 44. L'équilibre de l'écran — build 136
+
+La piste dessinée et la zone du bas, rail masqué :
+
+| Fenêtre | Piste build 134 | **Piste build 136** | Zone du bas | La barre d'actions défile | Vide sous elle |
+|---|---|---|---|---|---|
+| 1910 × 900 | 1035 × 464 | **803 × 359** | 302 px | non | 10 px |
+| 1440 × 900 | 886 × 397 | **710 × 318** | 302 px | non | 10 px |
+| 1920 × 1080 | 1323 × 592 | **1081 × 484** | 302 px | non | 10 px |
+
+La piste perd donc 40 % de sa surface, et la timeline gagne 42 % de largeur -- 118 → 168 px --
+avec des éléments à l'échelle. Avec 24 coureurs en deux groupes la colonne demande 810 px pour
+830 disponibles en 1440 : elle tient toujours sans défiler.
+
+**Un piège rencontré en chemin** : en passant la colonne centrale d'une grille à une boîte
+flexible, l'ordre du document reprend la main sur `grid-row`. La zone du bas, écrite avant
+l'ovale dans le document et placée en seconde rangée par la grille, est repassée **au-dessus**
+de l'ovale sans qu'aucune erreur ne soit levée. Corrigé en remettant le bloc dans l'ordre du
+document.
+
+## 45. L'écran sans cadre autour de l'ovale — build 139
+
+Fenêtre de 1910 × 900, celle de l'opérateur, rail masqué :
+
+| Disposition | Piste dessinée | Place libre de part et d'autre de la piste | La barre d'actions défile |
+|---|---|---|---|
+| Build 136 | 803 × 359 | **2 bandes encadrées de 190 px** | non |
+| **139, empilée** | **979 × 438** | aucune : le dessin remplit la largeur | non |
+| **139, en colonne** | 806 × 361 | aucune ; la place libre est celle des propositions, à droite des actions | non |
+
+Deux essais faits, regardés et abandonnés en chemin, qui sont consignés pour ne pas être
+refaits :
+
+- **Élargir la timeline à 290 px** : une ligne ne porte qu'un dossard, un drapeau et un code
+  pays ; la moitié droite de chaque ligne restait vide. Revenue à 176 px.
+- **Sortir la barre d'actions de la zone du bas pour la mettre à côté de l'ovale** : en
+  1440 × 900 la piste tombait à 438 × 196, soit le quart de sa surface. Abandonné.
+
+## 46. Les commandes de la carte du sprint — build 140
+
+Relevé des commandes de `#scard`, carte ouverte et carte en attente, et comparaison avec la
+build 118 (avant que la carte devienne permanente) :
+
+| | Build 118, sprint ouvert | Build 140, sprint ouvert | Build 140, hors sprint |
+|---|---|---|---|
+| Familles de commandes | clear, close, detected, live, manual, ne, send, shift, sort, target | **les mêmes** | les mêmes **sauf** close et send |
+| Boutons | ← → Manual, Detected order, Clear and record, Live, Live · waiting, Close, Not eligible, 1 2 3 4, BIB, NOC | **les mêmes** | les mêmes sauf Live · waiting et Close |
+
+Rien n'avait donc disparu de la carte **ouverte** ; c'est la carte **permanente** qui était
+livrée sans aucune commande.
+
+Vérifié au clic, hors sprint : le tri par pays réordonne la liste (`ESP FRA GBR NED SLO` →
+`BEL BRA COL DEN ESP`) et le retour par dossard la rétablit ; la flèche → fait passer le tour
+jugé de 10 à 11 et la flèche ← le ramène.
+
+## 47. La carte du sprint aérée — build 143
+
+| | Avant | Après |
+|---|---|---|
+| Ligne d'une place | 28 px | 36 px |
+| Ligne de la liste de départ | 26 px | 30 px |
+| Marges de la carte | 6 × 10 px | 10 × 12 px |
+| Écart entre les deux colonnes | 18 px | 20 px |
+| Rangée « place suivante » | 170 px de large, dans la colonne de droite, boutons `1` à `4` repliés sur deux lignes | **309 px, sous l'ordre**, boutons `1st` à `4th` sur une ligne |
+
+Vérifié : les quatre boutons sont bien sur une seule ligne, la carte ne déborde ni en largeur
+ni en hauteur, et la liste de départ reste entière.
+
+## 48. Les passages inéligibles dans la carte — build 146
+
+Cas forcé sur un sprint ouvert, par le harnais `window.__proto` : deux coureurs déclarés
+inéligibles **avant** leur passage, et un coureur déjà classé déclaré inéligible **après** le
+sien.
+
+| | Avant la correction | Après |
+|---|---|---|
+| Coureur inéligible au moment de son passage | ligne grisée « no points », sans rang | **identique** : `12 SUI no points`, `52 ITA no points` |
+| Coureur classé qui devient inéligible ensuite | **disparaît du classement**, sans rang et sans ligne grisée | **garde sa place** (`1:15` reste premier) |
+| Compteur « Not eligible » | 0 | 0 -- il ne compte que les écartés par l'opérateur |
+
+Les lignes grisées se placent dans l'ordre des passages : les deux coureurs ci-dessus ayant
+franchi après les cinq premiers, leurs lignes suivent les cinq places.
+
+## 49. L'annonce des coureurs sans points — build 147
+
+**Vérifié en course**, sur un sprint ouvert avec deux passages jugés inéligibles :
+
+| | Résultat |
+|---|---|
+| Compteur de la carte | `Not eligible · 2` |
+| Lignes du bloc | `15th · 12 SUI · no points · not eligible when he crossed`, `16th · 52 ITA · …` |
+| Flèche de reclassement | absente sur ces deux lignes, présente sur un écarté par l'opérateur |
+| Lignes grisées de l'ordre | `12 SUI no points`, `52 ITA no points`, sans rang |
+
+**Vérifié en apparence seulement** pour la timeline et le badge, l'état `S.inelig` ne se
+produisant pas dans une course simulée (c'est le scénario que `travaux.md` §2 dit encore à
+construire) : la pastille `no pts` tient dans la colonne de 174 px sans la faire déborder
+(−5 px de marge), et le badge rend `1-Bunch · 2 NO PTS`, son fond s'élargissant avec le texte.
+
+## 50. Le scénario qui force l'inéligibilité, et sa vérification en course — build 147
+
+Construit le 29 octobre 2026, à la demande de l'opérateur. Il comble le manque que `mesures.md`
+§6 et `travaux.md` §2 signalaient depuis la build 53.
+
+### La recette, rejouable à la main
+
+1. Dans le rail du simulateur, onglet **Simulation** : donner **+4 m/s** aux deux premiers
+   coureurs de la liste -- ils feront l'échappée, donc le **groupe 1** -- et **−4 m/s** au
+   dernier, qui sera lâché.
+2. Lancer la course en ×16 et attendre. Vers **t = 353 s, au tour 22**, la règle déclare le
+   coureur lâché inéligible : il a perdu un tour et se retrouve **physiquement devant le
+   peloton**, donc plus près de la ligne que le groupe au-dessus de lui. Trois groupes sont
+   alors en course : `1-Leaders`, `2-Bunch`, `3-Last`.
+3. Sur la carte du sprint, ramener le prochain sprint sur le tour en cours avec la flèche
+   **←**.
+4. À la cloche, **couper `Live`** -- sans quoi les places partent et le sprint se referme deux
+   tours plus tard -- puis appuyer sur **`Clear and record`**, qui enregistre tout passage à
+   partir de cet instant, quel que soit le tour.
+5. Attendre le passage du coureur à un tour : il arrive **vingt-cinq secondes plus tard**
+   (t = 377,5 s).
+
+### Ce que la course montre alors, relevé dans le DOM
+
+| Où | Ce qui s'affiche |
+|---|---|
+| Ordre du sprint | les cinq places, puis `15 IRL · no points`, **grisé et sans rang** |
+| Compteur de la carte | `Not eligible · 1` |
+| Ligne du bloc | `16th · 15 IRL · no points · not eligible when he crossed`, sans flèche de reclassement |
+| Timeline | `15 IRL` avec la pastille `no pts`, dans le bloc `3-LAST · 1 RIDER · −271 m` |
+| Ovale | badge `3-Last · NO PTS` |
+
+**La fenêtre d'inéligibilité dure quatorze tours** dans ce réglage (du tour 22 au tour 36), ce
+qui laisse largement le temps d'ouvrir un sprint dessus. C'est pour cela que les quatre
+tentatives précédentes échouaient : elles attendaient que la fenêtre tombe d'elle-même sur un
+sprint, au lieu d'amener le sprint sur la fenêtre.
+
+
+## §51 · La carte de sprint en trois colonnes (build 148)
+
+Mesuré dans le prototype, rail du simulateur replié, course de référence.
+
+| | 1440 × 1080 | 1920 × 1080 |
+|---|---|---|
+| Carte | **500 px** | **548 px** |
+| Colonne de l'ordre | 877 px de haut, **33 lignes de 26 px** | idem |
+| Colonne des coureurs | 930 px de haut, **35 lignes** | idem |
+| Piste, carte à 420 (avant) | 705 × 315 | — |
+| Piste, carte à 500 (après) | **634 × 283**, soit 16 % de moins | — |
+
+Les vingt-quatre coureurs d'une course pleine tiennent donc dans les deux colonnes **sans
+défilement**, avec neuf lignes de marge dans l'ordre et onze dans la liste. Les lignes sont
+élastiques : 26 px au plus serré, 34 px quand la course laisse de la place.
+
+**Largeurs utiles**, qui expliquent pourquoi rien n'est souple pour rien : la ligne de l'ordre
+demande 22 + 32 + 38 + l'écart + 22 + 22 ; la ligne de la liste, 32 + la nation. La colonne des
+commandes fait 172 px, ce qui tient `1st` à `4th` sur une rangée et `1st` à `5th` sur deux.
+
+**Contrôle automatique** : un script Playwright parcourt tous les éléments de la carte et
+compare `scrollWidth` à `clientWidth`, puis `scrollHeight` à `clientHeight` pour les trois
+zones défilantes. Il est à zéro dans les quatre états vérifiés -- avant la cloche, sprint
+ouvert, coureur sans transpondeur, sprint final -- aux deux largeurs.
+
+**Boutons essayés un par un en course** (×16 jusqu'à l'ouverture du sprint 1, tour 10), avec
+l'état relu après chaque clic : `Live` (aller et retour), `1st`…`4th`, `←` et `→` du tour jugé,
+`Manual` puis la saisie « 15 4 11 » validée par Entrée -- l'ordre devient `[15, 4, 11]` et la
+place suivante passe à 4 --, `Detected` qui le rend aux boucles, `Clear and record`, les tris
+`BIB` et `NOC`, `Not eligible`, le double-clic dans la liste qui place le coureur, le `×` qui
+le retire, et `Close`. Aucune erreur JavaScript, aucun débordement après manipulation.
+
+
+### §51 bis · La saisie manuelle dossard par dossard, et d'où vient l'écart entre les deux colonnes
+
+**Saisie un par un**, la façon de travailler que l'opérateur a demandé de vérifier le
+29 octobre 2026 : `Live` coupé, `Clear and record`, `Manual`, puis `15` ↵, `4` ↵, `11` ↵,
+`52` ↵.
+
+| Frappe | Ordre obtenu | Place suivante | Champ |
+|---|---|---|---|
+| `15` ↵ | 15 | 2ᵉ | vidé |
+| `4` ↵ | 15, 4 | 3ᵉ | vidé |
+| `11` ↵ | 15, 4, 11 | 4ᵉ | vidé |
+| `52` ↵ | 15, 4, 11, 52 | 5ᵉ | vidé |
+
+Chaque dossard se pose à la place en cours, la place suivante avance d'un rang, le champ se
+vide et **le curseur y reste** -- on enchaîne sans toucher la souris. Les quatre lignes portent
+la mention `manual` dans la colonne de l'écart, et les quatre coureurs grisent dans la liste.
+Aucune erreur.
+
+**L'écart entre les deux colonnes** : elles font toutes deux 949 px de haut, mais la colonne de
+l'ordre en cède 72 à ce qu'elle porte en plus.
+
+| | Colonne de l'ordre | Colonne des coureurs |
+|---|---|---|
+| Titre `ORDER` | 23 px | — |
+| En-tête `BIB NOC GAP` | 19 px | 19 px |
+| Zone des lignes | **877 px**, soit 33 lignes de 26 | **930 px**, soit 35 lignes |
+| Bande de dépôt | 26 px (+ 4 de marge) | — |
+
+Soit 23 + 19 + 877 + 30 = 949 d'un côté, 19 + 930 = 949 de l'autre. Les deux tiennent donc les
+vingt-quatre coureurs d'une course pleine, avec neuf lignes de marge dans l'ordre et onze dans
+la liste.

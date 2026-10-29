@@ -6,29 +6,56 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 90</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 148</span>
+    <div id="simtransport">
+        <div class="sh" style="justify-content:center">
+          <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
+          <span class="seg"><button class="btn lg quiet" id="simplay" title="Play"><svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6 L9 6 L3 10.4 Z"/></svg></button><button class="btn lg quiet" id="simpause" title="Pause"><svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><rect x="3" y="1.6" width="2.4" height="8.8" rx=".4"/><rect x="6.6" y="1.6" width="2.4" height="8.8" rx=".4"/></svg></button></span>
+          <span class="seg" id="speedseg"><button class="btn lg on" data-f="1">&times;1</button><button class="btn lg quiet" data-f="4">&times;4</button><button class="btn lg quiet" data-f="16">&times;16</button></span>
+        </div>
+        <div class="sh clockrow" style="justify-content:center">
+          <span class="clock" id="simclock">0:00.0</span>
+          <!-- UN SEUL champ dit ce qui se passe : le point REC quand l'opérateur mène la course, « PLAYING RACE x » quand
+               il en rejoue une, rien le reste du temps. L'opérateur, 28 octobre 2026 : « le champ pour afficher "REC" et
+               "PLAYING RACE 1" doit être le même champ ». En deux champs, celui qui ne s'affichait pas retenait quand même
+               sa place — 39,3 px devant l'autre — et la ligne de l'horloge sortait 48 px plus large que celle du
+               transport (mesures.md §22). -->
+          <span class="simstate off" id="simstate"></span>
+          <!-- Replay and New ride on the clock's line, not on the transport's. The operator, 28 October 2026: « place les
+               boutons "Replay" et "New" sur la même ligne que l'horloge ». On the transport's line the eight buttons
+               wanted 476 px for 460, so the groups were squeezed and their buttons ran UNDER their neighbours — ❚❚ under
+               ×1 by 12,3 px, ×16 under Replay by 16,6 px — and a symbol then sits off the middle of what the eye reads as
+               its button (mesures.md §22). Six buttons want 361 px on the first line, and the clock's line holds the two
+               others with room to spare. -->
+          <span class="seg"><button class="btn lg quiet" id="simrestart" title="Replay this race from its start">Replay</button><button class="btn lg newrace" id="simnew" title="Open a new, empty race">New</button></span>
+        </div>
+    </div>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
-    <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
-    <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
-    <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
+    <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
   </div>
 
   <div class="main">
     <section class="tl" aria-label="Lap timeline">
-      <div class="hd"><span class="lbl">Lap timeline</span><span class="note">measured positions · laps as validated</span></div>
       <div class="body" id="tlbody"></div>
-      <div class="tbar" id="tbar"></div>
     </section>
 
     <section class="mid">
-      <div class="strip" id="strip"></div>
+      <!-- La barre d'actions et les cartes de proposition : à gauche de l'ovale, à droite de la timeline, et non
+           pas au-dessus de l'ovale (l'opérateur, 29 octobre 2026). Le journal passe sous les deux. -->
+      <!-- Sous l'ovale, les propositions et les actions. Elles se disposent de deux manières, au choix de
+           l'utilisateur (l'opérateur, 29 octobre 2026) : les propositions au-dessus des actions, ou les actions en
+           colonne à gauche des propositions. Dans les deux cas la zone prend toute la place laissée par l'ovale. -->
+
       <div class="oval">
-        <svg viewBox="0 0 980 590" role="img" aria-label="Track view" id="oval">
-          <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#15181b" stroke="#b5884e" stroke-width="60"/>
+        <svg viewBox="63 49 854 492" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Track view" id="oval">
+          <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#8a8a8a" stroke="#b5884e" stroke-width="60"/>
           <rect x="143" y="158" width="694" height="274" rx="137" fill="none" stroke="#3b6ae8" stroke-width="6"/>
           <rect x="138.5" y="153.5" width="703" height="283" rx="141.5" fill="none" stroke="#111111" stroke-width="1.5"/>
           <rect x="132" y="147" width="716" height="296" rx="148" fill="none" stroke="#a32020" stroke-width="1.5"/>
@@ -38,15 +65,62 @@
           <g id="bands"></g>
           <g id="riders"></g>
           <g id="ovlabels"></g>
+          <text id="gmeas" class="glabel" x="-9999" y="-9999" aria-hidden="true"></text>
+          <g id="infield">
+            <foreignObject id="ifpanel" x="267" y="249" width="446" height="92">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="ifcols">
+                <div class="ifcol">
+                  <button class="startb" id="startbtn">ARM START</button>
+                  <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
+                  <button class="startb finb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
+                </div>
+                <div class="ifcol">
+                  <div class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
+                    <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
+                    <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
+                    <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></div>
+                  <div class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
+                    <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></div>
+                  <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
+                </div>
+                <div class="ifcol">
+                  <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
+                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
+                  <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
+                </div>
+              </div>
+            </foreignObject>
+            <foreignObject id="armfo1" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+          </g>
         </svg>
       </div>
-      <section id="scard" aria-label="Sprint"></section>
-      <div class="log">
-        <div class="hd"><span class="seg" id="logtabs"><button class="btn xs on" data-tab="cross">Crossings</button><button class="btn xs quiet" data-tab="dec">Decisions</button><button class="btn xs quiet" data-tab="sprints">Sprints</button><button class="btn xs quiet" data-tab="stand">Standings</button></span><span class="lbl" id="loghint" style="color:var(--dim)">finish-line order of every lap · leader first · newest lap first</span><span class="xb" id="xbtns"></span></div>
-        <div class="rows" id="logrows"></div>
+
+      <div class="below">
+        <div class="props" id="propcard"></div>
+        <section class="acts" aria-label="Actions">
+          <div class="tbar" id="tbar"></div>
+          <!-- Le sélecteur des deux dispositions est DANS la zone qu'il commande, pas dans la barre du haut
+               (l'opérateur, 29 octobre 2026). -->
+          <span class="seg" id="layseg" title="Where the proposals and the actions go"><button class="btn xs quiet" data-lay="stack" title="Proposals above, actions below">&#9647;&#9473;</button><button class="btn xs on" data-lay="side" title="Actions on the left, proposals on the right">&#9475;&#9647;</button></span>
+        </section>
       </div>
     </section>
+
+    <!-- La colonne de droite : la carte du sprint et la liste de départ côte à côte, à droite de l'ovale (sa page
+         redessinée du 29 octobre 2026). Hors sprint la colonne n'existe pas, et l'ovale reprend toute la largeur. -->
+    <section class="right" id="rightcol" aria-label="Sprint">
+      <section id="scard" aria-label="Sprint"></section>
+    </section>
   </div>
+</div>
+
+<!-- Les passages, le journal, les sprints et le classement ne sont plus affichés en permanence : l'opérateur les a
+     retirés de la page le 29 octobre 2026 et demandé qu'on aille les chercher dans un menu de la barre du haut. Le
+     panneau s'ouvre par-dessus l'écran de course et se referme. -->
+<div class="log" id="log" hidden>
+  <div class="hd"><span class="seg" id="logtabs"><button class="btn xs on" data-tab="cross">Crossings</button><button class="btn xs quiet" data-tab="dec">Decisions</button><button class="btn xs quiet" data-tab="sprints">Sprints</button><button class="btn xs quiet" data-tab="stand">Standings</button></span><span class="lbl" id="loghint" style="color:var(--dim)">finish-line order of every lap · leader first · newest lap first</span><span class="xb" id="xbtns"></span><button class="btn xs quiet" id="logclose" title="Back to the race screen">Close</button></div>
+  <div class="rows" id="logrows"></div>
 </div>
 
 <aside class="rail" id="rail" aria-label="Simulator">
@@ -90,29 +164,6 @@
   </div>
 
   <div class="sec fix" style="border-bottom:0">
-    <div id="railtransport"><div id="simtransport">
-    <div class="sh" style="justify-content:center">
-      <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
-      <span class="seg"><button class="btn lg quiet" id="simplay" title="Play"><svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6 L9 6 L3 10.4 Z"/></svg></button><button class="btn lg quiet" id="simpause" title="Pause"><svg class="ico" viewBox="0 0 12 12" aria-hidden="true"><rect x="3" y="1.6" width="2.4" height="8.8" rx=".4"/><rect x="6.6" y="1.6" width="2.4" height="8.8" rx=".4"/></svg></button></span>
-      <span class="seg" id="speedseg"><button class="btn lg on" data-f="1">&times;1</button><button class="btn lg quiet" data-f="4">&times;4</button><button class="btn lg quiet" data-f="16">&times;16</button></span>
-    </div>
-    <div class="sh clockrow" style="justify-content:center">
-      <span class="clock" id="simclock">0:00.0</span>
-      <!-- UN SEUL champ dit ce qui se passe : le point REC quand l'opérateur mène la course, « PLAYING RACE x » quand
-           il en rejoue une, rien le reste du temps. L'opérateur, 28 octobre 2026 : « le champ pour afficher "REC" et
-           "PLAYING RACE 1" doit être le même champ ». En deux champs, celui qui ne s'affichait pas retenait quand même
-           sa place — 39,3 px devant l'autre — et la ligne de l'horloge sortait 48 px plus large que celle du
-           transport (mesures.md §22). -->
-      <span class="simstate off" id="simstate"></span>
-      <!-- Replay and New ride on the clock's line, not on the transport's. The operator, 28 October 2026: « place les
-           boutons "Replay" et "New" sur la même ligne que l'horloge ». On the transport's line the eight buttons
-           wanted 476 px for 460, so the groups were squeezed and their buttons ran UNDER their neighbours — ❚❚ under
-           ×1 by 12,3 px, ×16 under Replay by 16,6 px — and a symbol then sits off the middle of what the eye reads as
-           its button (mesures.md §22). Six buttons want 361 px on the first line, and the clock's line holds the two
-           others with room to spare. -->
-      <span class="seg"><button class="btn lg quiet" id="simrestart" title="Replay this race from its start">Replay</button><button class="btn lg newrace" id="simnew" title="Open a new, empty race">New</button></span>
-    </div>
-    </div></div>
     <div class="cfgrow">
       <span class="cfgfield"><span>Laps</span><span class="spd"><button class="stp" data-cfg="laps" data-d="-1">−</button><input class="v" id="cfglaps" value="40"><button class="stp" data-cfg="laps" data-d="1">+</button></span></span>
       <span class="cfgfield"><span>Sprints</span><span class="spd"><button class="stp" data-cfg="sprints" data-d="-1">−</button><input class="v" id="cfgsprints" value="4"><button class="stp" data-cfg="sprints" data-d="1">+</button></span></span>
@@ -236,6 +287,21 @@ function reset() {
     cass: {},               // per pair of riders following each other: the break as it stands confirmed
     inelig: new Set(),      // riders not eligible, from the groups rule in computeGroups
     started: false,         // the race waits for Start: nothing moves before the operator says so
+    // The laps to go carry their own provenance (operator, 29 October 2026): the lap counter on the track, the
+    // application counting by itself, or the operator counting by hand. And they can be held back from the outputs.
+    // Two separate things, and they were one variable until they contradicted each other: WHICH provenance feeds
+    // the laps to go, and HOW the application counts. Picking the lap counter must not wipe the operator's own count.
+    togoPick: 'app',        // 'app' | 'counter' — the provenance the TO GO box shows
+    togoMode: 'auto',       // 'auto' | 'manual' — how the application itself counts
+    togoManual: null,       // the operator's own count, kept whichever provenance is picked
+    togoExport: true,       // false: the number goes out on no output at all
+    startState: 'idle',     // 'idle' | 'armed' | 'run' — what the start button says
+    fsConfirm: false,       // a false start asks twice
+    armDone: null,          // {i, bib, until}: the loop that has just named a leader shows his number for a moment
+    // « arm finish arme la ligne d'arrivée pour que le running time de l'horloge s'arrête au passage du vainqueur
+    // à la toute fin de la course » (operator, 29 October 2026).
+    finArm: false,          // the finish line is armed and waits for the winner
+    winT: null,             // the winner's crossing time: the running time shows this and stops there
     pilot: {},              // bib → the simulator order the rider is riding: {kind:'spd'|'up'|'down'|'gain'|'lose'}
     taps: TAPES.map(() => []),       // what a tape switch emits: an instant, no identity at all — the software may read this
     tapeTruth: TAPES.map(() => []),  // the simulated truth behind those contacts {t, bib, merged}: forbidden to the software, like r.dist
@@ -405,10 +471,16 @@ function step(dt) {
           S.passes.push({ bib: nb, t: rec.t, n: ka });
           // finish: the head of the race, counted in the bunch's lap, opens the finish on completing the distance;
           // every other rider still in the race then finishes at his next crossing, and the race is closed when all have crossed
-          if (L === 0 && !S.finishOpen && kn >= LAPS) { S.finishOpen = rec.t; S.finishCrossed = new Set(); logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false); }
+          if (L === 0 && !S.finishOpen && kn >= LAPS) {
+            S.finishOpen = rec.t; S.finishCrossed = new Set();
+            logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false);
+            // An armed finish line stops the running time on the winner, and disarms itself: the riders behind him
+            // go on crossing, the clock does not go on counting.
+            if (S.finArm) { S.winT = rec.t; S.finArm = false; logEvent('RACE', 'Running time stopped on BIB ' + nb + ' · ' + fmtT(rec.t), false); }
+          }
           if (L === 0 && S.finishOpen && rec.t >= S.finishOpen) S.finishCrossed.add(nb);   // the finish line only
         }
-        if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
+        if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.armDone = { i: LOOPS.indexOf(L), bib: nb, until: S.t + ARM_SHOW_S }; S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
       }
     }
   }
@@ -583,10 +655,6 @@ function computeGroups(M) {
   groups.sort((a, b) => (a.incident - b.incident) || (a.head - b.head));   // from the leader down to the tail of the race
   const bunch = groups.filter(g => !g.incident && g.cluster === bunchCluster).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null)
     || groups.filter(g => !g.incident).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null);
-  for (const g of groups) {   // who else rides in the same physical cluster?
-    const others = groups.filter(o => o !== g && !o.incident && o.cluster === g.cluster);
-    g.with = others.length ? others.map(o => o === bunch ? 'the bunch' : o.rows.length === 1 ? 'BIB ' + o.bibs[0] : 'BIB ' + o.bibs.join(', ')).join(' and ') : '';
-  }
   // --- not eligible, by groups (the operator rule of 25 October 2026) ---
   // Groups are numbered from 1, the front group, down the timeline. On the oval, the distance of a group to the
   // next sprint is measured back from the front group, which is therefore at 0 by construction: that is the rule
@@ -1014,12 +1082,16 @@ function syncUndo() { const b = $('#undo'); b.disabled = !S.undo.length; b.title
 
 
 // ---------- rendering ----------
-const tlbody = $('#tlbody'), tbar = $('#tbar'), strip = $('#strip'), logrows = $('#logrows');
+const tlbody = $('#tlbody'), tbar = $('#tbar'), propcard = $('#propcard'), logrows = $('#logrows');
 const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
 // The drawn width of the track, in SVG units, and the half-width everything on the oval measures from: the loop
 // lines across it, the edges of a group's band, the tape strips on its outer half, and the clearance the infield
 // labels keep from its inner edge. Written into the decor itself so there is one number, not two that drift apart.
 const OVAL_W = 60, HW = OVAL_W / 2;
+// Les dossards sur la piste ne doivent pas en déborder (l'opérateur, 29 octobre 2026). La piste fait HW = 30 de
+// demi-largeur : un dossard de rayon DOT_R posé sur la file extérieure atteint LANE + DOT_R, qui doit rester sous
+// HW. Avec 10 et 19 il atteint 29 ; avec les 15 et 24 d'avant il atteignait 39, soit 9 au-delà du bord.
+const DOT_R = 10, LANE = 19, DOT_GAP = 24;
 $('#trackband').setAttribute('stroke-width', OVAL_W);
 const PATHLEN = path.getTotalLength();
 // The oval's `d` is fixed in the markup and never rewritten at runtime, so its geometry can be sampled once
@@ -1042,12 +1114,76 @@ function chipN(r, n) { return `<span class="cw">${chip(r)}<span class="cn">${n}<
 const PALETTE = ['#c8102e', '#f97316', '#eab308', '#16a34a', '#06b6d4', '#0284c7', '#1d4ed8', '#7c3aed', '#ec4899', '#9a7140', '#4b5563', '#ECEAE4'];
 function setColor(bib, color) { const r = S.riders.find(x => x.bib === bib); r.color = color; const n = parseInt(color.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255; r.dk = lum > 0.6; dirty = true; render(); }
 function chip(r, cls) { return `<span class="chip${r.dk ? ' dk' : ''}${cls ? ' ' + cls : ''}" style="background:${r.color}">${r.bib}</span>`; }
+// The operator's naming, 29 October 2026 (regles-operateur.md §17). A group carries its RANK in the race, counted
+// from the front, then what it is: the one in front leads, those between it and the bunch chase, the bunch is the
+// bunch, those behind it are behind, and the very last of them — when there is more than one — is the last.
+// The very last group behind the bunch is always « Last », even when it is the only one behind — the operator
+// corrected this on 29 October 2026. « Behind » is therefore only for a group that has another one behind it.
+// Incident groups keep their own name and take no rank: they are not a place in the race. What they will be called
+// is not settled; he has not decided yet, so nothing changes there.
+// A name is set in a badge (operator, 29 October 2026), so its width has to be the REAL one: estimated at so many
+// units a character, the badge either strangles the name or hangs off it. It is measured once per distinct name on
+// a text node kept off the canvas, then remembered — renderOval runs twenty times a second and must not measure.
+const NAME_W = new Map();
+function labelWidth(txt) {
+  if (NAME_W.has(txt)) return NAME_W.get(txt);
+  const m = $('#gmeas'); if (!m) return txt.length * 8.6;
+  m.textContent = txt;
+  const w = m.getComputedTextLength() || txt.length * 8.6;
+  NAME_W.set(txt, w);
+  return w;
+}
+// The colours the operator chose on 29 October 2026: green at the front, red at the back, blue for the bunch, and
+// every other group a shade along the way. The ramp is laid over EVERY ranked group, the bunch included, and the
+// bunch then takes its blue on top — so green always lands on the head of the race and red always on its tail.
+// Spread over the groups OTHER than the bunch, a chase group would go red as soon as it was the last of that list,
+// while riding in front of the bunch.
+// Two ramps, pivoting on the bunch (operator, 29 October 2026): green to blue for the groups in front of it, blue
+// to red for those behind. The pivot is what makes it work — spread over every group at once, a chase group went
+// red while riding in front of the bunch.
+// The hues are chosen against the DRAWING, not for themselves. The track is wood, #b5884e, hue 33: anything amber
+// or orange sinks into it, which is exactly where a straight green-to-red ramp passes. These two ramps never go
+// near it — green to blue runs through teal, and blue to red climbs through violet and magenta rather than
+// descending back through green. The bunch's blue is also pulled towards cyan to part it from the track's own
+// royal blue (#1d4ed8, the côte d'azur and the stayers' line).
+const G_AHEAD = { h: [152, 200], s: [65, 90], l: [51, 58] };    // head → bunch
+const G_BEHIND = { h: [200, 360], s: [90, 100], l: [58, 68] };  // bunch → tail
+const G_BUNCH = 'hsl(200 90% 58%)';
+function groupRanked(G) { return (G || lastG).groups.filter(x => !x.incident); }
+function groupRank(g, G) { const i = groupRanked(G).indexOf(g); return i < 0 ? 0 : i + 1; }
+function groupColor(g, G) {
+  G = G || lastG;
+  if (g.incident) return '#9a9890';
+  if (g === G.bunch) return G_BUNCH;
+  const on = groupRanked(G), i = on.indexOf(g), bi = on.indexOf(G.bunch);
+  if (i < 0) return '#9a9890';
+  const mix = (a, t) => a[0] + (a[1] - a[0]) * t;
+  const ramp = (r, t) => `hsl(${(mix(r.h, t) % 360).toFixed(0)} ${mix(r.s, t).toFixed(0)}% ${mix(r.l, t).toFixed(0)}%)`;
+  if (bi < 0) return ramp(G_AHEAD, on.length > 1 ? i / (on.length - 1) : 0);   // no bunch on the track at all
+  return i < bi ? ramp(G_AHEAD, i / bi) : ramp(G_BEHIND, (i - bi) / (on.length - 1 - bi));
+}
+// Le badge d'un groupe sur l'ovale dit si ses coureurs sont privés de points, et combien : rien ne les marquait
+// plus sur la piste depuis que les annotations ont été retirées (l'opérateur, 29 octobre 2026 : « dans l'ovale
+// aussi. Je verrais bien une info dans le badge de leur groupe »).
+function groupNoPts(g) {
+  if (!S.inelig || !S.inelig.size || g.incident) return '';
+  const n = g.rows.filter(x => S.inelig.has(x.r.bib)).length;
+  if (!n) return '';
+  return n === g.rows.length ? ' · NO PTS' : ' · ' + n + ' NO PTS';
+}
 function groupName(g, G) {
   G = G || lastG;
-  if (g.incident) return g.op.type === 'crash' ? 'Crash' : 'Mechanical';
-  if (g === G.bunch) return 'Bunch';
-  const onTrack = G.groups.filter(x => !x.incident), bi = onTrack.indexOf(G.bunch), i = onTrack.indexOf(g);
-  return bi < 0 || i < bi ? 'Break ' + (i + 1) : 'Chase ' + (i - bi);
+  // Un groupe d'incident porte son nom en capitales et sans numéro (l'opérateur, 29 octobre 2026 : « le nom des
+  // groupes d'incident > CRASH »). Un ennui mécanique garde son propre mot, il n'a pas dit le contraire.
+  if (g.incident) return g.op.type === 'crash' ? 'CRASH' : 'MECHANICAL';
+  const on = groupRanked(G), i = on.indexOf(g), bi = on.indexOf(G.bunch);
+  if (i < 0) return 'Group';
+  const rank = i + 1;
+  let role;
+  if (g === G.bunch) role = 'Bunch';
+  else if (i < bi || bi < 0) role = i === 0 ? (g.rows.length > 1 ? 'Leaders' : 'Leader') : 'Chase';
+  else role = i === on.length - 1 ? 'Last' : 'Behind';   // the very last group is always Last, even if it is alone
+  return rank + '-' + role;
 }
 // (a group a lap ahead or behind keeps its own block even when it rides inside the bunch: the timeline reads the race, the oval reads the track)
 function liveActions(p) { return p.actions.filter(a => !a.bib || p.bibs.includes(a.bib)); }
@@ -1057,76 +1193,152 @@ function proposalsFor(g) { const out = S.proposals.filter(p => !(S.snoozed[p.key
 function renderTimeline(G) {
   lastG = G; shownProps = new Set();
   const sel = S.selection, lap = dispLap(), sprintN = nextSprintNum(lap);
-  let html = '';
+  let html = '', props = '';
   G.groups.forEach((g, gi) => {
     const prev = G.groups[gi - 1];
-    if (gi > 0 && !g.incident && !prev.incident) {
-      const gapM = g.head - prev.tail, gapS = gapM / G.leader.spd;
-      html += `<div class="tgap" data-newgroup="${gi}"><span>${gapM < 1 ? 'overlapping on the track' : gapM.toFixed(0) + ' m · ' + gapS.toFixed(1) + ' s'} <span class="nz">· drop here: new group</span></span></div>`;
-    } else html += `<div class="tgap" data-newgroup="${gi}"${g.incident && !(prev && prev.incident) ? ' style="margin-top:6px"' : ''}><span><span class="nz">Drop here: new group</span></span></div>`;
+    // La bande qui sépare deux blocs ne porte plus l'écart « 2 m · 0,1 s » : l'opérateur l'a marqué en rouge sur sa
+    // capture du 29 octobre 2026. L'écart d'un groupe est déjà dans son en-tête. Elle garde sa zone de dépôt, et
+    // celle-ci reste lisible en permanence : « on pourrait les laisser visibles en permanence ».
+    html += `<div class="tgap" data-newgroup="${gi}"${g.incident && !(prev && prev.incident) ? ' style="margin-top:6px"' : ''}><span><span class="nz">new group</span></span></div>`;
     const isLead = g.bibs.includes(G.leaderBib), allOut = g.bibs.every(b => S.sprintOut.has(b)), someOut = g.bibs.some(b => S.sprintOut.has(b));
     const name = groupName(g), open = g.op && g.op.open;
-    let info = plural(g.rows.length, 'rider') + (isLead ? ' · race leader' : '');
-    if (!g.incident && g.with) info += ' · with ' + g.with;
+    // L'en-tête du bloc porte quatre choses, et pas une de plus : le numéro, le nom, le nombre de coureurs et l'écart
+    // (regles-operateur.md §17, sa page redessinée du 29 octobre 2026). « race leader » a été retiré du champ du
+    // milieu : la même chose est déjà dite par le champ de l'écart, qui affiche « leader » pour le groupe de tête.
+    let info = plural(g.rows.length, 'rider');   // et rien d'autre : « with the bunch » retiré le 29 octobre 2026
     if (g.incident) { const since = lap - g.op.lap, left = NEUTRAL_LAPS - since; info = 'Lap ' + g.op.lap + ' · ' + plural(since, 'lap') + ' ago · ' + (left > 0 ? plural(left, 'lap') + ' left to rejoin' : 'neutralisation over'); }
-    // proposals of this block. A lap proposal adds no line: its buttons sit in the header (✓ all · Later · ✕) and each rider
-    // concerned carries his "+1?" / "−1?" mark with a ✓ on his own row. Other proposals take one line each.
-    let qLines = '', propLines = ''; const rowOk = {};
+    // Les propositions de ce bloc. Elles ne s'écrivent plus dans le bloc mais dans la colonne des actions, à gauche
+    // de l'ovale (l'opérateur, 29 octobre 2026) ; seule la marque « +1 ? » / « −1 ? » et son ✓ restent sur la ligne
+    // du coureur concerné. Une proposition de tour donne une carte, les autres une ligne chacune.
+    const rowOk = {};
     for (const p of proposalsFor(g)) {
       const acts = liveActions(p);
       if (p.kind === 'lap') {
-        acts.forEach((a, i) => { if (a.bib) rowOk[a.bib] = `<span data-pid="${p.id}"><button class="btn xs ok" data-pact="${i}" title="${a.label}">✓</button></span>`; });
-        const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib).map(x => `<button class="btn xs${x.a.bib || /all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${x.a.bib ? '✓' : /all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
-        qLines += `<div class="gq"><span><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b> · ${bibList(p.bibs)} · Lap ${p.lap}</span><span class="pa" data-pid="${p.id}">${btns}</span></div>`;
-      } else propLines += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
+        // Chaque coureur concerné garde son ✓, mais dans la carte et non plus sur sa ligne : à 118 px de large le
+        // bouton mangeait son code pays (« 52 · I ✓ »). La carte liste les dossards, comme son croquis du
+        // 29 octobre 2026. La ligne du coureur, elle, porte une marque discrète.
+        acts.forEach((a, i) => { if (a.bib) rowOk[a.bib] = 1; });
+        // La carte est dessinée comme son croquis du 29 octobre 2026 : les dossards empilés sous un en-tête BIB, à
+        // gauche, « car on a besoin de prendre connaissance des BIB impliqués très rapidement », avec leur drapeau
+        // et leur code pays qu'il a demandés en plus. Le ✓ de chaque coureur est resté à côté du sien.
+        const perBib = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib).map(x => {
+          const r = S.riders.find(y => y.bib === x.a.bib);
+          return `<span class="pb">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><button class="btn xs ok" data-pact="${x.i}" title="${x.a.label}">✓</button></span>`;
+        }).join('');
+        const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib)
+          .map(x => `<button class="btn xs${/all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${/all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
+        props += `<div class="gq" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${perBib}</span><span class="pr"><span class="pt"><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b></span><span class="pa">${btns}</span><span class="pl">Lap ${p.lap}</span></span></div>`;
+      } else props += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
     }
-    html += `<div class="tgrp${isLead ? ' lead' : ''}${g.pending ? ' pending' : ''}${g.op && !g.incident ? ' pinned' : ''}${g.incident ? ' incident' : ''}" data-gi="${gi}">
-      <div class="gh">${g.no ? '<span class="gno">' + g.no + '</span>' : ''}<b class="${g.incident ? 'crit' : ''}" data-selgroup="${gi}" title="Select every rider of this group">${name}</b><span class="gi" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')}">${info}</span>${g.incident ? '' : '<span class="ggap">' + (isLead ? 'leader' : (g.head < 0 ? '+' + (-g.head).toFixed(0) : '−' + g.head.toFixed(0)) + ' m') + '</span>'}${allOut ? '<span class="pill warn">out of sprint ' + sprintN + '</span>' : someOut ? '<span class="pill warn">part out of sprint ' + sprintN + '</span>' : ''}
-        <span class="r">${g.op ? '<button class="btn xs quiet" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span></div>${qLines}`;
-    html += propLines;
+    // The box carries the group's own colour, the same one its bubble has on the oval (regles-operateur.md §17).
+    const gcol = g.incident ? '' : ` style="--gcol:${groupColor(g, G)}"`;
+    html += `<div class="tgrp${isLead ? ' lead' : ''}${g.pending ? ' pending' : ''}${g.op && !g.incident ? ' pinned' : ''}${g.incident ? ' incident' : ' hascol'}" data-gi="${gi}"${gcol}>
+      <div class="gh" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')} · click to select the whole group">
+        <span class="ghl"><span class="gn">${name}</span>${g.op ? '<button class="btn xs quiet gx" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span>
+        <span class="ghl"><span class="gi">${info}</span>${g.incident ? '' : '<span class="ggap">' + (isLead ? 'leader' : (g.head < 0 ? '+' + (-g.head).toFixed(0) : '−' + g.head.toFixed(0)) + ' m') + '</span>'}</span>
+        ${allOut ? '<span class="pill warn">out of sprint ' + sprintN + '</span>' : someOut ? '<span class="pill warn">part out of sprint ' + sprintN + '</span>' : ''}</div>`;
     for (const x of g.rows) {
+    // La ligne d'un coureur ne porte que son dossard, son drapeau et son code pays. L'opérateur, 29 octobre 2026,
+    // sur sa page redessinée : « La timeline ne porte plus les noms des coureurs » -- « Confirmé ». Le nom reste dans
+    // l'infobulle et dans le classement ; les marqueurs d'état (hors piste, sans transpondeur, non lu, hors sprint,
+    // sans points) restent, il n'a pas demandé leur retrait.
 
-      const ls = S.lapStatus[x.r.bib], out = S.sprintOut.has(x.r.bib);
-      html += `<div class="trow${sel.has(x.r.bib) ? ' sel' : ''}" data-bib="${x.r.bib}">
-        ${chip(x.r, x.m.off ? 'off' : x.m.notp ? 'notp' : !x.m.read ? 'silent' : '')}${flag(x.r.nat)}<span class="noc">${x.r.nat}</span><span class="nm">${x.r.name}${x.m.off ? '<small class="crit">off track</small>' : x.m.notp ? '<small style="color:#8FB4FF">no transponder</small>' : !x.m.read ? '<small>not read</small>' : ''}${out && !allOut ? '<small>out of sprint</small>' : ''}${S.inelig && S.inelig.has(x.r.bib) ? '<small class="crit">no points</small>' : ''}</span>
-        <span class="g"></span>
-        <span class="lap" data-ledger="${x.r.bib}" title="${(l => l.gained + ' gained · ' + l.lost + ' lost · click to adjust')(lapsOf(x.r.bib))}">${x.pending ? (rowOk[x.r.bib] || '') : ''}</span>
-        <span class="ra"><button class="btn xs" data-rlap="1" data-bib="${x.r.bib}" title="This rider gains a lap">+1 lap</button><button class="btn xs" data-rlap="-1" data-bib="${x.r.bib}" title="This rider loses a lap">−1 lap</button><button class="btn xs" data-ledger="${x.r.bib}" title="Adjust this rider's laps gained and lost">Laps…</button><button class="btn xs" data-lead="${x.r.bib}" title="This rider is the race leader">Leader</button></span></div>`;
-      if (S.ledger === x.r.bib) { const l = lapsOf(x.r.bib);   // the two counters, adjusted in place
-        html += `<div class="ledger"><div class="lh"><b>BIB ${x.r.bib}</b>
-          <span class="ctr"><span class="k">gained</span><button class="btn xs" data-lsub="gained" data-bib="${x.r.bib}"${l.gained ? '' : ' disabled'} title="One lap gained fewer">−</button><b class="up">${l.gained}</b><button class="btn xs" data-ladd="gained" data-bib="${x.r.bib}" title="One lap gained more">+</button></span>
-          <span class="ctr"><span class="k">lost</span><button class="btn xs" data-lsub="lost" data-bib="${x.r.bib}"${l.lost ? '' : ' disabled'} title="One lap lost fewer">−</button><b class="down">${l.lost}</b><button class="btn xs" data-ladd="lost" data-bib="${x.r.bib}" title="One lap lost more">+</button></span>
-          <span class="r"><button class="btn xs quiet" data-ledger="${x.r.bib}">✕</button></span></div>
-          <div class="lh"><span class="k" style="font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Colour</span><span class="pal">${PALETTE.map(c => `<button class="sw${c.toLowerCase() === x.r.color.toLowerCase() ? ' on' : ''}" data-color="${c}" data-bib="${x.r.bib}" style="background:${c}" title="${c}"></button>`).join('')}<input type="color" value="${x.r.color}" data-colorpick="${x.r.bib}" title="Any colour"></span></div></div>`; }
+      const out = S.sprintOut.has(x.r.bib);
+      // La ligne ne porte que le dossard, le drapeau et le pays : la colonne fait 118 px (son croquis du 29 octobre
+      // 2026). Plus de boutons au survol -- « toutes les actions individuelles passent par un clic sur un coureur et
+      // la fenêtre d'option dans la colonne d'action ». Le nom et l'état sont dans l'infobulle de la ligne.
+      const mark = x.m.off ? 'off track' : x.m.notp ? 'no transponder' : !x.m.read ? 'not read'
+        : (out && !allOut) ? 'out of sprint' : (S.inelig && S.inelig.has(x.r.bib)) ? 'no points' : '';
+      const pend = x.pending && rowOk[x.r.bib];
+      html += `<div class="trow${sel.has(x.r.bib) ? ' sel' : ''}${mark ? ' marked' : ''}${mark === 'no points' ? ' nopts' : ''}${pend ? ' pend' : ''}" data-bib="${x.r.bib}" title="${x.r.name}${mark ? ' · ' + mark : ''}${pend ? ' · lap to validate' : ''}">
+        ${chip(x.r, x.m.off ? 'off' : x.m.notp ? 'notp' : !x.m.read ? 'silent' : '')}${flag(x.r.nat)}<span class="noc">${x.r.nat}</span>${mark === 'no points' ? '<span class="npts">no pts</span>' : ''}</div>`;
     }
     html += '</div>';
   });
-  html += `<div class="tgap last" data-newgroup="${G.groups.length}" style="margin-top:auto"><span><span class="nz">Drop here: new group</span></span></div>`;
+  html += `<div class="tgap last" data-newgroup="${G.groups.length}" style="margin-top:auto"><span><span class="nz">new group</span></span></div>`;
   if (S.withdrawn.size) {
     html += '<div class="wd"><div class="gh"><b>Withdrawn</b><span>' + plural(S.withdrawn.size, 'rider') + '</span></div>';
-    for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); html += `<div class="trow" data-wd="${bib}">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><span class="nm">${r.name}</span><span class="lap" style="color:var(--crit)">${w.code}</span><span class="g">Lap ${w.lap} <button class="btn xs quiet" data-reinstate="${bib}" title="Reinstate">↺</button></span></div>`; }
+    for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); html += `<div class="trow" data-wd="${bib}" title="${r.name} · ${w.code} · lap ${w.lap}">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><span class="lap"><b class="crit">${w.code}</b><button class="btn xs quiet" data-reinstate="${bib}" title="Reinstate">↺</button></span></div>`; }
     html += '</div>';
   }
   tlbody.innerHTML = html;
+  propcard.innerHTML = props;
   const bibs = [...sel].sort(byBib), dis = sel.size ? '' : ' disabled';
   const key = bibs.join(','), gsel = G.groups.find(g => [...g.bibs].sort(byBib).join(',') === key), gsi = gsel ? G.groups.indexOf(gsel) : -1, prevG = gsi > 0 ? G.groups[gsi - 1] : null;
   const canMerge = gsel && !gsel.incident && prevG && !prevG.incident, canBack = gsel && gsel.incident, allOutSel = sel.size && bibs.every(b => S.sprintOut.has(b)), allNoTpSel = sel.size && bibs.every(b => S.noTp.has(b));
-  tbar.innerHTML = `<span class="selinfo">${sel.size ? '<b>' + (gsel ? groupName(gsel, G) + ' · ' : '') + plural(bibs.length, 'rider') + '</b> · ' + bibList(bibs) : '<span class="lbl">No selection · click riders or a group name</span>'}</span><button class="btn xs quiet" data-act="clear"${dis}>Clear</button>
+  // Les actions d'un seul coureur : elles étaient sur sa ligne, au survol. Avec une timeline de 118 px elles n'y
+  // tiennent plus, et l'opérateur a tranché le 29 octobre 2026 : « toutes les actions individuelles passent par un
+  // clic sur un coureur et la fenêtre d'option dans la colonne d'action ». Un clic sur l'en-tête d'un bloc
+  // sélectionne le groupe entier, et les mêmes actions sont alors proposées pour tout le groupe.
+  const one = bibs.length === 1 ? bibs[0] : null;
+  if (!one && S.ledger != null) S.ledger = null;
+  const solo = one == null ? '' : `<span class="grpb"><button class="btn xs${S.ledger === one ? ' on' : ''}" data-ledger="${one}" title="Adjust this rider's laps gained and lost">Laps…</button><button class="btn xs" data-lead="${one}"${G.leaderBib === one ? ' disabled' : ''} title="This rider is the race leader">Leader</button></span>`;
+  let led = '';
+  if (one != null && S.ledger === one) { const r = S.riders.find(x => x.bib === one), l = lapsOf(one);
+    led = `<div class="ledger"><div class="lh"><b>BIB ${one}</b>
+      <span class="ctr"><span class="k">gained</span><button class="btn xs" data-lsub="gained" data-bib="${one}"${l.gained ? '' : ' disabled'} title="One lap gained fewer">−</button><b class="up">${l.gained}</b><button class="btn xs" data-ladd="gained" data-bib="${one}" title="One lap gained more">+</button></span>
+      <span class="ctr"><span class="k">lost</span><button class="btn xs" data-lsub="lost" data-bib="${one}"${l.lost ? '' : ' disabled'} title="One lap lost fewer">−</button><b class="down">${l.lost}</b><button class="btn xs" data-ladd="lost" data-bib="${one}" title="One lap lost more">+</button></span>
+      <span class="r"><button class="btn xs quiet" data-ledger="${one}">✕</button></span></div>
+      <div class="lh"><span class="k lbl">Colour</span><span class="pal">${PALETTE.map(c => `<button class="sw${c.toLowerCase() === r.color.toLowerCase() ? ' on' : ''}" data-color="${c}" data-bib="${one}" style="background:${c}" title="${c}"></button>`).join('')}<input type="color" value="${r.color}" data-colorpick="${one}" title="Any colour"></span></div></div>`; }
+  tbar.innerHTML = `<span class="selinfo">${sel.size ? '<b>' + (gsel ? groupName(gsel, G) + ' · ' : '') + plural(bibs.length, 'rider') + '</b> · ' + bibList(bibs) : '<span class="lbl">No selection · click riders or a group name</span>'}<button class="btn xs quiet clr" data-act="clear"${dis}>Clear</button></span>${solo}
     <span class="grpb"><button class="btn xs" data-act="lap" data-v="1"${dis} title="Selected riders gain a lap">+1 lap</button><button class="btn xs" data-act="lap" data-v="-1"${dis} title="Selected riders lose a lap">−1 lap</button><button class="btn xs" data-act="sprint"${dis} title="Selected riders are ignored in the next sprint, or back in it">${allOutSel ? 'Back in sprint ' + sprintN : 'Ignore in sprint ' + sprintN}</button><button class="btn xs" data-act="notp"${dis} title="Selected riders have no transponder: carried with their group, placed by hand in the sprints">${allNoTpSel ? 'Transponder back' : 'No transponder'}</button><button class="btn xs" data-act="swaptp"${bibs.length === 2 ? '' : ' disabled'} title="The two selected riders carry each other's transponder: exchange the attribution">Swapped</button></span>
     <span class="grpb"><button class="btn xs primary" data-act="group" data-type="manual"${dis} title="New group with the selected riders">Group</button><button class="btn xs danger" data-act="group" data-type="crash"${dis} title="Crash group with the selected riders">Crash</button><button class="btn xs danger" data-act="group" data-type="mech"${dis} title="Mechanical group with the selected riders">Mech.</button><span class="sep"></span><button class="btn xs" data-act="merge"${canMerge ? '' : ' disabled'} title="Merge this group with the group above (select exactly one group)">Merge ↑</button><button class="btn xs primary" data-act="back"${canBack ? '' : ' disabled'} title="Riders of this incident back in the race">Back in race</button></span>
-    <span class="grpb"><button class="btn xs danger" data-act="wd" data-v="ABD"${dis} title="Selected riders withdraw by themselves">ABD</button><button class="btn xs danger" data-act="wd" data-v="DNF"${dis} title="Selected riders put out of the race by the commissaires">DNF</button><button class="btn xs danger" data-act="wd" data-v="DSQ"${dis} title="Selected riders disqualified">DSQ</button></span>`;
+    <span class="grpb"><button class="btn xs danger" data-act="wd" data-v="ABD"${dis} title="Selected riders withdraw by themselves">ABD</button><button class="btn xs danger" data-act="wd" data-v="DNF"${dis} title="Selected riders put out of the race by the commissaires">DNF</button><button class="btn xs danger" data-act="wd" data-v="DSQ"${dis} title="Selected riders disqualified">DSQ</button></span>${led}`;
 
 }
 
+// The status fields live in the infield now (operator, 29 October 2026). They are written in place, never rebuilt:
+// the panel is laid down once in the HTML, and a button that is replaced between the press and the release never
+// emits a click (pitfalls D2) — and this panel carries buttons.
+const IF = {};
+for (const k of ['leadchip', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
+                 'togomode', 'lap', 'lapof']) IF[k] = $('#if' + k);
+const SRC = { app: $('#srcapp'), cnt: $('#srccnt'), appk: $('#srcappk'), appv: $('#srcappv'), cntv: $('#srccntv') };
+const FINB = $('#armfinish');
+// The two provenances are shown together, each with its own figure, and one of them is picked: that is the
+// operator's own rule for a linked lap counter — « un désaccord est signalé avec les deux valeurs plutôt que
+// corrigé en silence » (regles-operateur.md §13). The application's figure is either its own count or the
+// operator's; the lap counter's comes from the track, and nothing feeds it yet (travaux.md §4 bis).
+function appValue(autoVal) { return S.togoMode === 'manual' && S.togoManual != null ? S.togoManual : autoVal; }
+// What the application receives from the lap counter on the track. The prototype has no such feed, so it reads the
+// same count the application makes (travaux.md §4 bis): the two provenances agree here, and the disagreement the
+// operator's §13 describes cannot be exercised until a real counter is simulated.
+function counterValue(autoVal) { return autoVal; }
+function togoValue(autoVal) { return S.togoPick === 'counter' ? counterValue(autoVal) : appValue(autoVal); }
 function renderStrip(G) {
   const lap = dispLap(), toGo = LAPS - lap, n = nextSprintNum(lap), nextSprint = sprintLap(n), sprintNow = sprintNumOf(lap) > 0;
-  const lead = S.riders.find(r => r.bib === G.leaderBib), pending = S.proposals.filter(p => !(S.snoozed[p.key] && S.t < S.snoozed[p.key])).length;
-  strip.innerHTML = `<div class="fld"><span class="k">LAP</span><span class="v">${S.finished ? LAPS : lap}</span><span class="u">/ ${LAPS}</span></div>
-    <div class="fld"><span class="k">TO GO</span><span class="v">${S.finished ? 0 : toGo}</span></div>
-    <div class="fld${sprintNow || nextSprint - lap <= 2 ? ' acc' : ''}"><span class="k">${sprintNow ? 'SPRINT' : 'NEXT'}</span><span class="v sm">${S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across' : sprintNow ? 'SPRINT ' + n + ' this lap' : 'SPRINT ' + n}</span>${sprintNow || S.finished ? '' : `<span class="u">in ${plural(nextSprint - lap, 'lap')}</span>`}${S.sprintOut.size ? '<span class="u" style="color:var(--warn)">' + S.sprintOut.size + ' ignored</span>' : ''}</div>
-    <div class="fld"><span class="k">RACE TIME</span><span class="v">${fmtT(S.t)}</span></div>
-    <div class="fld"><span class="k">LEADER</span>${chip(lead)}<span class="u">${(G.leader.spd * 3.6).toFixed(1)} km/h</span><span class="u" style="color:${S.leader ? '#8FB4FF' : 'var(--muted)'}">${S.arm != null ? '· armed: next at ' + LOOPNAME[S.arm] : S.leader ? '· ' + S.leader.how : '· from the track'}</span></div>
-    <div class="fld"><span class="k">PROPOSALS</span><span class="v" style="color:${pending ? 'var(--acc)' : 'var(--muted)'}">${pending}</span><span class="u">in the groups</span></div>`;
+  const lead = S.riders.find(r => r.bib === G.leaderBib);
+  IF.lap.textContent = S.finished ? LAPS : lap;
+  IF.lapof.textContent = '/ ' + LAPS;
+  IF.time.textContent = fmtT(S.winT != null ? S.winT : S.t);
+  IF.time.classList.toggle('stopped', S.winT != null);
+  FINB.classList.toggle('armed', S.finArm);
+  IF.leadchip.textContent = lead ? lead.bib : '—';
+  IF.leadchip.style.background = lead ? lead.color : 'var(--line2)';
+  IF.leadchip.classList.toggle('dk', !!(lead && lead.dk));
+  // The leader box carries his number and nothing else (operator, 29 October 2026). He said « retire » — so the
+  // speed and the way he was named are gone, not moved into a tooltip where they would have survived his decision.
+  // « SPRINT 3 - 6 LAPS », the operator's own wording, 29 October 2026.
+  const over = S.finished || S.finishOpen;
+  IF.nextk.textContent = over ? '' : 'SPRINT';
+  IF.nextv.textContent = S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across' : n;
+  IF.nextu.textContent = over ? '' : sprintNow ? '- THIS LAP' : '- ' + plural(nextSprint - lap, 'lap').toUpperCase();
+  // « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
+  // immanquable » (operator, 29 October 2026). Two laps out and nearer, the box stops being a quiet field.
+  const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
+  IF.next.classList.toggle('acc', close);
+  IF.next.classList.toggle('hot', close);
+  const cnt = S.finished ? 0 : counterValue(toGo);
+  SRC.appk.textContent = S.togoMode === 'manual' ? 'MANUAL' : 'AUTO';
+  SRC.appv.textContent = S.finished ? 0 : appValue(toGo);
+  SRC.cntv.textContent = cnt == null ? '—' : cnt;
+  SRC.app.classList.toggle('on', S.togoPick === 'app');
+  SRC.cnt.classList.toggle('on', S.togoPick === 'counter');
+  SRC.app.classList.toggle('manual', S.togoMode === 'manual');
+  IF.togomode.textContent = S.togoMode === 'manual' ? 'A' : 'M';
+  IF.togov.textContent = S.finished ? 0 : togoValue(toGo);
+  IF.togo.classList.toggle('noexp', !S.togoExport);
+  syncStart();
 }
 
 // ---------- the oval: the same race as the timeline, drawn on the track, and editable the same way ----------
@@ -1144,13 +1356,19 @@ function arcPath(s0, s1) {   // a stroke along the track from s0 back to s1 (s1 
   for (let i = 0; i <= n; i++) { const p = pt(s1 + (s0 - s1) * i / n); d += (i ? ' L' : 'M') + p.x.toFixed(1) + ',' + p.y.toFixed(1); }
   return d;
 }
+// the same stroke, carried `off` units to the side: a group's bubble sits on ITS riders, which are rarely centred
+function arcPathOff(s0, s1, off) {
+  if (!off) return arcPath(s0, s1);
+  const n = Math.max(2, Math.ceil((s0 - s1) / 4)); let d = '';
+  for (let i = 0; i <= n; i++) { const a = normalAt(s1 + (s0 - s1) * i / n); d += (i ? ' L' : 'M') + (a.p.x + a.nx * off).toFixed(1) + ',' + (a.p.y + a.ny * off).toFixed(1); }
+  return d;
+}
 // The marks on the oval are computed, not drawn once: the operator sets the finish-to-pursuit gap, so a hard-coded
-// line would lie. Each loop gets a line across the track, each tape switch a short strip on the outer half of it —
-// the three that sit in a loop therefore show as a strip inside that loop's line. normalAt points outwards, so the
-// labels, which belong in the infield as before, take a negative offset.
+// line would lie. Each loop gets a line across the track. NOTHING here is captioned: the operator asked on
+// 29 October 2026 that the names Finish, Pursuit A, Pursuit B, 200 m and 100 m intermediate be taken off the oval.
+// The marks stay painted, only their text is gone — do not put a label back without him asking for it.
 function renderMarks() {
   const line = (s, from, to, col, w) => { const a = normalAt(s); return `<line x1="${(a.p.x + a.nx * from).toFixed(1)}" y1="${(a.p.y + a.ny * from).toFixed(1)}" x2="${(a.p.x + a.nx * to).toFixed(1)}" y2="${(a.p.y + a.ny * to).toFixed(1)}" stroke="${col}" stroke-width="${w}"/>`; };
-  const label = (s, off, col, size, w, txt) => { const a = normalAt(s); return `<text x="${(a.p.x + a.nx * off).toFixed(1)}" y="${(a.p.y + a.ny * off + 4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="${size}"${w ? ' font-weight="600"' : ''} fill="${col}">${txt}</text>`; };
   let h = '';
   const PXM = PATHLEN / TRACK;   // the drawing's scale, in units per metre: every painted line below is given in metres
   const FIN_BLACK = 2;           // the black line of the finish: the width of a pursuit line, which is what it is read against
@@ -1163,8 +1381,23 @@ function renderMarks() {
     // thin to read as a band around it, so it is widened to eight times the black line.
     if (fin) h += line(s, -HW, HW, '#FFFFFF', FIN_BLACK * 8) + line(s, -HW, HW, '#111111', FIN_BLACK);
     else h += line(s, -HW, HW, col, 2);   // the two pursuit lines are white and cross the whole width
-    h += label(s, -(HW + 16), col, 12, fin, LOOPNAME[s]);
+    // An armed loop shows it on the track itself: a green line over its own, lit by syncArm(). The Finish loop has
+    // no button since the operator had it removed, so nothing could ever light its line: it does not get one.
+    if (!fin) h += line(s, -HW, HW, '#1CC634', 4).replace('<line ', `<line id="lpg${LOOPS.indexOf(s)}" stroke-opacity="0" `);
   }
+  // The three leader buttons are placed on their own loop, inside the grass. Only their x and y move, and only
+  // here — this function runs when the track is set, not on every frame, so the buttons are never replaced (D2).
+  LOOPS.forEach((s0, i) => {
+    const fo = $('#armfo' + i); if (!fo) return;
+    const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
+    // The buttons sit OUTSIDE the track and the names inside, which is the swap the operator asked for: a button
+    // never moves, so the thin margin outside the drawing suits it, while a name follows its group all the way
+    // round and needs the room the infield has. The depth is still derived from the button's own height, so it
+    // cannot bite into the track whatever that height becomes.
+    const deep = -(HW + ht / 2 + 6);
+    fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
+    fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
+  });
   // The painted lines of the flying 200 m, white. The 200 m crosses the whole width, the 100 m only half of it,
   // from the côte d'azur up. A 166 m track has neither; on a 200 m the start falls on the finish line, which
   // carries its own mark already — the same two cases buildTapes() handles for the strips.
@@ -1173,87 +1406,160 @@ function renderMarks() {
     if (s < 0.05) continue;
     h += line(s, -HW, full ? HW : 0, '#FFFFFF', 1.5);
   }
-  // The tape switches are NOT drawn (operator, 28 October 2026). They are sensors, not paint: the two that are not
-  // in a loop sit under the 200 m and 100 m lines, which are painted above, and the other three under a loop line.
-  // They go on being counted all the same — the Track tab shows their contacts.
-  for (const T of TAPES) { if (T.loop == null) h += label(T.pos, -(HW + 10), '#FFFFFF', 10, false, T.name); }
+  // The tape switches are NOT drawn (operator, 28 October 2026), and since the 29th they are not named either.
+  // They are sensors, not paint: the two that are not in a loop sit under the 200 m and 100 m lines, which are
+  // painted above, and the other three under a loop line. They go on being counted all the same — the Track tab
+  // shows their contacts, by name.
   $('#marks').innerHTML = h;
+  armLines(); armShown = []; syncArm();   // #marks has just been rebuilt: the three green lines are new nodes
 }
 function renderOval(G, M) {
   let bands = '', dots = '', labels = '';
-  const leaderS = G.leader.pos;
-  const placedLabels = [];
-  // a label that would sit on another is pushed down until it is clear
-  const putLabel = (x, y, html) => { let yy = y; const free = v => !placedLabels.some(l => Math.abs(l.x - x) < 110 && Math.abs(l.y - v) < 19); for (let i = 0; i < 6 && !free(yy); i++) yy += 19; if (yy > 575) { yy = y; for (let i = 0; i < 6 && !free(yy); i++) yy -= 19; } placedLabels.push({ x, y: yy }); return html.replace('%X', x.toFixed(0)).replace('%Y', yy.toFixed(0)); };
-  // 1. bands: one per group drawn on the track, except a block that rides inside the bunch (its riders carry their marks)
+  const leaderS = G.leader.pos, bubbles = [];
+  // 1. which groups get a bubble. A block riding inside the bunch keeps none: its riders carry their own marks.
   const drawn = G.groups.filter(g => !g.incident && g.rows.some(x => !x.m.off) && !(g !== G.bunch && G.bunch && g.cluster === G.bunchCluster && !g.op));
-  G.groups.forEach((g, gi) => {
-    if (!drawn.includes(g)) return;
-    const rows = g.rows.filter(x => !x.m.off).sort((a, b) => a.behind - b.behind);
-    const sHead = leaderS - rows[0].behind, sTail = leaderS - rows[rows.length - 1].behind;
-    const colour = g.pending || g.op ? '#4F8CFF' : g === G.bunch ? '#ECEAE4' : '#F2A33A';
-    const d = arcPath(sHead + 7, sTail - 7);
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.22" stroke-width="${OVAL_W + 2}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="2"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none" transform="translate(0,0)"/>`;
-    // crisp edges on both sides of the track
-    for (const side of [-(HW + 1), HW + 1]) {
-      const n = Math.max(2, Math.ceil((sHead - sTail + 14) / 4)); let e = '';
-      for (let i = 0; i <= n; i++) { const s = sTail - 7 + (sHead - sTail + 14) * i / n, a = normalAt(s); e += (i ? ' L' : 'M') + (a.p.x + a.nx * side).toFixed(1) + ',' + (a.p.y + a.ny * side).toFixed(1); }
-      bands += `<path d="${e}" fill="none" stroke="${colour}" stroke-opacity="0.85" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
-    }
-  });
-  // riders a lap down who would take a points place by their crossing (top four read): not eligible, shown in red on the oval
-  const noPts = new Set();
-  for (const b of (S.inelig || [])) noPts.add(b);
   // 2. riders: lanes computed over every rider on the track, in track order, so that nobody hides anybody
   const all = [];
   for (const g of G.groups) for (const x of g.rows) if (!x.m.off) all.push({ x, g, s: leaderS - x.behind, along: ((((leaderS - x.behind) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN });
   all.sort((a, b) => a.along - b.along);
-  // each rider takes the first of three lanes across the track where he is at least 22 px from every rider already placed
-  const laneOff = [0, -24, 24], placedPts = [];
+  // chaque coureur prend la première des trois files où il est à DOT_GAP au moins de tous ceux déjà placés
+  const laneOff = [0, -LANE, LANE], placedPts = [];
   for (const it of all) {
     let best = null;
-    outer: for (const da of [0, 9, -9, 18, -18]) for (const lane of [0, 1, 2]) {   // lanes across, then a small nudge along the track
+    outer: for (const da of [0, 7, -7, 14, -14]) for (const lane of [0, 1, 2]) {   // lanes across, then a small nudge along the track
       const a = normalAt(it.s + da / PATHLEN * TRACK), cx = a.p.x + a.nx * laneOff[lane], cy = a.p.y + a.ny * laneOff[lane];
       const dmin = placedPts.reduce((m, q) => Math.min(m, Math.hypot(q.x - cx, q.y - cy)), Infinity);
       if (!best || dmin > best.dmin) best = { lane, cx, cy, dmin };
-      if (dmin >= 32) break outer;
+      if (dmin >= DOT_GAP) break outer;
     }
     placedPts.push({ x: best.cx, y: best.cy }); it.cx = best.cx; it.cy = best.cy; it.lane = best.lane;
   }
+
+  // 1 bis. the bubbles, drawn now that every rider has his lane: the operator wants them to HUG the riders they
+  // hold (29 October 2026, his black outlines), not to span the whole width of the track for seven metres beyond
+  // each end. So each bubble is measured on its own members — the widest lane they occupy, and the distance from
+  // the first of them to the last — plus the radius of a dot and a small margin.
+  const BUB_M = 4, PXM_B = PATHLEN / TRACK;
+  G.groups.forEach((g, gi) => {
+    if (!drawn.includes(g)) return;
+    const mine = all.filter(it => it.g === g); if (!mine.length) return;
+    // The width is the riders' OWN spread across the track, not the widest lane in use: two riders side by side were
+    // inheriting the bunch's width because one of them sat in an outer lane. So the bubble is centred on them.
+    // La bulle ne déborde pas de la piste non plus (l'opérateur, 29 octobre 2026 : « oui rentre la bulle aussi »).
+    // Ses deux bords sont donc calculés puis ramenés dans la demi-largeur HW, et son milieu s'en déduit : borner la
+    // seule demi-largeur ne suffirait pas, une bulle décentrée dépasserait encore d'un côté.
+    const offs = mine.map(it => laneOff[it.lane]), oMin = Math.min(...offs), oMax = Math.max(...offs);
+    // On borne à HW moins 2 : le trait de 1,5 qui dessine le bord est centré dessus, et la bande suit la courbe
+    // par segments, ce qui ajoute quelques dixièmes dans les virages. Mesuré : 31,2 en bornant à HW tout rond.
+    const BUB_HW = HW - 2;
+    const lo = Math.max(-BUB_HW, oMin - DOT_R - BUB_M), hi = Math.min(BUB_HW, oMax + DOT_R + BUB_M);
+    const mid = (lo + hi) / 2, halfW = (hi - lo) / 2;
+    const pad = (DOT_R + BUB_M) / PXM_B;                       // the same margin along the track, given in metres
+    const sHead = Math.max(...mine.map(it => it.s)), sTail = Math.min(...mine.map(it => it.s));
+    const colour = groupColor(g, G);   // the bubble carries the group's own colour, the same one its timeline box has
+    bubbles.push({ g, gi, sMid: (sHead + sTail) / 2, colour, halfW, mid });
+    const d = arcPathOff(sHead + pad, sTail - pad, mid);
+    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.48" stroke-width="${(halfW * 2).toFixed(1)}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
+    for (const side of [mid - halfW, mid + halfW]) {            // the two sides of the bubble, in its own colour
+      const n = Math.max(2, Math.ceil((sHead - sTail + 2 * pad) / 4)); let e = '';
+      for (let i = 0; i <= n; i++) { const sv = sTail - pad + (sHead - sTail + 2 * pad) * i / n, a = normalAt(sv); e += (i ? ' L' : 'M') + (a.p.x + a.nx * side).toFixed(1) + ',' + (a.p.y + a.ny * side).toFixed(1); }
+      bands += `<path d="${e}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
+    }
+  });
   for (const it of all) {
     const { x, s, cx, cy } = it, { p, nx, ny } = normalAt(s);
     const isLead = x.r.bib === G.leaderBib, sel = S.selection.has(x.r.bib);
-    const np = noPts.has(x.r.bib);
-    const stroke = np ? '#FF5C5C' : x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : isLead ? '#2ED47A' : '#ECEAE4', sw = np || isLead || sel ? 3.5 : 1.5;
-    if (isLead) dots += `<line x1="${(p.x - nx * 26).toFixed(1)}" y1="${(p.y - ny * 26).toFixed(1)}" x2="${(p.x + nx * 26).toFixed(1)}" y2="${(p.y + ny * 26).toFixed(1)}" stroke="#2ED47A" stroke-width="4" stroke-linecap="round" opacity="0.9"/>`;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/>${np ? `<circle class="blink" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="23" fill="none" stroke="#FF5C5C" stroke-width="3" pointer-events="none"/>` : ''}<text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
+    // Nothing marks an ineligible rider on the oval any more (operator, 29 October 2026): the « No points » text
+    // went with the other annotations, and the red outline and blinking ring that said the same thing went with it.
+    // S.inelig is untouched — the measure stands, and the sprint card still greys his line. Only the drawing is gone.
+    // Nothing marks the race leader on the oval: the green ring and the green bar across the track were part of the
+    // annotations the operator had taken off, and they had been left behind. The LEADER field names him.
+    const stroke = x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : '#ECEAE4', sw = sel ? 3.5 : 1.5;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${x.r.color}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
   // riders off the track (incident) sit on the apron, greyed
   for (const g of G.groups) for (const x of g.rows) if (x.m.off) {
     const { p, nx, ny } = normalAt(x.m.pos), cx = p.x - nx * 34, cy = p.y - ny * 34;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
-  // 3. labels: the leader first, then one per drawn group, then the gaps between drawn groups; none on top of another
-  const lp = normalAt(leaderS), ldx = 490 - lp.p.x, ldy = 295 - lp.p.y, ldd = Math.hypot(ldx, ldy) || 1;
-  labels += putLabel(lp.p.x - ldx / ldd * 78, lp.p.y - ldy / ldd * 78 + 4, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="700" fill="#2ED47A" stroke="#121416" stroke-width="3" paint-order="stroke">LEADER · BIB ${G.leaderBib}</text>`);
-  drawn.forEach((g, i) => {
-    const gi = G.groups.indexOf(g), rows = g.rows.filter(x => !x.m.off).sort((a, b) => a.behind - b.behind);
-    const sHead = leaderS - rows[0].behind, sTail = leaderS - rows[rows.length - 1].behind, p = pt((sHead + sTail) / 2), dx = 490 - p.x, dy = 295 - p.y, dd = Math.hypot(dx, dy) || 1;
-    const name = groupName(g, G) + ' · ' + rows.length + (g.pending ? (g.rows.some(x => x.pending > 0) ? ' · lap gained?' : ' · lap lost?') : '');
-    labels += putLabel(p.x - dx / dd * 58, p.y - dy / dd * 58 + 5, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Sans" font-size="19" font-weight="700" fill="${g.pending || g.op ? '#8FB4FF' : g === G.bunch ? '#ECEAE4' : '#F2A33A'}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${gi}" style="cursor:pointer">${name}</text>`);
-    const prev = drawn[i - 1];
-    if (prev) {
-      const gapM = g.head - prev.tail; if (gapM < 1) return;
-      const gapS = gapM / G.leader.spd, q = pt(leaderS - (prev.tail + g.head) / 2), ex = 490 - q.x, ey = 295 - q.y, ed = Math.hypot(ex, ey) || 1;
-      labels += putLabel(q.x - ex / ed * 56, q.y - ey / ed * 56 + 4, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" fill="#c9c6bd" stroke="#121416" stroke-width="3" paint-order="stroke">${gapM.toFixed(0)} m · ${gapS.toFixed(1)} s</text>`);
+  // 3. the group names (operator, 29 October 2026). Each bubble is joined by a line to its name, and the name is
+  // ALWAYS outside the track, at the SAME margin all the way round the velodrome: the ring is a constant depth
+  // measured from the track, so it follows the oval instead of sitting at a fixed distance from a centre.
+  // Where two names would land on top of each other, the one further back in the race steps out one ring further —
+  // « le groupe qui se fait dépasser allonge la ligne » — so the overtaking group keeps the inner, natural place.
+  // The ring sits just INSIDE the track, in the infield (operator, 29 October 2026). Outside, the drawing has only
+  // 80 to 95 units of margin before its own edge, and a name pushed out to clear another one ran off it. Inside
+  // there are 105 units in the curves and 48 on the straights — measured — which is why the two loop buttons went
+  // out: they were the only thing in the way, and they are the ones that never move.
+  const NAME_STEP = -12, NAME_TRIES = 6;   // short steps: a badge moves only as far as it must to be clear
+  // Everything the infield holds that a badge must not be pushed under. They are painted after the names, so a
+  // badge sent there vanishes: bubble and line drawn, name gone.
+  const PANELS = ['#ifpanel'].map(id => $(id)).filter(f => f && f.getAttribute('x'))
+    .map(f => ({ x: +f.getAttribute('x'), y: +f.getAttribute('y'), w: +f.getAttribute('width'), h: +f.getAttribute('height') }));
+  const hitsPanel = (x, y, w) => PANELS.some(P => x + w > P.x - 4 && x - w < P.x + P.w + 4 && y + 12 > P.y - 4 && y - 12 < P.y + P.h + 4);
+  const placed = [];
+  for (const bu of bubbles) {                       // bubbles are in race order, so the front group is placed first
+    const a = normalAt(bu.sMid);
+    const name = groupName(bu.g, G) + groupNoPts(bu.g);
+    const tw = labelWidth(name) / 2 + 9, th = 12;   // half-width and half-height of the BADGE, padding included
+    // Two names clash only when their BOXES would meet. Measured on the distance between their centres instead,
+    // the test fired on names that were nowhere near each other and threw them far off the track, trailing a long
+    // line behind them — which is the other half of what the operator saw.
+    // A badge is a rectangle aligned on the SCREEN, while its clearance is measured along the normal: how far it
+    // reaches towards the track is therefore |nx|·demi-largeur + |ny|·demi-hauteur, not the half-height alone. On a
+    // straight the two agree; in a curve, where the normal lies across, it is the WIDTH that points at the track —
+    // four times more — and that is how badges ended up lying on the riders.
+    // It also clears the BUBBLE and not the edge of the track: a wide bubble, the bunch's, reaches deeper into the
+    // infield than the ring does.
+    const reach = Math.abs(a.nx) * tw + Math.abs(a.ny) * th;
+    // The gap is measured ALONG THE LINE, and nothing corrects it afterwards. Every other formulation tried was
+    // discontinuous: clearing the badge's corners, whether by a step or by a search for the closest depth that
+    // clears every rider, makes the badge JUMP as it slips past one rider and up against the next — which is what
+    // the operator saw in his five pictures of the same curve. Measured: 22 units of jump on average, 60 at worst.
+    // This one is a smooth function of the angle, so the badge slides round the curve. Its corners may come near a
+    // rider in the slanted part of a curve; they never land on the pack, which is what he objected to.
+    const rayT = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9);
+    const GAP = 14;   // the visible gap between a bubble and its badge, the same all the way round the velodrome
+    let depth = Math.min(-(HW + GAP) - rayT, bu.mid - bu.halfW - GAP - rayT), lx = 0, ly = 0;
+    // When a group is being overtaken its badge gets out of the way, as the operator asked. It has two freedoms,
+    // and it needs both: going DEEPER into the infield — lengthening its line, which is what he described — and,
+    // when there is no depth left before the panel (on a straight there are only 48 units of it), SLIDING along
+    // the track. Depth alone left ten badges in twenty-three overlapping, because the push stopped at the panel.
+    // Note also that two badges 2·th high touch at 2·th apart: the test must leave at least that, plus some air.
+    const tgx = -a.ny, tgy = a.nx;                             // along the track, at right angles to the normal
+    // A spot is clear of the other badges AND of every rider: sliding along the track can carry a badge over the
+    // riders of a different group, which the depth-only version could not do.
+    const clearOf = (x, y) => !placed.some(q => Math.abs(q.x - x) < q.tw + tw + 6 && Math.abs(q.y - y) < 2 * th + 6)
+      && all.every(it => { const dx = Math.max(0, Math.abs(it.cx - x) - tw), dy = Math.max(0, Math.abs(it.cy - y) - th); return dx * dx + dy * dy >= 289; });
+    // The start row and the leader came back inside on 29 October 2026, but small and centred: a badge's normal
+    // place, 51 units from the edge of the track, never reaches them — there are some 40 units to spare. They are
+    // therefore a veto on a badge that is being PUSHED, never a reason to leave the normal place. A badge that
+    // finds no clear spot keeps that normal place rather than the last and most extreme one tried: thrown to an
+    // extreme, a badge used to vanish under the block, bubble and line still drawn and name gone.
+    lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;      // the normal place, and the fallback
+    outer2: for (let k = 0; k < NAME_TRIES; k++) {
+      for (const sv of [0, 34, -34, 68, -68]) {
+        const d2 = depth + k * NAME_STEP;
+        const x = a.p.x + a.nx * d2 + tgx * sv, y = a.p.y + a.ny * d2 + tgy * sv;
+        if ((k || sv) && hitsPanel(x, y, tw)) continue;         // a badge is never PUSHED under the block
+        if (clearOf(x, y)) { lx = x; ly = y; break outer2; }
+      }
     }
-  });
-  // the riders marked "No points": a thin dashed leader to a red "No points" text outside the track, like the other labels
-  for (const it of all) if (noPts.has(it.x.r.bib)) {
-    const { p } = normalAt(it.s), dx = p.x - 490, dy = p.y - 295, dd = Math.hypot(dx, dy) || 1, lx = p.x + dx / dd * 84, ly = p.y + dy / dd * 84;
-    labels += `<line x1="${it.cx.toFixed(1)}" y1="${it.cy.toFixed(1)}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}" stroke="#FF5C5C" stroke-width="1.5" stroke-dasharray="4 3" pointer-events="none"/>`;
-    labels += putLabel(lx, ly + 5, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="700" fill="#FF5C5C" stroke="#121416" stroke-width="3" paint-order="stroke">No points</text>`);
+    placed.push({ x: lx, y: ly, tw });
+    const edge = bu.mid - bu.halfW - 3;   // the line leaves the bubble on the INFIELD side, where the name now is
+    const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
+    // A badge that has slid along the track is no longer on the normal, so the line follows the real direction
+    // from the bubble to it, and stops on the badge's edge along THAT direction.
+    let dirx = lx - from.x, diry = ly - from.y, dl = Math.hypot(dirx, diry) || 1;
+    dirx /= dl; diry /= dl;
+    // The line must STOP where the name starts, not run behind it: crossing the text mixed the stroke with the
+    // halo that keeps the name readable, and the name came out blurred.
+    const t = Math.min(Math.abs(dirx) > 0.01 ? tw / Math.abs(dirx) : 1e9, Math.abs(diry) > 0.01 ? th / Math.abs(diry) : 1e9) + 1.5;   // just clear of the badge, never under it
+    // Towards the TRACK is +n now that the badge is inside: with the labels outside, depth was positive and the
+    // same step was written −n. Left as it was, the line ran from the bubble straight past the badge and out the
+    // far side — which is why it measured 24 to 96 units long instead of the gap it is meant to show.
+    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - dirx * t).toFixed(1)}" y2="${(ly - diry * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.9" pointer-events="none"/>`;
+    labels += `<g data-gi="${bu.gi}" style="cursor:pointer"><rect x="${(lx - tw).toFixed(1)}" y="${(ly - th).toFixed(1)}" width="${(tw * 2).toFixed(1)}" height="${(th * 2).toFixed(1)}" rx="5" fill="${bu.colour}"/><text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="#121416" pointer-events="none">${name}</text></g>`;
   }
   bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
   if (S.hover != null) { const d = document.getElementById('dot-' + S.hover); if (d) d.querySelector('circle').setAttribute('stroke-width', '4'); }
@@ -1298,6 +1604,7 @@ function selectGroup(gi) {   // the group name selects all its riders; again, it
 let logTab = 'cross';
 function renderLog() {
   $('#xbtns').innerHTML = logTab === 'sprints' ? '<button class="btn xs quiet" data-export="sprints" title="Every sprint with its order, points and photo flags, and the outputs">Export sprints</button>' : logTab === 'stand' ? '<button class="btn xs quiet" data-export="standings" title="The standings as CSV">Export standings</button><button class="btn xs quiet" data-export="journal" title="The journal, facts and decisions">Export journal</button>' : '';
+  if ($('#log').hidden) return;   // fermé : on ne reconstruit pas ses lignes à chaque image
   if (logTab === 'sprints') { logrows.innerHTML = renderSprintsTab(); return; }
   if (logTab === 'stand') { logrows.innerHTML = renderStandingsTab(); return; }
   if (logTab === 'cross') {   // the order of the finish-line crossings, lap by lap, from the leader to the tail of the race
@@ -1327,7 +1634,7 @@ function render() {
 function groupsNow() { const M = measured(); return computeGroups(M).groups; }
 
 // ---------- events ----------
-tlbody.addEventListener('click', e => {
+function onStripClick(e) {
   const t = e.target.closest('[data-dissolve],[data-selgroup],[data-pact],[data-reinstate],[data-rlap],[data-lead],[data-ledger],[data-ladd],[data-lsub],[data-color],.trow'); if (!t) return;
   if (t.dataset.dissolve) { const g = S.groups.find(x => x.id === +t.dataset.dissolve); if (g) { pushUndo((g.type === 'manual' ? 'dissolve group ' : 'close incident ') + bibList(g.bibs)); dissolve(g); } }
   else if (t.dataset.selgroup != null) selectGroup(+t.dataset.selgroup);
@@ -1341,7 +1648,11 @@ tlbody.addEventListener('click', e => {
   else if (t.dataset.lead) { pushUndo('leader BIB ' + t.dataset.lead); designateLeader(+t.dataset.lead, 'set by operator'); }
   else if (t.dataset.bib) { if (suppressClick) { suppressClick = false; return; } const bib = +t.dataset.bib; if (S.selection.has(bib)) S.selection.delete(bib); else S.selection.add(bib); railDirty = true; }
   dirty = true; render();
-});
+}
+tlbody.addEventListener('click', onStripClick);
+propcard.addEventListener('click', onStripClick);   // les propositions ont changé de conteneur, pas de comportement
+tbar.addEventListener('click', onStripClick);       // les compteurs, la couleur et le leader s'y trouvent aussi
+tbar.addEventListener('input', e => { const i = e.target.closest('[data-colorpick]'); if (i) setColor(+i.dataset.colorpick, i.value); });
 tbar.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const bibs = [...S.selection].sort(byBib);
@@ -1395,9 +1706,93 @@ document.addEventListener('pointerup', e => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { S.selection.clear(); dirty = true; render(); } if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
 $('#undo').addEventListener('click', undo);
 
-$('#armseg').addEventListener('click', e => { const b = e.target.closest('[data-arm]'); if (!b) return; const L = LOOPS[+b.dataset.arm]; pushUndo('arm ' + LOOPNAME[L]); S.arm = S.arm === L ? null : L; logEvent('LEADER', S.arm == null ? 'Arming cancelled' : 'Armed: next rider read at ' + LOOPNAME[L] + ' becomes the race leader', true); syncArm(); dirty = true; render(); });
+$('#infield').addEventListener('click', e => { const b = e.target.closest('.armb[data-arm]'); if (!b) return; const L = LOOPS[+b.dataset.arm]; pushUndo('arm ' + LOOPNAME[L]); S.arm = S.arm === L ? null : L; logEvent('LEADER', S.arm == null ? 'Arming cancelled' : 'Armed: next rider read at ' + LOOPNAME[L] + ' becomes the race leader', true); syncArm(); dirty = true; render(); });
+// The rest of the infield: the laps to go with their provenance, and the start button of the future software.
+// Both are described by the operator on 29 October 2026 (regles-operateur.md §17).
+function startClick() {
+  if (S.startState === 'idle') { S.startState = 'armed'; logEvent('RACE', 'Start armed · waiting for the gun, here or on the external button', true); }
+  else if (S.startState === 'armed') {
+    S.startState = 'run'; S.fsConfirm = false;
+    if (!S.started) { $('#simplay').click(); return; }           // the race, and the running time with it
+  } else if (!S.fsConfirm) { S.fsConfirm = true; }               // a false start asks twice
+  else {
+    S.fsConfirm = false;
+    logEvent('RACE', 'False start · the race goes back before the gun', true);
+    reset(); REC = null; LOADED = null; syncSeg(); railDirty = true;   // a false start records nothing
+  }
+  dirty = true; render();
+}
+$('#infield').addEventListener('click', e => {
+  const t = e.target;
+  if (t.id === 'startbtn') return startClick();
+  if (t.id === 'armfinish') {
+    if (S.winT != null) return;                       // the winner is in: there is nothing left to arm
+    S.finArm = !S.finArm;
+    logEvent('RACE', S.finArm ? 'Finish line armed · the running time stops on the winner' : 'Finish line disarmed', true);
+    dirty = true; return render();
+  }
+  if (t.closest('#iftogo')) {
+    S.togoExport = !S.togoExport;
+    logEvent('RACE', S.togoExport ? 'Laps to go sent to the outputs again' : 'Laps to go held back from every output', true);
+    dirty = true; return render();
+  }
+  if (t.id === 'iftogomode') {                       // the application counts by itself, or the operator by hand
+    const was = appValue(LAPS - dispLap());
+    S.togoMode = S.togoMode === 'manual' ? 'auto' : 'manual';
+    S.togoManual = S.togoMode === 'manual' ? was : null;
+    logEvent('RACE', 'Laps to go · application · ' + (S.togoMode === 'manual' ? 'counted by hand' : 'counted by the application'), true);
+    dirty = true; return render();
+  }
+  const pk = t.closest('[data-pick]');
+  if (pk) {
+    S.togoPick = pk.dataset.pick === 'counter' ? 'counter' : 'app';
+    logEvent('RACE', 'Laps to go taken from ' + (S.togoPick === 'counter' ? 'the lap counter' : 'the application'), true);
+    dirty = true; return render();
+  }
+  const st = t.closest('[data-togo]');
+  if (st && S.togoMode === 'manual') {
+    S.togoManual = Math.max(0, Math.min(LAPS, appValue(LAPS - dispLap()) + (+st.dataset.togo)));
+    dirty = true; return render();
+  }
+});
 $('#leaderauto').addEventListener('click', () => { pushUndo('leader auto'); S.leader = null; S.arm = null; logEvent('LEADER', 'Race leader taken from the track', true); syncArm(); dirty = true; render(); });
-function syncArm() { $('#armseg').querySelectorAll('[data-arm]').forEach(b => { const L = LOOPS[+b.dataset.arm]; b.classList.toggle('on', L === S.arm); b.classList.toggle('quiet', L !== S.arm); }); }
+// The three leader buttons sit on the track at their own loop. Armed, the button AND the loop's line go green and
+// wait; the moment a rider is read there, both come back to normal and the button shows his number for a moment
+// (operator, 29 October 2026). ARM_SHOW_S is not his: he said « pendant quelques secondes » and no figure was asked
+// of him — it is a display choice, and it is listed as one in cas-de-course.md.
+const ARM_SHOW_S = 5;
+// syncArm() runs on every frame (see render()), and builds 88 and 89 were spent taking per-frame work OUT of the
+// oval. So it looks nothing up: the three buttons are found once, and the three green lines are re-found only when
+// renderMarks() has just rebuilt #marks. Nothing here touches the document while the state has not changed.
+const ARMB = [0, 1, 2].map(i => { const fo = $('#armfo' + i); return fo && fo.querySelector('.armb'); });
+let ARMG = [], armShown = [];
+function armLines() { ARMG = [0, 1, 2].map(i => $('#lpg' + i)); }
+function syncArm() {
+  if (!S) return;      // the track is applied before the race state exists (see the bootstrap): nothing to show yet
+  if (S.armDone && S.t >= S.armDone.until) S.armDone = null;
+  for (let i = 0; i < ARMB.length; i++) {
+    const b = ARMB[i]; if (!b) continue;
+    const armed = LOOPS[i] === S.arm, done = !armed && S.armDone && S.armDone.i === i;
+    const want = armed ? 'on' : done ? 'bib' + S.armDone.bib : '';
+    if (armShown[i] === want) continue;                 // nothing changed for this loop: leave the DOM alone
+    armShown[i] = want;
+    b.classList.toggle('on', armed);
+    b.classList.toggle('done', !!done);
+    b.innerHTML = done ? 'BIB ' + S.armDone.bib : 'SET NEXT<br/>AS LEADER';
+    if (ARMG[i]) ARMG[i].setAttribute('stroke-opacity', armed ? '1' : '0');
+  }
+}
+// The start button of the future software, in the operator's own four states (regles-operateur.md §17).
+function syncStart() {
+  const b = $('#startbtn'); if (!b || !S) return;
+  const st = S.startState;
+  // Three wordings, and three only: the operator's own. The second click on FALSE START makes the button bigger
+  // and darker — he asked for that and for no other wording.
+  b.textContent = st === 'idle' ? 'ARM START' : st === 'armed' ? 'START ARMED' : 'FALSE START';
+  b.classList.toggle('armed', st === 'armed');
+  b.classList.toggle('fs', st === 'run');
+  b.classList.toggle('confirm', st === 'run' && S.fsConfirm);
+}
 let lastFactor = 1;
 $('#speedseg').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; S.factor = lastFactor = +b.dataset.f; syncSeg(); dirty = true; });
 // A label is centred in its button by its BOX, and a box is not what the eye sees: a glyph carries its own side
@@ -1470,6 +1865,23 @@ function syncSeg() {
   else if (playing && REC) { st.className = 'simstate recdot'; st.innerHTML = '<i></i>REC'; }
   else { st.className = 'simstate off'; st.textContent = ''; }
 }
+// Les deux dispositions de la zone sous l'ovale, au choix de l'utilisateur (l'opérateur, 29 octobre 2026 : « On
+// peut positionner les actions et propositions de deux manières différentes. Je trouve qu'offrir cette flexibilité
+// à l'utilisateur est très intéressante »).
+function setLayout(v) {
+  document.body.classList.toggle('lay-side', v === 'side');
+  $('#layseg').querySelectorAll('[data-lay]').forEach(b => {
+    const on = b.dataset.lay === v; b.classList.toggle('on', on); b.classList.toggle('quiet', !on); });
+}
+$('#layseg').addEventListener('click', e => { const b = e.target.closest('[data-lay]'); if (!b) return; setLayout(b.dataset.lay); });
+setLayout('side');   // la disposition par défaut, choisie par l'opérateur le 29 octobre 2026
+
+// Le panneau des passages s'ouvre par-dessus l'écran de course, depuis la barre du haut, et se referme. Il n'est
+// plus affiché en permanence (l'opérateur, 29 octobre 2026).
+function logOpen(o) { $('#log').hidden = !o; $('#logshow').classList.toggle('on', o); if (o) { dirty = true; render(); } }
+$('#logshow').addEventListener('click', () => logOpen($('#log').hidden));
+$('#logclose').addEventListener('click', () => logOpen(false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#log').hidden) logOpen(false); });
 $('#logtabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; logTab = b.dataset.tab; $('#logtabs').querySelectorAll('[data-tab]').forEach(x => { x.classList.toggle('on', x === b); x.classList.toggle('quiet', x !== b); }); $('#loghint').textContent = { cross: 'finish-line order of every lap · leader first · newest lap first', dec: 'facts only · newest first', sprints: 'every sprint as judged · click one to open it', stand: 'points: sprints 5-3-2-1, final ×2, laps ±20 · ties: place in the final sprint' }[logTab]; dirty = true; render(); });
 
 
@@ -1511,16 +1923,25 @@ function spOrder(k) {
   const s = sp(k), X = spCrossings(k);
   const read = [...X.entries()].map(([bib, t]) => ({ bib, t })).sort((a, b) => a.t - b.t);
   read.forEach((e, i) => e.raw = i + 1);
-  const notEligible = read.filter(e => spWhy(k, e.bib)).map(e => ({ ...e, why: spWhy(k, e.bib) }));
+  // « Not eligible » annonce les deux sortes : ceux que l'opérateur a écartés, et ceux que la règle de course a
+  // rendus inéligibles au moment de leur passage (l'opérateur, 29 octobre 2026 : « Il faut qu'ils y soient aussi »).
+  const notEligible = read.filter(e => spWhy(k, e.bib) || (s.greyed || []).includes(e.bib))
+    .map(e => ({ ...e, why: spWhy(k, e.bib) || 'no points · not eligible when he crossed', rule: !spWhy(k, e.bib) }));
   // A crossing read while the rider was not eligible carries no place: it stays where it was read, greyed.
   // He takes a place again once he is eligible, behind the riders placed ahead of him in the timeline.
-  const greyNow = new Set(s.lapped || []), greyEver = s.greyed || [];
+  // Chaque passage est jugé UNE SEULE FOIS, à l'instant où il est lu (pitfalls F10) : le verrou est `s.greyed`,
+  // la liste des coureurs dont le passage a été lu pendant leur inéligibilité. Le filtre portait sur `s.lapped`,
+  // l'inéligibilité de l'instant présent, ce qui rejugeait les passages après coup : un coureur lu alors qu'il
+  // était éligible disparaissait du classement dès qu'il devenait inéligible -- écarté du résultat et annoncé
+  // nulle part, puisque sa ligne n'était pas grisée non plus. C'est ce que l'opérateur a constaté le
+  // 29 octobre 2026 : « des coureurs non éligibles ont été ignorés mais jamais annoncés comme non éligibles ».
+  const greyEver = s.greyed || [];
   const greyed = read.filter(e => greyEver.includes(e.bib));
-  const eligible = read.filter(e => !spWhy(k, e.bib) && !greyNow.has(e.bib));
+  const eligible = read.filter(e => !spWhy(k, e.bib) && !greyEver.includes(e.bib));
   const byBibT = new Map(eligible.map(e => [e.bib, e]));
   let seq;
   if (s.order) {
-    seq = s.order.filter(b => !spWhy(k, b) && !greyNow.has(b)).map(b => { const e = byBibT.get(b); return e ? { ...e } : { bib: b, t: null, raw: 0, manual: true }; });
+    seq = s.order.filter(b => !spWhy(k, b) && !greyEver.includes(b)).map(b => { const e = byBibT.get(b); return e ? { ...e } : { bib: b, t: null, raw: 0, manual: true }; });
     for (const e of eligible) if (!s.order.includes(e.bib)) seq.push({ ...e });
   } else seq = eligible.map(e => ({ ...e }));
   // The rank consequence, as the operator wrote it: in the complete result of an intermediate sprint or of the
@@ -1663,10 +2084,42 @@ function spClose(k) { const s = sp(k); S.sprintOpen = null; s.closed = true; log
 // ---------- the sprint card ----------
 const scard = $('#scard');
 const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo check needed · click to confirm"><path d="M4 7h3.5l2-2.5h5l2 2.5H20v12H4z" fill="none" stroke="#FF5C5C" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="#FF5C5C" stroke-width="2"/></svg>';
+// La liste de départ : entière, sur une colonne, triable, qu'un sprint soit ouvert ou non. Glisser ou double-clic
+// place un coureur quand un sprint est ouvert ; hors sprint elle ne fait que montrer le plateau.
+function startListHtml(k, seq, tgt, fin, N) {
+  const sort = S.slSort || 'bib', list = [...S.riders].sort((a, b) => sort === 'noc' ? (a.nat.localeCompare(b.nat) || a.bib - b.bib) : a.bib - b.bib);
+  let h = '<div class="sright">';
+  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' \u25b4' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' \u25b4' : ''}</span></div><div class="slrows">`;
+  for (const r of list) {
+    const e = k == null ? null : seq.find(x => x.bib === r.bib), w = S.withdrawn.get(r.bib), why = (k == null || e) ? null : spWhy(k, r.bib);
+    // La colonne du rang a ete retiree : elle recopiait l'ordre affiche juste a gauche (l'operateur, 29 octobre 2026).
+    // Le grise dit qu'il est place, le pointille qu'il n'a pas de transpondeur, le fonce qu'il ne marque pas ici.
+    const ttl = r.name + (w ? ' \u00b7 ' + w.code : e ? ' \u00b7 ' + ordinal(e.place) + (e.held ? ' \u00b7 held' : '') : why ? ' \u00b7 ' + why.replace(' \u00b7 operator', '') : S.noTp.has(r.bib) ? ' \u00b7 no transponder' : '') + (k == null ? '' : ' \u00b7 double-click: ' + ordinal(tgt) + ' \u00b7 drag onto the order');
+    h += `<div class="slrow${e ? ' placed' : ''}${(why || w) ? ' out' : ''}" data-sl="${r.bib}" title="${ttl}">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span></div>`;
+  }
+  return h + '</div></div>';
+}
+
+// La carte montre le sprint ouvert, ou, hors sprint, le PROCHAIN -- et elle garde alors toutes ses commandes :
+// « il existait beaucoup plus d'options qu'actuellement dans les cartes de sprint. Il faut les restaurer ! »
+// (l'opérateur, 29 octobre 2026). Seules « Send » et « Close » disparaissent avant la cloche : il n'y a rien à
+// envoyer et rien à fermer. Tout le reste -- le tour jugé, la saisie manuelle, l'ordre mesuré, l'enregistrement,
+// le mode Live, la place suivante, le tri de la liste de départ -- se règle d'avance sur le prochain sprint.
+// Hors sprint, la carte montre le prochain sprint NON JUGÉ : celui que l'on vient de fermer ne revient pas, sinon
+// la carte réaffichait « SPRINT 1 · waiting for the bell » juste après l'avoir clos.
+function sprintShown() {
+  if (S.sprintOpen != null) return S.sprintOpen;
+  const lap = dispLap();
+  for (let k = 1; k <= NSPRINTS; k++) { const t = S.sprints[k]; if (!(t && t.closed) && sprintLap(k) >= lap) return k; }
+  for (let k = 1; k <= NSPRINTS; k++) { const t = S.sprints[k]; if (!(t && t.closed)) return k; }
+  return NSPRINTS;
+}
 function renderCard() {
-  const k = S.sprintOpen; document.body.classList.toggle('sprintmode', k != null);
-  if (k == null) { scard.innerHTML = ''; return; }
+  const open = S.sprintOpen != null; document.body.classList.toggle('sprintmode', open);
+  const k = sprintShown();
+  if (k == null || k > NSPRINTS) { scard.innerHTML = ''; return; }
   const s = sp(k), O = spOrder(k), seq = O.seq, fin = isFinal(k), st = spSendState(k);
+  const toGo = sprintLap(k) - dispLap();
   const inRace = S.riders.filter(r => !S.withdrawn.has(r.bib)), N = fin ? Math.max(inRace.length, seq.length) : SEND_PLACES;
   const focused = document.activeElement && document.activeElement.id === 'sinp', inpVal = focused ? document.activeElement.value : (s.manualText || '');
   let cnt = '';
@@ -1675,21 +2128,13 @@ function renderCard() {
     const across = O.read.length, toRank = inRace.length, notp = inRace.filter(r => S.noTp.has(r.bib) && !seq.some(e => e.bib === r.bib)).map(r => r.bib);
     cnt = seq.length >= toRank ? toRank + ' ranked · finish complete' : S.riders.length + ' started' + Object.entries(codes).map(([c, n]) => ' · ' + n + ' ' + c).join('') + ' · ' + toRank + ' to rank · ' + across + ' across' + (notp.length ? ' · BIB ' + notp.join(', ') + ' to place by hand' : '');
   }
-  let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>${fin ? `<span class="lapn">Lap ${LAPS} · points ×2</span>` : `<button class="btn xs quiet" data-sact="shift:-1" title="Judge this sprint on the previous lap">←</button><span class="lapn">Lap ${s.lap}</span><button class="btn xs quiet" data-sact="shift:1" title="Judge this sprint on the next lap">→</button>`}
-    <span style="width:8px"></span><button class="btn xs${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵  or  bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}
-    <button class="btn xs quiet" data-sact="detected" title="Back to the order the loops measured">Detected order</button><button class="btn xs quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>${s.recordFrom != null ? '<span class="pill acc">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}
-    <span class="cnt">${cnt}</span><span class="sp"></span>
-    <button class="btn xs${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button><button class="btn xs ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button><button class="btn xs quiet" data-sact="close" title="Back to the oval and the crossings">Close</button></div>`;
-  h += '<div class="sbody"><div class="sleft">';
-  // riders without transponder: place them in advance
-  for (const [bib] of S.noTp) {
-    if (S.withdrawn.has(bib) || s.notpDismiss.includes(bib) || seq.some(e => e.bib === bib)) continue;
-    if (lappedAt(k, bib)) continue;
-    const r = S.riders.find(x => x.bib === bib), g = lastG && lastG.groups.find(g => g.bibs.includes(bib));
-    if (!r) continue;                  // ce dossard n'est plus dans la course : il n'a rien à dire sur cette carte
-    h += `<div class="nts">${chip(r, 'notp')}<span class="noc">${r.nat}</span><span class="nm">${r.name}<small>no transponder${g ? ' · in ' + groupName(g) : ''}</small></span>${[1, 2, 3, 4, 5].map(p => `<button class="btn xs" data-sact="hold:${bib}:${p}" title="BIB ${bib} will be ${ordinal(p)}: held until the next rider is read, or Send">${ordinal(p)}</button>`).join('')}<button class="btn xs quiet" data-sact="notpdismiss:${bib}" title="Not in the first places of this sprint">not placed</button></div>`;
-  }
-  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span>Rider · drag to reorder</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
+  // Trois colonnes (l'operateur, 29 octobre 2026) : l'ordre a gauche, les coureurs au milieu, les commandes a droite.
+  // Plus de pied de carte : tout ce qui est une commande vit dans la colonne de droite, et rien ne repousse l'ordre.
+  let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>
+    <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
+    ${open ? `<button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
+  h += '<div class="sbody"><div class="sleft"><div class="ssec">Order<span class="hint">drag a line to reorder</span></div>';
+  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
   const tgt = spTarget(k);
   // the crossings read while the rider was not eligible: kept where they were read, greyed, with no place
   const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
@@ -1701,40 +2146,66 @@ function renderCard() {
   for (const g of grey) rows.push({ g });
   for (const row of rows) {
     if (row.g) { const gr = S.riders.find(x => x.bib === row.g.bib);
-      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="nm">${gr.name}</span><span class="why">no points</span><span class="ic"></span></div>`;
+      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
       continue; }
     const e = row.e, place = row.place;
-    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="nm">—</span><span></span><span></span><span></span></div>`; continue; }
+    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
     const r = S.riders.find(x => x.bib === e.bib), cls = e.held ? 'held' : e.photo ? 'cam' : e.sent ? 'sent' : '';
-    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span><span class="nm">${r.name}${S.noTp.has(e.bib) && !e.held ? '<small>no tp</small>' : ''}</span>
-      <span class="gp">${e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : ''}</span>
-      <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">Send</button>' : ''}</span>
+    const mark = e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : '';
+    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span>
+      <span class="gp">${mark}</span>
+      <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" title="Photo finish: confirm" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">↑</button>' : ''}</span>
       <span class="ic"><button class="btn xs quiet" data-sact="remove:${e.bib}" title="Out of this order">×</button></span></div>`;
   }
-  h += `<div class="sdrop" data-place="${seq.length + 1}"></div></div>`;
+  h += `</div><div class="sdrop" data-place="${seq.length + 1}" title="Drop a rider here to add him to the order"></div></div>`;
+  h += startListHtml(k, seq, tgt, fin, N);
+  // ---- la colonne des commandes ----
+  h += '<div class="sctl">';
+  if (!fin) h += `<div class="blk"><span class="bh">Judged on<span class="hint">now lap ${dispLap()}</span></span>
+    <div class="br lap"><button class="btn" data-sact="shift:-1" title="Judge this sprint on the previous lap">←</button><span class="lapn2">Lap ${s.lap}</span><button class="btn" data-sact="shift:1" title="Judge this sprint on the next lap">→</button></div></div>`;
+  h += `<div class="blk"><span class="bh">Sending</span>
+    <div class="br"><button class="btn${s.live ? ' on' : ' quiet'}" data-sact="live" title="Live: every place leaves the moment its rider is read on the line">Live</button>
+    ${open ? `<button class="btn ${st.cls}" data-sact="send" title="${s.live ? 'Live: the places leave by themselves' : 'Send the order to TV, scoreboard and web'}">${st.label}</button>` : '<button class="btn quiet" disabled title="Nothing to send before the bell">Send</button>'}</div></div>`;
+  h += `<div class="blk"><span class="bh">Order source</span>
+    <button class="btn wide quiet" data-sact="clear" title="Empty the order and record every crossing from now on, whatever the lap counter says">Clear and record</button>
+    <button class="btn wide${s.manual ? ' quiet' : ' on'}" data-sact="detected" title="Back to the order the loops measured">Detected</button>
+    ${s.recordFrom != null ? '<span class="pill acc" style="text-align:center">recording since ' + fmtT(s.recordFrom) + '</span>' : ''}</div>`;
+  h += `<div class="blk acc" title="Where the next rider goes: double-click in the list of riders, or a bib typed in the Manual box">
+    <span class="bh">Next place<span class="hint">${ordinal(tgt)}</span></span>
+    ${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">`
+          : `<div class="pl4">${[1, 2, 3, 4].map(p => `<button class="btn${tgt === p ? ' on' : ''}" data-sact="target:${p}">${ordinal(p)}</button>`).join('')}</div>`}</div>`;
+  h += `<div class="blk"><span class="bh">Manual</span>
+    <button class="btn wide${s.manual ? ' on' : ' quiet'}" data-sact="manual" title="Type the order: bibs separated by spaces then Enter, or one bib and Enter at a time">Manual</button>
+    ${s.manual ? `<input id="sinp" value="${inpVal.replace(/"/g, '&quot;')}" placeholder="bib bib bib ↵" title="Several bibs and Enter: the whole order, sent. One bib and Enter: the next place.">` : ''}</div>`;
+  // Les coureurs sans transpondeur : dans la bande libre de cette colonne, et non au-dessus de l'ordre (l'operateur,
+  // 29 octobre 2026) -- la ils repoussaient l'ordre et separaient son titre de son en-tete de colonnes.
+  if (!fin) for (const [bib] of S.noTp) {
+    if (S.withdrawn.has(bib) || s.notpDismiss.includes(bib) || seq.some(e => e.bib === bib)) continue;
+    if (lappedAt(k, bib)) continue;
+    const r = S.riders.find(x => x.bib === bib), g = lastG && lastG.groups.find(g => g.bibs.includes(bib));
+    if (!r) continue;                  // ce dossard n'est plus dans la course : il n'a rien à dire sur cette carte
+    h += `<div class="blk notp" title="${r.name}"><span class="bh">No transponder</span>
+      <div class="br"><span class="who">${chip(r, 'notp')}<span class="noc">${r.nat}</span></span>${g ? '<span class="hint">in ' + groupName(g) + '</span>' : ''}</div>
+      <div class="pl5">${[1, 2, 3, 4, 5].map(p => `<button class="btn" data-sact="hold:${bib}:${p}" title="BIB ${bib} will be ${ordinal(p)}: held until the next rider is read, or Send">${ordinal(p)}</button>`).join('')}</div></div>`;
+  }
   if (!fin) {
     const ne = O.notEligible;
-    h += `<div class="sne"><button class="btn xs quiet" data-sact="ne">Not eligible · ${ne.length}${S.neOpen ? ' ▴' : ' ▾'}</button>${s.excluded.length && !ne.length ? '<span class="lbl" style="color:var(--dim)">ignored: ' + bibList(s.excluded) + '</span>' : ''}</div>`;
-    if (S.neOpen) for (const e of ne) { const r = S.riders.find(x => x.bib === e.bib); h += `<div class="srow ne"><span class="pl">${ordinal(e.raw)}</span>${chip(r)}<span class="noc">${r.nat}</span><span class="nm">${r.name}</span><span class="why">${e.why}</span><span class="ic"><button class="btn xs quiet" data-sact="reinstate:${e.bib}" title="Rank him after all">↩</button></span></div>`; }
+    h += `<div class="blk last"><span class="bh">Not ranked</span>
+      <button class="btn wide quiet" data-sact="ne">Not eligible · ${ne.length}${S.neOpen ? ' ▴' : ' ▾'}</button>
+      ${S.neOpen ? ne.map(e => { const r = S.riders.find(x => x.bib === e.bib);
+        return `<div class="nerow" title="${r.name} · ${e.why}">${chip(r)}<span class="noc">${r.nat}</span><span class="why">${ordinal(e.raw)}</span>${e.rule ? '' : '<button class="btn xs quiet" data-sact="reinstate:' + e.bib + '" title="Rank him after all">↩</button>'}</div>`; }).join('') : ''}
+      ${s.excluded.length && !ne.length ? '<span class="hint">ignored: ' + bibList(s.excluded) + '</span>' : ''}</div>`;
   } else if (S.withdrawn.size) {
-    for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); h += `<div class="srow ne"><span class="pl"></span>${chip(r)}<span class="noc">${r.nat}</span><span class="nm">${r.name}</span><span class="why">${w.code} · Lap ${w.lap} · not ranked</span><span></span></div>`; }
+    h += `<div class="blk last"><span class="bh">Not ranked</span>${[...S.withdrawn].map(([bib, w]) => { const r = S.riders.find(x => x.bib === bib);
+      return `<div class="nerow" title="${r.name}">${chip(r)}<span class="noc">${r.nat}</span><span class="why">${w.code} · Lap ${w.lap}</span></div>`; }).join('')}</div>`;
   }
-  h += '</div><div class="sright">';
-  // the start list: fixed, whole, sortable; drag or double-click to place a rider
-  const sort = S.slSort || 'bib', list = [...S.riders].sort((a, b) => sort === 'noc' ? (a.nat.localeCompare(b.nat) || a.bib - b.bib) : a.bib - b.bib);
-  h += `<div class="stgt" title="Where the next rider goes: double-click in the start list, or a bib typed in the Manual box"><span class="k">Next</span><b>${ordinal(tgt)}</b>${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">` : [1, 2, 3, 4].map(p => `<button class="btn xs${tgt === p ? ' on' : ''}" data-sact="target:${p}">${p}</button>`).join('')}</div>`;
-  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' ▴' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' ▴' : ''}</span><span>${list.length} riders</span><span></span></div><div class="slrows">`;
-  for (const r of list) {
-    const e = seq.find(x => x.bib === r.bib), w = S.withdrawn.get(r.bib), why = e ? null : spWhy(k, r.bib);
-    h += `<div class="slrow${e ? ' placed' : ''}${why ? ' out' : ''}" data-sl="${r.bib}" title="Double-click: ${ordinal(tgt)} · drag onto the order">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span><span class="nm">${r.name}</span><span class="st">${e ? ordinal(e.place) + (e.held ? ' · held' : '') : w ? w.code : why ? why.replace(' · operator', '') : S.noTp.has(r.bib) ? 'no tp' : ''}</span></div>`;
-  }
-  h += '</div></div></div>';
+  h += '</div></div>';
   scard.innerHTML = h;
   if (focused) { const i = $('#sinp'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
 }
 // one click handler for the card
 scard.addEventListener('click', e => {
-  const t = e.target.closest('[data-sact]'); if (!t) return; const k = S.sprintOpen; if (k == null) return;
+  const t = e.target.closest('[data-sact]'); if (!t) return; const k = sprintShown(); if (k == null || k > NSPRINTS) return;
   const [act, a, b] = t.dataset.sact.split(':'), s = sp(k);
   if (act === 'shift') { pushUndo(spLabel(k) + ' lap shift'); spShift(k, +a); }
   else if (act === 'manual') { s.manual = !s.manual; dirty = true; render(); const i = $('#sinp'); if (i) i.focus(); return; }
@@ -1742,19 +2213,18 @@ scard.addEventListener('click', e => {
   else if (act === 'clear') { pushUndo(spLabel(k) + ' clear and record'); spClearRecord(k); }
   else if (act === 'live') { s.live = !s.live; S.liveMode = s.live; logEvent('SPRINT', spLabel(k) + (s.live ? ' · live: every place leaves as it is read' : ' · manual sending: nothing leaves without Send') + ' · operator', true); }
   else if (act === 'send') { if (!s.live) { pushUndo(spLabel(k) + ' send'); spSend(k, 'send'); } }
-  else if (act === 'close') spClose(k);
+  else if (act === 'close') { if (S.sprintOpen != null) spClose(k); }
   else if (act === 'target') s.target = +a;
   else if (act === 'photo') { pushUndo(spLabel(k) + ' photo confirmed'); spPhotoOk(k, +a); }
   else if (act === 'remove') { pushUndo(spLabel(k) + ' remove BIB ' + a); spRemove(k, +a); }
   else if (act === 'reinstate') { pushUndo(spLabel(k) + ' rank BIB ' + a); spReinstate(k, +a); }
   else if (act === 'sendheld') { pushUndo(spLabel(k) + ' send BIB ' + a); spSend(k, s.live ? 'live' : 'send', [+a]); }
   else if (act === 'hold') { pushUndo(spLabel(k) + ' BIB ' + a + ' ' + ordinal(+b)); spHold(k, +a, +b); }
-  else if (act === 'notpdismiss') { s.notpDismiss.push(+a); logEvent('SPRINT', spLabel(k) + ' · BIB ' + a + ' · no transponder · not in the first places · operator', true); }
   else if (act === 'ne') S.neOpen = !S.neOpen;
   else if (act === 'sort') S.slSort = a;
   dirty = true; render();
 });
-scard.addEventListener('dblclick', e => { const row = e.target.closest('.slrow'); const k = S.sprintOpen; if (!row || k == null) return; const bib = +row.dataset.sl; if (S.withdrawn.has(bib)) return; pushUndo(spLabel(k) + ' place BIB ' + bib); spInsert(k, bib, spTarget(k), 'double-click'); dirty = true; render(); });
+scard.addEventListener('dblclick', e => { const row = e.target.closest('.slrow'); const k = sprintShown(); if (!row || k == null || k > NSPRINTS) return; const bib = +row.dataset.sl; if (S.withdrawn.has(bib)) return; pushUndo(spLabel(k) + ' place BIB ' + bib); spInsert(k, bib, spTarget(k), 'double-click'); dirty = true; render(); });
 scard.addEventListener('input', e => { if (e.target.id === 'sinp') { const k = S.sprintOpen; if (k != null) sp(k).manualText = e.target.value; e.target.classList.remove('err'); } });
 scard.addEventListener('keydown', e => {
   if (e.target.id === 'stgt') { if (e.key === 'Enter') { const k = S.sprintOpen, v = parseInt(e.target.value, 10); if (k != null && v >= 1) { sp(k).target = v; dirty = true; render(); } } return; }
@@ -2060,16 +2530,17 @@ function cfgStep(key, d) {
   applyCfg(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
 }
 
-// Hiding the simulator must not take the race controls away: the transport block is MOVED into the top bar, not
-// copied, so there is only ever one play button and one clock in the page.
+// Le transport, l'horloge du simulateur, le champ d'état, Replay et New vivent dans la barre du haut, que le rail du
+// simulateur soit ouvert ou réduit à son bouton. L'opérateur, 28 octobre 2026 : « J'ai redessiné toute la page » --
+// son croquis place ces commandes dans l'en-tête. Masquer le simulateur ne déplace donc plus rien.
 function railHide(h) {
   $('#rail').hidden = h; $('#railshow').hidden = !h;
-  const t = $('#simtransport');
-  if (h) $('.bar').appendChild(t); else $('#railtransport').appendChild(t);
-  $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 90';
+  // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
+  // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
+  $('#buildno').textContent = 'build 148';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

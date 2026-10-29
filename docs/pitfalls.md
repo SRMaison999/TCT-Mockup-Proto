@@ -274,6 +274,72 @@ erreur bien visible. Retenu : `serve.js` sert `.css` en `text/css`. **Tout nouve
 statique extrait du prototype (un autre `.js`, une image, …) doit vérifier que `serve.js` lui
 donne le bon type** avant de le charger par balise.
 
+**D17. Vérifier une classe au lieu de la couleur qu'elle produit.** Le bouton `ARM FINISH`
+armait correctement — `S.finArm` passait à `true`, la classe `armed` était posée — et ne
+changeait pas d'aspect d'un pixel : l'opérateur a signalé qu'il « ne fonctionne pas », et de son
+point de vue c'était exact. La cause est une règle de style : `.startb.finb`, qui pose son
+apparence neutre, est déclarée **après** `.startb.armed` et a la **même spécificité**, donc elle
+l'emporte et annule le vert en silence. Retenu : **un test d'interface affirme la couleur
+calculée, pas la classe**. `document.querySelector(x)` puis `getComputedStyle(...).backgroundColor`
+coûte une ligne de plus et attrape ce que `classList.contains` laissera toujours passer. Et quand
+deux règles décrivent le même élément dans deux états, celle de l'état particulier doit mordre
+plus fort que celle du repos, pas seulement venir après.
+
+**D18. Une `font-family` écrite dans un attribut SVG, sans repli.** Le nom d'un groupe sur
+l'ovale portait `font-family="IBM Plex Sans"` **seul**, alors que toute l'interface passe par
+`var(--sans)`, c'est-à-dire `'IBM Plex Sans', system-ui, sans-serif`. Partout où la police du
+projet n'est pas chargée — réseau coupé, feuille de Google Fonts bloquée, premier affichage —
+ces textes-là, et eux seuls, retombent sur la **serif** par défaut du navigateur, au milieu
+d'une interface sans serif. L'opérateur l'a vu avant moi : « il faut utiliser une police qui
+correspond à notre projet ». Retenu : **un texte SVG prend sa police par une classe CSS**, donc
+par la variable du projet et sa liste de repli, jamais par un attribut `font-family` nu. Il
+reste un cas du même défaut, les dossards tracés dans les pastilles (`IBM Plex Mono` nu) : il
+n'a pas été corrigé parce qu'il n'a pas été demandé.
+
+**D19. `getBBox()` renvoie des zéros sur un élément non affiché.** En vérifiant que deux noms de
+groupes ne se recouvrent jamais, la mesure a annoncé **338 recouvrements sur 724 paires** et une
+distance minimale de **0** — deux étiquettes exactement au même point. C'était la mesure qui
+était fausse : la carte du sprint recouvre l'ovale par moments, et `getBBox()` sur un élément
+qui n'est pas rendu renvoie `{0,0,0,0}`, si bien que **toutes** les étiquettes se retrouvaient à
+l'origine, donc toutes « superposées ». Reprise sur les attributs `x`/`y`, en sautant les images
+où l'ovale n'est pas affiché, elle donne **zéro recouvrement**. Retenu : avant de corriger un
+code sur une mesure accablante, **vérifier que la mesure a regardé quelque chose de visible** —
+et, dans le doute, lire les coordonnées posées par le code plutôt que celles calculées par le
+moteur de rendu.
+
+**D20. Une classe courte redéclarée plus bas pour un autre panneau.** `.trow` désigne à la
+fois une ligne de coureur de la timeline et une ligne du panneau des transpondeurs. La règle
+du second, écrite une centaine de lignes plus bas dans `styles.css` avec **la même
+spécificité**, l'emportait : les lignes de la timeline tiraient leurs colonnes
+(`44px 34px …`), leur fond et leur barre de gauche d'un panneau qui n'a rien à voir avec
+elles, et la règle écrite pour elles ne servait à rien. Rien ne le signalait, puisque le
+résultat restait lisible. Découvert en resserrant la colonne : la grille ne bougeait pas.
+Corrigé en préfixant les règles du panneau par `#simtp`. Même famille que F5, et même leçon
+que D17 : **la cascade tranche par l'ordre à spécificité égale**, donc une classe courte se
+porte sur un conteneur, et on vérifie la valeur calculée, jamais la règle écrite.
+
+**D21. Mesurer des chiffres sans regarder l'écran.** Trois builds de suite ont été livrées sur
+des mesures correctes — aucun débordement, rien qui défile, la bonne hauteur partout — alors
+que l'écran, lui, montrait deux grands rectangles vides de part et d'autre de la piste.
+L'opérateur : « je veux qu'avant de faire des commits à tout va, tu regardes le résultat et te
+pose la question si le résultat est correct ». Les mesures disent qu'une règle est respectée ;
+elles ne disent pas que l'écran est bon. **Retenu : prendre la capture, la regarder, et se
+demander ce qu'un opérateur en penserait, avant de commiter.**
+
+**D22. `grid-row` ne survit pas au passage en boîte flexible.** La colonne centrale est passée
+d'une grille à un `flex-direction:column` ; les `grid-row:1` et `grid-row:2` qui ordonnaient
+l'ovale et la zone du bas sont devenus inertes, et l'ordre du document a repris la main. La
+zone du bas est repassée **au-dessus** de l'ovale sans qu'aucune erreur ne soit levée et sans
+que les mesures de hauteur ne bougent. Retenu : **en changeant de mode de disposition, relever
+les positions, pas seulement les tailles.**
+
+**D23. Une garde écrite pour un cas devenue fausse quand le cas change.** Le gestionnaire de
+clic de la carte du sprint commençait par `if (S.sprintOpen == null) return` -- juste, tant que
+la carte n'existait que pendant un sprint. Dès que la carte est devenue permanente, cette ligne
+a rendu **toute** la carte inerte hors sprint : le tri de la liste de départ par dossard ou par
+pays ne répondait plus, sans aucune erreur. Retenu : **en rendant permanent ce qui était
+conditionnel, relire les gardes qui portaient sur la condition.**
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été
@@ -329,6 +395,18 @@ sa place après avoir été lu. Retenu : **chaque passage est jugé une seule fo
 où il est lu** ; une liste des coureurs déjà jugés sert de verrou. Corollaire dans l'autre
 sens : un passage lu pendant l'inéligibilité reste grisé jusqu'à la fermeture du sprint — le
 coureur reprend une place par une **seconde** ligne, il ne transforme pas la première.
+
+**F12. Le filtre qui rejugeait les passages après coup.** La règle F10 dit que chaque passage
+est jugé **une seule fois**, à l'instant où il est lu, et que le verrou est la liste des
+coureurs déjà jugés. Le code posait bien ce verrou (`s.greyed`) pour **griser** la ligne, mais
+le filtre qui construit le classement portait, lui, sur `s.lapped` -- l'inéligibilité de
+**l'instant présent**. Conséquence : un coureur lu alors qu'il était éligible **disparaissait
+du classement** dès qu'il devenait inéligible plus tard dans le sprint, sans rang et sans ligne
+grisée, puisqu'il n'était pas dans le verrou. Écarté du résultat et annoncé nulle part.
+Constaté par l'opérateur le 29 octobre 2026 : « des coureurs non éligibles ont été ignorés (ce
+qui est correct pour le classement) mais jamais annoncés comme non éligibles ». **Retenu : le
+verrou doit servir aux deux usages, l'affichage et le classement ; un seul des deux qui lit
+l'instant présent suffit à rejuger le passé.**
 
 **F11. L'affichage grisé n'est que de l'affichage.** La tentation était de passer le sprint
 d'un modèle « un coureur, une place » à un modèle « un passage, une ligne ». L'opérateur a
@@ -504,3 +582,37 @@ n'ont été vérifiées que sur cas forcé (`mesures.md` §6 et §7).
 **À construire** : décaler le décrochage des deux coureurs lâchés pour qu'ils se trouvent
 entre le peloton et la ligne **au moment précis** où un sprint s'ouvre. Un seul scénario
 exercerait les deux règles.
+
+
+### D24 · Recopier une position sans se demander ce qu'elle fait là
+
+Le bloc des coureurs sans transpondeur était émis entre le titre `ORDER` et l'en-tête de
+colonnes de l'ordre (build 147, `renderCard`, ligne 2134). En redessinant la carte, je l'ai
+repris **tel quel**, avec son commentaire d'origine, dans quatre maquettes successives. Il a
+fallu que l'opérateur demande « pourquoi tu positionnes le cadre jaune du coureur GBR27 là où
+tu l'as positionné ? » pour que je regarde : il repoussait tout l'ordre et séparait un titre de
+son propre en-tête.
+
+**La règle** : une maquette qui reprend du code existant hérite aussi de ses défauts. Chaque
+élément recopié se justifie à nouveau, ou se déplace.
+
+### A13 · Répondre à une question par une modification
+
+À cette même question -- « pourquoi est-il là ? » -- j'ai répondu en le **supprimant**, et en
+inventant au passage une interaction (cliquer un coureur de la liste pour le placer) que
+personne n'avait demandée et qui effaçait une distinction réelle : la place donnée à un coureur
+sans transpondeur est **retenue** jusqu'au passage suivant ou jusqu'à `Send`.
+
+**La règle** : une question sur un comportement n'est pas une autorisation de le changer. On
+explique, on propose, on attend (`regles-operateur.md` §14.3).
+
+### A14 · Écrire du texte que personne n'a demandé
+
+Sous les boutons du bloc, j'avais ajouté « la place est retenue jusqu'au passage suivant, ou
+jusqu'à Send ». Deux fautes d'un coup : du texte inventé dans une interface où chaque libellé
+est décidé, et **du français dans une interface entièrement en anglais**. Même faute pour
+« déposer ici » dans la zone de dépôt.
+
+**La règle** : avant de livrer, relire tous les textes visibles d'une maquette et vérifier
+qu'ils viennent de la documentation ou de la build en cours, et qu'ils sont dans la langue de
+l'interface.

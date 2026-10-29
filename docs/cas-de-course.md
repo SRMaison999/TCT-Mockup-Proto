@@ -29,7 +29,7 @@ silencieusement optimiste.
 | 14 | **Deux transpondeurs inversés** | `regles-operateur.md` §11 | `tpById()` dans `step()`, `swapTp()` | `mesures.md` §10 | **Codé build 60** |
 | 15 | **Mise en place et tour de lancement** | `regles-operateur.md` §12 | — | — | **Pas codé.** Ni la phase dans le simulateur, ni la vérification des transpondeurs, ni les propositions. Le travail à faire est détaillé dans `travaux.md` §1 |
 | 16 | **Les deux Pursuits face à face sur l'ovale** | `regles-operateur.md` §9 | `#trackpath` ancré au milieu de la ligne droite d'arrivée, `pt()` décalé de `CFG.gap` | `pitfalls.md` A14 · `mesures.md` §14 | **Conforme**, corrigé build 69. Les deux repères tombent au milieu de leur ligne droite pour les quatre longueurs de piste et tout `gap` |
-| 17 | **Les marquages de la piste** | `regles-operateur.md` §9, tableau de la norme UCI | les quatre rectangles longitudinaux du décor, et `renderMarks()` pour les traits en travers | `mesures.md` §14 | **Conforme**, codé build 69, couleurs, épaisseurs et étendue des traits revues builds 70 à 73 sur ses quatre relectures du 28 octobre 2026. Côte d'azur, lignes noire, rouge et bleue à leur cote ; arrivée en trait noir sur bande blanche, ni l'un ni l'autre à sa cote réelle ; 200 m et 100 m en blanc ; tape switches **pas dessinés** |
+| 17 | **Les marquages de la piste** | `regles-operateur.md` §9, tableau de la norme UCI | les quatre rectangles longitudinaux du décor, et `renderMarks()` pour les traits en travers | `mesures.md` §14 | **Conforme**, codé build 69, couleurs, épaisseurs et étendue des traits revues builds 70 à 73 sur ses quatre relectures du 28 octobre 2026. Côte d'azur, lignes noire, rouge et bleue à leur cote ; arrivée en trait noir sur bande blanche, ni l'un ni l'autre à sa cote réelle ; 200 m et 100 m en blanc ; tape switches **pas dessinés**. **Build 91** : plus aucun repère n'est nommé — les cinq étiquettes de l'ovale sont retirées sur sa demande du 29 octobre 2026, les traits restent |
 | 18 | **La course de référence est une course enregistrée** | `regles-operateur.md` §16 | `REF_RACE.acts`, `replayTick()`, `pilotStep()` pour la roue | `pitfalls.md` A11 · `mesures.md` §15 | **Conforme**, codé build 74. Plus de `SCRIPT`, plus de `useScript`, plus de mode `away`. **Build 75** : elle quitte le code, déposée dans la liste enregistrée à la première ouverture, puis renommable et effaçable comme les autres |
 | 20 | **Le peloton tient l'allure affichée** | `regles-operateur.md` §16 | `S.anchor`, `step()`, `syncAllToBunchPace()` | `mesures.md` §17 · `architecture.md` §16 | **Conforme**, corrigé build 76. Un coureur qui quitte le peloton ne change plus l'allure de ceux qui restent |
 | 21 | **La progression d'un ordre, et la vitesse d'arrivée** | `regles-operateur.md` §16 | `progress()`, `po.prog`, `--prog`, `endPilot(r, mates)`, mode `follow` | `mesures.md` §18 · `architecture.md` §16 | **Conforme**, codé build 77 pour ↑ et ↓. Pour `+lap` et `−lap` le retour au peloton prend une trentaine de secondes : point ouvert au §15 des règles |
@@ -41,6 +41,12 @@ silencieusement optimiste.
 | 27 | **Les réglages gardés d'une course à l'autre** | `regles-operateur.md` §16 | `saveSetup()`, `loadSetup()`, `TPMAP`, `tct.sim.setup` | `mesures.md` §24 · `architecture.md` §19 | **Conforme**, codé build 86. Liste de départ, piste et appairage ; *New* et rechargement vérifiés |
 | 28 | **Le drapeau d'une nation entrée à la main** | `regles-operateur.md` §16 | `FLAGS`, `flag()` | `mesures.md` §25 | **Conforme**, codé build 87. 205 nations ; code inconnu = rectangle gris |
 | 19 | **Renommer et effacer une course** | `regles-operateur.md` §16 | le gabarit d'une ligne de l'onglet Files, `renaming`, `delArmed`, `commitRename()`, `saveRaces()` | `mesures.md` §16 | **Conforme**, codé build 75. Renommage sur place, effacement en deux clics, les deux tiennent au rechargement |
+| 29 | **Les champs d'état à l'intérieur de l'ovale** | `regles-operateur.md` §17 | `#infield`, `#ifpanel`, `renderStrip()` qui écrit en place | `mesures.md` §26 | **Proposé build 92, en attente de sa critique.** La bande au-dessus de l'ovale est supprimée. Sur sa deuxième lecture : le champ des propositions est retiré, l'horloge et le bouton de départ sont côte à côte sans titre, le leader ne porte que son dossard, et le prochain sprint devient immanquable à deux tours. Sur sa troisième : le compteur de tours rejoint les tours restants près de la ligne d'arrivée |
+| 30 | **La provenance des tours restants** | `regles-operateur.md` §17 | `S.togoSrc`, `S.togoManual`, `S.togoExport`, `togoValue()` | `mesures.md` §26 | **Proposé build 92.** Les **deux provenances s'affichent ensemble avec leurs deux valeurs**, et un sélecteur choisit celle qui alimente `TO GO` — la règle du §13 sur le désaccord. Un petit bouton bascule l'application entre comptage propre et comptage à la main, ± visibles en manuel seulement. `TO GO` est vert, et **rouge** quand les tours restants sont retenus des sorties : **la zone elle-même se clique**, il n'y a pas de bouton. Chaque provenance porte sa valeur, celle du compteur comprise. Le lap counter relié n'est toujours pas simulé (`travaux.md` §5) : c'est une provenance affichée, sans flux derrière |
+| 33 | **`ARM FINISH`** — l'horloge s'arrête sur le vainqueur | `regles-operateur.md` §17, point 17 | `S.finArm`, `S.winT`, posés à l'ouverture de l'arrivée dans `step()` | `mesures.md` §26 | **Conforme**, codé build 92. La ligne se désarme d'elle-même au passage du vainqueur, et le temps affiché reste le sien pendant que les autres franchissent |
+| 34 | **Les annotations de l'ovale** | `regles-operateur.md` §17, points 19 à 21 | `renderOval()`, `#ovlabels` vide | `mesures.md` §26 | **Toutes retirées**, build 93, et les marques rouges de l'inéligibilité avec elles à la build 94. `S.inelig` est intact : le cas 10 continue de griser la ligne du sprint. À refaire entièrement : `travaux.md` §4 ter |
+| 31 | **Le départ de la course** | `regles-operateur.md` §17 | `S.startState`, `S.fsConfirm`, `startClick()`, `syncStart()` | `mesures.md` §26 | **Proposé build 92, partiel.** Les quatre états et leurs couleurs y sont ; l'impulsion externe n'existe pas, et le départ s'appuie sur celui du simulateur — voir l'écart assumé ci-dessous |
+| 32 | **Désigner le prochain leader depuis la piste** (Pursuit A et B seulement) | `regles-operateur.md` §17 | `.armb`, `#armfo0..2` placés par `renderMarks()`, `#lpg0..2`, `syncArm()`, `S.armDone` | `mesures.md` §26 | **Proposé build 92.** « SET NEXT AS LEADER » sur deux lignes ; bouton et ligne de la boucle au vert à l'armement, dossard du nouveau leader ensuite. **La boucle Finish n'a plus de bouton**, sur sa demande du 29 octobre. Le délai d'affichage est un choix, voir ci-dessous |
 
 ---
 
@@ -55,6 +61,18 @@ l'opérateur les avait données comme une précision sur le matériel, il n'avai
 de les simuler. Le code n'a donc ni largeur de bande ni position en largeur du coureur, et
 tout le monde franchit toutes les bandes. Les longueurs restent écrites pour le jour où il
 en demandera quelque chose.
+
+**Le départ de la course n'a pas d'impulsion externe, et s'appuie sur celui du simulateur.**
+La règle du §17 décrit le **futur logiciel** : l'opérateur l'a dit lui-même. Le prototype en
+montre les quatre états et les enchaîne, mais il n'a pas d'entrée matérielle, et il n'a pas non
+plus de départ de course distinct de `Play` — aujourd'hui le même geste lance la course et
+l'horloge. Le tour de lancement, qui est ce qui sépare les deux, n'est pas construit
+(`travaux.md` §1). `START` déclenche donc le départ du simulateur, et un faux départ validé
+remet la course à zéro sans rien enregistrer.
+
+**Le dossard du nouveau leader reste affiché 5 secondes.** L'opérateur a dit « pendant quelques
+secondes » et aucune cote ne lui a été demandée, conformément au §14 (on ne lui demande que ce
+qu'il voit). `ARM_SHOW_S` vaut 5 : c'est un choix d'affichage, pas une règle.
 
 **La place du coureur dans son groupe ne se tire pas de l'horodatage du contact.** Tranché
 par l'opérateur, `regles-operateur.md` §11. Il n'y a rien à implémenter.

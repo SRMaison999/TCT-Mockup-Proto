@@ -7,9 +7,13 @@
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);overflow:hidden}
 .app{height:100%;box-sizing:border-box;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
-.bar{display:flex;align-items:center;gap:8px;height:36px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:0 10px;flex:0 0 auto}
+.bar{display:flex;align-items:center;gap:6px;height:36px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:0 10px;flex:0 0 auto}
 .bar h1{font:600 15px var(--sans);margin:0;white-space:nowrap}
 .bar .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .bld{flex:0 0 auto;color:var(--dim);font:500 12px var(--mono);white-space:nowrap}
+/* Quand la barre est pleine, c'est le mot « Race leader » qui cède avant le bouton « Race log » : il n'introduit
+   qu'un bouton dont l'opérateur a dit « je m'en fous », et son bouton garde son infobulle. */
+.bar .lbl{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .sp{flex:1 1 auto}
 .btn{font:500 13px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
@@ -47,18 +51,24 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .fld .v.sm{font-size:14px}
 .fld .u{font:500 12px var(--mono);color:var(--muted)}
 /* timeline */
-.tl{width:360px;flex:0 0 360px;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-width:0}
-.tl .hd{display:flex;align-items:baseline;gap:8px;padding:8px 10px 6px;border-bottom:1px solid var(--line)}
-.tl .hd .lbl{color:var(--fg)}
-.tl .hd .note{color:var(--muted);font-size:11px;margin-left:auto}
-.tl .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column}
-.tgrp{border:1px solid var(--line2);border-radius:4px;background:#17191c;padding:3px 4px 4px}
+.tl{width:174px;flex:0 0 auto;display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:4px;min-width:0}
+.tl .body{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 4px;display:flex;flex-direction:column}
+.tgrp{border:1px solid var(--line2);border-radius:4px;background:#17191c;padding:0 0 2px}
 .tgrp.lead{border-color:var(--fg)}
 .tgrp.pinned{border-color:var(--acc)}
 .tgrp.incident{border-color:var(--crit);border-style:dashed}
 .tgrp.over{background:var(--acc-soft)}
-.gh{display:flex;align-items:center;gap:6px;height:24px;padding:0 4px;font:500 12px var(--sans);color:var(--muted);white-space:nowrap}
-.gh .gi{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* L'en-tête d'un bloc : une bande à la couleur du groupe, sur deux lignes, cliquable en entier pour sélectionner
+   tout le groupe (son croquis du 29 octobre 2026). Il est **collant** : quand la colonne défile, le nom du groupe
+   reste visible au-dessus de ses coureurs (l'opérateur, 29 octobre 2026, sur une course à 24 coureurs). */
+.gh{position:sticky;top:-1px;z-index:3;display:flex;flex-direction:column;gap:1px;padding:4px 7px 5px;margin-bottom:3px;
+  cursor:pointer;background:var(--gcol, var(--line));color:#121416;font:500 12px var(--sans);border-radius:3px 3px 0 0}
+.gh .ghl{display:flex;align-items:center;gap:4px;min-width:0}
+.gh .gn{flex:1 1 auto;min-width:0;font:700 13px var(--sans);text-transform:uppercase;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#121416}
+.gh .gx{flex:0 0 auto;padding:0 3px;height:14px;line-height:12px;background:transparent;border-color:#12141633;color:#121416}
+.gh .pill{margin-top:2px;align-self:flex-start}
+.gh .gi{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;font:600 10px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:#121416cc}
 .gq{display:flex;align-items:center;gap:6px;height:24px;padding:0 4px;font:500 12px var(--sans);color:#c9d6f5;white-space:nowrap}
 .gq span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .gh b{color:var(--fg);font-size:12px;letter-spacing:.04em;cursor:pointer}
@@ -75,65 +85,141 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .gh span b{color:#8FB4FF}
 .btn.ok{background:#143824;border-color:var(--good);color:var(--good);font-weight:700}
 .trow .lap .btn.ok{padding:0 5px;height:18px;line-height:16px;margin-left:3px}
-.trow{touch-action:none;display:grid;grid-template-columns:34px 24px 36px minmax(0,1fr) 0 62px;gap:6px;align-items:center;height:26px;padding:0 4px;border-radius:3px;cursor:grab;user-select:none}
+.trow{touch-action:none;display:grid;grid-template-columns:38px 24px minmax(0,1fr) auto;gap:7px;align-items:center;height:28px;padding:0 6px;border-radius:3px;cursor:grab;user-select:none}
 .trow{position:relative}
 .trow:hover{background:#20242a}
-.trow .ra{display:none;position:absolute;left:108px;right:66px;top:2px;gap:2px;background:#20242a;justify-content:flex-end}
-.trow:hover .ra{display:flex}
+.trow:hover{background:#262b33}
 .trow.sel{background:var(--acc-soft);box-shadow:inset 2px 0 0 var(--acc)}
 .trow.hl{background:#262b33}
 .trow.dragging{opacity:.4}
 .dragghost{position:fixed;z-index:50;pointer-events:none;background:var(--acc);color:#0b1020;font:600 12px var(--sans);padding:3px 9px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .trow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.trow .noc{font:600 13px var(--mono);letter-spacing:.04em;color:var(--fg)}
+.trow .noc{font:600 14px var(--mono);letter-spacing:.02em;color:var(--fg);overflow:hidden}
+.trow .chip{height:24px;min-width:34px;font:600 14px var(--mono);padding:0 5px}
+.trow.marked .noc{color:var(--warn)}
+/* Un coureur privé de points le dit sur sa ligne, et pas seulement par la couleur de son code pays. */
+.trow .npts{font:700 9px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:#2a0d0d;background:var(--crit);
+  border-radius:3px;padding:1px 4px;white-space:nowrap}
+.trow.nopts .noc{color:var(--crit)}
+/* Un tour en attente de validation se voit sur la ligne, sans lui prendre de place : le ✓ est dans la carte. */
+.trow.pend{box-shadow:inset 0 0 0 1px #8FB4FF;background:#18203099}
+.trow.pend .noc{color:#8FB4FF}
 .trow .flag{width:22px;height:15px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 .trow .nm small{font-size:11px;margin-left:4px;color:var(--warn)}
 .trow .nm small.crit{color:var(--crit)}
-.trow .lap{font:600 12px var(--mono);text-align:right;white-space:nowrap}
+.trow .lap{font:600 12px var(--mono);text-align:right;white-space:nowrap;display:flex;align-items:center;gap:2px}
 .trow .lap{cursor:pointer}
 .trow .lap .up{color:var(--good)}.trow .lap .down{color:var(--warn);margin-left:3px}.trow .lap .pend{color:#8FB4FF;margin-left:3px}
 .ledger .ctr{display:inline-flex;align-items:center;gap:4px}
 .ledger .ctr .k{font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
 .ledger .ctr b{min-width:14px;text-align:center;font:600 13px var(--mono)}
 .ledger .ctr b.up{color:var(--good)}.ledger .ctr b.down{color:var(--warn)}
-.ledger .pal{display:inline-flex;gap:3px;align-items:center;margin-left:6px}
+.ledger .pal{display:inline-flex;flex-wrap:wrap;gap:3px;align-items:center;margin-left:0}
 .ledger .sw{width:16px;height:16px;border-radius:3px;border:2px solid transparent;padding:0;cursor:pointer}
 .ledger .sw.on{border-color:var(--fg)}
 .ledger input[type=color]{width:22px;height:20px;padding:0;border:1px solid var(--line2);border-radius:3px;background:none;margin-left:4px;cursor:pointer}
-.ledger{margin:2px 4px 6px 38px;border:1px solid var(--line2);border-radius:4px;background:#141618;padding:4px 6px;font-size:12px}
-.ledger .lh{display:flex;align-items:center;gap:8px;height:24px;color:var(--muted)}
+/* Le panneau des compteurs vit maintenant dans la colonne des actions, large de 268 px : tout y passe à la ligne
+   plutôt que de déborder. */
+.ledger{grid-column:1 / -1;margin:2px 0 0;border:1px solid var(--line2);border-radius:4px;background:#141618;padding:4px 6px;font-size:12px}
+.ledger .lh{display:flex;align-items:center;flex-wrap:wrap;gap:6px;row-gap:3px;min-height:24px;color:var(--muted)}
 .ledger .lh b{color:var(--fg)}
 .ledger .lh .r{margin-left:auto;display:flex;gap:3px}
+.ledger .lh .k.lbl{font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .ledger .ll{display:grid;grid-template-columns:52px 50px minmax(0,1fr) auto;gap:8px;align-items:center;height:24px;border-top:1px solid var(--line)}
 .ledger .ll .who{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ledger .ll.off span{text-decoration:line-through;color:var(--dim)}
 .tgrp.pending{border-color:var(--acc)}
+/* A group's box wears the colour of its bubble on the oval (operator, 29 October 2026): a band down its left edge,
+   and its name in the same colour, so the eye joins the two views without reading a word. This comes AFTER the
+   state rules above, which also set border-color: declared before them it was silently overridden — pitfalls D17. */
+/* The group's name on the oval wears the project's own typeface, the same one its name in the timeline box wears.
+   Written as an SVG font-family attribute it carried « IBM Plex Sans » ALONE, with no fallback list, so wherever
+   the web font had not loaded it — and it alone — dropped to the browser's default serif. */
+.glabel{font:700 15px var(--sans)}
 .trow .g{font:500 12px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tgap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;color:var(--muted);font:500 12px var(--mono);padding:0 6px;min-height:22px;border-radius:3px}
+.tgap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:5px;color:var(--muted);font:500 9px var(--mono);padding:0 2px;min-height:12px;border-radius:3px}
 .tgap::before,.tgap::after{content:"";height:1px;background:var(--line2)}
 .tgap.over{background:var(--acc-soft);color:var(--fg)}
-.tgap .nz{display:none;font:600 12px var(--sans);color:var(--acc)}
-.tgap{min-height:30px;margin:2px 0;border:1px dashed transparent}
+.tgap .nz{font:600 10px var(--sans);letter-spacing:.02em;color:var(--dim)}   /* lisible en permanence (opérateur, 29 octobre 2026) */
+.tgap{min-height:14px;margin:1px 0;border:1px dashed transparent}
 body.dragging .tgap{border-color:var(--acc);background:#161c2a}
-body.dragging .tgap .nz{display:inline}
+body.dragging .tgap .nz{color:var(--acc)}
 body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .tier{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 4px 3px}
 .tier:first-child{padding-top:2px}
 .wd{border:1px solid var(--line2);border-radius:4px;background:#141618;padding:3px 4px 4px;margin-top:6px;opacity:.85}
-.wd .trow{cursor:default;grid-template-columns:34px 24px 36px minmax(0,1fr) 60px 62px}
-.gh .gno{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;border-radius:3px;background:var(--line);color:var(--fg);font:500 11px var(--mono)}
-.gh .ggap{flex:0 0 auto;font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
-.tbar{border-top:1px solid var(--line);padding:6px 10px 8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;align-items:center;font-size:12px;color:var(--muted);box-sizing:border-box}
+.wd .trow{cursor:default;grid-template-columns:38px 24px minmax(0,1fr) auto}
+.gh .ggap{flex:0 0 auto;font:600 10px var(--mono);color:#121416;font-variant-numeric:tabular-nums}
+/* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
+   et à droite de la timeline (l'opérateur, 29 octobre 2026). */
+
+
+.acts{grid-row:2;grid-column:1;position:relative;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
+.acts .tbar{flex:1 1 280px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px 12px}
+/* Les deux dispositions, au choix depuis la barre du haut. */
+/* La zone du bas prend la hauteur dont elle a besoin, et l'ovale prend ce qui reste : la barre d'actions ne doit
+   jamais avoir à défiler pour être vue en entier (l'opérateur, 29 octobre 2026). */
+
+.below{order:2;flex:0 0 auto;min-height:0;display:grid;gap:8px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto}
+body.lay-side .below{grid-template-columns:290px minmax(0,1fr);grid-template-rows:auto}
+.props{grid-row:1;grid-column:1;min-height:0;display:flex;flex-wrap:wrap;align-content:flex-start;gap:10px}
+body.lay-side .props{grid-column:2;grid-row:1}
+body.lay-side .acts{grid-column:1;grid-row:1;flex-direction:column}
+body.lay-side .acts .tbar{flex:0 0 auto;width:100%}
+/* La carte d'une proposition, d'après son croquis : les dossards empilés à gauche sous un en-tête BIB, avec
+   drapeau et code pays ; le reste à droite. Elle respire autant que les actions -- l'opérateur, 29 octobre 2026 :
+   « et c'est la même chose pour les propositions ! ». */
+.props .gq{flex:0 0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 24px;align-items:start}
+.props .gq .pbs{display:flex;flex-direction:column;gap:6px}
+.props .gq .pbs > .k{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-left:2px}
+.props .gq .pb{display:grid;grid-template-columns:34px 22px 42px auto;gap:10px;align-items:center}
+.props .gq .pb .noc{font:600 13px var(--mono);letter-spacing:.02em;color:var(--fg)}
+.props .gq .pb .btn{padding:6px 12px;height:auto;line-height:1;font-size:13px;border-radius:4px}
+.props .gq .pr{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.props .gq .pr .btn{padding:6px 12px;font-size:13px;border-radius:4px}
+.props .gq .pt{font:600 14px var(--sans);color:#c9d6f5;white-space:nowrap}
+.props .gq .pa{display:flex;gap:8px}
+.props .gq .pl{font:500 12px var(--mono);color:var(--muted)}
+.props .prop{flex:1 1 320px;font-size:13px;gap:10px}
+.props .prop .btn{padding:6px 12px;font-size:13px;border-radius:4px}
+.props .gq,.props .prop{background:#1a2238;border-left:3px solid var(--acc);border-radius:4px;margin:0;padding:12px 16px;height:auto;min-height:26px;white-space:normal;align-items:flex-start;flex-wrap:wrap;row-gap:4px}
+.props .gq span,.props .prop .pt{white-space:normal;overflow:visible;text-overflow:clip}
+/* Les actions respirent. L'opérateur, 29 octobre 2026 : « Les actions présentent beaucoup de boutons tous très
+   rapprochés les uns des autres, et alors même qu'il y a beaucoup de place sur la page ». Les boutons passent donc
+   à la taille normale, chaque famille va à la ligne, et les familles sont séparées par un trait. */
+.tbar{display:flex;flex-direction:column;align-items:stretch;gap:10px;font-size:13px;color:var(--muted);box-sizing:border-box}
 .tbar b{color:var(--fg)}
-.tbar .selinfo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.tbar .grpb{grid-column:1 / -1;display:flex;gap:4px;align-items:center}
-.tbar .sep{width:1px;height:18px;background:var(--line2);margin:0 4px}
+.tbar .selinfo{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;
+  padding-bottom:6px;border-bottom:1px solid var(--line)}
+.tbar .selinfo > span,.tbar .selinfo > b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbar .selinfo .clr{margin-left:auto;flex:0 0 auto;padding:4px 10px;margin-right:62px}
+.tbar .grpb{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tbar .grpb .btn{padding:7px 13px;font-size:13px;border-radius:4px}
+.tbar .grpb .btn.xs{padding:7px 13px;font-size:13px;border-radius:4px}
+.tbar .ledger{flex:0 0 auto}
+.tbar .sep{width:1px;height:22px;background:var(--line2);margin:0 4px}
 /* centre */
-.mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px}
-.oval{flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+/* L'écran de course : l'ovale en haut, qui ne fait que la hauteur de son dessin, et sous lui la zone des
+   propositions et des actions, qui prend tout le reste -- **rien n'est vide** -- l'opérateur, 29 octobre 2026 : « Pourquoi laisses-tu un espace vide en-dessous des actions ? ».
+   L'ovale prend donc toute la hauteur que les deux lignes lui laissent, et son dessin est calé en haut de son
+   panneau (attribut preserveAspectRatio de l'ovale). */
+.mid{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+/* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
+   place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
+/* La carte tient trois colonnes : l'ordre, les coureurs, les commandes. A 1440 elle prend sa largeur sur l'ovale,
+   l'operateur l'a autorise le 29 octobre 2026 -- et elle est alors la meme que sur un ecran de 1920. */
+.right{display:flex;flex:0 0 auto;width:clamp(500px, 29%, 560px);min-height:0}
+/* L'ovale prend exactement ce que la zone du bas lui laisse : ni plafond, qui recréerait du vide, ni proportions
+   imposées, qui en recréeraient aussi. Son dessin est calé en haut de son panneau. */
+/* Sans cadre ni fond : quand le dessin ne remplit pas la largeur, la place libre est le fond de la page et non
+   deux rectangles vides encadrés (l'opérateur, 29 octobre 2026, ses deux rectangles rouges). */
+.oval{order:1;flex:1 1 auto;width:100%;min-height:0;background:none;border:0;border-radius:0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .oval svg{width:100%;height:100%;display:block;touch-action:none;user-select:none}
-.log{height:300px;flex:0 0 300px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box}
-.log .hd{display:flex;justify-content:space-between;align-items:center;height:18px}
+.log{position:fixed;left:16px;right:16px;top:58px;bottom:16px;z-index:40;background:var(--deep);border:1px solid var(--acc);
+  border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box;
+  box-shadow:0 18px 48px #000a}
+.log[hidden]{display:none}
+.log .hd{display:flex;justify-content:space-between;align-items:center;height:24px;flex:0 0 auto}
 .log .rows{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:1px}
 .lrow{display:grid;grid-template-columns:62px 72px minmax(0,1fr);gap:10px;align-items:center;min-height:32px;line-height:1.15;padding:0 6px;font-size:13px;white-space:nowrap;background:#17191c;border-left:3px solid var(--line2)}
 .lrow.op{border-left-color:var(--acc)}
@@ -145,17 +231,20 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .lrow .m{overflow:hidden;text-overflow:ellipsis}
 @media (max-width:1000px){body{overflow:auto}.app{height:auto}.main{flex-wrap:wrap}.tl{flex-basis:100%;width:auto;height:auto}.tl .body{overflow:visible}.mid{flex-basis:100%;height:620px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-/* sprint mode: the oval shrinks to a band, the crossings/decisions panel hides, the sprint card takes the centre */
+body:not(.sprintmode) #scard{border-color:var(--line)}
+body:not(.sprintmode) #scard .sh b{color:var(--muted)}
+body:not(.sprintmode) #scard .srow.empty{opacity:.5}
+
+/* Pendant un sprint, la carte s'ouvre dans la colonne de droite : l'ovale et le journal restent en place, ils ne sont
+   plus masqués. Sa page redessinée du 29 octobre 2026. */
 .fld.acc{background:var(--acc-soft)}
 .fld.acc .v,.fld.acc .k{color:#c9d6f5}
 .chip.notp{border:1px dashed #8FB4FF}
-@keyframes blink{50%{opacity:0}}
-@media (prefers-reduced-motion:no-preference){.blink{animation:blink 1s steps(2,start) infinite}}
-#scard{display:none;flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--acc);border-radius:4px;flex-direction:column;overflow:hidden}
-body.sprintmode .oval{display:none}
-body.sprintmode .log{display:none}
-body.sprintmode #scard{display:flex}
+#scard{display:flex;flex:1 1 auto;min-width:0;min-height:0;background:var(--panel);border:1px solid var(--acc);border-radius:4px;flex-direction:column;overflow:hidden}
 .sh{display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border-bottom:1px solid var(--line);flex:0 0 auto;white-space:nowrap}
+/* Dans la colonne de droite, l'en-tête de la carte n'a plus 706 px à sa disposition mais 618 : il passe sur deux
+   lignes au lieu d'être coupé. Rien n'en est retiré. */
+#scard .sh{flex-wrap:wrap;height:auto;min-height:36px;padding:5px 10px;row-gap:5px}
 .sh b{font:600 14px var(--sans);letter-spacing:.04em}
 .sh .lapn{color:var(--muted);font:500 13px var(--mono)}
 .sh .cnt{color:var(--muted);font:500 12px var(--mono);margin-left:6px}
@@ -166,60 +255,82 @@ body.sprintmode #scard{display:flex}
 .sh input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:3px 8px;width:150px}
 .sh input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .sh input.err{border-color:var(--crit);background:#2a1414}
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,620px) 270px;gap:18px;padding:6px 10px 8px;overflow:auto}
-.sleft,.sright{min-width:0;display:flex;flex-direction:column}
-.shd{display:grid;grid-template-columns:30px 34px 40px minmax(0,1fr) 66px 28px 28px;gap:6px;align-items:center;height:20px;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
-.shd.sl{grid-template-columns:34px 40px minmax(0,1fr) 72px}
+/* La carte respire comme les actions : lignes plus hautes, marges plus larges, et la rangée « place suivante »
+   sous l'ordre, à gauche, où la place ne manque pas. */
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 78px 172px;gap:9px;padding:7px 8px;overflow:hidden}
+.sleft,.sright,.sctl{min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ssec{display:flex;align-items:baseline;gap:7px;padding:0 2px 4px;font:600 11px var(--sans);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted)}
+.ssec .hint{font:500 11px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+/* Aucune colonne souple vide : chaque colonne porte quelque chose, et l'ecart se cale a droite. */
+.shd{display:grid;grid-template-columns:22px 32px 38px minmax(0,1fr) 22px 22px;gap:5px;align-items:center;height:19px;white-space:nowrap;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 2px}
+.shd.sl{grid-template-columns:32px minmax(0,1fr)}
+.shd > span{overflow:hidden;text-overflow:ellipsis}
 .shd .srt{cursor:pointer}
 .shd .srt.on{color:#8FB4FF}
-.srow{display:grid;grid-template-columns:30px 34px 40px minmax(0,1fr) 66px 28px 28px;gap:6px;align-items:center;height:28px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
+/* Les lignes respirent quand la course le permet et se serrent quand les 24 coureurs arrivent. */
+.srows,.slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto}
+.srow{display:grid;grid-template-columns:22px 32px 38px minmax(0,1fr) 22px 22px;gap:5px;align-items:center;flex:1 1 26px;min-height:26px;max-height:34px;padding:0 2px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
 .srow .pl{font:600 13px var(--mono);color:var(--muted);cursor:pointer;white-space:nowrap}
 .srow .pl.tgt{color:var(--acc)}
 .srow .noc{font:600 13px var(--mono);letter-spacing:.04em}
-.srow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.srow .nm small{font-size:11px;margin-left:5px;color:var(--muted)}
-.srow .gp{font:500 12px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.srow .gp{font:500 12px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .srow .ic{display:flex;align-items:center;justify-content:center}
-.srow .ic .btn.xs{padding:0 5px;height:18px;line-height:16px}
+.srow .ic .btn.xs{padding:0 4px;height:18px;line-height:16px}
 .srow.sent{background:#143824}
 .srow.cam{background:#3a1515}
 .srow.cam .gp{color:#ffb3b3}
-.srow.held{border-left:3px solid #8FB4FF;background:#161c2a}
+.srow.held{box-shadow:inset 3px 0 0 #8FB4FF;background:#161c2a}
 .srow.held .gp{color:#8FB4FF}
-.srow.empty .pl{color:var(--dim)}
-.srow.empty .nm{color:var(--dim)}
+.srow.empty .pl,.srow.empty .gp{color:var(--dim)}
 .srow.over{box-shadow:inset 0 2px 0 var(--acc)}
 .srow[data-bib]{cursor:grab}
 .srow.dragging{opacity:.4}
-.sdrop{height:10px;border-radius:3px}
-.sdrop.over{box-shadow:inset 0 2px 0 var(--acc)}
-.sne{display:flex;align-items:center;gap:8px;height:28px;border-top:1px solid var(--line);padding:0 4px;margin-top:2px}
 .srow.grey{color:var(--dim)}
-.srow.grey .noc,.srow.grey .nm,.srow.grey .why{color:var(--dim)}
-.srow.grey .why{grid-column:5 / 7;font:500 11px var(--sans);text-align:right;white-space:nowrap}
+.srow.grey .noc{color:var(--dim)}
+.srow.grey .why{grid-column:4/6;font:500 10px var(--sans);text-align:right;white-space:nowrap;color:var(--dim)}
 .srow.grey .chip{opacity:.45}
-.srow.ne{height:24px;font-size:12px;color:var(--muted)}
-.srow.ne .nm{color:var(--muted)}
-.srow.ne .why{grid-column:5 / 7;font:500 11px var(--sans);color:var(--warn);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nts{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;margin:2px 0 4px;background:#2a2410;border:1px solid var(--warn);border-radius:3px;font-size:12px}
-.nts .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nts .nm small{color:var(--warn);margin-left:6px}
-.stgt{display:flex;align-items:center;gap:6px;height:32px;margin:0 0 4px;padding:0 4px;border:1px solid var(--acc);border-radius:4px;background:#161c2a}
-.stgt .k{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#c9d6f5;white-space:nowrap}
-.stgt b{font:600 18px var(--mono);color:var(--acc);margin:0 6px 0 2px;min-width:44px}
-.stgt .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
-.stgt input{font:600 14px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:2px 6px;width:64px}
-.slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.slrow{display:grid;grid-template-columns:34px 40px minmax(0,1fr) 80px;gap:6px;align-items:center;flex:0 0 auto;height:26px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
+/* La bande de depot ferme la colonne de l'ordre : elle vaut zero quand les 24 places sont prises. */
+.sdrop{flex:0 0 auto;height:24px;margin:4px 1px 0;border:1px dashed var(--line2);border-radius:4px}
+.sdrop.over{box-shadow:inset 0 2px 0 var(--acc);border-color:var(--acc)}
+.slrow{display:grid;grid-template-columns:32px minmax(0,1fr);gap:5px;align-items:center;flex:1 1 26px;min-height:26px;max-height:34px;padding:0 2px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
 .slrow .noc{font:600 13px var(--mono);letter-spacing:.04em}
-.slrow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.slrow .st{font:500 11px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}
 .slrow.placed .chip{opacity:.4}
-.slrow.placed .nm{color:var(--muted)}
+.slrow.placed .noc{color:var(--muted)}
 .slrow.out{color:var(--dim)}
-.slrow.out .nm{color:var(--dim)}
-.slrow.out .st{color:var(--warn)}
+.slrow.out .noc{color:var(--dim)}
 .slrow:hover{background:#20242a}
+/* La colonne des commandes : un pave par chose a faire, chacun avec son titre et son air. */
+.sctl{gap:9px;overflow:auto}
+.sctl .blk{display:flex;flex-direction:column;gap:7px;border:1px solid var(--line);border-radius:4px;padding:7px 8px 8px;background:var(--deep);min-width:0;flex:0 0 auto}
+.sctl .blk.acc{border-color:var(--acc);background:#161c2a}
+.sctl .blk.notp{border-color:var(--warn)}
+.sctl .blk.last{margin-top:auto}
+.sctl .bh{display:flex;align-items:baseline;gap:6px;justify-content:space-between;font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.sctl .blk.acc .bh{color:#c9d6f5}
+.sctl .blk.notp .bh{color:var(--warn)}
+.sctl .bh .hint{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+.sctl .br{display:flex;align-items:center;gap:6px;min-width:0}
+.sctl .br .btn{flex:1 1 auto;padding:6px 9px;font-size:12px;text-align:center}
+.sctl .br.lap .btn{flex:0 0 auto;padding:5px 9px}
+.sctl .br .who{display:flex;align-items:center;gap:6px;min-width:0}
+.sctl .br .who .noc{font:600 13px var(--mono);letter-spacing:.04em}
+.sctl .lapn2{font:600 17px var(--mono);color:var(--fg);flex:1 1 auto;text-align:center}
+.sctl .btn.wide{width:100%;text-align:center;padding:7px 8px;font-size:12px}
+.sctl .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.sctl .btn.sentok{background:#143824;border-color:var(--good);color:var(--good);font-weight:600}
+.sctl .btn.send{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.sctl .pl4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.sctl .pl5{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.sctl .pl4 .btn,.sctl .pl5 .btn{padding:6px 0;font-size:12px}
+.sctl input{font:600 13px var(--mono);color:var(--fg);background:var(--bg);border:1px solid var(--line2);border-radius:3px;padding:7px 8px;min-width:0;width:100%;box-sizing:border-box}
+.sctl input:focus{outline:2px solid var(--acc);outline-offset:1px}
+.sctl input.err{border-color:var(--crit);background:#2a1414}
+.sctl .nerow{display:flex;align-items:center;gap:6px;min-width:0;font-size:12px;color:var(--muted)}
+.sctl .nerow .noc{font:600 12px var(--mono)}
+.sctl .nerow .why{margin-left:auto;font:500 10px var(--sans);color:var(--warn);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sctl .hint{font:500 10px var(--sans);color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+
 /* sprints and standings tabs in the bottom panel */
 .lrow.spr{cursor:pointer}
 .lrow.spr:hover{background:#20242a}
@@ -271,21 +382,29 @@ body.sprintmode #scard{display:flex}
 .cfgfield{display:flex;align-items:center;gap:8px}
 .clock{font:600 18px var(--mono);color:var(--fg);background:#17191c;border:1px solid var(--line2);border-radius:4px;padding:3px 12px;font-variant-numeric:tabular-nums}
 /* the transport block, once moved into the top bar by railHide */
+/* Le sélecteur des deux dispositions : dans le coin haut droit du panneau des actions, c'est-à-dire dans la zone
+   qu'il commande. La ligne de sélection lui réserve sa place pour qu'il ne la recouvre pas. */
+#layseg{position:absolute;top:9px;right:10px;z-index:2}
+#layseg .btn{font-family:var(--mono);letter-spacing:-1px}
 .bar #simtransport{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .bar #simtransport .sh{padding:0;gap:6px}
 .bar #simtransport .btn.lg{padding:3px 9px;font-size:13px}
 .bar #simtransport .clock{font-size:13px;padding:2px 8px}
-#railtransport #simtransport .clockrow{padding-top:8px}   /* the second row only breathes when the rail is open; in the top bar the two rows sit side by side */
 /* One height for everything in the transport row — buttons, groups of buttons, clock and REC. Each of them was
    sizing itself on its own text and padding, so six controls side by side came out six different heights
    (operator, 28 October 2026). The height is given once per place the row can sit, and every control takes it. */
 #simtransport{--tph:38px}
 .bar #simtransport{--tph:26px}
 #simtransport .btn,#simtransport .seg,#simtransport .clock,#simtransport .simstate{height:var(--tph);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;line-height:1}
-#simtransport .simstate{flex:0 0 120px;width:120px}
-#simtransport .simstate.off{visibility:hidden}
+/* Le champ prend la place de son texte, et pas davantage : « REC » n'a pas besoin des 120 px que demande
+   « PLAYING RACE 2 ». C'est ce qui faisait déborder la barre en 1440 avec le rail ouvert. */
+#simtransport .simstate{flex:0 0 auto;min-width:0;padding:0 2px}
+/* Vide, le champ d'état ne garde plus ses 120 px : avec le rail ouvert en 1440 la barre débordait de 82 px et le
+   bouton « Race log » en sortait. C'est toujours UN seul champ pour REC et PLAYING RACE (règle du 28 octobre 2026),
+   mais il ne réserve sa place que lorsqu'il a quelque chose à dire. */
+#simtransport .simstate.off{display:none}
 #simtransport .seg .btn{height:100%;border-radius:0}
-.bar.withtransport h1{display:none}
+.bar h1{display:none}   /* le transport occupe l'en-tête ; le sous-titre porte le numéro de build */
 .btn.lg{padding:8px 16px;font-size:16px}
 .rosterrow{display:grid;grid-template-columns:22px 40px minmax(0,1fr) 44px 26px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2)}
 .rosterrow .swatch{width:18px;height:18px;border-radius:4px;border:1px solid var(--line2);padding:0;cursor:pointer;background:none}
@@ -293,11 +412,11 @@ body.sprintmode #scard{display:flex}
 .rosterrow input.bib{font-family:var(--mono);text-align:center;color:var(--muted)}
 .rosterrow input.noc{font-family:var(--mono);text-align:center;text-transform:uppercase;color:var(--muted)}
 .rosterrow.editing input{background:#23272b;border-color:var(--line2);color:var(--fg)}
-.trow{display:grid;grid-template-columns:44px 34px minmax(0,1fr) 50px 40px 42px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--mono)}
-.trow.hdr{background:none;border-left-color:transparent;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:18px}
-.trow.spare{border-left-color:var(--warn)}
-.trow .st{font:500 11px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.trow .dead{color:var(--crit);text-decoration:line-through}
+#simtp .trow{display:grid;grid-template-columns:44px 34px minmax(0,1fr) 50px 40px 42px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--mono)}
+#simtp .trow.hdr{background:none;border-left-color:transparent;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-height:18px}
+#simtp .trow.spare{border-left-color:var(--warn)}
+#simtp .trow .st{font:500 11px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#simtp .trow .dead{color:var(--crit);text-decoration:line-through}
 .krow{display:grid;grid-template-columns:minmax(0,1fr) 96px 26px;gap:6px;align-items:center;min-height:27px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2);font:500 12px var(--sans)}
 .krow .v{min-width:40px;text-align:right;font:500 12px var(--mono);font-variant-numeric:tabular-nums}
 .krow input.v{width:52px;box-sizing:border-box;text-align:center;background:#23272b;border:1px solid var(--line2);border-radius:3px;color:var(--fg);padding:1px 3px;font-family:var(--mono)}
@@ -331,3 +450,136 @@ body.sprintmode #scard{display:flex}
 #simtransport .btn .ink{display:inline-block}   /* a box of its own, so it can be shifted inside its button */
 .dot{display:inline-block;width:7px;height:7px;border-radius:4px;background:var(--crit);margin-right:5px;vertical-align:1px}
 .hint{color:var(--dim);font:500 11px var(--mono);padding:5px 4px 0}
+
+/* ---------- The race fields, inside the oval ----------------------------------------------------------------
+   The operator asked on 29 October 2026 that the status bar above the oval be taken away and its fields put inside
+   the track (regles-operateur.md §17). Everything below lives INSIDE the SVG, in track units, so it stays in the
+   middle of the oval at any window size.
+
+   Two things govern the whole block and must not be undone:
+   - renderStrip() writes text and classes into these nodes, never innerHTML. A button replaced between the press
+     and the release emits no click (pitfalls D2), and this panel carries buttons.
+   - A foreignObject catches the pointer over its whole RECTANGLE, transparent or not. The frames are therefore
+     see-through and only what is drawn takes the pointer. */
+
+/* The panel follows the operator's drawing of 29 October 2026: three rows, each a few boxes sized to what they
+   hold and centred, not a grid of equal cells. */
+.ifg{display:flex;flex-direction:column;align-items:center;gap:7px;font-family:var(--sans)}
+.ifrow{display:flex;align-items:stretch;justify-content:center;gap:6px}
+.ifb{display:flex;align-items:center;gap:7px;height:38px;padding:0 11px;box-sizing:border-box;
+  background:var(--deep);border:1px solid var(--line);border-radius:4px;white-space:nowrap;overflow:hidden}
+.ifb .ifk{font:600 12px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
+.ifb .ifv{font:600 21px var(--mono);font-variant-numeric:tabular-nums}
+.ifb .ifv.sm{font-size:15px}
+.ifb .ifu{font:500 12px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;padding:0 6px;
+  border-radius:4px;font:600 15px var(--mono);color:#fff;background:var(--line2)}
+.ifclock{justify-content:center;min-width:112px}
+.ifclock .ifv{font-size:24px}
+.ifclock .ifv.stopped{color:var(--play)}
+
+/* « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
+   immanquable ». No colour was stated; this is the one the project already keeps for what must be seen. */
+.ifb.hot{background:var(--warn);border-color:var(--warn)}
+.ifb.hot .ifk,.ifb.hot .ifv,.ifb.hot .ifu{color:#2a1b05;font-weight:700}
+.ifb.hot .ifv{font-size:17px}
+
+/* The start button, in the operator's four states. The third click state is only BIGGER AND DARKER — he asked for
+   nothing else, and in particular for no second wording. */
+.ifstart{display:flex}
+.startb{width:100%;font:700 13px var(--sans);letter-spacing:.09em;border-radius:4px;padding:0;cursor:pointer;
+  color:#fff;background:var(--crit);border:1px solid var(--crit)}
+.startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
+.startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
+.startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:15px;letter-spacing:.12em}
+/* Beside it, the button that arms the finish. It is NOT the start button: at rest it stays neutral. Armed, it goes
+   green like everything else that waits for a rider — and that rule must come LAST and bite harder than the neutral
+   one, which is declared after .startb.armed and was silently cancelling it: the button armed without showing it. */
+.ifrow .startb{width:auto;padding:0 13px}
+.startb.finb{background:var(--deep);border-color:var(--line);color:var(--fg)}
+.startb.finb:hover{border-color:var(--muted)}
+.startb.finb.armed{background:var(--play);border-color:var(--play);color:#06220c}
+
+/* The laps to go show BOTH provenances with BOTH figures, and one of them is picked — the operator's rule for a
+   disagreement with the lap counter (regles-operateur.md §13). The chosen figure is the green TO GO box; held back
+   from the outputs, that box goes red, and a very small button makes the change. */
+.togobox{display:flex;flex-direction:column;gap:3px;padding:3px;background:var(--deep);
+  border:1px solid var(--line);border-radius:4px}
+.srcrow{display:flex;align-items:center;gap:7px;height:20px;padding:0 8px;border-radius:3px;
+  background:#23272b;border:1px solid var(--line2)}
+.srcrow.on{border-color:var(--muted)}
+.srcrow .ifk{flex:1 1 auto;font-size:11px}
+.srcv{font:600 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
+.pick{width:13px;height:13px;border-radius:50%;padding:0;background:#15181b;border:1px solid var(--line2);
+  cursor:pointer;flex-shrink:0}
+.srcrow.on .pick{background:var(--fg);border-color:var(--fg)}
+.modeb{width:20px;height:18px;font-size:11px}
+.ifstep{display:none;gap:3px}
+.srcrow.manual .ifstep{display:inline-flex}
+.ifsb{height:18px;width:18px;font-size:11px}
+/* The box is the button, so its figure fills it: nothing else competes for the room. */
+#iftogo{height:36px;background:var(--play);border-color:var(--play);cursor:pointer;justify-content:space-between}
+#iftogo:hover{filter:brightness(1.08)}
+#iftogo .ifk{font-size:14px;letter-spacing:.06em}
+#iftogo .ifv{font-size:28px;line-height:1}
+#iftogo .ifk,#iftogo .ifv{color:#06220c}
+.ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
+  border-radius:3px;width:20px;height:20px;line-height:1;padding:0;cursor:pointer}
+.ifsb:hover{border-color:var(--muted)}
+#iftogo.noexp{background:var(--crit);border-color:var(--crit)}
+#iftogo.noexp .ifk,#iftogo.noexp .ifv{color:#2a0808}
+
+
+/* The two leader buttons, each on its own loop. The Finish loop has none: the operator had it removed. */
+.armwrap{display:flex;align-items:center;justify-content:center;height:100%}
+.armb{width:100%;height:100%;font:600 11px var(--sans);letter-spacing:.04em;line-height:1.35;color:var(--fg);
+  background:rgba(15,17,19,.92);border:1px solid var(--line2);border-radius:3px;padding:0;cursor:pointer}
+.armb:hover{border-color:var(--muted)}
+.armb.on{color:#06220c;background:var(--play);border-color:var(--play)}
+.armb.done{color:var(--play);border-color:var(--play);background:rgba(15,17,19,.92);font:600 15px var(--mono)}
+
+#ifpanel,.ifg,.ifrow,.armwrap{pointer-events:none}
+.ifb,.startb,.ifsb,.armb,.srcrow,.pick,.togobox{pointer-events:auto}
+/* The fields left the inside of the oval on 29 October 2026: the ring between the track and the panel was 48 units
+   and a badge needs every one of them, so a group's name had nowhere to go. The block keeps its three rows and sits
+   above the oval; what, if anything, goes back inside is for the operator to say. */
+.panelbar{flex:0 0 auto;display:flex;justify-content:center;background:var(--panel);border:1px solid var(--line);
+  border-radius:4px;padding:8px}
+.panelbar .ifg{width:auto}
+/* Everything that was in the bar above the oval went back inside it (operator's redrawn page, 29 October 2026).
+   The laps and the laps to go stand in a column beside the two provenances; the leader and the next sprint sit
+   lower, as badges of their own. */
+.lapcol{display:flex;flex-direction:column;gap:3px}
+.lapcol .ifb{height:100%}
+#ifbadges .ifrow{height:100%}
+#ifpanel,#ifbadges,#ifbadges .ifrow{pointer-events:none}
+/* The operator redrew the infield on 29 October 2026 as three columns side by side: the start, the laps to go with
+   their two provenances, and the race's own figures. */
+.ifcols{display:flex;align-items:flex-start;justify-content:center;gap:8px;font-family:var(--sans)}
+.ifcol{display:flex;flex-direction:column;gap:4px}
+.ifcol .startb{width:100%;height:32px;padding:0 10px}
+.ifcol .ifb{height:32px}
+.ifcol .srcrow{height:26px}
+.ifcol #iftogo{height:38px}
+#ifpanel,.ifcols{pointer-events:none}
+.ifcol>*{pointer-events:auto}
+.ifcol .startb,.ifcol .srcrow .ifk,.ifcol .ifb{white-space:nowrap}
+/* Smaller, on the operator's offer: « on peut réduire la taille des polices, des boutons d'armage, de l'horloge ».
+   A tighter block leaves the group badges more room, and 23 frames in 197 had one partly covered. */
+.ifcol .startb{font-size:11px;height:28px;padding:0 9px}
+.ifcol .ifb{height:28px;padding:0 9px;gap:6px}
+.ifcol .ifb .ifk{font-size:11px}
+.ifcol .ifb .ifv{font-size:18px}
+.ifcol .ifb .ifv.sm{font-size:13px}
+.ifcol .ifb .ifu{font-size:11px}
+.ifcol .ifclock .ifv{font-size:20px}
+.ifcol .ifchip{min-width:24px;height:20px;font-size:13px}
+.ifcol .srcrow{height:22px}
+.ifcol .srcrow .ifk{font-size:10px}
+.ifcol .srcv{font-size:12px}
+.ifcol #iftogo{height:32px}
+.ifcol #iftogo .ifk{font-size:12px}
+.ifcol #iftogo .ifv{font-size:24px}
+
+
+
