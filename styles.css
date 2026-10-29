@@ -282,7 +282,6 @@ body.sprintmode #scard{display:flex}
 .bar #simtransport .sh{padding:0;gap:6px}
 .bar #simtransport .btn.lg{padding:3px 9px;font-size:13px}
 .bar #simtransport .clock{font-size:13px;padding:2px 8px}
-#railtransport #simtransport .clockrow{padding-top:8px}   /* the second row only breathes when the rail is open; in the top bar the two rows sit side by side */
 /* One height for everything in the transport row — buttons, groups of buttons, clock and REC. Each of them was
    sizing itself on its own text and padding, so six controls side by side came out six different heights
    (operator, 28 October 2026). The height is given once per place the row can sit, and every control takes it. */
@@ -292,7 +291,7 @@ body.sprintmode #scard{display:flex}
 #simtransport .simstate{flex:0 0 120px;width:120px}
 #simtransport .simstate.off{visibility:hidden}
 #simtransport .seg .btn{height:100%;border-radius:0}
-.bar.withtransport h1{display:none}
+.bar h1{display:none}   /* le transport occupe l'en-tête ; le sous-titre porte le numéro de build */
 .btn.lg{padding:8px 16px;font-size:16px}
 .rosterrow{display:grid;grid-template-columns:22px 40px minmax(0,1fr) 44px 26px;gap:4px;align-items:center;min-height:26px;padding:0 4px;background:#17191c;border-left:3px solid var(--line2)}
 .rosterrow .swatch{width:18px;height:18px;border-radius:4px;border:1px solid var(--line2);padding:0;cursor:pointer;background:none}

@@ -1531,3 +1531,14 @@ Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque 
 > Je ne sais pas encore
 
 Il reste donc **tel qu'il est**, et la question est ouverte (§15).
+
+### La barre du haut
+
+**29 octobre 2026.** Son dessin de la page entière place dans l'en-tête ce qui vivait jusque-là
+dans le rail du simulateur : le transport (`⏮ 30s`, lecture, pause, `×1`/`×4`/`×16`), l'horloge
+du simulateur, le champ unique qui dit `REC` ou `PLAYING RACE n`, puis `Replay` et `New`.
+
+53. **Le transport du simulateur est dans la barre du haut, en permanence.** Masquer le rail ne
+    déplace plus rien : le rail se réduit à son bouton `Simulator` et les commandes de lecture
+    restent là où elles sont. Le titre « Lap timeline · prototype » laisse la place ; le
+    sous-titre, qui porte le numéro de build, reste.

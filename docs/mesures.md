@@ -1485,3 +1485,20 @@ s'était désarmée d'elle-même.
 l'horloge, laissant le bouton de départ seul à la ligne suivante — alors que l'opérateur les
 veut côte à côte. Le leader prend désormais la ligne entière. Une boîte peut être parfaitement
 placée et parfaitement à la mauvaise place : les deux lectures restent nécessaires.
+
+## 27. La barre du haut après le déménagement du transport — build 113
+
+Fenêtre de 1920 px, prototype ouvert en `file://`, rail du simulateur ouvert puis masqué.
+
+| Mesure | Valeur |
+|---|---|
+| Largeur de la barre | 1427 px |
+| Hauteur de la barre | 38 px |
+| Bloc du transport | 555,3 px de large, de x = 421,4 à x = 976,7 |
+| Dépassement de la barre (`scrollWidth − clientWidth`) | 0 px, rail ouvert comme rail masqué |
+| Dépassement de la page | 0 px (`scrollWidth` = `innerWidth` = 1920) |
+| Position du bloc, rail masqué | identique : x = 421, largeur 555 px |
+
+Le bloc ne bouge plus d'un pixel quand le rail se ferme, puisqu'il ne change plus de parent. Le
+champ d'état garde ses 120 px même vide — c'est ce qui tient l'écart entre l'horloge et
+`Replay`, et c'est voulu : un seul champ dit `REC` ou `PLAYING RACE n` (§17, 28 octobre 2026).
