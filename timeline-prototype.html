@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 128</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 129</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1182,7 +1182,7 @@ function renderTimeline(G) {
     // La bande qui sépare deux blocs ne porte plus l'écart « 2 m · 0,1 s » : l'opérateur l'a marqué en rouge sur sa
     // capture du 29 octobre 2026. L'écart d'un groupe est déjà dans son en-tête. Elle garde sa zone de dépôt, et
     // celle-ci reste lisible en permanence : « on pourrait les laisser visibles en permanence ».
-    html += `<div class="tgap" data-newgroup="${gi}"${g.incident && !(prev && prev.incident) ? ' style="margin-top:6px"' : ''}><span><span class="nz">Drop here: new group</span></span></div>`;
+    html += `<div class="tgap" data-newgroup="${gi}"${g.incident && !(prev && prev.incident) ? ' style="margin-top:6px"' : ''}><span><span class="nz">new group</span></span></div>`;
     const isLead = g.bibs.includes(G.leaderBib), allOut = g.bibs.every(b => S.sprintOut.has(b)), someOut = g.bibs.some(b => S.sprintOut.has(b));
     const name = groupName(g), open = g.op && g.op.open;
     // L'en-tête du bloc porte quatre choses, et pas une de plus : le numéro, le nom, le nombre de coureurs et l'écart
@@ -1238,7 +1238,7 @@ function renderTimeline(G) {
     }
     html += '</div>';
   });
-  html += `<div class="tgap last" data-newgroup="${G.groups.length}" style="margin-top:auto"><span><span class="nz">Drop here: new group</span></span></div>`;
+  html += `<div class="tgap last" data-newgroup="${G.groups.length}" style="margin-top:auto"><span><span class="nz">new group</span></span></div>`;
   if (S.withdrawn.size) {
     html += '<div class="wd"><div class="gh"><b>Withdrawn</b><span>' + plural(S.withdrawn.size, 'rider') + '</span></div>';
     for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); html += `<div class="trow" data-wd="${bib}" title="${r.name} · ${w.code} · lap ${w.lap}">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><span class="lap"><b class="crit">${w.code}</b><button class="btn xs quiet" data-reinstate="${bib}" title="Reinstate">↺</button></span></div>`; }
@@ -2475,7 +2475,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 128';
+  $('#buildno').textContent = 'build 129';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

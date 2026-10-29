@@ -1762,3 +1762,29 @@ dans l'une comme dans l'autre disposition.
 
 La barre d'actions occupe maintenant 182 px des 333 px de la zone en 1440, et la carte de
 proposition 143 px. Rien ne déborde dans aucune des deux dispositions, à 1440 comme à 1920.
+
+## 41. La hauteur de la timeline à 24 coureurs — build 129
+
+La hauteur demandée par la colonne se calcule exactement, et la formule a été vérifiée sur un
+cas réel monté à 24 coureurs inscrits :
+
+`hauteur = cadre_du_bloc × G + ligne × R + bande × (G + 1)`
+
+| | Build 128 | Build 129 |
+|---|---|---|
+| Cadre d'un bloc | 43 px | 36 px |
+| Ligne d'un coureur | 26 px | 22 px |
+| Bande de dépôt | 32 px | 16 px |
+| En-tête d'un bloc | 35 px | 30 px |
+| **24 coureurs en 2 groupes** | 806 px (prédit et mesuré) | **648 px (prédit et mesuré)** |
+
+Nombre de groupes qui tiennent sans défiler, avec 24 coureurs :
+
+| | 1440 × 900 (830 px) | 1920 × 1080 (1010 px) |
+|---|---|---|
+| Build 128 | 2 groupes | 4 groupes |
+| **Build 129** | **5 groupes** | **9 groupes** |
+
+Au-delà, la colonne défile, mais l'en-tête du bloc reste collé en haut : vérifié en forçant le
+défilement, après 150 px de défilement l'en-tête est à 3 px du haut de la colonne au lieu
+d'être sorti de l'écran, et il porte toujours son nom, son nombre de coureurs et son écart.
