@@ -1729,3 +1729,21 @@ maintenant exactement la même taille, sprint ou pas, et la carte est là en per
 | Piste dessinée | 755 × 338 | 1146 × 513 |
 
 Le vide est désormais **entièrement sous l'ovale**, et non plus réparti de part et d'autre.
+
+## 39. Les deux dispositions sous l'ovale — build 127
+
+Une proposition de tour à trois dossards affichée, rail masqué.
+
+| | 1440 × 900 | 1920 × 1080 |
+|---|---|---|
+| Piste dessinée | 755 × 338 | 1134 × 508 |
+| Haut de la piste | y = 134 | y = 172 |
+| Zone sous l'ovale | 848 × 333 | 1288 × 268 |
+| · propositions, disposition empilée | 848 × 265 | 1288 × 226 |
+| · actions, disposition empilée | 848 × 60 | 1288 × 34 |
+| · actions, disposition en colonne | 268 × 333 | 268 × 268 |
+| · propositions, disposition en colonne | 572 × 333 | 1012 × 268 |
+| Place vide sous les actions | 10 px (la marge de la page) | 10 px |
+
+La zone remplit exactement ce que l'ovale laisse : il n'y a plus de place vide nulle part,
+dans l'une comme dans l'autre disposition.

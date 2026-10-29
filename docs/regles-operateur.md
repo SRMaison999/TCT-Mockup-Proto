@@ -1709,3 +1709,17 @@ proposer (§14, point 1 et point 3).
 81. **L'ovale est calé en haut de son panneau.** Mot pour mot : « REMONTE L'OVALE SUR LA
     PAGE ». Son dessin ne se centre plus verticalement : le haut de la piste est à 134 px du
     haut de la page en 1440, contre 250 px auparavant. Tout le vide passe donc sous l'ovale.
+
+### Les deux dispositions de la zone sous l'ovale
+
+**29 octobre 2026.** Deux croquis, et mot pour mot :
+
+> On peut positionner les actions et propositions de deux manières différentes. Je trouve
+> qu'offrir cette flexibilité à l'utilisateur est très intéressante
+
+82. **La zone sous l'ovale prend toute la place que l'ovale laisse**, et se dispose de deux
+    manières, au choix de l'utilisateur depuis la barre du haut :
+    - **les propositions au-dessus, les actions en dessous**, toutes deux sur toute la largeur ;
+    - **les actions en colonne à gauche**, les propositions à leur droite.
+83. **C'est un choix de l'utilisateur, pas un réglage d'essai.** Il reste dans la barre du
+    haut, il ne disparaîtra pas.

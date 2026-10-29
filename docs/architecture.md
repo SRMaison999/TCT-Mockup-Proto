@@ -367,8 +367,11 @@ immédiatement quand il est caché, pour ne pas reconstruire ses lignes à chaqu
 
 ### La barre d'actions
 
-Elle est sous l'ovale, dans la deuxième rangée de la grille `.mid`, et porte côte à côte la
-barre de sélection (`#tbar`) et les cartes de proposition (`#propcard`).
+Sous l'ovale, `.below` prend toute la hauteur restante et contient la barre de sélection
+(`#tbar`, dans `.acts`) et les cartes de proposition (`#propcard`). Deux dispositions, au choix
+de l'utilisateur depuis `#layseg` dans la barre du haut : par défaut les propositions au-dessus
+des actions, ou, avec la classe de corps `lay-side`, les actions en colonne de 268 px à gauche
+des propositions.
 
 `#tbar` ne porte plus seulement les actions d'une sélection : quand elle ne contient **qu'un
 seul coureur**, elle ajoute `Laps…` et `Leader`, et le panneau des compteurs et de la couleur
