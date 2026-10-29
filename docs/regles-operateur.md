@@ -1815,3 +1815,11 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
     manuelle, l'ordre mesuré, l'enregistrement, le mode Live, la place suivante, les non
     éligibles et le tri de la liste de départ. **Seuls `Send` et `Close` manquent avant la
     cloche** : il n'y a rien à envoyer et rien à fermer.
+
+98. **La carte du sprint respire comme les actions.** « DONNE DE L'AIR ! Il y a énormément de
+    place en-dessous du classement ». La ligne d'une place passe de 28 à 36 px, celle de la
+    liste de départ de 26 à 30, les marges de la carte de 6 à 10 px.
+99. **La rangée « place suivante » quitte la colonne étroite de la liste de départ** pour
+    passer **sous l'ordre**, à gauche, où la place ne manque pas. Elle tient sur deux lignes
+    voulues -- le libellé et la place en cours, puis les quatre boutons `1st` à `4th` à taille
+    normale -- au lieu de passer à la ligne toute seule dans 170 px.

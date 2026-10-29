@@ -249,14 +249,17 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .sh input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:3px 8px;width:150px}
 .sh input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .sh input.err{border-color:var(--crit);background:#2a1414}
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(230px,1fr) minmax(166px,180px);gap:18px;padding:6px 10px 8px;overflow:auto}
+/* La carte respire comme les actions : lignes plus hautes, marges plus larges, et la rangée « place suivante »
+   sous l'ordre, à gauche, où la place ne manque pas. */
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(230px,1fr) minmax(176px,190px);gap:20px;padding:10px 12px 12px;overflow:auto}
 .sleft,.sright{min-width:0;display:flex;flex-direction:column}
-.shd{display:grid;grid-template-columns:30px 34px 44px minmax(0,1fr) 56px 28px 28px;gap:6px;align-items:center;height:20px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
-.shd.sl{grid-template-columns:34px 44px minmax(0,1fr)}
+
+.shd{display:grid;grid-template-columns:32px 38px 46px minmax(0,1fr) 58px 30px 30px;gap:8px;align-items:center;height:24px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
+.shd.sl{grid-template-columns:38px 46px minmax(0,1fr)}
 .shd > span{overflow:hidden;text-overflow:ellipsis}
 .shd .srt{cursor:pointer}
 .shd .srt.on{color:#8FB4FF}
-.srow{display:grid;grid-template-columns:30px 34px 44px minmax(0,1fr) 56px 28px 28px;gap:6px;align-items:center;height:28px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
+.srow{display:grid;grid-template-columns:32px 38px 46px minmax(0,1fr) 58px 30px 30px;gap:8px;align-items:center;height:36px;padding:0 6px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
 .srow .pl{font:600 13px var(--mono);color:var(--muted);cursor:pointer;white-space:nowrap}
 .srow .pl.tgt{color:var(--acc)}
 .srow .noc{font:600 13px var(--mono);letter-spacing:.04em}
@@ -288,13 +291,19 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .nts{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;margin:2px 0 4px;background:#2a2410;border:1px solid var(--warn);border-radius:3px;font-size:12px}
 .nts .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nts .nm small{color:var(--warn);margin-left:6px}
-.stgt{display:flex;align-items:center;flex-wrap:wrap;row-gap:3px;gap:6px;min-height:32px;padding-top:2px;padding-bottom:2px;margin:0 0 4px;padding:0 4px;border:1px solid var(--acc);border-radius:4px;background:#161c2a}
-.stgt .k{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#c9d6f5;white-space:nowrap}
-.stgt b{font:600 18px var(--mono);color:var(--acc);margin:0 4px 0 2px;min-width:40px}
+/* Deux lignes voulues : le libellé et la place en cours, puis les quatre boutons. Sur une seule, ils passaient à
+   la ligne tout seuls et la rangée était illisible. Elle reste sous l'ordre, à portée de l'œil. */
+.stgt{display:flex;flex-direction:column;align-items:stretch;gap:10px;margin:14px 0 0;padding:10px 12px 12px;
+  border:1px solid var(--acc);border-radius:4px;background:#161c2a}
+.stgt .sthead{display:flex;align-items:center;gap:12px}
+.stgt .stbtns{display:flex;flex-wrap:wrap;gap:8px}
+.stgt .k{font:600 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#c9d6f5;white-space:nowrap}
+.stgt b{font:600 20px var(--mono);color:var(--acc);margin:0 6px 0 0;min-width:46px}
+.stgt .btn{padding:7px 14px;font-size:13px}
 .stgt .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
 .stgt input{font:600 14px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:2px 6px;width:64px}
 .slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.slrow{display:grid;grid-template-columns:34px 44px minmax(0,1fr);gap:6px;align-items:center;flex:0 0 auto;height:26px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
+.slrow{display:grid;grid-template-columns:38px 46px minmax(0,1fr);gap:8px;align-items:center;flex:0 0 auto;height:30px;padding:0 6px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
 .slrow .noc{font:600 13px var(--mono);letter-spacing:.04em}
 .slrow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .slrow .st{font:500 11px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}

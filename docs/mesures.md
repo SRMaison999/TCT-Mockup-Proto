@@ -1907,3 +1907,16 @@ livrée sans aucune commande.
 Vérifié au clic, hors sprint : le tri par pays réordonne la liste (`ESP FRA GBR NED SLO` →
 `BEL BRA COL DEN ESP`) et le retour par dossard la rétablit ; la flèche → fait passer le tour
 jugé de 10 à 11 et la flèche ← le ramène.
+
+## 47. La carte du sprint aérée — build 143
+
+| | Avant | Après |
+|---|---|---|
+| Ligne d'une place | 28 px | 36 px |
+| Ligne de la liste de départ | 26 px | 30 px |
+| Marges de la carte | 6 × 10 px | 10 × 12 px |
+| Écart entre les deux colonnes | 18 px | 20 px |
+| Rangée « place suivante » | 170 px de large, dans la colonne de droite, boutons `1` à `4` repliés sur deux lignes | **309 px, sous l'ordre**, boutons `1st` à `4th` sur une ligne |
+
+Vérifié : les quatre boutons sont bien sur une seule ligne, la carte ne déborde ni en largeur
+ni en hauteur, et la liste de départ reste entière.
