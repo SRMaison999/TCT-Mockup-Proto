@@ -6,10 +6,9 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 91</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 92</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
-    <span class="seg" id="armseg" title="The next rider read at this point becomes the race leader"><button class="btn quiet" data-arm="0">Finish</button><button class="btn quiet" data-arm="2">Pursuit A</button><button class="btn quiet" data-arm="1">Pursuit B</button></span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
     <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
     <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
@@ -25,7 +24,6 @@
     </section>
 
     <section class="mid">
-      <div class="strip" id="strip"></div>
       <div class="oval">
         <svg viewBox="0 0 980 590" role="img" aria-label="Track view" id="oval">
           <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#15181b" stroke="#b5884e" stroke-width="60"/>
@@ -38,6 +36,28 @@
           <g id="bands"></g>
           <g id="riders"></g>
           <g id="ovlabels"></g>
+          <g id="infield">
+            <foreignObject id="armfo0" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="0">SET NEXT AS NEW LEADER</button></div></foreignObject>
+            <foreignObject id="armfo1" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT AS NEW LEADER</button></div></foreignObject>
+            <foreignObject id="armfo2" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT AS NEW LEADER</button></div></foreignObject>
+            <foreignObject id="ifpanel" x="305" y="222" width="370" height="108">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="ifg">
+                <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
+                <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
+                <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
+                <div class="ifstart"><button class="startb" id="startbtn">ARM START</button></div>
+                <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
+              </div>
+            </foreignObject>
+            <foreignObject id="togofo" x="0" y="0" width="246" height="28">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="armwrap">
+                <div class="ifb" id="iftogo"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span>
+                  <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
+                  <span class="ifsrc" id="iftogosrc" title="Where this number comes from: the lap counter on the track, the application counting by itself, or the operator counting by hand">APP · AUTO</span>
+                  <button class="ifsb wide" id="iftogoexp" title="Hold the laps to go back from every output">EXPORTED</button></div>
+              </div>
+            </foreignObject>
+          </g>
         </svg>
       </div>
       <section id="scard" aria-label="Sprint"></section>
@@ -236,6 +256,14 @@ function reset() {
     cass: {},               // per pair of riders following each other: the break as it stands confirmed
     inelig: new Set(),      // riders not eligible, from the groups rule in computeGroups
     started: false,         // the race waits for Start: nothing moves before the operator says so
+    // The laps to go carry their own provenance (operator, 29 October 2026): the lap counter on the track, the
+    // application counting by itself, or the operator counting by hand. And they can be held back from the outputs.
+    togoSrc: 'auto',        // 'counter' | 'auto' | 'manual'
+    togoManual: null,       // the operator's own count, while he keeps it by hand
+    togoExport: true,       // false: the number goes out on no output at all
+    startState: 'idle',     // 'idle' | 'armed' | 'run' — what the start button says
+    fsConfirm: false,       // a false start asks twice
+    armDone: null,          // {i, bib, until}: the loop that has just named a leader shows his number for a moment
     pilot: {},              // bib → the simulator order the rider is riding: {kind:'spd'|'up'|'down'|'gain'|'lose'}
     taps: TAPES.map(() => []),       // what a tape switch emits: an instant, no identity at all — the software may read this
     tapeTruth: TAPES.map(() => []),  // the simulated truth behind those contacts {t, bib, merged}: forbidden to the software, like r.dist
@@ -408,7 +436,7 @@ function step(dt) {
           if (L === 0 && !S.finishOpen && kn >= LAPS) { S.finishOpen = rec.t; S.finishCrossed = new Set(); logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false); }
           if (L === 0 && S.finishOpen && rec.t >= S.finishOpen) S.finishCrossed.add(nb);   // the finish line only
         }
-        if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
+        if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.armDone = { i: LOOPS.indexOf(L), bib: nb, until: S.t + ARM_SHOW_S }; S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
       }
     }
   }
@@ -1014,7 +1042,7 @@ function syncUndo() { const b = $('#undo'); b.disabled = !S.undo.length; b.title
 
 
 // ---------- rendering ----------
-const tlbody = $('#tlbody'), tbar = $('#tbar'), strip = $('#strip'), logrows = $('#logrows');
+const tlbody = $('#tlbody'), tbar = $('#tbar'), logrows = $('#logrows');
 const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
 // The drawn width of the track, in SVG units, and the half-width everything on the oval measures from: the loop
 // lines across it, the edges of a group's band, the tape strips on its outer half, and the clearance the infield
@@ -1118,15 +1146,43 @@ function renderTimeline(G) {
 
 }
 
+// The status fields live in the infield now (operator, 29 October 2026). They are written in place, never rebuilt:
+// the panel is laid down once in the HTML, and a button that is replaced between the press and the release never
+// emits a click (pitfalls D2) — and this panel carries buttons.
+const IF = {};
+for (const k of ['leadchip', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
+                 'togosrc', 'togoexp', 'lap', 'lapof']) IF[k] = $('#if' + k);
+const TOGO_SRC = { counter: 'LAP COUNTER', auto: 'APP · AUTO', manual: 'APP · MANUAL' };
+function togoValue(autoVal) { return S.togoSrc === 'manual' && S.togoManual != null ? S.togoManual : autoVal; }
 function renderStrip(G) {
   const lap = dispLap(), toGo = LAPS - lap, n = nextSprintNum(lap), nextSprint = sprintLap(n), sprintNow = sprintNumOf(lap) > 0;
-  const lead = S.riders.find(r => r.bib === G.leaderBib), pending = S.proposals.filter(p => !(S.snoozed[p.key] && S.t < S.snoozed[p.key])).length;
-  strip.innerHTML = `<div class="fld"><span class="k">LAP</span><span class="v">${S.finished ? LAPS : lap}</span><span class="u">/ ${LAPS}</span></div>
-    <div class="fld"><span class="k">TO GO</span><span class="v">${S.finished ? 0 : toGo}</span></div>
-    <div class="fld${sprintNow || nextSprint - lap <= 2 ? ' acc' : ''}"><span class="k">${sprintNow ? 'SPRINT' : 'NEXT'}</span><span class="v sm">${S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across' : sprintNow ? 'SPRINT ' + n + ' this lap' : 'SPRINT ' + n}</span>${sprintNow || S.finished ? '' : `<span class="u">in ${plural(nextSprint - lap, 'lap')}</span>`}${S.sprintOut.size ? '<span class="u" style="color:var(--warn)">' + S.sprintOut.size + ' ignored</span>' : ''}</div>
-    <div class="fld"><span class="k">RACE TIME</span><span class="v">${fmtT(S.t)}</span></div>
-    <div class="fld"><span class="k">LEADER</span>${chip(lead)}<span class="u">${(G.leader.spd * 3.6).toFixed(1)} km/h</span><span class="u" style="color:${S.leader ? '#8FB4FF' : 'var(--muted)'}">${S.arm != null ? '· armed: next at ' + LOOPNAME[S.arm] : S.leader ? '· ' + S.leader.how : '· from the track'}</span></div>
-    <div class="fld"><span class="k">PROPOSALS</span><span class="v" style="color:${pending ? 'var(--acc)' : 'var(--muted)'}">${pending}</span><span class="u">in the groups</span></div>`;
+  const lead = S.riders.find(r => r.bib === G.leaderBib);
+  IF.lap.textContent = S.finished ? LAPS : lap;
+  IF.lapof.textContent = '/ ' + LAPS;
+  IF.time.textContent = fmtT(S.t);
+  IF.leadchip.textContent = lead ? lead.bib : '—';
+  IF.leadchip.style.background = lead ? lead.color : 'var(--line2)';
+  IF.leadchip.classList.toggle('dk', !!(lead && lead.dk));
+  // The leader box carries his number and nothing else (operator, 29 October 2026): no speed, no sentence saying
+  // how he was named. Both are still true, so they go in the tooltip rather than on the screen.
+  IF.leadchip.parentNode.title = 'Race leader · ' + (G.leader.spd * 3.6).toFixed(1) + ' km/h · '
+    + (S.arm != null ? 'armed' : S.leader ? S.leader.how : 'from the track');
+  IF.nextk.textContent = sprintNow ? 'SPRINT' : 'NEXT';
+  IF.nextv.textContent = S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across'
+    : sprintNow ? 'SPRINT ' + n + ' this lap' : 'SPRINT ' + n;
+  IF.nextu.textContent = sprintNow || S.finished ? '' : 'in ' + plural(nextSprint - lap, 'lap');
+  // « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
+  // immanquable » (operator, 29 October 2026). Two laps out and nearer, the box stops being a quiet field.
+  const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
+  IF.next.classList.toggle('acc', close);
+  IF.next.classList.toggle('hot', close);
+  IF.togov.textContent = S.finished ? 0 : togoValue(toGo);
+  IF.togosrc.textContent = TOGO_SRC[S.togoSrc];
+  IF.togo.classList.toggle('manual', S.togoSrc === 'manual');
+  IF.togo.classList.toggle('noexp', !S.togoExport);
+  IF.togoexp.textContent = S.togoExport ? 'EXPORTED' : 'NOT EXPORTED';
+  IF.togoexp.classList.toggle('off', !S.togoExport);
+  syncStart();
 }
 
 // ---------- the oval: the same race as the timeline, drawn on the track, and editable the same way ----------
@@ -1162,7 +1218,24 @@ function renderMarks() {
     // thin to read as a band around it, so it is widened to eight times the black line.
     if (fin) h += line(s, -HW, HW, '#FFFFFF', FIN_BLACK * 8) + line(s, -HW, HW, '#111111', FIN_BLACK);
     else h += line(s, -HW, HW, col, 2);   // the two pursuit lines are white and cross the whole width
+    // An armed loop shows it on the track itself: a green line over its own, lit by syncArm().
+    h += line(s, -HW, HW, '#1CC634', 4).replace('<line ', `<line id="lpg${LOOPS.indexOf(s)}" stroke-opacity="0" `);
   }
+  // The three leader buttons are placed on their own loop, inside the grass. Only their x and y move, and only
+  // here — this function runs when the track is set, not on every frame, so the buttons are never replaced (D2).
+  const tf = $('#togofo');
+  if (tf) {
+    const a = normalAt(0), w = +tf.getAttribute('width'), ht = +tf.getAttribute('height');
+    tf.setAttribute('x', (a.p.x - a.nx * (HW + 86) - w / 2).toFixed(1));
+    tf.setAttribute('y', (a.p.y - a.ny * (HW + 86) - ht / 2).toFixed(1));
+  }
+  LOOPS.forEach((s0, i) => {
+    const fo = $('#armfo' + i); if (!fo) return;
+    const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
+    const deep = i === 0 ? HW + 52 : HW + 22;   // Finish sits a row deeper: it is only `gap` metres from Pursuit A
+    fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
+    fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
+  });
   // The painted lines of the flying 200 m, white. The 200 m crosses the whole width, the 100 m only half of it,
   // from the côte d'azur up. A 166 m track has neither; on a 200 m the start falls on the finish line, which
   // carries its own mark already — the same two cases buildTapes() handles for the strips.
@@ -1176,6 +1249,7 @@ function renderMarks() {
   // painted above, and the other three under a loop line. They go on being counted all the same — the Track tab
   // shows their contacts, by name.
   $('#marks').innerHTML = h;
+  armLines(); armShown = []; syncArm();   // #marks has just been rebuilt: the three green lines are new nodes
 }
 function renderOval(G, M) {
   let bands = '', dots = '', labels = '';
@@ -1393,9 +1467,80 @@ document.addEventListener('pointerup', e => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { S.selection.clear(); dirty = true; render(); } if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); } });
 $('#undo').addEventListener('click', undo);
 
-$('#armseg').addEventListener('click', e => { const b = e.target.closest('[data-arm]'); if (!b) return; const L = LOOPS[+b.dataset.arm]; pushUndo('arm ' + LOOPNAME[L]); S.arm = S.arm === L ? null : L; logEvent('LEADER', S.arm == null ? 'Arming cancelled' : 'Armed: next rider read at ' + LOOPNAME[L] + ' becomes the race leader', true); syncArm(); dirty = true; render(); });
+$('#infield').addEventListener('click', e => { const b = e.target.closest('.armb[data-arm]'); if (!b) return; const L = LOOPS[+b.dataset.arm]; pushUndo('arm ' + LOOPNAME[L]); S.arm = S.arm === L ? null : L; logEvent('LEADER', S.arm == null ? 'Arming cancelled' : 'Armed: next rider read at ' + LOOPNAME[L] + ' becomes the race leader', true); syncArm(); dirty = true; render(); });
+// The rest of the infield: the laps to go with their provenance, and the start button of the future software.
+// Both are described by the operator on 29 October 2026 (regles-operateur.md §17).
+const TOGO_NEXT = { counter: 'auto', auto: 'manual', manual: 'counter' };
+function startClick() {
+  if (S.startState === 'idle') { S.startState = 'armed'; logEvent('RACE', 'Start armed · waiting for the gun, here or on the external button', true); }
+  else if (S.startState === 'armed') {
+    S.startState = 'run'; S.fsConfirm = false;
+    if (!S.started) { $('#simplay').click(); return; }           // the race, and the running time with it
+  } else if (!S.fsConfirm) { S.fsConfirm = true; }               // a false start asks twice
+  else {
+    S.fsConfirm = false;
+    logEvent('RACE', 'False start · the race goes back before the gun', true);
+    reset(); REC = null; LOADED = null; syncSeg(); railDirty = true;   // a false start records nothing
+  }
+  dirty = true; render();
+}
+$('#infield').addEventListener('click', e => {
+  const t = e.target;
+  if (t.id === 'startbtn') return startClick();
+  if (t.id === 'iftogoexp') {
+    S.togoExport = !S.togoExport;
+    logEvent('RACE', S.togoExport ? 'Laps to go sent to the outputs again' : 'Laps to go held back from every output', true);
+    dirty = true; return render();
+  }
+  if (t.id === 'iftogosrc') {
+    const was = togoValue(LAPS - dispLap());
+    S.togoSrc = TOGO_NEXT[S.togoSrc];
+    if (S.togoSrc === 'manual') S.togoManual = was; else S.togoManual = null;
+    logEvent('RACE', 'Laps to go · ' + TOGO_SRC[S.togoSrc], true);
+    dirty = true; return render();
+  }
+  const st = t.closest('[data-togo]');
+  if (st && S.togoSrc === 'manual') {
+    S.togoManual = Math.max(0, Math.min(LAPS, togoValue(LAPS - dispLap()) + (+st.dataset.togo)));
+    dirty = true; return render();
+  }
+});
 $('#leaderauto').addEventListener('click', () => { pushUndo('leader auto'); S.leader = null; S.arm = null; logEvent('LEADER', 'Race leader taken from the track', true); syncArm(); dirty = true; render(); });
-function syncArm() { $('#armseg').querySelectorAll('[data-arm]').forEach(b => { const L = LOOPS[+b.dataset.arm]; b.classList.toggle('on', L === S.arm); b.classList.toggle('quiet', L !== S.arm); }); }
+// The three leader buttons sit on the track at their own loop. Armed, the button AND the loop's line go green and
+// wait; the moment a rider is read there, both come back to normal and the button shows his number for a moment
+// (operator, 29 October 2026). ARM_SHOW_S is not his: he said « pendant quelques secondes » and no figure was asked
+// of him — it is a display choice, and it is listed as one in cas-de-course.md.
+const ARM_SHOW_S = 5;
+// syncArm() runs on every frame (see render()), and builds 88 and 89 were spent taking per-frame work OUT of the
+// oval. So it looks nothing up: the three buttons are found once, and the three green lines are re-found only when
+// renderMarks() has just rebuilt #marks. Nothing here touches the document while the state has not changed.
+const ARMB = [0, 1, 2].map(i => $('#armfo' + i).querySelector('.armb'));
+let ARMG = [], armShown = [];
+function armLines() { ARMG = [0, 1, 2].map(i => $('#lpg' + i)); }
+function syncArm() {
+  if (!S) return;      // the track is applied before the race state exists (see the bootstrap): nothing to show yet
+  if (S.armDone && S.t >= S.armDone.until) S.armDone = null;
+  for (let i = 0; i < ARMB.length; i++) {
+    const b = ARMB[i]; if (!b) continue;
+    const armed = LOOPS[i] === S.arm, done = !armed && S.armDone && S.armDone.i === i;
+    const want = armed ? 'on' : done ? 'bib' + S.armDone.bib : '';
+    if (armShown[i] === want) continue;                 // nothing changed for this loop: leave the DOM alone
+    armShown[i] = want;
+    b.classList.toggle('on', armed);
+    b.classList.toggle('done', !!done);
+    b.textContent = done ? 'BIB ' + S.armDone.bib : 'SET NEXT AS NEW LEADER';
+    if (ARMG[i]) ARMG[i].setAttribute('stroke-opacity', armed ? '1' : '0');
+  }
+}
+// The start button of the future software, in the operator's own four states (regles-operateur.md §17).
+function syncStart() {
+  const b = $('#startbtn'); if (!b || !S) return;
+  const st = S.startState;
+  b.textContent = st === 'idle' ? 'ARM START' : st === 'armed' ? 'START ARMED' : S.fsConfirm ? 'CONFIRM FALSE START' : 'FALSE START';
+  b.classList.toggle('armed', st === 'armed');
+  b.classList.toggle('fs', st === 'run');
+  b.classList.toggle('confirm', st === 'run' && S.fsConfirm);
+}
 let lastFactor = 1;
 $('#speedseg').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; S.factor = lastFactor = +b.dataset.f; syncSeg(); dirty = true; });
 // A label is centred in its button by its BOX, and a box is not what the eye sees: a glyph carries its own side
@@ -2067,7 +2212,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 91';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 92';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

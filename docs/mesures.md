@@ -1075,3 +1075,52 @@ pas avant — NOR, MAR, RSA, VIE, CAN — et sur un code inventé :
 | XXX | le rectangle gris, comme avant |
 
 **La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
+
+---
+
+## 26. Les champs d'état dans le gazon — build 92
+
+Proposé le 29 octobre 2026 sur la maquette de l'opérateur, puis repris sur sa deuxième lecture
+du même jour (`regles-operateur.md` §17). Mesuré dans le navigateur, fenêtre 1700 × 1000,
+piste 250 m, `gap` 10 m.
+
+**Les trois défauts de la première version**, trouvés en pilotant la page, pas à l'œil :
+
+| Défaut | Mesure | Cause |
+|---|---|---|
+| Le cadre coupait son contenu | contenu **164 px** dans un cadre de **143 px** | un `foreignObject` rogne ce qui dépasse |
+| Le bouton de départ tombait sur celui de la boucle Finish | `ARM START` x 755→855, Finish x 818→923, y 426→452 contre 432→456 | les deux visaient le milieu du bas du gazon |
+| Les clics n'atteignaient pas les boutons de la piste | — | un `foreignObject` capte le pointeur sur **tout son rectangle**, transparent ou non |
+
+**Ce que la build 92 donne**, mêmes conditions. Tout ce qui se pose dans le bas du gazon est
+empilé, et chaque étage dégage le suivant :
+
+| Étage | Boîte | Dégagement |
+|---|---|---|
+| Bouton Pursuit B (en haut) | y 257 → 281 | **26 px** au-dessus du panneau |
+| Panneau | y 307 → 399, contenu **389** | **plus de rognage**, 10 px de marge |
+| Tours restants, sur la ligne d'arrivée | y 403 → 427 | 4 px sous le panneau |
+| Bouton Finish | y 432 → 456 | 5 px sous les tours restants |
+| Bouton Pursuit A | y 457 → 481 | 1 px sous le bouton Finish |
+
+La profondeur différente des deux boutons du bas n'est pas un réglage à l'œil : Finish et
+Pursuit A ne sont séparés que du `gap`, que l'opérateur règle, et à 10 m leurs deux boutons se
+recouvrent de toute leur largeur. Les poser à deux profondeurs les dégage **pour tout `gap`**.
+
+**Les trois provenances des tours restants** répondent : partant de `APP · AUTO` à 40 tours, un
+clic sur la provenance donne `APP · MANUAL` **et fait apparaître les deux boutons `−` et `+`**,
+qui n'existent pas dans les deux autres modes ; `−` donne **39** ; le bouton de sortie donne
+`NOT EXPORTED` et la valeur se barre ; un clic de plus sur la provenance donne `LAP COUNTER`.
+
+**Les quatre états du départ** s'enchaînent : `ARM START` → `START ARMED` → la course part et le
+bouton dit `FALSE START` → un clic dit `CONFIRM FALSE START`. Aucune erreur de console sur tout
+le parcours.
+
+**Le champ du prochain sprint à deux tours.** Mesuré en course : à `in 2 laps`, la classe `hot`
+est bien posée. Le champ passe alors sur le fond **`--warn`, #F2A33A**, texte en #2a1b05, sur
+toute la largeur du panneau. Aucune couleur n'a été énoncée par l'opérateur : celle-ci est celle
+que le projet réserve déjà à ce qui doit se voir.
+
+**Deux défauts de la deuxième version, corrigés au même build** : le champ du sprint ne prenait
+qu'une colonne et tronquait « in 2… », et la boîte des tours restants coupait son bouton à
+« EX ». Le premier prend maintenant toute la largeur, la seconde est passée de 186 à 246 unités.

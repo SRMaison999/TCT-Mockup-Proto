@@ -760,6 +760,11 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   `−lap` le coureur revient dans le peloton en une trentaine de secondes, parce qu'il doit
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
   tour de 195 secondes (`travaux.md` §8d). À trancher.
+- **Où s'affiche le compteur de tours de course.** Il doit l'être (§17), mais aucune place ne lui
+  a été désignée. Posé à côté du leader en attendant.
+- **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
+  dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
+- **La couleur du gazon** : « Je ne sais pas encore » (§17). Inchangé en attendant.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -1035,3 +1040,109 @@ Les trois se retrouvent dans la course suivante, et au rechargement de la page. 
 > il faut donc en créer une liste beaucoup plus importante
 
 29. **Toute nation que l'opérateur entre a son drapeau.** La liste en couvre 205.
+
+---
+
+## 17. L'écran de course : le gazon, le départ, les tours restants
+
+Cette section vient après le §16 pour la même raison que lui : ne renuméroter aucune autre.
+
+**29 octobre 2026 — la bande d'état descend dans le gazon.** Mot pour mot :
+
+> Retirons la ligne des boutons au-dessus de l'ovale et plaçons les dans l'ovale
+
+Sa maquette montrait quatre boîtes à l'intérieur de l'ovale, un bouton rouge **ARM START**, et
+les boutons de désignation du leader posés **sur la piste**, chacun à sa boucle. Six points
+qu'elle ne tranchait pas lui ont été soumis ; ses réponses, mot pour mot, font le reste de
+cette section.
+
+### Le compteur de tours de course
+
+> oui tu as raison il faut l'afficher quelque part
+
+C'est la réponse sur `LAP 2 / 40`, absent de sa maquette. Il reste affiché ; **où**, il ne l'a
+pas dit.
+
+### Les propositions
+
+Sur la première maquette, il avait répondu « Attends la prochaine étape de mes propositions ».
+L'étape est venue le même jour, et elle tranche : **le champ est retiré** (voir ci-dessous).
+
+### D'où viennent les tours restants
+
+> oui il faut trouver un moyen d'indiquer que "38" to go provient de la connexion avec le lap
+> counter manuel ou si il provient de l'appli. Si il provient de l'appli i y a deux modes
+> possibles : automatique (l'appli calcule et affiche le nombre de tours restants) ou manuel.
+> En mode manuel il faut donc des boutons pour incrémenter et décrémenter. Et enfin il faut un
+> moyen de ne pas exporter le nombre de laps to go sur aucune des outputs en cas de problèmes.
+
+Trois provenances, donc : **le lap counter** relié à la piste, **l'application en automatique**,
+**l'application à la main**. En manuel, deux boutons incrémentent et décrémentent. Et le nombre
+peut être **retenu de toutes les sorties**.
+
+### Le départ de la course
+
+L'opérateur a confirmé la portée de ce qui suit, mot pour mot : « oui je t'ai décrit le
+workflow de départ des courses **du futur logiciel** ». Ce n'est donc pas une description du
+simulateur du prototype. Son énoncé, mot pour mot :
+
+> Armer le départ de la course. Une fois armé le bouton passe en vert et le label devient
+> "START ARMED" et on peut soit cliquer dessus pour trig le départ de la course ou faire en
+> sorte qu'une impulsion externe (comme un bouton pressoir) connectée à l'appli trig le départ
+> de la course. A ce moment là le running time de l'horloge démarre. Le bouton "START ARMED"
+> devient FALSE START" en gris et si on clique dessus une première fois le bouton va devenir un
+> peu plus grand et plus foncé et il faut recliquer une deuxième fois pour valider le faux
+> départ. Quand un faux départ est validé, le bouton revient sur "ARM START" en rouge.
+
+Quatre états, dans cet ordre : **ARM START** en rouge → **START ARMED** en vert → le départ,
+par le bouton **ou par une impulsion externe**, et l'horloge part → **FALSE START** en gris →
+un premier clic l'agrandit et le fonce, un second valide le faux départ et tout revient à
+**ARM START** en rouge.
+
+### Les trois boutons de désignation du leader
+
+> je ne sais pas quoi faire avec ce bouton "Auto". En revanche, les 3 boutons "SET LEADER"
+> doivent être renommés "SET NEXT AS NEW LEADER" et quand on a cliqué dessus le bouton et la
+> ligne de Pursuit ou de finish affiliée passe en vert en attendant le passage d'un coureur.
+> Dès qu'un coureur est passé, le bouton et la ligne redevienne de leur couleur normale mais
+> dans le bouton s'affiche le n° de dossard du nouveau leader pendant quelques secondes
+
+**Le sort du bouton `Auto` n'est pas tranché** — il reste où il est en attendant. « Quelques
+secondes » n'est pas une cote et aucune ne lui a été demandée : la valeur retenue est un choix
+d'affichage, signalé comme tel dans `cas-de-course.md`.
+
+### Sa deuxième lecture, le même jour
+
+Devant la première version codée, mot pour mot :
+
+> ah non mais ça ne va pas du tout !
+>
+> * le champ "Proposals" tu le retire
+> * le bouton qui arme le start et l'horloge doivent être côte à côte. Le texte "Race time" doit
+>   être supprimé.
+> * Les laps to go doivent être affichés près de la ligne Finish. Et il faut afficher les
+>   commandes relatives au mode sélectionné sinon il y a des boutons inutiles
+> * dans le champ LEADER, retire "56.9 km/h from the track"
+> * Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne
+>   très visible et immanquable
+
+Cinq décisions, donc :
+
+1. **Le champ des propositions disparaît.**
+2. **L'horloge et le bouton qui arme le départ sont côte à côte**, et l'horloge n'est plus
+   titrée « RACE TIME ».
+3. **Les tours restants s'affichent près de la ligne d'arrivée**, plus dans le panneau. Et
+   **seules les commandes du mode choisi s'affichent** : les boutons `−` et `+` n'existent qu'en
+   mode manuel.
+4. **Le champ du leader ne porte que son dossard** : ni la vitesse, ni la façon dont il a été
+   désigné.
+5. **À deux tours du prochain sprint, le champ devient immanquable.** Aucune couleur n'a été
+   énoncée ; celle qui est retenue est dans `mesures.md` §26.
+
+### La couleur du gazon
+
+Sur la question de savoir si le gazon doit s'éclaircir, puisque sa maquette le montrait blanc :
+
+> Je ne sais pas encore
+
+Il reste donc **tel qu'il est**, et la question est ouverte (§15).

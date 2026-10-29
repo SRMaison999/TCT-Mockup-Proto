@@ -646,6 +646,26 @@ peinture : les deux qui ne sont pas dans une boucle tombent sous les lignes des 
 des 100 m, les trois autres sous un trait de boucle. `tapeCount()` continue de les compter —
 c'est un retrait de dessin, pas de mesure.
 
+**Les champs d'état sont dans le gazon, et ils ne sont jamais reconstruits** (`regles-operateur.md`
+§17, build 92). La bande `#strip` au-dessus de l'ovale n'existe plus. Le panneau `#ifpanel`, la
+boîte des tours restants `#togofo` et les trois boutons de leader `#armfo0..2` sont des
+`<foreignObject>` **posés une fois dans le HTML**, à l'intérieur du SVG, donc en unités de piste :
+ils restent dans le gazon à toute taille de fenêtre. `renderStrip()` n'y écrit que du texte et
+des classes — **jamais d'`innerHTML`** —, parce qu'un bouton remplacé entre l'appui et le
+relâchement n'émet aucun clic (`pitfalls.md` D2), et que ce panneau porte des boutons. Leur place
+est calculée par `renderMarks()`, qui ne tourne qu'au réglage de la piste, et non à chaque image.
+
+Deux pièges s'y sont révélés, tous deux mesurés et non vus :
+
+- **Un `foreignObject` capte le pointeur sur tout son rectangle**, transparent ou non. Laissé
+  tel quel, le cadre du panneau avalait les clics destinés aux boutons de la piste et à la piste
+  elle-même. Les cadres sont donc en `pointer-events:none`, et seules les boîtes et les boutons
+  reprennent le pointeur.
+- **`syncArm()` tourne à chaque image.** Il ne cherche donc rien dans le document : les trois
+  boutons sont trouvés une fois, les trois lignes vertes seulement quand `renderMarks()` vient de
+  reconstruire `#marks`, et un bouton dont l'état n'a pas changé n'est pas touché. C'est la même
+  discipline que les builds 88 et 89.
+
 **Aucun repère de l'ovale n'est nommé** (`regles-operateur.md` §9, 29 octobre 2026, build 91).
 `renderMarks()` ne pose plus que des `<line>` : l'assistant `label()` qui écrivait « Finish »,
 « Pursuit A », « Pursuit B », « 200 m start » et « 100 m intermediate » est supprimé, et `#marks` ne

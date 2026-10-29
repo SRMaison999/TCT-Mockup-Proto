@@ -41,6 +41,10 @@ silencieusement optimiste.
 | 27 | **Les réglages gardés d'une course à l'autre** | `regles-operateur.md` §16 | `saveSetup()`, `loadSetup()`, `TPMAP`, `tct.sim.setup` | `mesures.md` §24 · `architecture.md` §19 | **Conforme**, codé build 86. Liste de départ, piste et appairage ; *New* et rechargement vérifiés |
 | 28 | **Le drapeau d'une nation entrée à la main** | `regles-operateur.md` §16 | `FLAGS`, `flag()` | `mesures.md` §25 | **Conforme**, codé build 87. 205 nations ; code inconnu = rectangle gris |
 | 19 | **Renommer et effacer une course** | `regles-operateur.md` §16 | le gabarit d'une ligne de l'onglet Files, `renaming`, `delArmed`, `commitRename()`, `saveRaces()` | `mesures.md` §16 | **Conforme**, codé build 75. Renommage sur place, effacement en deux clics, les deux tiennent au rechargement |
+| 29 | **Les champs d'état dans le gazon** | `regles-operateur.md` §17 | `#infield`, `#ifpanel`, `renderStrip()` qui écrit en place | `mesures.md` §26 | **Proposé build 92, en attente de sa critique.** La bande au-dessus de l'ovale est supprimée. Sur sa deuxième lecture : le champ des propositions est retiré, l'horloge et le bouton de départ sont côte à côte sans titre, le leader ne porte que son dossard, et le prochain sprint devient immanquable à deux tours |
+| 30 | **La provenance des tours restants** | `regles-operateur.md` §17 | `S.togoSrc`, `S.togoManual`, `S.togoExport`, `togoValue()` | `mesures.md` §26 | **Proposé build 92.** Trois provenances, ± **visibles en manuel seulement**, et la retenue à l'export. Posés près de la ligne d'arrivée, hors du panneau. Le lap counter relié n'est toujours pas simulé (`travaux.md` §5) : c'est une provenance affichée, sans flux derrière |
+| 31 | **Le départ de la course** | `regles-operateur.md` §17 | `S.startState`, `S.fsConfirm`, `startClick()`, `syncStart()` | `mesures.md` §26 | **Proposé build 92, partiel.** Les quatre états et leurs couleurs y sont ; l'impulsion externe n'existe pas, et le départ s'appuie sur celui du simulateur — voir l'écart assumé ci-dessous |
+| 32 | **Désigner le prochain leader depuis la piste** | `regles-operateur.md` §17 | `.armb`, `#armfo0..2` placés par `renderMarks()`, `#lpg0..2`, `syncArm()`, `S.armDone` | `mesures.md` §26 | **Proposé build 92.** Bouton et ligne de la boucle au vert à l'armement, dossard du nouveau leader ensuite. Le délai d'affichage est un choix, voir ci-dessous |
 
 ---
 
@@ -55,6 +59,18 @@ l'opérateur les avait données comme une précision sur le matériel, il n'avai
 de les simuler. Le code n'a donc ni largeur de bande ni position en largeur du coureur, et
 tout le monde franchit toutes les bandes. Les longueurs restent écrites pour le jour où il
 en demandera quelque chose.
+
+**Le départ de la course n'a pas d'impulsion externe, et s'appuie sur celui du simulateur.**
+La règle du §17 décrit le **futur logiciel** : l'opérateur l'a dit lui-même. Le prototype en
+montre les quatre états et les enchaîne, mais il n'a pas d'entrée matérielle, et il n'a pas non
+plus de départ de course distinct de `Play` — aujourd'hui le même geste lance la course et
+l'horloge. Le tour de lancement, qui est ce qui sépare les deux, n'est pas construit
+(`travaux.md` §1). `START` déclenche donc le départ du simulateur, et un faux départ validé
+remet la course à zéro sans rien enregistrer.
+
+**Le dossard du nouveau leader reste affiché 5 secondes.** L'opérateur a dit « pendant quelques
+secondes » et aucune cote ne lui a été demandée, conformément au §14 (on ne lui demande que ce
+qu'il voit). `ARM_SHOW_S` vaut 5 : c'est un choix d'affichage, pas une règle.
 
 **La place du coureur dans son groupe ne se tire pas de l'horodatage du contact.** Tranché
 par l'opérateur, `regles-operateur.md` §11. Il n'y a rien à implémenter.

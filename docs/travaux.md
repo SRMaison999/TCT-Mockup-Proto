@@ -109,6 +109,21 @@ déjà mesuré par `tapeCount()`.
 
 ---
 
+## 4 bis. Ce que l'écran de course montre sans que rien ne le serve
+
+Proposé et codé à la build 92 sur la demande du 29 octobre 2026 (`regles-operateur.md` §17).
+Deux commandes sont à l'écran sans avoir de source derrière elles, et c'est assumé pour le
+moment (`cas-de-course.md`) — mais ce n'est pas fini :
+
+| | Travail | Fini quand |
+|---|---|---|
+| a | **L'impulsion externe du départ.** « faire en sorte qu'une impulsion externe (comme un bouton pressoir) connectée à l'appli trig le départ de la course » | Une entrée extérieure déclenche le départ, et l'écran le montre comme s'il venait du bouton |
+| b | **Le départ de course distinct du `Play` du simulateur.** Aujourd'hui le même geste lance la course et l'horloge ; le tour de lancement, qui sépare les deux, n'est pas construit (§1 ci-dessus) | `START` part au coup de pistolet, et les coureurs peuvent rouler avant |
+| c | **La provenance `LAP COUNTER`.** Elle s'affiche, mais le lap counter relié n'est pas simulé (§5 ci-dessous) | Le nombre affiché vient vraiment du compteur, et un désaccord est signalé avec les deux valeurs (`regles-operateur.md` §13) |
+| d | **La retenue à l'export.** Le bouton bascule et la valeur se barre, mais les exports sont des fichiers qui ne la lisent pas encore (§5 ci-dessous) | Aucune sortie ne porte les tours restants quand l'opérateur les retient |
+
+---
+
 ## 5. Ce que le prototype ne simule pas du tout
 
 Aucun de ces points n'est un bug : ils n'ont jamais été construits.
