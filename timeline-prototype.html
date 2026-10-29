@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 111</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 112</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1251,10 +1251,11 @@ function renderStrip(G) {
   IF.leadchip.classList.toggle('dk', !!(lead && lead.dk));
   // The leader box carries his number and nothing else (operator, 29 October 2026). He said « retire » — so the
   // speed and the way he was named are gone, not moved into a tooltip where they would have survived his decision.
-  IF.nextk.textContent = sprintNow ? 'SPRINT' : 'NEXT';
-  IF.nextv.textContent = S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across'
-    : sprintNow ? 'SPRINT ' + n + ' this lap' : 'SPRINT ' + n;
-  IF.nextu.textContent = sprintNow || S.finished ? '' : 'in ' + plural(nextSprint - lap, 'lap');
+  // « SPRINT 3 - 6 LAPS », the operator's own wording, 29 October 2026.
+  const over = S.finished || S.finishOpen;
+  IF.nextk.textContent = over ? '' : 'SPRINT';
+  IF.nextv.textContent = S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across' : n;
+  IF.nextu.textContent = over ? '' : sprintNow ? '- THIS LAP' : '- ' + plural(nextSprint - lap, 'lap').toUpperCase();
   // « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
   // immanquable » (operator, 29 October 2026). Two laps out and nearer, the box stops being a quiet field.
   const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
@@ -2384,7 +2385,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 111';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 112';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

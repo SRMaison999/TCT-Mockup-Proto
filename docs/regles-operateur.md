@@ -1505,6 +1505,13 @@ Et, devant deux libellés qui passaient à la ligne :
 troisième colonne, parce qu'il avait demandé qu'il soit affiché quelque part (point 1 de cette
 section). À confirmer ou à retirer.
 
+Puis, sur le libellé de ce champ, mot pour mot :
+
+> le champ "NEXT SPRINT 3 in 6 laps" peut se renommer ainsi "SPRINT 3 - 6 LAPS"
+
+52. **Le prochain sprint s'écrit `SPRINT n - x LAPS`.** Le mot « NEXT » disparaît, et le nombre
+    de tours est en majuscules. Au tour du sprint : `SPRINT n - THIS LAP`.
+
 ### Le simulateur dans une autre fenêtre
 
 Sa proposition : « On peut même imaginer que le simulateur s'ouvre dans une autre fenêtre »,
