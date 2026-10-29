@@ -441,3 +441,30 @@ body.sprintmode #scard{display:flex}
 .lapcol .ifb{height:100%}
 #ifbadges .ifrow{height:100%}
 #ifpanel,#ifbadges,#ifbadges .ifrow{pointer-events:none}
+/* The operator redrew the infield on 29 October 2026 as three columns side by side: the start, the laps to go with
+   their two provenances, and the race's own figures. */
+.ifcols{display:flex;align-items:flex-start;justify-content:center;gap:8px;font-family:var(--sans)}
+.ifcol{display:flex;flex-direction:column;gap:4px}
+.ifcol .startb{width:100%;height:32px;padding:0 10px}
+.ifcol .ifb{height:32px}
+.ifcol .srcrow{height:26px}
+.ifcol #iftogo{height:38px}
+#ifpanel,.ifcols{pointer-events:none}
+.ifcol>*{pointer-events:auto}
+.ifcol .startb,.ifcol .srcrow .ifk,.ifcol .ifb{white-space:nowrap}
+/* Smaller, on the operator's offer: « on peut réduire la taille des polices, des boutons d'armage, de l'horloge ».
+   A tighter block leaves the group badges more room, and 23 frames in 197 had one partly covered. */
+.ifcol .startb{font-size:11px;height:28px;padding:0 9px}
+.ifcol .ifb{height:28px;padding:0 9px;gap:6px}
+.ifcol .ifb .ifk{font-size:11px}
+.ifcol .ifb .ifv{font-size:18px}
+.ifcol .ifb .ifv.sm{font-size:13px}
+.ifcol .ifb .ifu{font-size:11px}
+.ifcol .ifclock .ifv{font-size:20px}
+.ifcol .ifchip{min-width:24px;height:20px;font-size:13px}
+.ifcol .srcrow{height:22px}
+.ifcol .srcrow .ifk{font-size:10px}
+.ifcol .srcv{font-size:12px}
+.ifcol #iftogo{height:32px}
+.ifcol #iftogo .ifk{font-size:12px}
+.ifcol #iftogo .ifv{font-size:24px}

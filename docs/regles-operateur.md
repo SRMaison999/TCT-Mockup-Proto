@@ -765,6 +765,10 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
 - **Le nom des groupes d'incident sur l'ovale** : « je pense que ce sera "CRASH" sans numéro »,
   mais il n'y a pas encore réfléchi (§17). Inchangé en attendant : `Crash` et `Mechanical`, sans
   numéro et sans bulle.
+- **Le simulateur dans une autre fenêtre** : sa proposition, et la contre-proposition d'un
+  recouvrement refermable, sont au §17. Rien n'est codé en attendant.
+- **Le compteur de tours de course dans l'intérieur de l'ovale** : absent de son deuxième
+  dessin, gardé parce qu'il avait demandé qu'il soit affiché (§17).
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -1481,6 +1485,37 @@ page ». Ce qu'elle montre, et ses réponses aux cinq points qu'elle laissait ou
 49. **L'intérieur de l'ovale reprend les tours restants** : la rangée du départ, puis les deux
     provenances à côté de `LAP` et `TO GO`, puis `LEADER` et le prochain sprint en badges. La
     barre au-dessus de l'ovale disparaît.
+
+### Son deuxième dessin de l'intérieur
+
+**29 octobre 2026.** Mot pour mot : « j'ai tenté de redessiné différemment l'intérieur d'ovale,
+regarde la capture ». Elle montre **trois colonnes côte à côte** : le départ (armement, horloge,
+arrivée) empilé verticalement ; les deux provenances et les tours restants ; puis le leader et
+le prochain sprint.
+
+Et, devant deux libellés qui passaient à la ligne :
+
+> Si nécessaire on peut réduire la taille des polices, des boutons d'armage, de l'horloge
+
+50. **L'intérieur de l'ovale est en trois colonnes**, dans cet ordre.
+51. **Les tailles peuvent se réduire** pour que tout tienne : polices, boutons d'armage,
+    horloge. Les valeurs retenues sont dans `mesures.md` §26.
+
+**Le compteur de tours de course ne figure pas sur ce dessin.** Il est gardé, en tête de la
+troisième colonne, parce qu'il avait demandé qu'il soit affiché quelque part (point 1 de cette
+section). À confirmer ou à retirer.
+
+### Le simulateur dans une autre fenêtre
+
+Sa proposition : « On peut même imaginer que le simulateur s'ouvre dans une autre fenêtre »,
+puis « Cela supprimerait ces boutons ».
+
+**Ce qui a été répondu, et qui reste à trancher par lui** : le prototype est un fichier autonome
+qu'il ouvre souvent par double-clic, donc en `file://`, et deux fenêtres `file://` ne peuvent
+pas se parler en JavaScript — Chrome leur donne des origines opaques. Il faudrait passer par le
+serveur ou faire transiter l'état par le stockage du navigateur. La contre-proposition est de
+garder le simulateur dans la page mais **en recouvrement**, refermable entièrement, ce qui donne
+le même écran sans boutons de test. **Non tranché** (§15).
 
 ### La couleur de l'intérieur de l'ovale
 

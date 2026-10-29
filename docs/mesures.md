@@ -1443,6 +1443,22 @@ Le bloc n'est jamais une raison de quitter la place normale, seulement un veto s
 qu'on **pousse** : la ligne flotte alors de 2,5 unités en moyenne dans les parties obliques,
 contre 0,00 avec l'intérieur entièrement vide.
 
+**L'intérieur en trois colonnes**, build 111. Deux cadrages successifs ont été faux parce que
+la largeur avait été estimée au lieu d'être mesurée : à **416** unités le contenu était rogné —
+horloge coupée, `ARM FINISH` amputé — et à **480** deux libellés passaient à la ligne. Les
+colonnes demandent **112 + 130 + 194** plus les écarts.
+
+Sur l'offre de l'opérateur de réduire les tailles, le bloc est passé de **510 × 118** à
+**446 × 92** : boutons d'armage et champs à 28 unités de haut au lieu de 32, horloge à 20 px au
+lieu de 24, chiffre des tours restants à 24 au lieu de 28.
+
+Ce que cela rend aux badges, mesuré sur ~200 images :
+
+| Bloc | Badges partiellement couverts |
+|---|---|
+| 510 × 118 | **23 images**, 4 % du badge en moyenne, 14 % au pire |
+| 446 × 92 | **0** |
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 
