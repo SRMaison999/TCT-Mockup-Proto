@@ -1593,3 +1593,23 @@ prévues à gauche de l'ovale, à droite de la timeline, et non pas au-dessus de
     du groupe concerné ; elles sont maintenant rassemblées dans cette colonne. Ce qui reste
     sur la ligne du coureur : sa marque « +1 ? » / « −1 ? » et son ✓, qu'il avait demandés.
 65. **Le journal passe sous les deux colonnes**, comme sur son dessin.
+
+### Quatre dispositions à essayer pendant un sprint
+
+**29 octobre 2026.** Devant le choix de la place de la carte du sprint, mot pour mot :
+
+> je voudrais voir toutes les propositions, je ne peux pas me décider sans les essayer
+
+Et sur la taille de fenêtre :
+
+> Là je travaille depuis la maison et mon écran à une largeur de 1920, mais habituellement les
+> ordinateurs de service ont une largeur de 1440. Mais les opérateurs peuvent s'adapter
+
+Il a par ailleurs écarté la piste du bandeau du bas : « je n'aime pas beaucoup la vue du bas,
+je la trouve beaucoup trop petite verticalement parlant ».
+
+66. **Les quatre dispositions sont livrées comme des interrupteurs d'essai**, dans le rail du
+    simulateur, combinables librement : carte resserrée, actions sous l'ovale, timeline
+    repliée, passages repliés. **Elles sont temporaires** : une fois son choix fait, la
+    disposition retenue est écrite en dur et les interrupteurs disparaissent.
+67. **L'écran doit tenir en 1440 px de large.** C'est la taille des ordinateurs de service.

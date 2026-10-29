@@ -1578,3 +1578,28 @@ La colonne du sprint tombe à son plancher de 560 px. Le nom d'un coureur n'a pl
 dans l'ordre et 43 px dans la liste de départ, contre 120 et 90 à 1920 px. Rien ne déborde et
 rien ne tombe à zéro, mais **les noms y sont coupés** : l'écran est dessiné pour une fenêtre
 large.
+
+## 32. Les seize combinaisons des quatre dispositions — build 118
+
+Ovale dessiné (taille réelle du dessin, proportions gardées), pendant un sprint ouvert. Aucune
+combinaison ne déborde, et la liste de départ reste entière dans toutes.
+
+| Dispositions actives | 1920 × 1080 | 1440 × 900 |
+|---|---|---|
+| aucune (état livré) | 596 × 359 | 253 × 152 |
+| carte resserrée | 736 × 443 | 296 × 178 |
+| passages repliés seuls | 596 × 359 | 253 × 152 |
+| actions sous l'ovale **ou** timeline repliée | 874 × 526 | 531 × 320 |
+| carte resserrée + l'une des deux | 1014 × 610 | 574 × 346 |
+| actions sous l'ovale + timeline repliée | 953 × 574 | 654 × 394 |
+| les trois | 1014 × 610 | 654 × 394 |
+| **les quatre** | **1292 × 778** | **852 × 513** |
+
+Trois faits en ressortent :
+
+- **Replier les passages ne sert à rien seul** : la largeur limite avant la hauteur. Cela ne
+  compte qu'avec les trois autres, et le gain est alors considérable (1014 → 1292).
+- **Replier la timeline et descendre les actions donnent exactement le même gain**, mais
+  replier la timeline ne coûte aucune hauteur.
+- **La carte resserrée ne vaut qu'au-dessus de son plancher** : 560 px en 1920, 520 en 1440.
+  Le nom d'un coureur y passe de 120 à 66 px dans l'ordre et de 90 à 73 px dans la liste.

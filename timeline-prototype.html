@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 117</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 118</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -43,6 +43,8 @@
     <section class="tl" aria-label="Lap timeline">
       <div class="body" id="tlbody"></div>
     </section>
+
+    <button class="tlshow" id="tlshow" title="Montrer la timeline">&rsaquo;</button>
 
     <section class="mid">
       <!-- La barre d'actions et les cartes de proposition : à gauche de l'ovale, à droite de la timeline, et non
@@ -152,6 +154,17 @@
     <div class="cfgrow">
       <span class="cfgfield"><span>Laps</span><span class="spd"><button class="stp" data-cfg="laps" data-d="-1">−</button><input class="v" id="cfglaps" value="40"><button class="stp" data-cfg="laps" data-d="1">+</button></span></span>
       <span class="cfgfield"><span>Sprints</span><span class="spd"><button class="stp" data-cfg="sprints" data-d="-1">−</button><input class="v" id="cfgsprints" value="4"><button class="stp" data-cfg="sprints" data-d="1">+</button></span></span>
+    </div>
+    <!-- TEMPORAIRE. Quatre dispositions à essayer pendant un sprint, pour que l'opérateur tranche sur pièces plutôt
+         que sur des chiffres (sa demande du 29 octobre 2026 : « je voudrais voir toutes les propositions, je ne peux
+         pas me décider sans les essayer »). À retirer une fois son choix fait, avec la classe de corps retenue
+         écrite en dur. -->
+    <div class="ksub">Essais de disposition<span class="sp"></span><span class="lbl" style="color:var(--dim)">pendant un sprint</span></div>
+    <div class="cfgrow vrow">
+      <button class="btn xs quiet" data-var="tight" title="La carte du sprint passe de 700 à 540 px : colonnes du nom, de l'écart et de l'état resserrées">Carte resserrée</button>
+      <button class="btn xs quiet" data-var="actsbottom" title="La colonne des actions descend sous l'ovale, sur toute la largeur">Actions sous l'ovale</button>
+      <button class="btn xs quiet" data-var="foldtl" title="La timeline se replie tant qu'un sprint est ouvert ; un onglet la ramène">Timeline repliée</button>
+      <button class="btn xs quiet" data-var="nolog" title="Le bandeau des passages se replie tant qu'un sprint est ouvert">Sans les passages</button>
     </div>
   </div>
 </aside>
@@ -1589,6 +1602,23 @@ function onStripClick(e) {
 }
 tlbody.addEventListener('click', onStripClick);
 propcard.addEventListener('click', onStripClick);   // les propositions ont changé de conteneur, pas de comportement
+// --- TEMPORAIRE : les quatre dispositions à essayer (voir le commentaire du rail). Elles ne touchent qu'à des
+// classes de corps : aucune n'ajoute ni ne retire une information, elles déplacent ou replient des blocs. ---
+const VARIANTS = ['tight', 'actsbottom', 'foldtl', 'nolog'];
+const VAR = {};
+function syncVariants() {
+  for (const v of VARIANTS) document.body.classList.toggle('v-' + v, !!VAR[v]);
+  $('#rail').querySelectorAll('[data-var]').forEach(b => {
+    const on = !!VAR[b.dataset.var]; b.classList.toggle('on', on); b.classList.toggle('quiet', !on); });
+}
+$('#rail').addEventListener('click', e => {
+  const b = e.target.closest('[data-var]'); if (!b) return;
+  VAR[b.dataset.var] = !VAR[b.dataset.var];
+  if (b.dataset.var === 'foldtl') document.body.classList.remove('tlopen');
+  syncVariants(); dirty = true; render();
+});
+$('#tlshow').addEventListener('click', () => { document.body.classList.add('tlopen'); dirty = true; render(); });
+
 tbar.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const bibs = [...S.selection].sort(byBib);
@@ -1996,6 +2026,7 @@ const scard = $('#scard');
 const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo check needed · click to confirm"><path d="M4 7h3.5l2-2.5h5l2 2.5H20v12H4z" fill="none" stroke="#FF5C5C" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="#FF5C5C" stroke-width="2"/></svg>';
 function renderCard() {
   const k = S.sprintOpen; document.body.classList.toggle('sprintmode', k != null);
+  if (k == null) document.body.classList.remove('tlopen');   // la timeline repliée revient à la fermeture de la carte
   if (k == null) { scard.innerHTML = ''; return; }
   const s = sp(k), O = spOrder(k), seq = O.seq, fin = isFinal(k), st = spSendState(k);
   const inRace = S.riders.filter(r => !S.withdrawn.has(r.bib)), N = fin ? Math.max(inRace.length, seq.length) : SEND_PLACES;
@@ -2398,7 +2429,7 @@ function railHide(h) {
   $('#rail').hidden = h; $('#railshow').hidden = !h;
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 117';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 118';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

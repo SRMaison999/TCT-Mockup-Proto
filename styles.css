@@ -142,7 +142,7 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .tbar .grpb{grid-column:1 / -1;display:flex;gap:4px;align-items:center}
 .tbar .sep{width:1px;height:18px;background:var(--line2);margin:0 4px}
 /* centre */
-.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 300px;gap:10px}
+.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr) var(--logh, 300px);gap:10px}
 /* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
    place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
 .right{display:none;flex:0 0 auto;width:clamp(560px, 40%, 700px);min-height:0}
@@ -222,9 +222,9 @@ body.sprintmode #scard{display:flex}
 .nts{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;margin:2px 0 4px;background:#2a2410;border:1px solid var(--warn);border-radius:3px;font-size:12px}
 .nts .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nts .nm small{color:var(--warn);margin-left:6px}
-.stgt{display:flex;align-items:center;gap:6px;height:32px;margin:0 0 4px;padding:0 4px;border:1px solid var(--acc);border-radius:4px;background:#161c2a}
+.stgt{display:flex;align-items:center;flex-wrap:wrap;row-gap:3px;gap:6px;min-height:32px;padding-top:2px;padding-bottom:2px;margin:0 0 4px;padding:0 4px;border:1px solid var(--acc);border-radius:4px;background:#161c2a}
 .stgt .k{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#c9d6f5;white-space:nowrap}
-.stgt b{font:600 18px var(--mono);color:var(--acc);margin:0 6px 0 2px;min-width:44px}
+.stgt b{font:600 18px var(--mono);color:var(--acc);margin:0 4px 0 2px;min-width:40px}
 .stgt .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
 .stgt input{font:600 14px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:2px 6px;width:64px}
 .slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
@@ -478,3 +478,34 @@ body.sprintmode #scard{display:flex}
 .ifcol #iftogo{height:32px}
 .ifcol #iftogo .ifk{font-size:12px}
 .ifcol #iftogo .ifv{font-size:24px}
+
+
+/* ------------------------------------------------------------------------------------------------------------
+   TEMPORAIRE : les quatre dispositions à essayer pendant un sprint. Elles s'activent depuis le rail du simulateur
+   et se combinent librement. À retirer quand l'opérateur aura tranché.
+   ------------------------------------------------------------------------------------------------------------ */
+.vrow{flex-wrap:wrap;gap:4px}
+
+/* 1. La carte du sprint resserrée : 540 px au lieu de 700, en rendant aux colonnes la place de leur texte. */
+body.v-tight .right{width:clamp(520px, 30%, 560px)}
+body.v-tight .sbody{grid-template-columns:minmax(286px,1fr) minmax(196px,220px);gap:14px}
+body.v-tight .shd,body.v-tight .srow{grid-template-columns:28px 34px 40px minmax(0,1fr) 46px 26px 26px;gap:5px}
+body.v-tight .shd.sl,body.v-tight .slrow{grid-template-columns:34px 40px minmax(0,1fr) 50px;gap:5px}
+
+/* 2. La colonne des actions devient une barre sous l'ovale, sur toute la largeur. */
+body.v-actsbottom .mid{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto var(--logh, 300px)}
+body.v-actsbottom .acts{grid-row:2;grid-column:1;flex-direction:row;align-items:flex-start;flex-wrap:wrap}
+body.v-actsbottom .acts .tbar{flex:1 1 360px}
+body.v-actsbottom .props{flex:1 1 300px;overflow:visible}
+body.v-actsbottom .log{grid-row:3}
+
+/* 3. La timeline se replie pendant le sprint ; l'onglet la ramène jusqu'à la fermeture de la carte. */
+.tlshow{display:none;flex:0 0 16px;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);
+  border-radius:4px;color:var(--muted);font:600 14px var(--sans);cursor:pointer;padding:0}
+.tlshow:hover{color:var(--fg);border-color:var(--acc)}
+body.sprintmode.v-foldtl:not(.tlopen) .tl{display:none}
+body.sprintmode.v-foldtl:not(.tlopen) .tlshow{display:flex}
+
+/* 4. Le bandeau des passages se replie pendant le sprint. */
+body.sprintmode.v-nolog{--logh:0px}
+body.sprintmode.v-nolog .log{display:none}
