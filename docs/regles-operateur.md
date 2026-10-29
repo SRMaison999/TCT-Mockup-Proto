@@ -1647,3 +1647,23 @@ La bande et son texte sont **relevés sur son croquis**, pas décidés : le fond
 `rgb(51, 180, 244)`, qui est la couleur du peloton et celle de sa bulle sur l'ovale, et le
 texte en noir. Le prototype rend `rgb(52, 180, 244)` sur du texte sombre. Rien n'est à
 confirmer : c'est son dessin.
+
+### Les passages quittent la page
+
+**29 octobre 2026.** Sa décision, mot pour mot :
+
+> Il faut retirer complètement la vue "Crossings" "Decisions" "Sprints" "Standings" de la page
+> et l'offrir comme possibilité mais en allant l chercher dans un menu, éventuellement la barre
+> tout en haut de la page par exemple.
+> Et la barre d'action prend la place de cette vue. Elle n'a pas besoin d'être très haute
+
+72. **Le bandeau des passages n'est plus affiché en permanence.** Il s'ouvre par le bouton
+    `Race log` de la barre du haut, par-dessus l'écran de course, et se referme par `Close` ou
+    par la touche Échap. Ses quatre onglets sont inchangés.
+73. **La barre d'actions prend sa place, sous l'ovale, et reste courte** : 34 px en 1920, 60 px
+    en 1440, où elle passe sur deux lignes.
+74. **Le numéro de build a un champ à lui dans la barre du haut.** Le sous-titre se laisse
+    couper quand la barre se resserre ; le numéro, jamais.
+
+Les interrupteurs d'essai sont retirés : son choix est fait et la disposition est écrite en
+dur.

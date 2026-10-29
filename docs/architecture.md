@@ -359,7 +359,16 @@ produit aucune lecture.
   (`pointerdown/move/up`) sur la timeline et sur l'ovale, avec une étiquette fantôme ; sur
   l'ovale, sélection et actions de groupe **au relâchement** du pointeur.
 
-### La colonne des actions
+### Le panneau des passages
+
+`#log` n'est plus dans `.mid` : c'est un panneau en `position:fixed`, caché par défaut, ouvert
+par `#logshow` dans la barre du haut et fermé par `#logclose` ou Échap. `renderLog()` sort
+immédiatement quand il est caché, pour ne pas reconstruire ses lignes à chaque image.
+
+### La barre d'actions
+
+Elle est sous l'ovale, dans la deuxième rangée de la grille `.mid`, et porte côte à côte la
+barre de sélection (`#tbar`) et les cartes de proposition (`#propcard`).
 
 `#tbar` ne porte plus seulement les actions d'une sélection : quand elle ne contient **qu'un
 seul coureur**, elle ajoute `Laps…` et `Leader`, et le panneau des compteurs et de la couleur

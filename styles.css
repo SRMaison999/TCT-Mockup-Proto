@@ -10,6 +10,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .bar{display:flex;align-items:center;gap:8px;height:36px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:0 10px;flex:0 0 auto}
 .bar h1{font:600 15px var(--sans);margin:0;white-space:nowrap}
 .bar .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .bld{flex:0 0 auto;color:var(--dim);font:500 12px var(--mono);white-space:nowrap}
 .sp{flex:1 1 auto}
 .btn{font:500 13px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
@@ -139,27 +140,34 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .gh .ggap{flex:0 0 auto;font:600 10px var(--mono);color:#121416;font-variant-numeric:tabular-nums}
 /* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
    et à droite de la timeline (l'opérateur, 29 octobre 2026). */
-.acts{min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px}
-.acts .tbar{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);border-radius:4px}
-.acts .tbar .grpb{flex-wrap:wrap}
-.props{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.acts{grid-row:2;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
+.acts .tbar{flex:1 1 auto;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 8px 6px}
+.props{flex:0 1 auto;max-width:42%;display:flex;flex-direction:column;gap:4px}
 .props .gq,.props .prop{background:#1a2238;border-left:3px solid var(--acc);border-radius:3px;margin:0;padding:5px 7px;height:auto;min-height:26px;white-space:normal;align-items:flex-start;flex-wrap:wrap;row-gap:4px}
 .props .gq span,.props .prop .pt{white-space:normal;overflow:visible;text-overflow:clip}
-.tbar{border-top:1px solid var(--line);padding:6px 10px 8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;align-items:center;font-size:12px;color:var(--muted);box-sizing:border-box}
+.tbar{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;font-size:12px;color:var(--muted);box-sizing:border-box}
 .tbar b{color:var(--fg)}
 .tbar .selinfo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.tbar .grpb{grid-column:1 / -1;display:flex;gap:4px;align-items:center}
+.tbar .grpb{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.tbar .selinfo{flex:0 1 auto}
+.tbar .ledger{flex:1 1 100%}
 .tbar .sep{width:1px;height:18px;background:var(--line2);margin:0 4px}
 /* centre */
-.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr) var(--logh, 300px);gap:10px}
+/* L'écran de course : l'ovale, et sous lui une barre d'actions courte, qui a pris la place du bandeau des passages
+   (l'opérateur, 29 octobre 2026 : « la barre d'action prend la place de cette vue. Elle n'a pas besoin d'être très
+   haute »). */
+.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:8px}
 /* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
    place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
 .right{display:none;flex:0 0 auto;width:clamp(420px, 26%, 460px);min-height:0}
 body.sprintmode .right{display:flex}
-.oval{flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.oval{grid-row:1;flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .oval svg{width:100%;height:100%;display:block;touch-action:none;user-select:none}
-.log{grid-column:1 / -1;min-width:0;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box}
-.log .hd{display:flex;justify-content:space-between;align-items:center;height:18px}
+.log{position:fixed;left:16px;right:16px;top:58px;bottom:16px;z-index:40;background:var(--deep);border:1px solid var(--acc);
+  border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box;
+  box-shadow:0 18px 48px #000a}
+.log[hidden]{display:none}
+.log .hd{display:flex;justify-content:space-between;align-items:center;height:24px;flex:0 0 auto}
 .log .rows{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:1px}
 .lrow{display:grid;grid-template-columns:62px 72px minmax(0,1fr);gap:10px;align-items:center;min-height:32px;line-height:1.15;padding:0 6px;font-size:13px;white-space:nowrap;background:#17191c;border-left:3px solid var(--line2)}
 .lrow.op{border-left-color:var(--acc)}
@@ -489,19 +497,4 @@ body.sprintmode #scard{display:flex}
 .ifcol #iftogo .ifv{font-size:24px}
 
 
-/* ------------------------------------------------------------------------------------------------------------
-   TEMPORAIRE : les quatre dispositions à essayer pendant un sprint. Elles s'activent depuis le rail du simulateur
-   et se combinent librement. À retirer quand l'opérateur aura tranché.
-   ------------------------------------------------------------------------------------------------------------ */
-.vrow{flex-wrap:wrap;gap:4px}
 
-/* 1. La colonne des actions devient une barre sous l'ovale, sur toute la largeur. */
-body.v-actsbottom .mid{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto var(--logh, 300px)}
-body.v-actsbottom .acts{grid-row:2;grid-column:1;flex-direction:row;align-items:flex-start;flex-wrap:wrap}
-body.v-actsbottom .acts .tbar{flex:1 1 360px}
-body.v-actsbottom .props{flex:1 1 300px;overflow:visible}
-body.v-actsbottom .log{grid-row:3}
-
-/* 2. Le bandeau des passages se replie pendant le sprint. */
-body.sprintmode.v-nolog{--logh:0px}
-body.sprintmode.v-nolog .log{display:none}

@@ -1634,3 +1634,21 @@ Relevée au pixel sur le croquis de l'opérateur du 29 octobre 2026 (`images/25.
 28 premières lignes) : fond `rgb(51, 180, 244)` sur 2856 pixels, texte `rgb(0, 0, 0)`. Le
 prototype rend `rgb(52, 180, 244)` -- la couleur du peloton, `hsl(200 90% 58%)`, la même que
 sa bulle sur l'ovale.
+
+## 34. L'écran de course sans le bandeau des passages — build 120
+
+| | 1920 × 1080 | 1440 × 900 |
+|---|---|---|
+| Ovale hors sprint | 1611 × 970 | 1269 × 764 |
+| Ovale pendant un sprint | 1288 × 775 | 848 × 511 |
+| Hauteur de la barre d'actions | 34 px | 60 px (deux lignes) |
+| Carte du sprint | 460 px | 420 px |
+| Dépassement de la barre d'actions, de la page | 0 px, 0 px | 0 px, 0 px |
+
+Le panneau `Race log` ouvert couvre l'écran de la barre du haut au bas de la page. Ses quatre
+onglets donnent 10, 4, 4 et 17 lignes sur la course de contrôle, contre une dizaine de lignes
+visibles dans le bandeau de 300 px qu'il remplace.
+
+Rappel du chemin parcouru sur l'ovale pendant un sprint, en 1440 : **253 × 152** à la
+build 118, **570 × 343** à la build 119, **848 × 511** à la build 120 — soit **dix-huit fois**
+la surface de départ.
