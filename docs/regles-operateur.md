@@ -1667,3 +1667,21 @@ confirmer : c'est son dessin.
 
 Les interrupteurs d'essai sont retirés : son choix est fait et la disposition est écrite en
 dur.
+
+### La carte d'une proposition
+
+**29 octobre 2026.** Devant une carte qui alignait les dossards dans une phrase, mot pour mot :
+
+> mais je n'aime pas la façon dont tu les présentes. je préfère ma façon car on a besoin de
+> prendre connaissance des BIB impliqués très rapidement
+
+Puis, sur son propre croquis :
+
+> effectivement il faut ajouter le code nation et le drapeau à ma proposition
+
+75. **Les dossards d'une proposition sont empilés, sous un en-tête `BIB`**, à gauche de la
+    carte, chacun avec son drapeau et son code pays. Le titre, les boutons `✓ all` et `✕` et le
+    tour concerné sont à droite.
+76. **Le ✓ de chaque coureur est à côté du sien, dans la carte.** Il était sur sa ligne dans la
+    timeline ; à 118 px de large, il lui mangeait son code pays (« 52 · I ✓ »). La ligne porte
+    désormais une marque bleue, sans bouton, et le ✓ valide toujours ce coureur seul.

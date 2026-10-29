@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 120</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 121</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1190,9 +1190,20 @@ function renderTimeline(G) {
     for (const p of proposalsFor(g)) {
       const acts = liveActions(p);
       if (p.kind === 'lap') {
-        acts.forEach((a, i) => { if (a.bib) rowOk[a.bib] = `<span data-pid="${p.id}"><button class="btn xs ok" data-pact="${i}" title="${a.label}">✓</button></span>`; });
-        const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib).map(x => `<button class="btn xs${x.a.bib || /all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${x.a.bib ? '✓' : /all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
-        props += `<div class="gq"><span><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b> · ${bibList(p.bibs)} · Lap ${p.lap}</span><span class="pa" data-pid="${p.id}">${btns}</span></div>`;
+        // Chaque coureur concerné garde son ✓, mais dans la carte et non plus sur sa ligne : à 118 px de large le
+        // bouton mangeait son code pays (« 52 · I ✓ »). La carte liste les dossards, comme son croquis du
+        // 29 octobre 2026. La ligne du coureur, elle, porte une marque discrète.
+        acts.forEach((a, i) => { if (a.bib) rowOk[a.bib] = 1; });
+        // La carte est dessinée comme son croquis du 29 octobre 2026 : les dossards empilés sous un en-tête BIB, à
+        // gauche, « car on a besoin de prendre connaissance des BIB impliqués très rapidement », avec leur drapeau
+        // et leur code pays qu'il a demandés en plus. Le ✓ de chaque coureur est resté à côté du sien.
+        const perBib = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib).map(x => {
+          const r = S.riders.find(y => y.bib === x.a.bib);
+          return `<span class="pb">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><button class="btn xs ok" data-pact="${x.i}" title="${x.a.label}">✓</button></span>`;
+        }).join('');
+        const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib)
+          .map(x => `<button class="btn xs${/all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${/all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
+        props += `<div class="gq" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${perBib}</span><span class="pr"><span class="pt"><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b></span><span class="pa">${btns}</span><span class="pl">Lap ${p.lap}</span></span></div>`;
       } else props += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
     }
     // The box carries the group's own colour, the same one its bubble has on the oval (regles-operateur.md §17).
@@ -1214,9 +1225,9 @@ function renderTimeline(G) {
       // la fenêtre d'option dans la colonne d'action ». Le nom et l'état sont dans l'infobulle de la ligne.
       const mark = x.m.off ? 'off track' : x.m.notp ? 'no transponder' : !x.m.read ? 'not read'
         : (out && !allOut) ? 'out of sprint' : (S.inelig && S.inelig.has(x.r.bib)) ? 'no points' : '';
-      html += `<div class="trow${sel.has(x.r.bib) ? ' sel' : ''}${mark ? ' marked' : ''}" data-bib="${x.r.bib}" title="${x.r.name}${mark ? ' · ' + mark : ''}">
-        ${chip(x.r, x.m.off ? 'off' : x.m.notp ? 'notp' : !x.m.read ? 'silent' : '')}${flag(x.r.nat)}<span class="noc">${x.r.nat}</span>
-        <span class="lap">${x.pending ? (rowOk[x.r.bib] || '') : ''}</span></div>`;
+      const pend = x.pending && rowOk[x.r.bib];
+      html += `<div class="trow${sel.has(x.r.bib) ? ' sel' : ''}${mark ? ' marked' : ''}${pend ? ' pend' : ''}" data-bib="${x.r.bib}" title="${x.r.name}${mark ? ' · ' + mark : ''}${pend ? ' · lap to validate' : ''}">
+        ${chip(x.r, x.m.off ? 'off' : x.m.notp ? 'notp' : !x.m.read ? 'silent' : '')}${flag(x.r.nat)}<span class="noc">${x.r.nat}</span></div>`;
     }
     html += '</div>';
   });
@@ -2429,7 +2440,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 120';
+  $('#buildno').textContent = 'build 121';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

@@ -1652,3 +1652,18 @@ visibles dans le bandeau de 300 px qu'il remplace.
 Rappel du chemin parcouru sur l'ovale pendant un sprint, en 1440 : **253 × 152** à la
 build 118, **570 × 343** à la build 119, **848 × 511** à la build 120 — soit **dix-huit fois**
 la surface de départ.
+
+## 35. La carte d'une proposition dans la barre d'actions — build 121
+
+Fenêtre de 1440, trois coureurs lancés 8 m/s plus vite que le peloton : ils prennent un tour
+ensemble et donnent une proposition à trois dossards.
+
+| Mesure | Valeur |
+|---|---|
+| Barre d'actions, proposition comprise | 94 px de haut, 848 px de large |
+| Dépassement de la carte, de la page | 0 px, 0 px |
+| Boutons ✓ posés sur les lignes de la timeline | 0 (contre 3 à la build 120, qui coupaient le code pays) |
+
+Vérifié au clic : un ✓ de coureur fait passer la carte de trois dossards à deux et inscrit au
+journal « BIB 7 · laps gained 0 → 1 · effect Lap 21 · validated proposal ». Les deux autres
+restent en attente.
