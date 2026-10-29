@@ -128,18 +128,28 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .wd{border:1px solid var(--line2);border-radius:4px;background:#141618;padding:3px 4px 4px;margin-top:6px;opacity:.85}
 .wd .trow{cursor:default;grid-template-columns:34px 22px 36px minmax(0,1fr) 34px auto}
 .gh .ggap{flex:0 0 auto;font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+/* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
+   et à droite de la timeline (l'opérateur, 29 octobre 2026). */
+.acts{min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px}
+.acts .tbar{flex:0 0 auto;background:var(--panel);border:1px solid var(--line);border-radius:4px}
+.acts .tbar .grpb{flex-wrap:wrap}
+.props{flex:1 1 auto;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.props .gq,.props .prop{background:#1a2238;border-left:3px solid var(--acc);border-radius:3px;margin:0;padding:5px 7px;height:auto;min-height:26px;white-space:normal;align-items:flex-start;flex-wrap:wrap;row-gap:4px}
+.props .gq span,.props .prop .pt{white-space:normal;overflow:visible;text-overflow:clip}
 .tbar{border-top:1px solid var(--line);padding:6px 10px 8px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 8px;align-items:center;font-size:12px;color:var(--muted);box-sizing:border-box}
 .tbar b{color:var(--fg)}
 .tbar .selinfo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .tbar .grpb{grid-column:1 / -1;display:flex;gap:4px;align-items:center}
 .tbar .sep{width:1px;height:18px;background:var(--line2);margin:0 4px}
 /* centre */
-.mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px}
-.right{display:none;flex:0 1 700px;min-width:560px;min-height:0}
+.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr) 300px;gap:10px}
+/* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
+   place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
+.right{display:none;flex:0 0 auto;width:clamp(560px, 40%, 700px);min-height:0}
 body.sprintmode .right{display:flex}
 .oval{flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .oval svg{width:100%;height:100%;display:block;touch-action:none;user-select:none}
-.log{height:300px;flex:0 0 300px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box}
+.log{grid-column:1 / -1;min-width:0;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box}
 .log .hd{display:flex;justify-content:space-between;align-items:center;height:18px}
 .log .rows{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:1px}
 .lrow{display:grid;grid-template-columns:62px 72px minmax(0,1fr);gap:10px;align-items:center;min-height:32px;line-height:1.15;padding:0 6px;font-size:13px;white-space:nowrap;background:#17191c;border-left:3px solid var(--line2)}
@@ -173,7 +183,7 @@ body.sprintmode #scard{display:flex}
 .sh input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:3px 8px;width:150px}
 .sh input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .sh input.err{border-color:var(--crit);background:#2a1414}
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:18px;padding:6px 10px 8px;overflow:auto}
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(300px,1fr) minmax(220px,270px);gap:18px;padding:6px 10px 8px;overflow:auto}
 .sleft,.sright{min-width:0;display:flex;flex-direction:column}
 .shd{display:grid;grid-template-columns:30px 34px 40px minmax(0,1fr) 66px 28px 28px;gap:6px;align-items:center;height:20px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
 .shd.sl{grid-template-columns:34px 40px minmax(0,1fr) 72px}

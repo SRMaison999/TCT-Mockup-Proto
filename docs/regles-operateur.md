@@ -1581,3 +1581,15 @@ timeline, et une reste :
 62. **L'ovale et le journal restent visibles pendant un sprint.** Jusqu'ici la carte les
     masquait tous les deux. **Écart par rapport à un comportement validé**, imposé par son
     dessin, qui montre les trois ensemble.
+
+### La barre d'actions
+
+**29 octobre 2026.** Mot pour mot : « La barre d'actions et la carte de proposition sont
+prévues à gauche de l'ovale, à droite de la timeline, et non pas au-dessus de l'ovale ».
+
+63. **Une colonne d'actions sépare la timeline de l'ovale.** Elle porte la barre de sélection
+    en haut, et sous elle les cartes de proposition.
+64. **Les propositions quittent les blocs de la timeline.** Elles s'écrivaient dans l'en-tête
+    du groupe concerné ; elles sont maintenant rassemblées dans cette colonne. Ce qui reste
+    sur la ligne du coureur : sa marque « +1 ? » / « −1 ? » et son ✓, qu'il avait demandés.
+65. **Le journal passe sous les deux colonnes**, comme sur son dessin.

@@ -1554,3 +1554,27 @@ Fenêtre de 1920 px, rail du simulateur masqué, course menée jusqu'à l'ouvert
 
 À 620 px la carte débordait de 88 px, l'en-tête n'ayant pas la place de ses boutons. À
 700 px, il tient sur deux lignes et le nom d'un coureur garde 120 px dans l'ordre.
+
+## 31. La colonne d'actions — build 117
+
+Fenêtre de 1920 px, rail masqué, un coureur lancé 10 m/s plus vite que le peloton pour
+obtenir une proposition de tour gagné.
+
+| Mesure | Valeur |
+|---|---|
+| Timeline | 294 px |
+| Colonne d'actions | 268 px |
+| Barre de sélection | 168 px de haut, aucun dépassement |
+| Cartes de proposition | 524 px de haut, aucun dépassement horizontal |
+| Ovale | 1306 px hors sprint, 736 px pendant un sprint |
+| Journal | 1014 px pendant un sprint, 1584 px hors sprint (il couvre les deux colonnes) |
+| Propositions restées dans la timeline | 0 |
+| Propositions dans la colonne | 1 — « Lap gained? · BIB 52 · Lap 17 » |
+| Dépassement de la page | 0 px |
+
+### Ce que donne une fenêtre de 1440 px
+
+La colonne du sprint tombe à son plancher de 560 px. Le nom d'un coureur n'a plus que 30 px
+dans l'ordre et 43 px dans la liste de départ, contre 120 et 90 à 1920 px. Rien ne déborde et
+rien ne tombe à zéro, mais **les noms y sont coupés** : l'écran est dessiné pour une fenêtre
+large.
