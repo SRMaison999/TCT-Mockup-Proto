@@ -343,9 +343,10 @@ body.sprintmode #scard{display:flex}
    - A foreignObject catches the pointer over its whole RECTANGLE, transparent or not. The frames are therefore
      see-through and only what is drawn takes the pointer. */
 
-/* The panel: four equal boxes, two by two, as the operator drew them. NOT three full-width bands — that was mine,
-   not his, and it is what made the screen look like a pile. */
-.ifg{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-family:var(--sans)}
+/* The panel follows the operator's drawing of 29 October 2026: three rows, each a few boxes sized to what they
+   hold and centred, not a grid of equal cells. */
+.ifg{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--sans)}
+.ifrow{display:flex;align-items:stretch;justify-content:center;gap:8px}
 .ifb{display:flex;align-items:center;gap:7px;height:34px;padding:0 10px;box-sizing:border-box;
   background:var(--deep);border:1px solid var(--line);border-radius:4px;white-space:nowrap;overflow:hidden}
 .ifb .ifk{font:600 10px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
@@ -354,7 +355,7 @@ body.sprintmode #scard{display:flex}
 .ifb .ifu{font:500 11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
 .ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 5px;
   border-radius:3px;font:600 13px var(--mono);color:#fff;background:var(--line2)}
-.ifclock{justify-content:center}
+.ifclock{justify-content:center;min-width:104px}
 .ifclock .ifv{font-size:20px}
 
 /* « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
@@ -371,26 +372,40 @@ body.sprintmode #scard{display:flex}
 .startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
 .startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
 .startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:14px;letter-spacing:.12em}
+/* Beside it, the button that arms the finish. It is NOT the start button: it stays neutral. */
+.ifrow .startb{width:auto;padding:0 14px}
+.startb.finb{background:var(--deep);border-color:var(--line);color:var(--fg)}
+.startb.finb:hover{border-color:var(--muted)}
 
-/* The lap counter and the laps to go, side by side on the finish line itself. Being held back from the outputs is
-   shown by the ZONE going red — there is no field that says so — and a very small button makes the change. */
-.togorow{display:flex;justify-content:center;gap:6px;height:100%}
-.togorow .ifb{flex:0 0 auto;width:auto;height:30px}
+/* The laps to go show BOTH provenances with BOTH figures, and one of them is picked — the operator's rule for a
+   disagreement with the lap counter (regles-operateur.md §13). The chosen figure is the green TO GO box; held back
+   from the outputs, that box goes red, and a very small button makes the change. */
+.togobox{display:flex;flex-direction:column;gap:3px;padding:4px;background:var(--deep);
+  border:1px solid var(--line);border-radius:4px}
+.srcrow{display:flex;align-items:center;gap:6px;height:20px;padding:0 6px;border-radius:3px;
+  background:#23272b;border:1px solid var(--line2)}
+.srcrow.on{border-color:var(--muted)}
+.srcrow .ifk{flex:1 1 auto}
+.srcv{font:600 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
+.pick{width:12px;height:12px;border-radius:50%;padding:0;background:#15181b;border:1px solid var(--line2);
+  cursor:pointer;flex-shrink:0}
+.srcrow.on .pick{background:var(--fg);border-color:var(--fg)}
+.modeb{width:18px;height:16px;font-size:10px}
 .ifstep{display:none;gap:3px}
-#iftogo.manual .ifstep{display:inline-flex}
+.srcrow.manual .ifstep{display:inline-flex}
+.ifsb{height:16px;width:16px}
+#iftogo{height:28px;background:var(--play);border-color:var(--play)}
+#iftogo .ifk,#iftogo .ifv{color:#06220c}
 .ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
   border-radius:3px;width:20px;height:20px;line-height:1;padding:0;cursor:pointer}
 .ifsb:hover{border-color:var(--muted)}
-.ifsrc{font:600 9px var(--sans);letter-spacing:.07em;color:var(--muted);border:1px solid var(--line2);
-  border-radius:3px;padding:2px 6px;cursor:pointer;user-select:none}
-.ifsrc:hover{border-color:var(--muted);color:var(--fg)}
 .ifdot{width:11px;height:11px;padding:0;border-radius:2px;background:#23272b;border:1px solid var(--line2);
   cursor:pointer;flex-shrink:0}
 .ifdot:hover{border-color:var(--fg)}
 #iftogo.noexp{background:var(--crit);border-color:var(--crit)}
 #iftogo.noexp .ifk,#iftogo.noexp .ifv{color:#2a0808}
-#iftogo.noexp .ifsrc{color:#2a0808;border-color:#2a0808}
-#iftogo.noexp .ifsb,#iftogo.noexp .ifdot{background:#2a0808;border-color:#2a0808;color:#fff}
+#iftogo .ifdot{margin-left:auto;background:#06220c;border-color:#06220c}
+#iftogo.noexp .ifdot{background:#2a0808;border-color:#2a0808}
 
 /* The two leader buttons, each on its own loop. The Finish loop has none: the operator had it removed. */
 .armwrap{display:flex;align-items:center;justify-content:center;height:100%}
@@ -400,5 +415,5 @@ body.sprintmode #scard{display:flex}
 .armb.on{color:#06220c;background:var(--play);border-color:var(--play)}
 .armb.done{color:var(--play);border-color:var(--play);background:rgba(15,17,19,.92);font:600 12px var(--mono)}
 
-#ifpanel,.ifg,.armwrap,.togorow{pointer-events:none}
-.ifb,.startb,.ifsb,.ifsrc,.ifdot,.armb{pointer-events:auto}
+#ifpanel,.ifg,.ifrow,.armwrap{pointer-events:none}
+.ifb,.startb,.ifsb,.ifdot,.armb,.srcrow,.pick,.togobox{pointer-events:auto}

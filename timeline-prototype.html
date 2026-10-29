@@ -26,7 +26,7 @@
     <section class="mid">
       <div class="oval">
         <svg viewBox="0 0 980 590" role="img" aria-label="Track view" id="oval">
-          <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#15181b" stroke="#b5884e" stroke-width="60"/>
+          <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#8a8a8a" stroke="#b5884e" stroke-width="60"/>
           <rect x="143" y="158" width="694" height="274" rx="137" fill="none" stroke="#3b6ae8" stroke-width="6"/>
           <rect x="138.5" y="153.5" width="703" height="283" rx="141.5" fill="none" stroke="#111111" stroke-width="1.5"/>
           <rect x="132" y="147" width="716" height="296" rx="148" fill="none" stroke="#a32020" stroke-width="1.5"/>
@@ -39,21 +39,30 @@
           <g id="infield">
             <foreignObject id="armfo1" x="0" y="0" width="112" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
             <foreignObject id="armfo2" x="0" y="0" width="112" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="ifpanel" x="280" y="240" width="420" height="76">
+            <foreignObject id="ifpanel" x="275" y="209" width="430" height="176">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifg">
-                <div class="ifb" id="ifleadb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
-                <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
-                <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
-                <div class="ifstart"><button class="startb" id="startbtn">ARM START</button></div>
-              </div>
-            </foreignObject>
-            <foreignObject id="togofo" x="0" y="0" width="376" height="28">
-              <div xmlns="http://www.w3.org/1999/xhtml" class="togorow">
-                <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
-                <div class="ifb" id="iftogo"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span>
-                  <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
-                  <span class="ifsrc" id="iftogosrc" title="Where this number comes from: the lap counter on the track, the application counting by itself, or the operator counting by hand">APP · AUTO</span>
-                  <button class="ifdot" id="iftogoexp" title="Hold the laps to go back from every output"></button></div>
+                <div class="ifrow">
+                  <button class="startb" id="startbtn">ARM START</button>
+                  <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
+                  <button class="startb finb" id="armfinish" title="Behaviour not stated yet">ARM FINISH</button>
+                </div>
+                <div class="ifrow">
+                  <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
+                  <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
+                </div>
+                <div class="ifrow">
+                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
+                  <div class="togobox">
+                    <div class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
+                      <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
+                      <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
+                      <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></div>
+                    <div class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
+                      <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></div>
+                    <div class="ifb togo" id="iftogo"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span>
+                      <button class="ifdot" id="iftogoexp" title="Hold the laps to go back from every output"></button></div>
+                  </div>
+                </div>
               </div>
             </foreignObject>
           </g>
@@ -257,8 +266,11 @@ function reset() {
     started: false,         // the race waits for Start: nothing moves before the operator says so
     // The laps to go carry their own provenance (operator, 29 October 2026): the lap counter on the track, the
     // application counting by itself, or the operator counting by hand. And they can be held back from the outputs.
-    togoSrc: 'auto',        // 'counter' | 'auto' | 'manual'
-    togoManual: null,       // the operator's own count, while he keeps it by hand
+    // Two separate things, and they were one variable until they contradicted each other: WHICH provenance feeds
+    // the laps to go, and HOW the application counts. Picking the lap counter must not wipe the operator's own count.
+    togoPick: 'app',        // 'app' | 'counter' — the provenance the TO GO box shows
+    togoMode: 'auto',       // 'auto' | 'manual' — how the application itself counts
+    togoManual: null,       // the operator's own count, kept whichever provenance is picked
     togoExport: true,       // false: the number goes out on no output at all
     startState: 'idle',     // 'idle' | 'armed' | 'run' — what the start button says
     fsConfirm: false,       // a false start asks twice
@@ -1150,9 +1162,15 @@ function renderTimeline(G) {
 // emits a click (pitfalls D2) — and this panel carries buttons.
 const IF = {};
 for (const k of ['leadchip', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
-                 'togosrc', 'togoexp', 'lap', 'lapof']) IF[k] = $('#if' + k);
-const TOGO_SRC = { counter: 'LAP COUNTER', auto: 'APP · AUTO', manual: 'APP · MANUAL' };
-function togoValue(autoVal) { return S.togoSrc === 'manual' && S.togoManual != null ? S.togoManual : autoVal; }
+                 'togoexp', 'togomode', 'lap', 'lapof']) IF[k] = $('#if' + k);
+const SRC = { app: $('#srcapp'), cnt: $('#srccnt'), appk: $('#srcappk'), appv: $('#srcappv'), cntv: $('#srccntv') };
+// The two provenances are shown together, each with its own figure, and one of them is picked: that is the
+// operator's own rule for a linked lap counter — « un désaccord est signalé avec les deux valeurs plutôt que
+// corrigé en silence » (regles-operateur.md §13). The application's figure is either its own count or the
+// operator's; the lap counter's comes from the track, and nothing feeds it yet (travaux.md §4 bis).
+function appValue(autoVal) { return S.togoMode === 'manual' && S.togoManual != null ? S.togoManual : autoVal; }
+function counterValue() { return null; }
+function togoValue(autoVal) { const c = counterValue(); return S.togoPick === 'counter' && c != null ? c : appValue(autoVal); }
 function renderStrip(G) {
   const lap = dispLap(), toGo = LAPS - lap, n = nextSprintNum(lap), nextSprint = sprintLap(n), sprintNow = sprintNumOf(lap) > 0;
   const lead = S.riders.find(r => r.bib === G.leaderBib);
@@ -1173,9 +1191,15 @@ function renderStrip(G) {
   const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
   IF.next.classList.toggle('acc', close);
   IF.next.classList.toggle('hot', close);
+  const cnt = counterValue();
+  SRC.appk.textContent = S.togoMode === 'manual' ? 'MANUAL' : 'AUTO';
+  SRC.appv.textContent = S.finished ? 0 : appValue(toGo);
+  SRC.cntv.textContent = cnt == null ? '—' : cnt;
+  SRC.app.classList.toggle('on', S.togoPick === 'app');
+  SRC.cnt.classList.toggle('on', S.togoPick === 'counter');
+  SRC.app.classList.toggle('manual', S.togoMode === 'manual');
+  IF.togomode.textContent = S.togoMode === 'manual' ? 'A' : 'M';
   IF.togov.textContent = S.finished ? 0 : togoValue(toGo);
-  IF.togosrc.textContent = TOGO_SRC[S.togoSrc];
-  IF.togo.classList.toggle('manual', S.togoSrc === 'manual');
   IF.togo.classList.toggle('noexp', !S.togoExport);
   IF.togoexp.classList.toggle('off', !S.togoExport);
   IF.togoexp.title = S.togoExport ? 'Hold the laps to go back from every output' : 'Send the laps to go to the outputs again';
@@ -1221,18 +1245,10 @@ function renderMarks() {
   }
   // The three leader buttons are placed on their own loop, inside the grass. Only their x and y move, and only
   // here — this function runs when the track is set, not on every frame, so the buttons are never replaced (D2).
-  const tf = $('#togofo');
-  if (tf) {
-    const a = normalAt(0), w = +tf.getAttribute('width'), ht = +tf.getAttribute('height');
-    tf.setAttribute('x', (a.p.x - a.nx * (HW + 22) - w / 2).toFixed(1));
-    tf.setAttribute('y', (a.p.y - a.ny * (HW + 22) - ht / 2).toFixed(1));
-  }
   LOOPS.forEach((s0, i) => {
     const fo = $('#armfo' + i); if (!fo) return;
     const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
-    // Pursuit A shares the home straight with the finish line, where the two counters now sit against the track:
-    // it steps back one row so that they keep the edge. Pursuit B has its straight to itself.
-    const deep = i === 2 ? HW + 58 : HW + 22;
+    const deep = HW + 22;   // both loops carry their button at the same depth, each against its own straight
     fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
     fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
   });
@@ -1470,7 +1486,6 @@ $('#undo').addEventListener('click', undo);
 $('#infield').addEventListener('click', e => { const b = e.target.closest('.armb[data-arm]'); if (!b) return; const L = LOOPS[+b.dataset.arm]; pushUndo('arm ' + LOOPNAME[L]); S.arm = S.arm === L ? null : L; logEvent('LEADER', S.arm == null ? 'Arming cancelled' : 'Armed: next rider read at ' + LOOPNAME[L] + ' becomes the race leader', true); syncArm(); dirty = true; render(); });
 // The rest of the infield: the laps to go with their provenance, and the start button of the future software.
 // Both are described by the operator on 29 October 2026 (regles-operateur.md §17).
-const TOGO_NEXT = { counter: 'auto', auto: 'manual', manual: 'counter' };
 function startClick() {
   if (S.startState === 'idle') { S.startState = 'armed'; logEvent('RACE', 'Start armed · waiting for the gun, here or on the external button', true); }
   else if (S.startState === 'armed') {
@@ -1492,16 +1507,22 @@ $('#infield').addEventListener('click', e => {
     logEvent('RACE', S.togoExport ? 'Laps to go sent to the outputs again' : 'Laps to go held back from every output', true);
     dirty = true; return render();
   }
-  if (t.id === 'iftogosrc') {
-    const was = togoValue(LAPS - dispLap());
-    S.togoSrc = TOGO_NEXT[S.togoSrc];
-    if (S.togoSrc === 'manual') S.togoManual = was; else S.togoManual = null;
-    logEvent('RACE', 'Laps to go · ' + TOGO_SRC[S.togoSrc], true);
+  if (t.id === 'iftogomode') {                       // the application counts by itself, or the operator by hand
+    const was = appValue(LAPS - dispLap());
+    S.togoMode = S.togoMode === 'manual' ? 'auto' : 'manual';
+    S.togoManual = S.togoMode === 'manual' ? was : null;
+    logEvent('RACE', 'Laps to go · application · ' + (S.togoMode === 'manual' ? 'counted by hand' : 'counted by the application'), true);
+    dirty = true; return render();
+  }
+  const pk = t.closest('[data-pick]');
+  if (pk) {
+    S.togoPick = pk.dataset.pick === 'counter' ? 'counter' : 'app';
+    logEvent('RACE', 'Laps to go taken from ' + (S.togoPick === 'counter' ? 'the lap counter' : 'the application'), true);
     dirty = true; return render();
   }
   const st = t.closest('[data-togo]');
-  if (st && S.togoSrc === 'manual') {
-    S.togoManual = Math.max(0, Math.min(LAPS, togoValue(LAPS - dispLap()) + (+st.dataset.togo)));
+  if (st && S.togoMode === 'manual') {
+    S.togoManual = Math.max(0, Math.min(LAPS, appValue(LAPS - dispLap()) + (+st.dataset.togo)));
     dirty = true; return render();
   }
 });

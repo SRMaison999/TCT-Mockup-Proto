@@ -762,7 +762,8 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   tour de 195 secondes (`travaux.md` §8d). À trancher.
 - **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
   dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
-- **La couleur de l'intérieur de l'ovale** : « Je ne sais pas encore » (§17). Inchangé en attendant.
+- **Ce que fait le bouton `ARM FINISH`.** Il figure sur sa maquette du 29 octobre (§17) ; son
+  comportement n'a jamais été énoncé. Le bouton est à l'écran et ne fait rien.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -1166,6 +1167,30 @@ Ce que cela fixe :
    devient rouge** quand ils sont retenus. Un **tout petit bouton** fait la bascule.
 8. **Les boutons s'appellent « SET NEXT AS LEADER », sur deux lignes**, et **celui de la boucle
    Finish est supprimé** : il n'en reste que deux, Pursuit A et Pursuit B.
+
+### Sa maquette du 29 octobre 2026
+
+Devant une version qu'il jugeait encore ratée, il a dessiné lui-même ce qu'il voulait. Mot pour
+mot :
+
+> Quelquechose comme ça ...
+
+Ce que la maquette montre, et qui fait foi :
+
+9. **Trois rangées, chacune centrée**, et non une grille de cases égales :
+   - `ARM START` · l'horloge · **`ARM FINISH`** ;
+   - `LAP 5 / 40` · `NEXT SPRINT 1 in 5 laps` ;
+   - `LEADER 15`, et à sa droite le bloc des tours restants.
+10. **`ARM FINISH`** est un bouton **neuf**, posé à droite de l'horloge, en neutre et non en
+    rouge. **Ce qu'il fait n'a pas été énoncé** (§15).
+11. **Les deux provenances s'affichent ensemble, chacune avec sa valeur** — « AUTO / MANU − 36 »
+    et « LAP COUNTER − 35 » — et **un sélecteur choisit celle qui alimente `TO GO`**. C'est
+    exactement sa règle du §13 : un désaccord se signale avec les deux valeurs. Un petit bouton
+    bascule l'application entre son propre comptage et le comptage à la main.
+12. **`TO GO` est une boîte verte** sous les deux provenances. Elle devient rouge quand les tours
+    restants sont retenus des sorties (point 7 ci-dessus).
+13. **L'intérieur de l'ovale est gris clair** sur cette maquette, alors qu'il était noir. C'est
+    la réponse au « Je ne sais pas encore » laissé plus haut.
 
 ### La couleur de l'intérieur de l'ovale
 
