@@ -37,14 +37,14 @@
           <g id="riders"></g>
           <g id="ovlabels"></g>
           <g id="infield">
-            <foreignObject id="armfo1" x="0" y="0" width="112" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="armfo2" x="0" y="0" width="112" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="ifpanel" x="275" y="209" width="430" height="176">
+            <foreignObject id="armfo1" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="ifpanel" x="205" y="192" width="570" height="208">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifg">
                 <div class="ifrow">
                   <button class="startb" id="startbtn">ARM START</button>
                   <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
-                  <button class="startb finb" id="armfinish" title="Behaviour not stated yet">ARM FINISH</button>
+                  <button class="startb finb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
                 </div>
                 <div class="ifrow">
                   <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
@@ -274,6 +274,10 @@ function reset() {
     startState: 'idle',     // 'idle' | 'armed' | 'run' — what the start button says
     fsConfirm: false,       // a false start asks twice
     armDone: null,          // {i, bib, until}: the loop that has just named a leader shows his number for a moment
+    // « arm finish arme la ligne d'arrivée pour que le running time de l'horloge s'arrête au passage du vainqueur
+    // à la toute fin de la course » (operator, 29 October 2026).
+    finArm: false,          // the finish line is armed and waits for the winner
+    winT: null,             // the winner's crossing time: the running time shows this and stops there
     pilot: {},              // bib → the simulator order the rider is riding: {kind:'spd'|'up'|'down'|'gain'|'lose'}
     taps: TAPES.map(() => []),       // what a tape switch emits: an instant, no identity at all — the software may read this
     tapeTruth: TAPES.map(() => []),  // the simulated truth behind those contacts {t, bib, merged}: forbidden to the software, like r.dist
@@ -443,7 +447,13 @@ function step(dt) {
           S.passes.push({ bib: nb, t: rec.t, n: ka });
           // finish: the head of the race, counted in the bunch's lap, opens the finish on completing the distance;
           // every other rider still in the race then finishes at his next crossing, and the race is closed when all have crossed
-          if (L === 0 && !S.finishOpen && kn >= LAPS) { S.finishOpen = rec.t; S.finishCrossed = new Set(); logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false); }
+          if (L === 0 && !S.finishOpen && kn >= LAPS) {
+            S.finishOpen = rec.t; S.finishCrossed = new Set();
+            logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false);
+            // An armed finish line stops the running time on the winner, and disarms itself: the riders behind him
+            // go on crossing, the clock does not go on counting.
+            if (S.finArm) { S.winT = rec.t; S.finArm = false; logEvent('RACE', 'Running time stopped on BIB ' + nb + ' · ' + fmtT(rec.t), false); }
+          }
           if (L === 0 && S.finishOpen && rec.t >= S.finishOpen) S.finishCrossed.add(nb);   // the finish line only
         }
         if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.armDone = { i: LOOPS.indexOf(L), bib: nb, until: S.t + ARM_SHOW_S }; S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
@@ -1163,6 +1173,7 @@ const IF = {};
 for (const k of ['leadchip', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
                  'togomode', 'lap', 'lapof']) IF[k] = $('#if' + k);
 const SRC = { app: $('#srcapp'), cnt: $('#srccnt'), appk: $('#srcappk'), appv: $('#srcappv'), cntv: $('#srccntv') };
+const FINB = $('#armfinish');
 // The two provenances are shown together, each with its own figure, and one of them is picked: that is the
 // operator's own rule for a linked lap counter — « un désaccord est signalé avec les deux valeurs plutôt que
 // corrigé en silence » (regles-operateur.md §13). The application's figure is either its own count or the
@@ -1178,7 +1189,9 @@ function renderStrip(G) {
   const lead = S.riders.find(r => r.bib === G.leaderBib);
   IF.lap.textContent = S.finished ? LAPS : lap;
   IF.lapof.textContent = '/ ' + LAPS;
-  IF.time.textContent = fmtT(S.t);
+  IF.time.textContent = fmtT(S.winT != null ? S.winT : S.t);
+  IF.time.classList.toggle('stopped', S.winT != null);
+  FINB.classList.toggle('armed', S.finArm);
   IF.leadchip.textContent = lead ? lead.bib : '—';
   IF.leadchip.style.background = lead ? lead.color : 'var(--line2)';
   IF.leadchip.classList.toggle('dk', !!(lead && lead.dk));
@@ -1248,7 +1261,9 @@ function renderMarks() {
   LOOPS.forEach((s0, i) => {
     const fo = $('#armfo' + i); if (!fo) return;
     const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
-    const deep = HW + 22;   // both loops carry their button at the same depth, each against its own straight
+    // Both buttons sit against their own straight, as close to the track as they can: the panel between them needs
+    // every unit of height it can get, and the measurement said so — the content was 236 units for a frame of 198.
+    const deep = HW + 16;
     fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
     fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
   });
@@ -1502,6 +1517,12 @@ function startClick() {
 $('#infield').addEventListener('click', e => {
   const t = e.target;
   if (t.id === 'startbtn') return startClick();
+  if (t.id === 'armfinish') {
+    if (S.winT != null) return;                       // the winner is in: there is nothing left to arm
+    S.finArm = !S.finArm;
+    logEvent('RACE', S.finArm ? 'Finish line armed · the running time stops on the winner' : 'Finish line disarmed', true);
+    dirty = true; return render();
+  }
   if (t.closest('#iftogo')) {
     S.togoExport = !S.togoExport;
     logEvent('RACE', S.togoExport ? 'Laps to go sent to the outputs again' : 'Laps to go held back from every output', true);

@@ -1180,6 +1180,23 @@ pleine largeur empilées**. Ce n'était pas un défaut de réglage, c'était son
 le mien sans que je m'en aperçoive. Le panneau est revenu à sa forme : `LEADER` et le prochain
 sprint sur la première ligne, l'horloge et le bouton de départ sur la seconde.
 
+**L'échelle, et pourquoi son croquis était plus joli.** Il a dit, le 29 octobre 2026, que son
+croquis fait à Paint était plus joli que l'écran codé. Comparés, ce n'était pas une affaire de
+soin : ses boîtes et ses textes étaient **environ deux fois plus grands**. Le panneau a été
+porté à son échelle — boîtes de 40 unités de haut, chiffre des tours restants à 33 px, horloge
+à 30 px — et il est alors devenu trop grand pour sa place : contenu **236 unités** dans un
+cadre de **198**, que le cadre rognait.
+
+La place n'est pas bornée par l'ovale mais par **les deux boutons de leader**, posés au milieu
+de chaque ligne droite, donc exactement au-dessus et au-dessous du panneau. Les rapprocher du
+bord de piste (profondeur `HW + 16` au lieu de `HW + 22`) et resserrer le bloc des provenances
+donne le compte juste : **208 unités de contenu dans un cadre de 208**.
+
+**L'horloge arrêtée sur le vainqueur**, mesurée sur une course de 2 tours, ligne armée avant le
+départ : l'horloge s'est figée à **0:33.7** au passage du premier coureur sur la ligne, elle y
+était encore 2,5 secondes plus tard pendant que la course continuait derrière lui, et la ligne
+s'était désarmée d'elle-même.
+
 **Un défaut trouvé à l'œil et non par la mesure** : le champ du leader s'était rangé à côté de
 l'horloge, laissant le bouton de départ seul à la ligne suivante — alors que l'opérateur les
 veut côte à côte. Le leader prend désormais la ligne entière. Une boîte peut être parfaitement

@@ -347,33 +347,34 @@ body.sprintmode #scard{display:flex}
    hold and centred, not a grid of equal cells. */
 .ifg{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--sans)}
 .ifrow{display:flex;align-items:stretch;justify-content:center;gap:8px}
-.ifb{display:flex;align-items:center;gap:7px;height:34px;padding:0 10px;box-sizing:border-box;
+.ifb{display:flex;align-items:center;gap:9px;height:40px;padding:0 14px;box-sizing:border-box;
   background:var(--deep);border:1px solid var(--line);border-radius:4px;white-space:nowrap;overflow:hidden}
-.ifb .ifk{font:600 10px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
-.ifb .ifv{font:600 18px var(--mono);font-variant-numeric:tabular-nums}
-.ifb .ifv.sm{font-size:13px}
-.ifb .ifu{font:500 11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
-.ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 5px;
-  border-radius:3px;font:600 13px var(--mono);color:#fff;background:var(--line2)}
-.ifclock{justify-content:center;min-width:104px}
-.ifclock .ifv{font-size:20px}
+.ifb .ifk{font:600 13px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
+.ifb .ifv{font:600 24px var(--mono);font-variant-numeric:tabular-nums}
+.ifb .ifv.sm{font-size:17px}
+.ifb .ifu{font:500 14px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0 7px;
+  border-radius:4px;font:600 17px var(--mono);color:#fff;background:var(--line2)}
+.ifclock{justify-content:center;min-width:150px}
+.ifclock .ifv{font-size:30px}
+.ifclock .ifv.stopped{color:var(--play)}
 
 /* « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
    immanquable ». No colour was stated; this is the one the project already keeps for what must be seen. */
 .ifb.hot{background:var(--warn);border-color:var(--warn)}
 .ifb.hot .ifk,.ifb.hot .ifv,.ifb.hot .ifu{color:#2a1b05;font-weight:700}
-.ifb.hot .ifv{font-size:15px}
+.ifb.hot .ifv{font-size:19px}
 
 /* The start button, in the operator's four states. The third click state is only BIGGER AND DARKER — he asked for
    nothing else, and in particular for no second wording. */
 .ifstart{display:flex}
-.startb{width:100%;font:700 12px var(--sans);letter-spacing:.09em;border-radius:4px;padding:0;cursor:pointer;
+.startb{width:100%;font:700 15px var(--sans);letter-spacing:.09em;border-radius:4px;padding:0;cursor:pointer;
   color:#fff;background:var(--crit);border:1px solid var(--crit)}
 .startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
 .startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
-.startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:14px;letter-spacing:.12em}
+.startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:17px;letter-spacing:.12em}
 /* Beside it, the button that arms the finish. It is NOT the start button: it stays neutral. */
-.ifrow .startb{width:auto;padding:0 14px}
+.ifrow .startb{width:auto;padding:0 20px}
 .startb.finb{background:var(--deep);border-color:var(--line);color:var(--fg)}
 .startb.finb:hover{border-color:var(--muted)}
 
@@ -382,23 +383,23 @@ body.sprintmode #scard{display:flex}
    from the outputs, that box goes red, and a very small button makes the change. */
 .togobox{display:flex;flex-direction:column;gap:3px;padding:4px;background:var(--deep);
   border:1px solid var(--line);border-radius:4px}
-.srcrow{display:flex;align-items:center;gap:6px;height:20px;padding:0 6px;border-radius:3px;
+.srcrow{display:flex;align-items:center;gap:8px;height:24px;padding:0 10px;border-radius:3px;
   background:#23272b;border:1px solid var(--line2)}
 .srcrow.on{border-color:var(--muted)}
 .srcrow .ifk{flex:1 1 auto}
-.srcv{font:600 12px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
-.pick{width:12px;height:12px;border-radius:50%;padding:0;background:#15181b;border:1px solid var(--line2);
+.srcv{font:600 16px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
+.pick{width:15px;height:15px;border-radius:50%;padding:0;background:#15181b;border:1px solid var(--line2);
   cursor:pointer;flex-shrink:0}
 .srcrow.on .pick{background:var(--fg);border-color:var(--fg)}
-.modeb{width:18px;height:16px;font-size:10px}
+.modeb{width:24px;height:22px;font-size:12px}
 .ifstep{display:none;gap:3px}
 .srcrow.manual .ifstep{display:inline-flex}
-.ifsb{height:16px;width:16px}
+.ifsb{height:22px;width:22px;font-size:13px}
 /* The box is the button, so its figure fills it: nothing else competes for the room. */
-#iftogo{height:36px;background:var(--play);border-color:var(--play);cursor:pointer;justify-content:space-between}
+#iftogo{height:44px;background:var(--play);border-color:var(--play);cursor:pointer;justify-content:space-between}
 #iftogo:hover{filter:brightness(1.08)}
-#iftogo .ifk{font-size:13px;letter-spacing:.06em}
-#iftogo .ifv{font-size:27px;line-height:1}
+#iftogo .ifk{font-size:16px;letter-spacing:.06em}
+#iftogo .ifv{font-size:33px;line-height:1}
 #iftogo .ifk,#iftogo .ifv{color:#06220c}
 .ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
   border-radius:3px;width:20px;height:20px;line-height:1;padding:0;cursor:pointer}
@@ -409,11 +410,11 @@ body.sprintmode #scard{display:flex}
 
 /* The two leader buttons, each on its own loop. The Finish loop has none: the operator had it removed. */
 .armwrap{display:flex;align-items:center;justify-content:center;height:100%}
-.armb{width:100%;height:100%;font:600 9px var(--sans);letter-spacing:.04em;line-height:1.35;color:var(--fg);
+.armb{width:100%;height:100%;font:600 11px var(--sans);letter-spacing:.04em;line-height:1.35;color:var(--fg);
   background:rgba(15,17,19,.92);border:1px solid var(--line2);border-radius:3px;padding:0;cursor:pointer}
 .armb:hover{border-color:var(--muted)}
 .armb.on{color:#06220c;background:var(--play);border-color:var(--play)}
-.armb.done{color:var(--play);border-color:var(--play);background:rgba(15,17,19,.92);font:600 12px var(--mono)}
+.armb.done{color:var(--play);border-color:var(--play);background:rgba(15,17,19,.92);font:600 15px var(--mono)}
 
 #ifpanel,.ifg,.ifrow,.armwrap{pointer-events:none}
 .ifb,.startb,.ifsb,.armb,.srcrow,.pick,.togobox{pointer-events:auto}

@@ -762,8 +762,6 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   tour de 195 secondes (`travaux.md` §8d). À trancher.
 - **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
   dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
-- **Ce que fait le bouton `ARM FINISH`.** Il figure sur sa maquette du 29 octobre (§17) ; son
-  comportement n'a jamais été énoncé. Le bouton est à l'écran et ne fait rien.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -1212,6 +1210,27 @@ Ce que cela fixe :
 15. **La ligne `LAP COUNTER` porte le nombre de tours reçu du compteur**, à côté de son nom,
     comme la ligne de l'application porte le sien.
 16. **Le texte de `TO GO` remplit sa boîte**, la place n'étant plus disputée par un bouton.
+
+### Ce que fait `ARM FINISH`, et l'échelle du panneau
+
+Mot pour mot, le 29 octobre 2026 :
+
+> arm finish arme la ligne d'arrivée pour que le running time de l'horloge s'arrête au passage
+> du vainqueur à la toute fin de la course.
+
+Et, sur la mise en page :
+
+> Mais le layout est moche ! Mon croquis de mauvaise qualité que j'ai créé avec Paint et que je
+> t'ai transmis est plus joli que le tien
+
+Ce que cela fixe :
+
+17. **`ARM FINISH` arme la ligne d'arrivée.** Armée, elle **arrête le running time de l'horloge
+    au passage du vainqueur**, à la toute fin de la course. Les coureurs derrière lui continuent
+    de franchir la ligne ; l'horloge, elle, ne compte plus.
+18. **Le panneau se lit à l'échelle de son croquis**, pas plus petit. Ses boîtes et ses textes
+    étaient environ deux fois trop petits ; ce qui rendait sa version plus lisible que la mienne
+    n'était pas son soin, c'était sa taille.
 
 ### La couleur de l'intérieur de l'ovale
 
