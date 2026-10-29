@@ -1462,6 +1462,26 @@ Il l'a dit le même jour, mot pour mot :
 Cela remplace le point 34 du même jour pour le bloc des champs seulement ; les **noms de
 groupes**, eux, restent à l'intérieur de l'ovale, ce qui était tout l'objet de ce déplacement.
 
+### Sa page redessinée
+
+**29 octobre 2026.** Il a redessiné la page entière et l'a transmise : « J'ai redessiné toute la
+page ». Ce qu'elle montre, et ses réponses aux cinq points qu'elle laissait ouverts :
+
+44. **L'intérieur de l'ovale reste gris.** Il l'avait dessiné noir : « c'était pour voir ce que
+    ça donnait. Peut-être que c'est plus lisible en gris ».
+45. **La timeline ne porte plus les noms des coureurs** — dossard, drapeau et code pays
+    seulement. « Confirmé ».
+46. **Le badge du prochain sprint passe à l'orange à deux tours**, comme le champ qu'il
+    remplace. **Sa place n'est pas acquise** : « il est possible que je le déplace plus tard ».
+47. **L'horloge de course n'est que dans l'ovale.** Celle de la barre du haut est **celle du
+    simulateur**, et elles ne montrent pas la même chose : depuis `ARM FINISH`, l'horloge de
+    course se fige sur le vainqueur pendant que la lecture continue.
+48. **Le simulateur ne s'ouvre que par son bouton**, et pourrait même s'ouvrir dans une autre
+    fenêtre.
+49. **L'intérieur de l'ovale reprend les tours restants** : la rangée du départ, puis les deux
+    provenances à côté de `LAP` et `TO GO`, puis `LEADER` et le prochain sprint en badges. La
+    barre au-dessus de l'ovale disparaît.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

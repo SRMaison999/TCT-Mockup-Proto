@@ -434,3 +434,10 @@ body.sprintmode #scard{display:flex}
 .panelbar{flex:0 0 auto;display:flex;justify-content:center;background:var(--panel);border:1px solid var(--line);
   border-radius:4px;padding:8px}
 .panelbar .ifg{width:auto}
+/* Everything that was in the bar above the oval went back inside it (operator's redrawn page, 29 October 2026).
+   The laps and the laps to go stand in a column beside the two provenances; the leader and the next sprint sit
+   lower, as badges of their own. */
+.lapcol{display:flex;flex-direction:column;gap:3px}
+.lapcol .ifb{height:100%}
+#ifbadges .ifrow{height:100%}
+#ifpanel,#ifbadges,#ifbadges .ifrow{pointer-events:none}
