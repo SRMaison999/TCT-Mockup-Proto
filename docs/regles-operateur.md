@@ -760,8 +760,6 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   `−lap` le coureur revient dans le peloton en une trentaine de secondes, parce qu'il doit
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
   tour de 195 secondes (`travaux.md` §8d). À trancher.
-- **Où s'affiche le compteur de tours de course.** Il doit l'être (§17), mais aucune place ne lui
-  a été désignée. Posé à côté du leader en attendant.
 - **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
   dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
 - **La couleur du gazon** : « Je ne sais pas encore » (§17). Inchangé en attendant.
@@ -1138,6 +1136,25 @@ Cinq décisions, donc :
    désigné.
 5. **À deux tours du prochain sprint, le champ devient immanquable.** Aucune couleur n'a été
    énoncée ; celle qui est retenue est dans `mesures.md` §26.
+
+### Sa troisième lecture, le même jour
+
+Mot pour mot :
+
+> * Les tours "2/40" doivent être proches des "38 TO GO"
+> * pour éviter de créer un champ EXPORTED, il faut plutôt que le zone des laps to go devienne
+>   rouge. Pour changer entre exporté et non exporté il faut je pense un tout petit bouton
+> * Les boutons "SET NEXT AS NEW LEADER" renomme les "SET NEXT AS LEADER" sur deux lignes.
+>   supprime celui de la ligne Finish
+
+Ce que cela fixe :
+
+6. **Le compteur de tours de course est à côté des tours restants**, donc près de la ligne
+   d'arrivée et non plus dans le panneau. Cela répond à la question laissée ouverte plus haut.
+7. **Il n'y a pas de champ qui dit « exporté »** : c'est **la zone des tours restants qui
+   devient rouge** quand ils sont retenus. Un **tout petit bouton** fait la bascule.
+8. **Les boutons s'appellent « SET NEXT AS LEADER », sur deux lignes**, et **celui de la boucle
+   Finish est supprimé** : il n'en reste que deux, Pursuit A et Pursuit B.
 
 ### La couleur du gazon
 

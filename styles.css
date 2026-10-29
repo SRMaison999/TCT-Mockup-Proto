@@ -401,3 +401,25 @@ body.sprintmode #scard{display:flex}
 .ifb.hot .ifv{font-size:16px}
 .ifb.hot .ifk,.ifb.hot .ifu{font-weight:700}
 #ifnext{grid-column:1 / -1}
+/* Third reading (29 October 2026): the lap counter sits next to the laps to go by the finish line; being held back
+   from the outputs is shown by the ZONE going red, not by a field saying so, and a very small button toggles it. */
+.togorow{display:flex;gap:6px;height:100%}
+.togorow .ifb{flex:0 0 auto}
+.togorow #iftogo{flex:1 1 auto}
+#iftogo.noexp{background:var(--crit);border-color:var(--crit)}
+#iftogo.noexp .ifk,#iftogo.noexp .ifv{color:#2a0808;text-decoration:none}
+#iftogo.noexp .ifsrc{color:#2a0808;border-color:#2a0808}
+#iftogo.noexp .ifsb{background:#2a0808;border-color:#2a0808;color:#fff}
+.ifdot{width:11px;height:11px;padding:0;border-radius:2px;background:#23272b;border:1px solid var(--line2);cursor:pointer;flex-shrink:0}
+.ifdot:hover{border-color:var(--fg)}
+.ifdot.off{background:#2a0808;border-color:#2a0808}
+/* Two lines in the leader buttons, now that they say « SET NEXT / AS LEADER ». */
+.armb{line-height:1.3}
+/* The rule that sized the single TO GO box to the full frame now starves it: the row holds two boxes, each sized
+   to its own content, and only TO GO takes the slack. */
+#togofo .ifb{width:auto;height:100%}
+#ifpanel,.ifg,.armwrap,.togorow{pointer-events:none}
+.togorow{justify-content:center}
+.togorow #iftogo{flex:0 0 auto}
+/* The leader takes the whole line, so the clock and the start button share the next one — side by side, as asked. */
+#ifleadb{grid-column:1 / -1}

@@ -1124,3 +1124,29 @@ que le projet réserve déjà à ce qui doit se voir.
 **Deux défauts de la deuxième version, corrigés au même build** : le champ du sprint ne prenait
 qu'une colonne et tronquait « in 2… », et la boîte des tours restants coupait son bouton à
 « EX ». Le premier prend maintenant toute la largeur, la seconde est passée de 186 à 246 unités.
+
+**La troisième lecture**, le même jour (`regles-operateur.md` §17). Le compteur de tours quitte
+le panneau pour la ligne d'arrivée, la retenue à l'export cesse d'être un champ, et la boucle
+Finish perd son bouton de leader. Mêmes conditions de mesure :
+
+| Étage | Boîte | Dégagement |
+|---|---|---|
+| Bouton Pursuit B | y 256 → 281 | 26 px au-dessus du panneau |
+| Panneau | y 307 → 395, contenu **379** | 16 px de marge |
+| `LAP 7 / 40` + `TO GO 33`, centrés sur la ligne d'arrivée | y 429 → 452 | 34 px sous le panneau |
+| Bouton Pursuit A | y 457 → 482 | 5 px sous eux |
+| Bouton Finish | **supprimé** | — |
+
+La place libérée par le bouton de Finish sert aux deux compteurs, qui se rapprochent de la ligne
+de 30 unités de piste.
+
+**Le défaut que la mesure a trouvé et que l'œil n'aurait pas expliqué** : la zone des tours
+restants était bien rouge — `rgb(255, 92, 92)` relevé sur l'élément — mais **large de 19 px**,
+donc invisible. Une règle plus ancienne, `#togofo .ifb{width:100%}`, écrite quand la boîte était
+seule dans son cadre, donnait toute la largeur à la boîte `LAP` et affamait sa voisine. Les deux
+se dimensionnent maintenant sur leur contenu : 81 px et 156 px.
+
+**Le second, trouvé à l'œil et non par la mesure** : le champ du leader s'était rangé à côté de
+l'horloge, laissant le bouton de départ seul à la ligne suivante — alors que l'opérateur les
+veut côte à côte. Le leader prend désormais la ligne entière. Une boîte peut être parfaitement
+placée et parfaitement à la mauvaise place : les deux lectures restent nécessaires.

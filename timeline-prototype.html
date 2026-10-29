@@ -37,24 +37,23 @@
           <g id="riders"></g>
           <g id="ovlabels"></g>
           <g id="infield">
-            <foreignObject id="armfo0" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="0">SET NEXT AS NEW LEADER</button></div></foreignObject>
-            <foreignObject id="armfo1" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT AS NEW LEADER</button></div></foreignObject>
-            <foreignObject id="armfo2" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT AS NEW LEADER</button></div></foreignObject>
-            <foreignObject id="ifpanel" x="305" y="222" width="370" height="108">
+            <foreignObject id="armfo1" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="armfo2" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="ifpanel" x="305" y="222" width="370" height="104">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifg">
-                <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
-                <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
+                <div class="ifb" id="ifleadb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
                 <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
                 <div class="ifstart"><button class="startb" id="startbtn">ARM START</button></div>
                 <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
               </div>
             </foreignObject>
-            <foreignObject id="togofo" x="0" y="0" width="246" height="28">
-              <div xmlns="http://www.w3.org/1999/xhtml" class="armwrap">
+            <foreignObject id="togofo" x="0" y="0" width="376" height="28">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="togorow">
+                <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
                 <div class="ifb" id="iftogo"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span>
                   <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
                   <span class="ifsrc" id="iftogosrc" title="Where this number comes from: the lap counter on the track, the application counting by itself, or the operator counting by hand">APP · AUTO</span>
-                  <button class="ifsb wide" id="iftogoexp" title="Hold the laps to go back from every output">EXPORTED</button></div>
+                  <button class="ifdot" id="iftogoexp" title="Hold the laps to go back from every output"></button></div>
               </div>
             </foreignObject>
           </g>
@@ -1180,8 +1179,8 @@ function renderStrip(G) {
   IF.togosrc.textContent = TOGO_SRC[S.togoSrc];
   IF.togo.classList.toggle('manual', S.togoSrc === 'manual');
   IF.togo.classList.toggle('noexp', !S.togoExport);
-  IF.togoexp.textContent = S.togoExport ? 'EXPORTED' : 'NOT EXPORTED';
   IF.togoexp.classList.toggle('off', !S.togoExport);
+  IF.togoexp.title = S.togoExport ? 'Hold the laps to go back from every output' : 'Send the laps to go to the outputs again';
   syncStart();
 }
 
@@ -1226,8 +1225,8 @@ function renderMarks() {
   const tf = $('#togofo');
   if (tf) {
     const a = normalAt(0), w = +tf.getAttribute('width'), ht = +tf.getAttribute('height');
-    tf.setAttribute('x', (a.p.x - a.nx * (HW + 86) - w / 2).toFixed(1));
-    tf.setAttribute('y', (a.p.y - a.ny * (HW + 86) - ht / 2).toFixed(1));
+    tf.setAttribute('x', (a.p.x - a.nx * (HW + 56) - w / 2).toFixed(1));
+    tf.setAttribute('y', (a.p.y - a.ny * (HW + 56) - ht / 2).toFixed(1));
   }
   LOOPS.forEach((s0, i) => {
     const fo = $('#armfo' + i); if (!fo) return;
@@ -1514,7 +1513,7 @@ const ARM_SHOW_S = 5;
 // syncArm() runs on every frame (see render()), and builds 88 and 89 were spent taking per-frame work OUT of the
 // oval. So it looks nothing up: the three buttons are found once, and the three green lines are re-found only when
 // renderMarks() has just rebuilt #marks. Nothing here touches the document while the state has not changed.
-const ARMB = [0, 1, 2].map(i => $('#armfo' + i).querySelector('.armb'));
+const ARMB = [0, 1, 2].map(i => { const fo = $('#armfo' + i); return fo && fo.querySelector('.armb'); });
 let ARMG = [], armShown = [];
 function armLines() { ARMG = [0, 1, 2].map(i => $('#lpg' + i)); }
 function syncArm() {
@@ -1528,7 +1527,7 @@ function syncArm() {
     armShown[i] = want;
     b.classList.toggle('on', armed);
     b.classList.toggle('done', !!done);
-    b.textContent = done ? 'BIB ' + S.armDone.bib : 'SET NEXT AS NEW LEADER';
+    b.innerHTML = done ? 'BIB ' + S.armDone.bib : 'SET NEXT<br/>AS LEADER';
     if (ARMG[i]) ARMG[i].setAttribute('stroke-opacity', armed ? '1' : '0');
   }
 }
