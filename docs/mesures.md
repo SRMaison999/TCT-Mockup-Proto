@@ -1078,7 +1078,7 @@ pas avant — NOR, MAR, RSA, VIE, CAN — et sur un code inventé :
 
 ---
 
-## 26. Les champs d'état dans le gazon — build 92
+## 26. Les champs d'état à l'intérieur de l'ovale — build 92
 
 Proposé le 29 octobre 2026 sur la maquette de l'opérateur, puis repris sur sa deuxième lecture
 du même jour (`regles-operateur.md` §17). Mesuré dans le navigateur, fenêtre 1700 × 1000,
@@ -1089,10 +1089,10 @@ piste 250 m, `gap` 10 m.
 | Défaut | Mesure | Cause |
 |---|---|---|
 | Le cadre coupait son contenu | contenu **164 px** dans un cadre de **143 px** | un `foreignObject` rogne ce qui dépasse |
-| Le bouton de départ tombait sur celui de la boucle Finish | `ARM START` x 755→855, Finish x 818→923, y 426→452 contre 432→456 | les deux visaient le milieu du bas du gazon |
+| Le bouton de départ tombait sur celui de la boucle Finish | `ARM START` x 755→855, Finish x 818→923, y 426→452 contre 432→456 | les deux visaient le même bas de piste |
 | Les clics n'atteignaient pas les boutons de la piste | — | un `foreignObject` capte le pointeur sur **tout son rectangle**, transparent ou non |
 
-**Ce que la build 92 donne**, mêmes conditions. Tout ce qui se pose dans le bas du gazon est
+**Ce que la build 92 donne**, mêmes conditions. Tout ce qui se pose en bas de l'ovale est
 empilé, et chaque étage dégage le suivant :
 
 | Étage | Boîte | Dégagement |
@@ -1146,7 +1146,34 @@ donc invisible. Une règle plus ancienne, `#togofo .ifb{width:100%}`, écrite qu
 seule dans son cadre, donnait toute la largeur à la boîte `LAP` et affamait sa voisine. Les deux
 se dimensionnent maintenant sur leur contenu : 81 px et 156 px.
 
-**Le second, trouvé à l'œil et non par la mesure** : le champ du leader s'était rangé à côté de
+**La quatrième lecture.** L'opérateur a jugé la disposition « horrible » et a demandé de relire
+ses explications pour y trouver les incohérences. Quatre ont été trouvées, et aucune n'était un
+problème de pixels :
+
+| Incohérence | Ce qu'il avait dit | Ce qui avait été codé |
+|---|---|---|
+| Un libellé inventé | « le bouton va devenir un peu plus grand et plus foncé » | le bouton changeait **aussi** de texte, pour « CONFIRM FALSE START » |
+| Une décision contournée | « dans le champ LEADER, retire "56.9 km/h from the track" » | le texte était passé en infobulle, donc gardé |
+| Un mécanisme mort | « supprime celui de la ligne Finish » | la ligne verte de la boucle Finish continuait d'être tracée, alors que plus aucun bouton ne pouvait l'allumer |
+| Le style empilé par retouches | — | **91 lignes** de style ajoutées en six fois, chaque bloc contredisant le précédent : hauteur de boîte définie deux fois, règles de grille devenues sans objet, sélecteurs visant des éléments supprimés |
+
+La dernière est la cause de la disposition elle-même : une feuille de style écrite par ajouts
+successifs ne donne pas une mise en page, elle donne la somme des hésitations. Réécrite d'un
+seul tenant, **73 lignes**, et la disposition en est sortie seule.
+
+**Ce que la build 92 donne finalement**, mêmes conditions :
+
+| Étage | Boîte | Dégagement |
+|---|---|---|
+| Bouton Pursuit B | y 256 → 281 | 33 px au-dessus du panneau |
+| Panneau, trois lignes d'une seule largeur | y 314 → 402, contenu **395** | 7 px de marge |
+| Bouton Pursuit A | y 426 → 451 | 24 px sous le panneau |
+| `LAP` + `TO GO`, contre la piste, centrés sur la ligne d'arrivée | y 457 → 481 | 6 px sous lui |
+
+Pursuit A recule d'un cran parce qu'il partage la ligne droite d'arrivée avec les deux
+compteurs, qui prennent le bord de piste : ce sont eux qui doivent être « près de la ligne ».
+
+**Un défaut trouvé à l'œil et non par la mesure** : le champ du leader s'était rangé à côté de
 l'horloge, laissant le bouton de départ seul à la ligne suivante — alors que l'opérateur les
 veut côte à côte. Le leader prend désormais la ligne entière. Une boîte peut être parfaitement
 placée et parfaitement à la mauvaise place : les deux lectures restent nécessaires.

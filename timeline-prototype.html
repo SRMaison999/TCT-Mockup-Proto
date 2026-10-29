@@ -37,9 +37,9 @@
           <g id="riders"></g>
           <g id="ovlabels"></g>
           <g id="infield">
-            <foreignObject id="armfo1" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="armfo2" x="0" y="0" width="124" height="26"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="ifpanel" x="305" y="222" width="370" height="104">
+            <foreignObject id="armfo1" x="0" y="0" width="112" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="armfo2" x="0" y="0" width="112" height="30"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="ifpanel" x="310" y="230" width="360" height="104">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifg">
                 <div class="ifb" id="ifleadb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
                 <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
@@ -1162,10 +1162,8 @@ function renderStrip(G) {
   IF.leadchip.textContent = lead ? lead.bib : '—';
   IF.leadchip.style.background = lead ? lead.color : 'var(--line2)';
   IF.leadchip.classList.toggle('dk', !!(lead && lead.dk));
-  // The leader box carries his number and nothing else (operator, 29 October 2026): no speed, no sentence saying
-  // how he was named. Both are still true, so they go in the tooltip rather than on the screen.
-  IF.leadchip.parentNode.title = 'Race leader · ' + (G.leader.spd * 3.6).toFixed(1) + ' km/h · '
-    + (S.arm != null ? 'armed' : S.leader ? S.leader.how : 'from the track');
+  // The leader box carries his number and nothing else (operator, 29 October 2026). He said « retire » — so the
+  // speed and the way he was named are gone, not moved into a tooltip where they would have survived his decision.
   IF.nextk.textContent = sprintNow ? 'SPRINT' : 'NEXT';
   IF.nextv.textContent = S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across'
     : sprintNow ? 'SPRINT ' + n + ' this lap' : 'SPRINT ' + n;
@@ -1217,21 +1215,24 @@ function renderMarks() {
     // thin to read as a band around it, so it is widened to eight times the black line.
     if (fin) h += line(s, -HW, HW, '#FFFFFF', FIN_BLACK * 8) + line(s, -HW, HW, '#111111', FIN_BLACK);
     else h += line(s, -HW, HW, col, 2);   // the two pursuit lines are white and cross the whole width
-    // An armed loop shows it on the track itself: a green line over its own, lit by syncArm().
-    h += line(s, -HW, HW, '#1CC634', 4).replace('<line ', `<line id="lpg${LOOPS.indexOf(s)}" stroke-opacity="0" `);
+    // An armed loop shows it on the track itself: a green line over its own, lit by syncArm(). The Finish loop has
+    // no button since the operator had it removed, so nothing could ever light its line: it does not get one.
+    if (!fin) h += line(s, -HW, HW, '#1CC634', 4).replace('<line ', `<line id="lpg${LOOPS.indexOf(s)}" stroke-opacity="0" `);
   }
   // The three leader buttons are placed on their own loop, inside the grass. Only their x and y move, and only
   // here — this function runs when the track is set, not on every frame, so the buttons are never replaced (D2).
   const tf = $('#togofo');
   if (tf) {
     const a = normalAt(0), w = +tf.getAttribute('width'), ht = +tf.getAttribute('height');
-    tf.setAttribute('x', (a.p.x - a.nx * (HW + 56) - w / 2).toFixed(1));
-    tf.setAttribute('y', (a.p.y - a.ny * (HW + 56) - ht / 2).toFixed(1));
+    tf.setAttribute('x', (a.p.x - a.nx * (HW + 22) - w / 2).toFixed(1));
+    tf.setAttribute('y', (a.p.y - a.ny * (HW + 22) - ht / 2).toFixed(1));
   }
   LOOPS.forEach((s0, i) => {
     const fo = $('#armfo' + i); if (!fo) return;
     const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
-    const deep = i === 0 ? HW + 52 : HW + 22;   // Finish sits a row deeper: it is only `gap` metres from Pursuit A
+    // Pursuit A shares the home straight with the finish line, where the two counters now sit against the track:
+    // it steps back one row so that they keep the edge. Pursuit B has its straight to itself.
+    const deep = i === 2 ? HW + 58 : HW + 22;
     fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
     fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
   });
@@ -1535,7 +1536,9 @@ function syncArm() {
 function syncStart() {
   const b = $('#startbtn'); if (!b || !S) return;
   const st = S.startState;
-  b.textContent = st === 'idle' ? 'ARM START' : st === 'armed' ? 'START ARMED' : S.fsConfirm ? 'CONFIRM FALSE START' : 'FALSE START';
+  // Three wordings, and three only: the operator's own. The second click on FALSE START makes the button bigger
+  // and darker — he asked for that and for no other wording.
+  b.textContent = st === 'idle' ? 'ARM START' : st === 'armed' ? 'START ARMED' : 'FALSE START';
   b.classList.toggle('armed', st === 'armed');
   b.classList.toggle('fs', st === 'run');
   b.classList.toggle('confirm', st === 'run' && S.fsConfirm);

@@ -762,7 +762,7 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   tour de 195 secondes (`travaux.md` §8d). À trancher.
 - **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
   dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
-- **La couleur du gazon** : « Je ne sais pas encore » (§17). Inchangé en attendant.
+- **La couleur de l'intérieur de l'ovale** : « Je ne sais pas encore » (§17). Inchangé en attendant.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -1041,11 +1041,11 @@ Les trois se retrouvent dans la course suivante, et au rechargement de la page. 
 
 ---
 
-## 17. L'écran de course : le gazon, le départ, les tours restants
+## 17. L'écran de course : l'intérieur de l'ovale, le départ, les tours restants
 
 Cette section vient après le §16 pour la même raison que lui : ne renuméroter aucune autre.
 
-**29 octobre 2026 — la bande d'état descend dans le gazon.** Mot pour mot :
+**29 octobre 2026 — la bande d'état descend à l'intérieur de l'ovale.** Mot pour mot :
 
 > Retirons la ligne des boutons au-dessus de l'ovale et plaçons les dans l'ovale
 
@@ -1137,6 +1137,17 @@ Cinq décisions, donc :
 5. **À deux tours du prochain sprint, le champ devient immanquable.** Aucune couleur n'a été
    énoncée ; celle qui est retenue est dans `mesures.md` §26.
 
+### Un mot qui n'est pas le sien
+
+Le 29 octobre 2026, devant une version où l'intérieur de l'ovale était appelé « gazon » jusque
+dans le titre de cette section, mot pour mot :
+
+> Et arrête avec ton "gazon" ! il n'y a pas de gazon dans un vélodrome !!!!!!
+
+Le mot n'avait jamais été le sien. Le sien, le 27 octobre, est au §12 : « la zone en béton,
+plate, immédiatement à l'intérieur de l'ovale de la piste en bois ». **On dit l'intérieur de
+l'ovale.** Corrigé dans les quatre documents qui portaient le mot.
+
 ### Sa troisième lecture, le même jour
 
 Mot pour mot :
@@ -1156,9 +1167,9 @@ Ce que cela fixe :
 8. **Les boutons s'appellent « SET NEXT AS LEADER », sur deux lignes**, et **celui de la boucle
    Finish est supprimé** : il n'en reste que deux, Pursuit A et Pursuit B.
 
-### La couleur du gazon
+### La couleur de l'intérieur de l'ovale
 
-Sur la question de savoir si le gazon doit s'éclaircir, puisque sa maquette le montrait blanc :
+Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :
 
 > Je ne sais pas encore
 

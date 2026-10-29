@@ -332,94 +332,73 @@ body.sprintmode #scard{display:flex}
 .dot{display:inline-block;width:7px;height:7px;border-radius:4px;background:var(--crit);margin-right:5px;vertical-align:1px}
 .hint{color:var(--dim);font:500 11px var(--mono);padding:5px 4px 0}
 
-/* ---------- The status fields, moved off the bar above the oval and into the infield (operator, 29 October 2026).
-   Everything here lives INSIDE the SVG, in track units, so it stays in the grass at any window size. The panel is
-   laid down once: render() only writes text and toggles classes, never innerHTML — a button replaced between the
-   press and the release never emits a click (pitfalls D2). */
+/* ---------- The race fields, inside the oval ----------------------------------------------------------------
+   The operator asked on 29 October 2026 that the status bar above the oval be taken away and its fields put inside
+   the track (regles-operateur.md §17). Everything below lives INSIDE the SVG, in track units, so it stays in the
+   middle of the oval at any window size.
+
+   Two things govern the whole block and must not be undone:
+   - renderStrip() writes text and classes into these nodes, never innerHTML. A button replaced between the press
+     and the release emits no click (pitfalls D2), and this panel carries buttons.
+   - A foreignObject catches the pointer over its whole RECTANGLE, transparent or not. The frames are therefore
+     see-through and only what is drawn takes the pointer. */
+
+/* The panel: three rows of one height, the middle one split between the clock and the start button. */
 .ifg{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:var(--sans)}
-.ifb{display:flex;align-items:center;gap:7px;height:34px;padding:0 10px;box-sizing:border-box;
+.ifb{display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;box-sizing:border-box;
   background:var(--deep);border:1px solid var(--line);border-radius:4px;white-space:nowrap;overflow:hidden}
 .ifb .ifk{font:600 10px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
-.ifb .ifv{font:600 19px var(--mono);font-variant-numeric:tabular-nums}
+.ifb .ifv{font:600 18px var(--mono);font-variant-numeric:tabular-nums}
 .ifb .ifv.sm{font-size:13px}
 .ifb .ifu{font:500 11px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
-.ifb.acc{background:var(--acc-soft)}
-.ifb.acc .ifv,.ifb.acc .ifk{color:#c9d6f5}
+#ifleadb,#ifnext{grid-column:1 / -1}
 .ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 5px;
   border-radius:3px;font:600 13px var(--mono);color:#fff;background:var(--line2)}
-/* The laps to go carry their own source and mode, so the operator can see where the number comes from. */
-#iftogo{grid-column:1 / -1}
+.ifclock{justify-content:center}
+.ifclock .ifv{font-size:20px}
+
+/* « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
+   immanquable ». No colour was stated; this is the one the project already keeps for what must be seen. */
+.ifb.hot{background:var(--warn);border-color:var(--warn)}
+.ifb.hot .ifk,.ifb.hot .ifv,.ifb.hot .ifu{color:#2a1b05;font-weight:700}
+.ifb.hot .ifv{font-size:15px}
+
+/* The start button, in the operator's four states. The third click state is only BIGGER AND DARKER — he asked for
+   nothing else, and in particular for no second wording. */
+.ifstart{display:flex}
+.startb{width:100%;font:700 12px var(--sans);letter-spacing:.09em;border-radius:4px;padding:0;cursor:pointer;
+  color:#fff;background:var(--crit);border:1px solid var(--crit)}
+.startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
+.startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
+.startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:14px;letter-spacing:.12em}
+
+/* The lap counter and the laps to go, side by side on the finish line itself. Being held back from the outputs is
+   shown by the ZONE going red — there is no field that says so — and a very small button makes the change. */
+.togorow{display:flex;justify-content:center;gap:6px;height:100%}
+.togorow .ifb{flex:0 0 auto;width:auto;height:100%}
 .ifstep{display:none;gap:3px}
 #iftogo.manual .ifstep{display:inline-flex}
 .ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
   border-radius:3px;width:20px;height:20px;line-height:1;padding:0;cursor:pointer}
-.ifsb.wide{width:auto;padding:0 7px}
 .ifsb:hover{border-color:var(--muted)}
 .ifsrc{font:600 9px var(--sans);letter-spacing:.07em;color:var(--muted);border:1px solid var(--line2);
   border-radius:3px;padding:2px 6px;cursor:pointer;user-select:none}
 .ifsrc:hover{border-color:var(--muted);color:var(--fg)}
-#iftogo.noexp .ifv{color:var(--dim);text-decoration:line-through}
-#iftogoexp.off{color:var(--crit);border-color:#6b2a2a}
-/* The start button and its four states. */
-.ifstart{grid-column:1 / -1;display:flex;justify-content:center;margin-top:2px}
-.startb{font:700 12px var(--sans);letter-spacing:.09em;border-radius:4px;padding:7px 18px;cursor:pointer;
-  color:#fff;background:var(--crit);border:1px solid var(--crit)}
-.startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
-.startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
-.startb.fs.confirm{background:#23272b;border-color:var(--muted);font-size:13px;padding:9px 22px}
-/* The three leader buttons sit on the track at their own loop (operator, 29 October 2026). */
+.ifdot{width:11px;height:11px;padding:0;border-radius:2px;background:#23272b;border:1px solid var(--line2);
+  cursor:pointer;flex-shrink:0}
+.ifdot:hover{border-color:var(--fg)}
+#iftogo.noexp{background:var(--crit);border-color:var(--crit)}
+#iftogo.noexp .ifk,#iftogo.noexp .ifv{color:#2a0808}
+#iftogo.noexp .ifsrc{color:#2a0808;border-color:#2a0808}
+#iftogo.noexp .ifsb,#iftogo.noexp .ifdot{background:#2a0808;border-color:#2a0808;color:#fff}
+
+/* The two leader buttons, each on its own loop. The Finish loop has none: the operator had it removed. */
 .armwrap{display:flex;align-items:center;justify-content:center;height:100%}
-.armb{font:600 8px var(--sans);letter-spacing:.05em;color:var(--fg);background:rgba(15,17,19,.92);
-  border:1px solid var(--line2);border-radius:3px;padding:3px 5px;cursor:pointer;line-height:1.25;
-  white-space:normal;text-align:center;max-width:100%}
+.armb{width:100%;height:100%;font:600 9px var(--sans);letter-spacing:.04em;line-height:1.35;color:var(--fg);
+  background:rgba(15,17,19,.92);border:1px solid var(--line2);border-radius:3px;padding:0;cursor:pointer}
 .armb:hover{border-color:var(--muted)}
 .armb.on{color:#06220c;background:var(--play);border-color:var(--play)}
 .armb.done{color:var(--play);border-color:var(--play);background:rgba(15,17,19,.92);font:600 12px var(--mono)}
-/* A foreignObject catches the pointer over its whole RECTANGLE, transparent or not: left alone, the panel's box
-   swallowed the clicks meant for the leader buttons and for the track behind it. So the frames are see-through and
-   only what is actually drawn takes the pointer. */
-#ifpanel,.ifg,.armwrap{pointer-events:none}
-.ifb,.startb,.ifsb,.ifsrc,.armb{pointer-events:auto}
-/* Measured on the drawing: the content stood 21 px taller than its frame, which clips it, and the start button
-   landed on the Finish loop's own button. So the rows are shorter and the three wide ones take the full width —
-   the start button no longer sits where a loop button has to be. */
-.ifb{height:28px}
-#ifpropb,.ifstart{grid-column:1 / -1}
-.ifstart{margin-top:0}
-.startb{padding:5px 18px}
-/* The panel after the operator's second reading (29 October 2026): no proposals field, the clock and the start
-   button side by side and the clock without its caption, the leader reduced to his number, and the laps to go taken
-   out of the panel to sit by the finish line. */
-.ifclock{justify-content:center}
-.ifclock .ifv{font-size:21px}
-.ifstart{grid-column:auto;align-items:stretch}
-.ifstart .startb{width:100%;padding:0}
-#togofo .ifb{height:28px;width:100%}
-/* Two laps from the sprint the field stops being quiet: « très visible et immanquable ». */
-.ifb.hot{background:var(--warn);border-color:var(--warn)}
-.ifb.hot .ifk,.ifb.hot .ifv,.ifb.hot .ifu{color:#2a1b05}
-.ifb.hot .ifv{font-size:16px}
-.ifb.hot .ifk,.ifb.hot .ifu{font-weight:700}
-#ifnext{grid-column:1 / -1}
-/* Third reading (29 October 2026): the lap counter sits next to the laps to go by the finish line; being held back
-   from the outputs is shown by the ZONE going red, not by a field saying so, and a very small button toggles it. */
-.togorow{display:flex;gap:6px;height:100%}
-.togorow .ifb{flex:0 0 auto}
-.togorow #iftogo{flex:1 1 auto}
-#iftogo.noexp{background:var(--crit);border-color:var(--crit)}
-#iftogo.noexp .ifk,#iftogo.noexp .ifv{color:#2a0808;text-decoration:none}
-#iftogo.noexp .ifsrc{color:#2a0808;border-color:#2a0808}
-#iftogo.noexp .ifsb{background:#2a0808;border-color:#2a0808;color:#fff}
-.ifdot{width:11px;height:11px;padding:0;border-radius:2px;background:#23272b;border:1px solid var(--line2);cursor:pointer;flex-shrink:0}
-.ifdot:hover{border-color:var(--fg)}
-.ifdot.off{background:#2a0808;border-color:#2a0808}
-/* Two lines in the leader buttons, now that they say « SET NEXT / AS LEADER ». */
-.armb{line-height:1.3}
-/* The rule that sized the single TO GO box to the full frame now starves it: the row holds two boxes, each sized
-   to its own content, and only TO GO takes the slack. */
-#togofo .ifb{width:auto;height:100%}
+
 #ifpanel,.ifg,.armwrap,.togorow{pointer-events:none}
-.togorow{justify-content:center}
-.togorow #iftogo{flex:0 0 auto}
-/* The leader takes the whole line, so the clock and the start button share the next one — side by side, as asked. */
-#ifleadb{grid-column:1 / -1}
+.ifb,.startb,.ifsb,.ifsrc,.ifdot,.armb{pointer-events:auto}
