@@ -1315,9 +1315,9 @@ Et sa correction, le même jour, sur un cas qui avait été mal lu :
 24. **Les groupes d'incident n'ont pas de numéro** et gardent leur nom. **Ce nom n'est pas
     tranché** : « je n'y ai pas encore réfléchi » (§15).
 25. **Chaque groupe a sa couleur**, la même sur sa bulle et sur sa boîte de timeline.
-26. **Le nom est toujours hors de la piste, à la même marge tout autour**, relié à sa bulle par
-    une ligne, et **le groupe dépassé allonge la sienne** pour que deux noms ne se chevauchent
-    pas.
+26. **Le nom est à la même marge tout autour**, relié à sa bulle par une ligne, et **le groupe
+    dépassé allonge la sienne** pour que deux noms ne se chevauchent pas. *(Le « hors de la
+    piste » de cet énoncé est remplacé le même jour : voir le point 34.)*
 
 Sur la première version codée, il a entouré en noir la taille qu'il veut pour les bulles :
 
@@ -1378,6 +1378,25 @@ Et la contrainte qui décide des teintes exactes :
 32. **Deux dégradés, pivotant sur le peloton** : vert → bleu devant lui, bleu → rouge derrière.
 33. **Aucune teinte ne doit se rapprocher de celle de la piste.** Les valeurs retenues sont dans
     `mesures.md` §26 ; elles ne lui ont pas été demandées, il a seulement posé la contrainte.
+
+### Les noms passent à l'intérieur de l'ovale
+
+**29 octobre 2026.** D'abord le constat :
+
+> regarde ici les textes sont trop éloignés de la piste
+
+Puis sa question, qui a décidé de la suite :
+
+> je me demandais > et si nous mettions les textes de groupes à l'intérieur de la piste plutôt
+> qu'à l'extérieur ?
+
+34. **Le nom d'un groupe s'affiche à l'intérieur de l'ovale**, et non plus à l'extérieur. Le
+    §17 point 26 — « toujours hors de la piste » — est **remplacé** par celui-ci ; la marge
+    constante tout autour, elle, reste.
+35. **Les deux boutons `SET NEXT AS LEADER` passent à l'extérieur de la piste.** Ils étaient la
+    seule chose qui occupait l'intérieur au milieu de chaque ligne droite, là où un nom doit
+    pouvoir se poser. Ils ne bougent jamais, le nom suit son groupe : c'est au nom qu'il faut
+    la place.
 
 ### La couleur de l'intérieur de l'ovale
 

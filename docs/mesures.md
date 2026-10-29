@@ -1290,6 +1290,34 @@ Relevé sur quatre groupes forcés : `1-Leader` hsl(152 65% 51%), `2-Bunch` hsl(
    à **87 unités** — c'est-à-dire juste au-dessus du dégagement de 86 que le code impose, donc le
    décalage vers l'extérieur a bien joué.
 
+**Les noms à l'intérieur de l'ovale**, build 100. L'opérateur les trouvait trop éloignés de la
+piste et a demandé ce que donnerait l'intérieur. La place disponible, relevée sur le dessin :
+
+| | Place libre |
+|---|---|
+| Dehors, jusqu'au bord du dessin | **80 à 95 unités** |
+| Dedans, dans les virages | **105 unités** |
+| Dedans, sur les lignes droites hors boutons | **48 unités** |
+| Dedans, au milieu d'une ligne droite, sous un bouton de boucle | **6 unités** |
+
+Un nom en demande environ 34. L'intérieur convenait donc partout sauf sous les deux boutons de
+boucle, d'où l'échange : les noms, qui suivent leur groupe, prennent l'intérieur ; les boutons,
+qui ne bougent jamais, prennent l'extérieur et ses marges étroites.
+
+Mesuré avant et après, sur la même course à six groupes forcés :
+
+| | Avant (dehors) | Après (dedans) |
+|---|---|---|
+| Ligne la plus longue | **177 unités** | **113** |
+| Ligne typique | — | 22 à 46 |
+| Recouvrements de noms, sur ~370 paires | 0 | **3** |
+
+Deux défauts corrigés en chemin. La ligne partait du bord **extérieur** de la bulle alors que le
+nom était désormais dedans : elle traversait la bulle et la piste. Et le test de chevauchement
+comparait la **distance entre les centres** de deux noms, ce qui le déclenchait sur des noms qui
+ne se gênaient pas et les projetait loin de la piste en traînant une longue ligne — c'était
+l'autre moitié de ce que l'opérateur voyait. Il compare maintenant leurs **boîtes**.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

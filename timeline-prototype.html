@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 99</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 100</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1311,10 +1311,11 @@ function renderMarks() {
   LOOPS.forEach((s0, i) => {
     const fo = $('#armfo' + i); if (!fo) return;
     const a = normalAt(s0), w = +fo.getAttribute('width'), ht = +fo.getAttribute('height');
-    // A button must sit WHOLLY inside the track, never biting into it. Its depth is therefore derived from its own
-    // height — half of it, plus a margin — and not set by hand: a hand-set depth is exactly what put the lower
-    // button on the track when it was moved closer to gain room for the panel.
-    const deep = HW + ht / 2 + 6;
+    // The buttons sit OUTSIDE the track and the names inside, which is the swap the operator asked for: a button
+    // never moves, so the thin margin outside the drawing suits it, while a name follows its group all the way
+    // round and needs the room the infield has. The depth is still derived from the button's own height, so it
+    // cannot bite into the track whatever that height becomes.
+    const deep = -(HW + ht / 2 + 6);
     fo.setAttribute('x', (a.p.x - a.nx * deep - w / 2).toFixed(1));
     fo.setAttribute('y', (a.p.y - a.ny * deep - ht / 2).toFixed(1));
   });
@@ -1400,25 +1401,32 @@ function renderOval(G, M) {
   // measured from the track, so it follows the oval instead of sitting at a fixed distance from a centre.
   // Where two names would land on top of each other, the one further back in the race steps out one ring further —
   // « le groupe qui se fait dépasser allonge la ligne » — so the overtaking group keeps the inner, natural place.
-  const NAME_RING = HW + 48, NAME_STEP = 26, NAME_CLEAR = 86;
+  // The ring sits just INSIDE the track, in the infield (operator, 29 October 2026). Outside, the drawing has only
+  // 80 to 95 units of margin before its own edge, and a name pushed out to clear another one ran off it. Inside
+  // there are 105 units in the curves and 48 on the straights — measured — which is why the two loop buttons went
+  // out: they were the only thing in the way, and they are the ones that never move.
+  const NAME_RING = -(HW + 24), NAME_STEP = -18, NAME_TRIES = 3;   // a name never wanders more than 54 units deeper
+  const PANEL = (() => { const f = $('#ifpanel'); return f ? { x: +f.getAttribute('x'), y: +f.getAttribute('y'), w: +f.getAttribute('width'), h: +f.getAttribute('height') } : null; })();
+  const hitsPanel = (x, y, w) => PANEL && x + w > PANEL.x - 4 && x - w < PANEL.x + PANEL.w + 4 && y > PANEL.y - 12 && y < PANEL.y + PANEL.h + 12;
   const placed = [];
   for (const bu of bubbles) {                       // bubbles are in race order, so the front group is placed first
     const a = normalAt(bu.sMid);
+    const name = groupName(bu.g, G);
+    const tw = name.length * 4.3 + 4, th = 10;      // half-width and half-height of the name's box
+    // Two names clash only when their BOXES would meet. Measured on the distance between their centres instead,
+    // the test fired on names that were nowhere near each other and threw them far off the track, trailing a long
+    // line behind them — which is the other half of what the operator saw.
     let depth = NAME_RING, lx = 0, ly = 0;
-    for (let k = 0; k < 5; k++) {
+    for (let k = 0; k < NAME_TRIES; k++) {
       lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;
-      if (!placed.some(q => Math.hypot(q.x - lx, q.y - ly) < NAME_CLEAR)) break;
+      if (!placed.some(q => Math.abs(q.x - lx) < q.tw + tw + 6 && Math.abs(q.y - ly) < 22) && !hitsPanel(lx, ly, tw)) break;
       depth += NAME_STEP;
     }
-    placed.push({ x: lx, y: ly });
-    const edge = bu.mid + bu.halfW + 3;   // the line starts at the bubble's own outer edge, wherever it sits
+    placed.push({ x: lx, y: ly, tw });
+    const edge = bu.mid - bu.halfW - 3;   // the line leaves the bubble on the INFIELD side, where the name now is
     const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
     // The line must STOP where the name starts, not run behind it: crossing the text mixed the stroke with the
-    // halo that keeps the name readable, and the name came out blurred. The name's box is measured from the string
-    // itself — 15 px bold, so about 8,6 units a character — and the line ends where it meets that box, whichever
-    // way round the oval the name sits.
-    const name = groupName(bu.g, G);
-    const tw = name.length * 4.3 + 4, th = 10;        // half-width and half-height of the name's box
+    // halo that keeps the name readable, and the name came out blurred.
     const t = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9) + 4;
     labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * t).toFixed(1)}" y2="${(ly - a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
     labels += `<text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${name}</text>`;
@@ -2321,7 +2329,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 99';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 100';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
