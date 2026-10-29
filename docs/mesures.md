@@ -1686,17 +1686,11 @@ toute la hauteur disponible, son dessin calé en haut de son panneau
 Hors sprint, le dessin gagne encore : 697 → **771 px** de haut en 1440. Pendant un sprint, il
 reste limité par sa largeur, et les 150 px qui restent sont dans le panneau, sous la piste.
 
-## 37. Le cadre du dessin et la carte empilée — build 124
+## 37. Le cadre du dessin — build 125
 
-La piste dessinée, en 1440 × 900, carte des sprints affichée :
-
-| | Piste à l'écran |
-|---|---|
-| Build 121 (cadre 980 × 590, carte 420 px sur deux colonnes) | 659 × 295 |
-| Cadre resserré sur son contenu (832 × 514) | 775 × 347 |
-| **+ carte empilée sur une colonne (272 px)** | **886 × 397** |
-
-Soit **+34 % en linéaire et +80 % en surface**. Deux causes, et non une :
+La piste dessinée, en 1440 × 900 : **755 × 338** contre **659 × 295** à la build 121, à carte
+égale (420 px, deux colonnes). Le gain vient du seul cadre du dessin ; la carte empilée sur une
+colonne, qui portait la piste à 886 × 397, a été refusée par l'opérateur et retirée.
 
 1. **Le cadre du dessin était trop grand.** Relevé sur un tour complet, le dessin occupe
    `x 67..913` et `y 53..537` ; le cadre disait `0 0 980 590`. Il dit maintenant
@@ -1704,8 +1698,23 @@ Soit **+34 % en linéaire et +80 % en surface**. Deux causes, et non une :
    **0 fois** le dessin ne sort du cadre. Un premier essai à `84 38 832 514` coupait la bulle
    du peloton dans le virage gauche -- les bulles dépassent la piste de 13 unités, ce qu'une
    estimation ne donne pas et qu'un relevé sur un tour donne.
-2. **La carte prenait trop de largeur.** L'ovale est limité par sa largeur dès que la carte est
-   là : avec 420 px de carte il ne peut faire que 850 px de large, donc 525 de haut pour 755
-   disponibles, d'où 230 px de vide. Pour qu'il remplisse la hauteur il lui faudrait 1 222 px,
-   c'est-à-dire une carte de 46 px : **le vide ne peut pas être supprimé, seulement réduit.**
-   La carte empilée le ramène de 230 à 146 px.
+2. **Le reste du vide tient à la largeur de la carte, et il est irréductible.** L'ovale est
+   limité par sa largeur dès que la carte est là : avec 420 px de carte il fait 850 px de
+   large, donc 525 de haut pour 755 disponibles. Pour qu'il remplisse la hauteur il lui
+   faudrait 1 222 px, c'est-à-dire une carte de 46 px. **Le vide en hauteur ne peut pas être
+   supprimé tant que la carte est à droite.**
+
+## 38. Ce que la refonte a changé, mesuré — build 125
+
+Même fenêtre (1440 × 900), même script, trois états du prototype. « Piste » est la taille du
+velodrome dessiné à l'écran.
+
+| | En course | Pendant un sprint | Carte visible en course |
+|---|---|---|---|
+| Build 112, avant la refonte | 670 × 300 | **l'ovale disparaissait** | non |
+| Build 118, sa page redessinée | 639 × 286 | 195 × 87 — **9 %** de sa surface | non |
+| **Build 125** | **755 × 338** | **755 × 338 — 100 %** | **oui** |
+
+Le gain n'est pas d'abord la taille : c'est que **l'écran ne bouge plus**. Jusqu'ici, ouvrir un
+sprint faisait disparaître la piste, puis la réduisait à 9 % de sa surface. Elle garde
+maintenant exactement la même taille, sprint ou pas, et la carte est là en permanence.

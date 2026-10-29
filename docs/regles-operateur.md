@@ -1700,6 +1700,8 @@ Puis, sur son propre croquis :
     la carte des sprints en permanence ». Hors sprint elle annonce le prochain -- `SPRINT n ·
     x laps to go · waiting for the bell` -- garde ses places vides et la liste de départ
     entière, et ne porte aucune commande puisque rien n'est à juger.
-80. **La carte est sur une seule colonne**, l'ordre au-dessus de la liste de départ. À deux
-    colonnes elle demandait 420 px de large, et l'ovale, limité à 850 px, laissait 230 px de
-    vide en hauteur. Sur une colonne elle en demande 272 et la piste gagne 90 % de surface.
+**La carte reste sur deux colonnes.** Elle avait été empilée sur une seule, pour rendre de la
+largeur à l'ovale : l'opérateur ne l'avait ni demandé ni vu proposer, et l'a refusé --
+« qui t'a demandé de mettre la carte de sprint sur une colonne ? ». Remis en l'état à la
+build 125. La largeur rendue à l'ovale ne justifie pas de changer un écran validé sans le
+proposer (§14, point 1 et point 3).
