@@ -2021,3 +2021,36 @@ l'état relu après chaque clic : `Live` (aller et retour), `1st`…`4th`, `←`
 place suivante passe à 4 --, `Detected` qui le rend aux boucles, `Clear and record`, les tris
 `BIB` et `NOC`, `Not eligible`, le double-clic dans la liste qui place le coureur, le `×` qui
 le retire, et `Close`. Aucune erreur JavaScript, aucun débordement après manipulation.
+
+
+### §51 bis · La saisie manuelle dossard par dossard, et d'où vient l'écart entre les deux colonnes
+
+**Saisie un par un**, la façon de travailler que l'opérateur a demandé de vérifier le
+29 octobre 2026 : `Live` coupé, `Clear and record`, `Manual`, puis `15` ↵, `4` ↵, `11` ↵,
+`52` ↵.
+
+| Frappe | Ordre obtenu | Place suivante | Champ |
+|---|---|---|---|
+| `15` ↵ | 15 | 2ᵉ | vidé |
+| `4` ↵ | 15, 4 | 3ᵉ | vidé |
+| `11` ↵ | 15, 4, 11 | 4ᵉ | vidé |
+| `52` ↵ | 15, 4, 11, 52 | 5ᵉ | vidé |
+
+Chaque dossard se pose à la place en cours, la place suivante avance d'un rang, le champ se
+vide et **le curseur y reste** -- on enchaîne sans toucher la souris. Les quatre lignes portent
+la mention `manual` dans la colonne de l'écart, et les quatre coureurs grisent dans la liste.
+Aucune erreur.
+
+**L'écart entre les deux colonnes** : elles font toutes deux 949 px de haut, mais la colonne de
+l'ordre en cède 72 à ce qu'elle porte en plus.
+
+| | Colonne de l'ordre | Colonne des coureurs |
+|---|---|---|
+| Titre `ORDER` | 23 px | — |
+| En-tête `BIB NOC GAP` | 19 px | 19 px |
+| Zone des lignes | **877 px**, soit 33 lignes de 26 | **930 px**, soit 35 lignes |
+| Bande de dépôt | 26 px (+ 4 de marge) | — |
+
+Soit 23 + 19 + 877 + 30 = 949 d'un côté, 19 + 930 = 949 de l'autre. Les deux tiennent donc les
+vingt-quatre coureurs d'une course pleine, avec neuf lignes de marge dans l'ordre et onze dans
+la liste.
