@@ -1338,6 +1338,17 @@ Puis, sur la typographie de ces noms :
 28. **Le nom d'un groupe est écrit dans la police du projet**, la même que celle de son nom dans
     la boîte de timeline.
 
+Sur une capture rapprochée, deux défauts relevés par lui :
+
+> 1. la ligne qui sépare la bulle du nom passe derrière le texte au lieu de s'arrêter au moment
+>    d'atteindre le texte. Cela a pour conséquence de rendre le texte flou
+> 2. il reste encore le cercle vert indiquant le leader hérité de l'ancienne version
+
+29. **La ligne s'arrête où le nom commence.** Elle ne passe jamais derrière lui.
+30. **Rien ne marque le leader sur l'ovale.** L'anneau vert et la barre verte en travers de la
+    piste faisaient partie des annotations retirées ; ils avaient été laissés derrière. Le champ
+    `LEADER` du panneau le nomme.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

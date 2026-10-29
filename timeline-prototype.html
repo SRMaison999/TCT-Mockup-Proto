@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 97</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 98</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1360,8 +1360,9 @@ function renderOval(G, M) {
     // Nothing marks an ineligible rider on the oval any more (operator, 29 October 2026): the « No points » text
     // went with the other annotations, and the red outline and blinking ring that said the same thing went with it.
     // S.inelig is untouched — the measure stands, and the sprint card still greys his line. Only the drawing is gone.
-    const stroke = x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : isLead ? '#2ED47A' : '#ECEAE4', sw = isLead || sel ? 3.5 : 1.5;
-    if (isLead) dots += `<line x1="${(p.x - nx * 26).toFixed(1)}" y1="${(p.y - ny * 26).toFixed(1)}" x2="${(p.x + nx * 26).toFixed(1)}" y2="${(p.y + ny * 26).toFixed(1)}" stroke="#2ED47A" stroke-width="4" stroke-linecap="round" opacity="0.9"/>`;
+    // Nothing marks the race leader on the oval: the green ring and the green bar across the track were part of the
+    // annotations the operator had taken off, and they had been left behind. The LEADER field names him.
+    const stroke = x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : '#ECEAE4', sw = sel ? 3.5 : 1.5;
     dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
   // riders off the track (incident) sit on the apron, greyed
@@ -1387,8 +1388,15 @@ function renderOval(G, M) {
     placed.push({ x: lx, y: ly });
     const edge = bu.mid + bu.halfW + 3;   // the line starts at the bubble's own outer edge, wherever it sits
     const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
-    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * 9).toFixed(1)}" y2="${(ly - a.ny * 9).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
-    labels += `<text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${groupName(bu.g, G)}</text>`;
+    // The line must STOP where the name starts, not run behind it: crossing the text mixed the stroke with the
+    // halo that keeps the name readable, and the name came out blurred. The name's box is measured from the string
+    // itself — 15 px bold, so about 8,6 units a character — and the line ends where it meets that box, whichever
+    // way round the oval the name sits.
+    const name = groupName(bu.g, G);
+    const tw = name.length * 4.3 + 4, th = 10;        // half-width and half-height of the name's box
+    const t = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9) + 4;
+    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * t).toFixed(1)}" y2="${(ly - a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
+    labels += `<text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${name}</text>`;
   }
   bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
   if (S.hover != null) { const d = document.getElementById('dot-' + S.hover); if (d) d.querySelector('circle').setAttribute('stroke-width', '4'); }
@@ -2288,7 +2296,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 97';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 98';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

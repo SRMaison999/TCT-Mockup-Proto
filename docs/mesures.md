@@ -1248,6 +1248,16 @@ Les cotes : demi-largeur = (couloir max − couloir min) / 2 + **15** (le rayon 
 centrée sur l'axe de la piste mais sur **ses propres coureurs**, ce qui a demandé un tracé
 d'arc décalé (`arcPathOff`).
 
+**La ligne du nom s'arrête au bord du texte**, build 98. Elle s'arrêtait à **9 unités du centre**
+du nom, alors qu'un nom de huit caractères en occupe une quarantaine de part et d'autre : elle
+traversait donc le texte, et son trait se mêlait au halo qui rend le nom lisible — d'où le flou
+signalé. Elle s'arrête maintenant au bord de la boîte du nom, mesurée sur la chaîne elle-même
+(4,3 unités par caractère à 15 px gras), quel que soit l'endroit de l'ovale. Vérifié dans le
+DOM, trois groupes : le point d'arrivée de chaque ligne tombe **hors** du rectangle de son texte.
+
+**Plus aucune marque de leader sur l'ovale**, build 98 : zéro ligne et zéro cercle en `#2ED47A`
+dans `#riders`.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 
