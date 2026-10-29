@@ -1667,3 +1667,20 @@ ensemble et donnent une proposition à trois dossards.
 Vérifié au clic : un ✓ de coureur fait passer la carte de trois dossards à deux et inscrit au
 journal « BIB 7 · laps gained 0 → 1 · effect Lap 21 · validated proposal ». Les deux autres
 restent en attente.
+
+## 36. L'ovale collé en haut — build 122
+
+Fenêtre de 1440 × 900, rail masqué.
+
+| | Sans proposition | Avec une proposition |
+|---|---|---|
+| Ovale dessiné | 1158 × 697 | 850 × 512 (sprint ouvert) |
+| Haut de l'ovale | y = 58 | y = 58 |
+| Place vide au bas de la page | 95 px | 159 px |
+
+Le haut de l'ovale **ne bouge pas** : le plafond de hauteur réserve en permanence la ligne des
+propositions, qu'il y en ait une ou non. Les 95 px vides du bas sont le prix de cette
+stabilité -- sans la réserve, l'ovale sauterait de 95 px à l'instant où une proposition
+arrive, c'est-à-dire au moment où l'opérateur regarde la piste.
+
+En 1920 × 1080, l'ovale dessiné passe à 1382 × 832 hors sprint.

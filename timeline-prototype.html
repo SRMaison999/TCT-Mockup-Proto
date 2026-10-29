@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 121</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 122</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -49,9 +49,10 @@
     <section class="mid">
       <!-- La barre d'actions et les cartes de proposition : à gauche de l'ovale, à droite de la timeline, et non
            pas au-dessus de l'ovale (l'opérateur, 29 octobre 2026). Le journal passe sous les deux. -->
+      <!-- Les propositions ont une ligne à elles, entre l'ovale et les actions (l'opérateur, 29 octobre 2026). -->
+      <div class="props" id="propcard"></div>
       <section class="acts" aria-label="Actions">
         <div class="tbar" id="tbar"></div>
-        <div class="props" id="propcard"></div>
       </section>
 
       <div class="oval">
@@ -2440,7 +2441,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 121';
+  $('#buildno').textContent = 'build 122';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

@@ -143,12 +143,13 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .gh .ggap{flex:0 0 auto;font:600 10px var(--mono);color:#121416;font-variant-numeric:tabular-nums}
 /* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
    et à droite de la timeline (l'opérateur, 29 octobre 2026). */
-.acts{grid-row:2;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
+.acts{grid-row:3;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
 .acts .tbar{flex:1 1 280px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 8px 6px}
-.props{flex:0 0 auto;display:flex;flex-direction:column;gap:4px}
+.props{grid-row:2;display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px}
+.props:empty{display:none}
 /* La carte d'une proposition de tour, d'après son croquis : les dossards empilés à gauche sous un en-tête BIB,
    avec drapeau et code pays ; le reste à droite. */
-.props .gq{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:start}
+.props .gq{flex:0 0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:start}
 .props .gq .pbs{display:flex;flex-direction:column;gap:2px}
 .props .gq .pbs > .k{font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-left:2px}
 .props .gq .pb{display:grid;grid-template-columns:34px 20px auto auto;gap:4px;align-items:center}
@@ -157,6 +158,7 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .props .gq .pr{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
 .props .gq .pt{font:600 12px var(--sans);color:#c9d6f5;white-space:nowrap}
 .props .gq .pl{font:500 11px var(--mono);color:var(--muted)}
+.props .prop{flex:1 1 320px}
 .props .gq,.props .prop{background:#1a2238;border-left:3px solid var(--acc);border-radius:3px;margin:0;padding:5px 7px;height:auto;min-height:26px;white-space:normal;align-items:flex-start;flex-wrap:wrap;row-gap:4px}
 .props .gq span,.props .prop .pt{white-space:normal;overflow:visible;text-overflow:clip}
 .tbar{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;font-size:12px;color:var(--muted);box-sizing:border-box}
@@ -167,15 +169,18 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .tbar .ledger{flex:1 1 100%}
 .tbar .sep{width:1px;height:18px;background:var(--line2);margin:0 4px}
 /* centre */
-/* L'écran de course : l'ovale, et sous lui une barre d'actions courte, qui a pris la place du bandeau des passages
-   (l'opérateur, 29 octobre 2026 : « la barre d'action prend la place de cette vue. Elle n'a pas besoin d'être très
-   haute »). */
-.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:8px}
+/* L'écran de course, de haut en bas : l'ovale, la ligne des propositions, la barre d'actions. L'ovale est collé en
+   haut et ne fait que la hauteur de son dessin -- « Il y a beaucoup de place en hauteur au-dessus et en-dessous de
+   l'ovale ! Monte l'ovale sur l'écran et place les propositions dans une ligne entre l'ovale et les actions »
+   (l'opérateur, 29 octobre 2026). Le plafond de hauteur réserve la place des deux lignes du dessous, qu'une
+   proposition soit affichée ou non : l'ovale ne saute pas quand il en arrive une. */
+.mid{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto auto auto;align-content:start;gap:8px;overflow:hidden}
 /* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
    place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
 .right{display:none;flex:0 0 auto;width:clamp(420px, 26%, 460px);min-height:0}
 body.sprintmode .right{display:flex}
-.oval{grid-row:1;flex:1 1 auto;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.oval{grid-row:1;width:100%;aspect-ratio:980 / 590;max-height:calc(100vh - 205px);background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .oval svg{width:100%;height:100%;display:block;touch-action:none;user-select:none}
 .log{position:fixed;left:16px;right:16px;top:58px;bottom:16px;z-index:40;background:var(--deep);border:1px solid var(--acc);
   border-radius:4px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden;box-sizing:border-box;
