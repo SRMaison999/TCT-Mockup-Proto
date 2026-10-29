@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 129</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 130</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1158,7 +1158,9 @@ function groupColor(g, G) {
 }
 function groupName(g, G) {
   G = G || lastG;
-  if (g.incident) return g.op.type === 'crash' ? 'Crash' : 'Mechanical';
+  // Un groupe d'incident porte son nom en capitales et sans numéro (l'opérateur, 29 octobre 2026 : « le nom des
+  // groupes d'incident > CRASH »). Un ennui mécanique garde son propre mot, il n'a pas dit le contraire.
+  if (g.incident) return g.op.type === 'crash' ? 'CRASH' : 'MECHANICAL';
   const on = groupRanked(G), i = on.indexOf(g), bi = on.indexOf(G.bunch);
   if (i < 0) return 'Group';
   const rank = i + 1;
@@ -2475,7 +2477,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 129';
+  $('#buildno').textContent = 'build 130';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

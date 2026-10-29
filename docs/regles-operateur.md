@@ -760,16 +760,28 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   `−lap` le coureur revient dans le peloton en une trentaine de secondes, parce qu'il doit
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
   tour de 195 secondes (`travaux.md` §8d). À trancher.
-- **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
-  dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
-- **Le nom des groupes d'incident sur l'ovale** : « je pense que ce sera "CRASH" sans numéro »,
-  mais il n'y a pas encore réfléchi (§17). Inchangé en attendant : `Crash` et `Mechanical`, sans
-  numéro et sans bulle.
-- **Le simulateur dans une autre fenêtre** : sa proposition, et la contre-proposition d'un
-  recouvrement refermable, sont au §17. Rien n'est codé en attendant.
-- **Le compteur de tours de course dans l'intérieur de l'ovale** : absent de son deuxième
-  dessin, gardé parce qu'il avait demandé qu'il soit affiché (§17).
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
+
+### Cinq points tranchés le 29 octobre 2026
+
+Ses réponses, mot pour mot, et ce qu'elles ferment :
+
+| Question | Sa réponse | Ce qui est fait |
+|---|---|---|
+| Le bouton `Auto` du leader | « le bouton AUTO je m'en fous » | Il reste où il est, dans la barre du haut. Rien n'est codé. |
+| Le simulateur dans une autre fenêtre | « tu m'as dit que ce n'était pas possible » | Abandonné. Le simulateur reste dans la page, derrière son bouton. |
+| La place du badge du sprint | « le badge du sprint est dans l'ovale, il n'y a pas de problème ! » | Il reste dans l'intérieur de l'ovale. |
+| Le compteur `LAP 21 / 40` | « le LAP 21 / 40 est dans l'ovale, il n'y a pas de problème ! » | Il reste dans l'intérieur de l'ovale. |
+| Le nom des groupes d'incident | « le nom des groupes d'incident > CRASH » | `CRASH`, en capitales et sans numéro. |
+
+**Ce qui n'a pas été demandé** : un groupe d'ennui mécanique garde son propre mot,
+`MECHANICAL`, en capitales et sans numéro lui aussi. Il n'a rien dit à son sujet, et l'appeler
+`CRASH` dirait une chose fausse sur la course.
+
+**Où ce nom se lit** : dans l'en-tête du bloc de la timeline et dans la barre de sélection. Un
+groupe d'incident n'a **pas de bulle sur l'ovale** -- ses coureurs sont dessinés avec les
+autres (`renderOval`, filtre `drawn`) -- donc le nom n'y apparaît pas. La question portait sur
+l'ovale ; la réponse s'applique partout où le nom s'affiche.
 
 ---
 
