@@ -648,7 +648,8 @@ c'est un retrait de dessin, pas de mesure.
 
 **Les champs d'état sont dans le gazon, et ils ne sont jamais reconstruits** (`regles-operateur.md`
 §17, build 92). La bande `#strip` au-dessus de l'ovale n'existe plus. Le panneau `#ifpanel`, la
-boîte des tours restants `#togofo` et les trois boutons de leader `#armfo0..2` sont des
+boîte des tours restants `#togofo` — qui porte aussi le compteur de tours — et les **deux**
+boutons de leader `#armfo1` et `#armfo2` sont des
 `<foreignObject>` **posés une fois dans le HTML**, à l'intérieur du SVG, donc en unités de piste :
 ils restent dans le gazon à toute taille de fenêtre. `renderStrip()` n'y écrit que du texte et
 des classes — **jamais d'`innerHTML`** —, parce qu'un bouton remplacé entre l'appui et le
