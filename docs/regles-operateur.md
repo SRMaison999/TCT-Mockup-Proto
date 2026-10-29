@@ -1228,9 +1228,11 @@ Ce que cela fixe :
 17. **`ARM FINISH` arme la ligne d'arrivée.** Armée, elle **arrête le running time de l'horloge
     au passage du vainqueur**, à la toute fin de la course. Les coureurs derrière lui continuent
     de franchir la ligne ; l'horloge, elle, ne compte plus.
-18. **Le panneau se lit à l'échelle de son croquis**, pas plus petit. Ses boîtes et ses textes
-    étaient environ deux fois trop petits ; ce qui rendait sa version plus lisible que la mienne
-    n'était pas son soin, c'était sa taille.
+18. **Le panneau se lit à l'échelle de son croquis.** Devant une version agrandie au jugé, et
+    toujours fausse, il a renvoyé sa capture avec trois mots : « utilise cette échelle ». Sa
+    capture est au rapport 1:1 avec le dessin, donc ses boîtes se **relèvent** au lieu de
+    s'estimer ; les cotes relevées sont dans `mesures.md` §26. **Un croquis qu'il fournit à la
+    taille de l'écran est une cotation**, pas une suggestion.
 
 ### La couleur de l'intérieur de l'ovale
 

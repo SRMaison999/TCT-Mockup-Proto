@@ -345,61 +345,61 @@ body.sprintmode #scard{display:flex}
 
 /* The panel follows the operator's drawing of 29 October 2026: three rows, each a few boxes sized to what they
    hold and centred, not a grid of equal cells. */
-.ifg{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--sans)}
-.ifrow{display:flex;align-items:stretch;justify-content:center;gap:8px}
-.ifb{display:flex;align-items:center;gap:9px;height:40px;padding:0 14px;box-sizing:border-box;
+.ifg{display:flex;flex-direction:column;align-items:center;gap:7px;font-family:var(--sans)}
+.ifrow{display:flex;align-items:stretch;justify-content:center;gap:6px}
+.ifb{display:flex;align-items:center;gap:7px;height:38px;padding:0 11px;box-sizing:border-box;
   background:var(--deep);border:1px solid var(--line);border-radius:4px;white-space:nowrap;overflow:hidden}
-.ifb .ifk{font:600 13px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
-.ifb .ifv{font:600 24px var(--mono);font-variant-numeric:tabular-nums}
-.ifb .ifv.sm{font-size:17px}
-.ifb .ifu{font:500 14px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
-.ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:28px;padding:0 7px;
-  border-radius:4px;font:600 17px var(--mono);color:#fff;background:var(--line2)}
-.ifclock{justify-content:center;min-width:150px}
-.ifclock .ifv{font-size:30px}
+.ifb .ifk{font:600 12px var(--sans);letter-spacing:.08em;color:var(--muted);flex-shrink:0}
+.ifb .ifv{font:600 21px var(--mono);font-variant-numeric:tabular-nums}
+.ifb .ifv.sm{font-size:15px}
+.ifb .ifu{font:500 12px var(--mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.ifchip{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:24px;padding:0 6px;
+  border-radius:4px;font:600 15px var(--mono);color:#fff;background:var(--line2)}
+.ifclock{justify-content:center;min-width:112px}
+.ifclock .ifv{font-size:24px}
 .ifclock .ifv.stopped{color:var(--play)}
 
 /* « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
    immanquable ». No colour was stated; this is the one the project already keeps for what must be seen. */
 .ifb.hot{background:var(--warn);border-color:var(--warn)}
 .ifb.hot .ifk,.ifb.hot .ifv,.ifb.hot .ifu{color:#2a1b05;font-weight:700}
-.ifb.hot .ifv{font-size:19px}
+.ifb.hot .ifv{font-size:17px}
 
 /* The start button, in the operator's four states. The third click state is only BIGGER AND DARKER — he asked for
    nothing else, and in particular for no second wording. */
 .ifstart{display:flex}
-.startb{width:100%;font:700 15px var(--sans);letter-spacing:.09em;border-radius:4px;padding:0;cursor:pointer;
+.startb{width:100%;font:700 13px var(--sans);letter-spacing:.09em;border-radius:4px;padding:0;cursor:pointer;
   color:#fff;background:var(--crit);border:1px solid var(--crit)}
 .startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
 .startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
-.startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:17px;letter-spacing:.12em}
+.startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:15px;letter-spacing:.12em}
 /* Beside it, the button that arms the finish. It is NOT the start button: it stays neutral. */
-.ifrow .startb{width:auto;padding:0 20px}
+.ifrow .startb{width:auto;padding:0 13px}
 .startb.finb{background:var(--deep);border-color:var(--line);color:var(--fg)}
 .startb.finb:hover{border-color:var(--muted)}
 
 /* The laps to go show BOTH provenances with BOTH figures, and one of them is picked — the operator's rule for a
    disagreement with the lap counter (regles-operateur.md §13). The chosen figure is the green TO GO box; held back
    from the outputs, that box goes red, and a very small button makes the change. */
-.togobox{display:flex;flex-direction:column;gap:3px;padding:4px;background:var(--deep);
+.togobox{display:flex;flex-direction:column;gap:3px;padding:3px;background:var(--deep);
   border:1px solid var(--line);border-radius:4px}
-.srcrow{display:flex;align-items:center;gap:8px;height:24px;padding:0 10px;border-radius:3px;
+.srcrow{display:flex;align-items:center;gap:7px;height:20px;padding:0 8px;border-radius:3px;
   background:#23272b;border:1px solid var(--line2)}
 .srcrow.on{border-color:var(--muted)}
-.srcrow .ifk{flex:1 1 auto}
-.srcv{font:600 16px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
-.pick{width:15px;height:15px;border-radius:50%;padding:0;background:#15181b;border:1px solid var(--line2);
+.srcrow .ifk{flex:1 1 auto;font-size:11px}
+.srcv{font:600 13px var(--mono);font-variant-numeric:tabular-nums;color:var(--fg)}
+.pick{width:13px;height:13px;border-radius:50%;padding:0;background:#15181b;border:1px solid var(--line2);
   cursor:pointer;flex-shrink:0}
 .srcrow.on .pick{background:var(--fg);border-color:var(--fg)}
-.modeb{width:24px;height:22px;font-size:12px}
+.modeb{width:20px;height:18px;font-size:11px}
 .ifstep{display:none;gap:3px}
 .srcrow.manual .ifstep{display:inline-flex}
-.ifsb{height:22px;width:22px;font-size:13px}
+.ifsb{height:18px;width:18px;font-size:11px}
 /* The box is the button, so its figure fills it: nothing else competes for the room. */
-#iftogo{height:44px;background:var(--play);border-color:var(--play);cursor:pointer;justify-content:space-between}
+#iftogo{height:36px;background:var(--play);border-color:var(--play);cursor:pointer;justify-content:space-between}
 #iftogo:hover{filter:brightness(1.08)}
-#iftogo .ifk{font-size:16px;letter-spacing:.06em}
-#iftogo .ifv{font-size:33px;line-height:1}
+#iftogo .ifk{font-size:14px;letter-spacing:.06em}
+#iftogo .ifv{font-size:28px;line-height:1}
 #iftogo .ifk,#iftogo .ifv{color:#06220c}
 .ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
   border-radius:3px;width:20px;height:20px;line-height:1;padding:0;cursor:pointer}

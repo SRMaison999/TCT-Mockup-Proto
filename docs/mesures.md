@@ -1180,17 +1180,32 @@ pleine largeur empilées**. Ce n'était pas un défaut de réglage, c'était son
 le mien sans que je m'en aperçoive. Le panneau est revenu à sa forme : `LEADER` et le prochain
 sprint sur la première ligne, l'horloge et le bouton de départ sur la seconde.
 
-**L'échelle, et pourquoi son croquis était plus joli.** Il a dit, le 29 octobre 2026, que son
-croquis fait à Paint était plus joli que l'écran codé. Comparés, ce n'était pas une affaire de
-soin : ses boîtes et ses textes étaient **environ deux fois plus grands**. Le panneau a été
-porté à son échelle — boîtes de 40 unités de haut, chiffre des tours restants à 33 px, horloge
-à 30 px — et il est alors devenu trop grand pour sa place : contenu **236 unités** dans un
-cadre de **198**, que le cadre rognait.
+**L'échelle, et comment elle a fini par être relevée au lieu d'être devinée.** Il a dit, le
+29 octobre 2026, que son croquis fait à Paint était plus joli que l'écran codé, puis, l'écran
+ayant été agrandi au jugé et jugé pire encore, il a renvoyé sa capture avec trois mots : « utilise
+cette échelle ».
 
-La place n'est pas bornée par l'ovale mais par **les deux boutons de leader**, posés au milieu
-de chaque ligne droite, donc exactement au-dessus et au-dessous du panneau. Les rapprocher du
-bord de piste (profondeur `HW + 16` au lieu de `HW + 22`) et resserrer le bloc des provenances
-donne le compte juste : **208 unités de contenu dans un cadre de 208**.
+**Sa capture fait 962 px de large pour un `viewBox` de 980** : elle est donc à peu près au
+rapport 1:1 avec les unités de piste, et ses boîtes se lisent **directement** dedans. Relevé sur
+son image :
+
+| Élément | Sur son croquis | Ce qui était codé avant |
+|---|---|---|
+| Hauteur d'une rangée | **≈ 40 u** | 34 puis 44 |
+| Horloge | **≈ 24 px** | 20 puis 30 |
+| Chiffre des tours restants | **≈ 28 px** | 27 puis 33 |
+| Libellé d'un bouton | **≈ 13 px** | 12 puis 15 |
+| Largeur de la première rangée | **≈ 400 u** | 570 |
+
+Les deux essais précédents encadraient sa valeur sans jamais la toucher : d'abord trop petit,
+puis **trop grand**. Ce n'était pas une question de goût mais une cote, et une cote se mesure.
+La leçon vaut au-delà de ce panneau : un croquis que l'opérateur fournit à la taille de l'écran
+**est une cotation**, pas une suggestion.
+
+Résultat : **184 unités de contenu dans un cadre de 184**, contre 236 dans 198 à l'essai
+précédent, où le cadre rognait. La hauteur disponible n'est d'ailleurs pas bornée par l'ovale
+mais par **les deux boutons de leader**, posés au milieu de chaque ligne droite, donc exactement
+au-dessus et au-dessous du panneau.
 
 **L'horloge arrêtée sur le vainqueur**, mesurée sur une course de 2 tours, ligne armée avant le
 départ : l'horloge s'est figée à **0:33.7** au passage du premier coureur sur la ligne, elle y
