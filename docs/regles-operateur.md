@@ -1643,6 +1643,7 @@ mot :
 71. **Un clic sur l'en-tête d'un bloc sélectionne le groupe entier**, et les actions de la
     colonne s'appliquent alors à tout le groupe.
 
-**Un point à confirmer** : son croquis montre le nom du groupe en blanc sur un bleu soutenu.
-La bande porte la couleur du groupe, celle de sa bulle sur l'ovale, avec le texte en sombre --
-exactement comme les badges de l'ovale qu'il a validés. À dire s'il préfère son bleu.
+La bande et son texte sont **relevés sur son croquis**, pas décidés : le fond y est en
+`rgb(51, 180, 244)`, qui est la couleur du peloton et celle de sa bulle sur l'ovale, et le
+texte en noir. Le prototype rend `rgb(52, 180, 244)` sur du texte sombre. Rien n'est à
+confirmer : c'est son dessin.

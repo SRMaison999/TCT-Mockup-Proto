@@ -1627,3 +1627,10 @@ passages se replient aussi.
 Vérifié au clic : un coureur sélectionné donne 13 actions dans la colonne, dont `Laps…` et
 `Leader` ; un clic sur l'en-tête du bloc sélectionne les 16 coureurs et laisse les 11 actions
 de groupe. Aucun débordement, et la liste de départ reste entière.
+
+### La couleur de la bande d'en-tête
+
+Relevée au pixel sur le croquis de l'opérateur du 29 octobre 2026 (`images/25.png`, bande des
+28 premières lignes) : fond `rgb(51, 180, 244)` sur 2856 pixels, texte `rgb(0, 0, 0)`. Le
+prototype rend `rgb(52, 180, 244)` -- la couleur du peloton, `hsl(200 90% 58%)`, la même que
+sa bulle sur l'ovale.
