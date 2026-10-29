@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 105</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 106</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1445,26 +1445,40 @@ function renderOval(G, M) {
     const rayT = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9);
     const GAP = 17;   // the visible gap between a bubble and its badge, the same all the way round the velodrome
     let depth = Math.min(-(HW + GAP) - rayT, bu.mid - bu.halfW - GAP - rayT), lx = 0, ly = 0;
-    // A badge steps DEEPER into the infield only to clear another badge, and only while that keeps it out of the
-    // panel. Testing the panel as a reason to step was backwards: the steps go inward and the panel IS inward, so
-    // every step made the overlap worse and the badge sank six steps deep, trailing a line 68 units long.
-    for (let k = 0; k < NAME_TRIES; k++) {
-      lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;
-      if (!placed.some(q => Math.abs(q.x - lx) < q.tw + tw + 6 && Math.abs(q.y - ly) < 22)) break;
-      const nx2 = a.p.x + a.nx * (depth + NAME_STEP), ny2 = a.p.y + a.ny * (depth + NAME_STEP);
-      if (hitsPanel(nx2, ny2, tw)) break;                      // nowhere left to go: leave it where it is
-      depth += NAME_STEP;
+    // When a group is being overtaken its badge gets out of the way, as the operator asked. It has two freedoms,
+    // and it needs both: going DEEPER into the infield — lengthening its line, which is what he described — and,
+    // when there is no depth left before the panel (on a straight there are only 48 units of it), SLIDING along
+    // the track. Depth alone left ten badges in twenty-three overlapping, because the push stopped at the panel.
+    // Note also that two badges 2·th high touch at 2·th apart: the test must leave at least that, plus some air.
+    const tgx = -a.ny, tgy = a.nx;                             // along the track, at right angles to the normal
+    // A spot is clear of the other badges AND of every rider: sliding along the track can carry a badge over the
+    // riders of a different group, which the depth-only version could not do.
+    const clearOf = (x, y) => !placed.some(q => Math.abs(q.x - x) < q.tw + tw + 6 && Math.abs(q.y - y) < 2 * th + 6)
+      && all.every(it => { const dx = Math.max(0, Math.abs(it.cx - x) - tw), dy = Math.max(0, Math.abs(it.cy - y) - th); return dx * dx + dy * dy >= 289; });
+    let slide = 0;
+    outer2: for (let k = 0; k < NAME_TRIES; k++) {
+      for (const sv of [0, 34, -34, 68, -68]) {
+        const d2 = depth + k * NAME_STEP;
+        const x = a.p.x + a.nx * d2 + tgx * sv, y = a.p.y + a.ny * d2 + tgy * sv;
+        if (k && !sv && hitsPanel(x, y, tw)) continue;          // never step into the panel
+        if (clearOf(x, y)) { depth = d2; slide = sv; lx = x; ly = y; break outer2; }
+        lx = x; ly = y;                                        // keep the last tried spot if nothing is ever clear
+      }
     }
     placed.push({ x: lx, y: ly, tw });
     const edge = bu.mid - bu.halfW - 3;   // the line leaves the bubble on the INFIELD side, where the name now is
     const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
+    // A badge that has slid along the track is no longer on the normal, so the line follows the real direction
+    // from the bubble to it, and stops on the badge's edge along THAT direction.
+    let dirx = lx - from.x, diry = ly - from.y, dl = Math.hypot(dirx, diry) || 1;
+    dirx /= dl; diry /= dl;
     // The line must STOP where the name starts, not run behind it: crossing the text mixed the stroke with the
     // halo that keeps the name readable, and the name came out blurred.
-    const t = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9) + 1.5;   // just clear of the badge, never under it
+    const t = Math.min(Math.abs(dirx) > 0.01 ? tw / Math.abs(dirx) : 1e9, Math.abs(diry) > 0.01 ? th / Math.abs(diry) : 1e9) + 1.5;   // just clear of the badge, never under it
     // Towards the TRACK is +n now that the badge is inside: with the labels outside, depth was positive and the
     // same step was written −n. Left as it was, the line ran from the bubble straight past the badge and out the
     // far side — which is why it measured 24 to 96 units long instead of the gap it is meant to show.
-    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx + a.nx * t).toFixed(1)}" y2="${(ly + a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.9" pointer-events="none"/>`;
+    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - dirx * t).toFixed(1)}" y2="${(ly - diry * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.9" pointer-events="none"/>`;
     labels += `<g data-gi="${bu.gi}" style="cursor:pointer"><rect x="${(lx - tw).toFixed(1)}" y="${(ly - th).toFixed(1)}" width="${(tw * 2).toFixed(1)}" height="${(th * 2).toFixed(1)}" rx="5" fill="${bu.colour}"/><text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="#121416" pointer-events="none">${name}</text></g>`;
   }
   bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
@@ -2365,7 +2379,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 105';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 106';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

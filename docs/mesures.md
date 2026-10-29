@@ -1384,6 +1384,31 @@ Il subsiste **1 effleurement sur 1 216 paires** badge/coureur dans le cas à plu
 un coin de badge frôle un coureur d'un autre groupe. L'éliminer demanderait de dégager le badge
 sur son coin, ce qui ramènerait les sauts — c'est le compromis assumé.
 
+**Deux groupes qui se dépassent**, build 106. L'opérateur a demandé ce que font leurs badges à
+cet instant. La réponse a demandé de forcer le bon cas, car le plus fréquent ne le produit pas :
+
+- **Le peloton qui double un lâché ne produit aucun croisement de badges.** Tant que le lâché
+  roule dans l'amas du peloton, sa bulle n'est **pas tracée** — il n'est montré que par sa
+  pastille, comportement antérieur à ce travail. Il n'y a donc pas deux badges à séparer.
+- **Le vrai cas est une échappée qui double un lâché**, toutes deux hors du peloton. Forcé, il
+  donne 21 images de rapprochement sur 224.
+
+Mesuré sur ce cas :
+
+| | Recouvrements | Distance minimale entre centres |
+|---|---|---|
+| Seuil vertical à 22 unités | **13** sur 30 rapprochements | 11 |
+| Corrigé à 2·demi-hauteur + air | **10** sur 23 | 14 |
+| Avec le glissement le long de la piste | **0** sur 21 | **37** |
+
+Deux défauts trouvés là : le seuil vertical valait **22** alors que deux badges de 24 de haut se
+touchent déjà à 24 — ils étaient déclarés dégagés en se recouvrant. Et la profondeur seule ne
+suffit pas : sur une ligne droite il n'y a que 48 unités avant le panneau, donc deux ou trois
+pas, après quoi le badge n'avait plus où aller. Le glissement latéral lui donne la seconde
+liberté qui manquait, et un contrôle contre les coureurs a dû lui être ajouté, car glisser peut
+porter un badge au-dessus des coureurs d'un **autre** groupe — 7 cas sur 4 784 avant ce
+contrôle, **0** après.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

@@ -1429,6 +1429,13 @@ Puis, sur une séquence de cinq images prises dans le même virage :
 39. **L'écart entre une bulle et son badge est le même en tout point du vélodrome**, et ne
     change pas d'une image à l'autre.
 
+Sur sa question « et quid des groupes qui se dépassent ? » :
+
+40. **Un badge qui gênerait un autre s'écarte**, d'abord en s'enfonçant vers le centre comme
+    l'opérateur l'a décrit, et, **quand il n'y a plus de profondeur disponible avant le
+    panneau**, en glissant le long de la piste. Sa ligne suit alors la direction réelle de sa
+    bulle à lui.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :
