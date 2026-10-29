@@ -1570,3 +1570,14 @@ timeline, et une reste :
     visibles en permanence ». Elle était écrite seulement pendant un glisser ; elle est
     maintenant lisible tout le temps, en gris, et passe à la couleur d'accent au glisser.
 60. **Le nombre de coureurs n'est plus suivi de « with the bunch » ni de « with BIB … ».**
+
+### La colonne de droite
+
+**29 octobre 2026.** Sa page redessinée place la carte du sprint et la liste de départ
+**côte à côte, à droite de l'ovale**, sur toute la hauteur.
+
+61. **La carte du sprint s'ouvre dans une colonne de droite.** Elle n'existe que pendant un
+    sprint ; hors sprint, l'ovale et le journal reprennent toute la largeur.
+62. **L'ovale et le journal restent visibles pendant un sprint.** Jusqu'ici la carte les
+    masquait tous les deux. **Écart par rapport à un comportement validé**, imposé par son
+    dessin, qui montre les trois ensemble.

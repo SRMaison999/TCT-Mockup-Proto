@@ -337,14 +337,17 @@ produit aucune lecture.
 
 ## 8. Rendu
 
-- **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · nom ·
-  écart · tours), boutons de survol (`.ra`), panneau de compteurs et de couleur
-  (`.ledger`), zones de dépôt (`.tgap`), section Withdrawn, barre de sélection (`#tbar`).
-  L'écart est dans l'en-tête du bloc (`.gno`, `.ggap`), pas sur les lignes de coureurs. La
-  marque de tours n'apparaît que sur les coureurs en attente de validation.
+- **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · marqueurs
+  d'état · tours), boutons de survol (`.ra`), panneau de compteurs et de couleur
+  (`.ledger`), zones de dépôt (`.tgap`, toujours lisibles), section Withdrawn, barre de
+  sélection (`#tbar`). La ligne d'un coureur ne porte pas son nom ; il est dans son
+  infobulle. L'en-tête du bloc porte le nom du groupe, le nombre de coureurs et l'écart
+  (`.ggap`), et rien d'autre. La marque de tours n'apparaît que sur les coureurs en attente
+  de validation. **Attention** : `.trow` est aussi le nom des lignes du panneau des
+  transpondeurs, dont les règles sont portées par `#simtp` (`pitfalls.md` D20).
 - **`renderOval(G, M)`** : bandes (`#bands`), coureurs sur trois files (dossards de rayon
-  15, sans marque de tours) avec un pas minimal de 32 px, étiquettes à l'extérieur avec
-  évitement de collisions (`putLabel`), leader nommé. `pt(s)` et `normalAt(s)` projettent
+  15, sans marque de tours) avec un pas minimal de 32 px, bulle de groupe à la couleur du
+  groupe et badge de nom **à l'intérieur** de la piste, à marge constante. `pt(s)` et `normalAt(s)` projettent
   une distance de course sur le tracé SVG `#trackpath`, qui **commence au milieu de la ligne
   droite d’arrivée**, là où se trouve Pursuit A (§14) ; sens de course : bas vers la droite. `renderMarks()` calcule les repères des boucles et des bandes depuis
   la distance de course, ils ne sont plus dessinés en dur.
@@ -355,6 +358,14 @@ produit aucune lecture.
 - **Interactions** : clics délégués sur `#tlbody`, `#tbar`, `#logrows` ; glisser au pointeur
   (`pointerdown/move/up`) sur la timeline et sur l'ovale, avec une étiquette fantôme ; sur
   l'ovale, sélection et actions de groupe **au relâchement** du pointeur.
+
+### La colonne de droite
+
+`#scard` ne vit plus sous l'ovale mais dans `.right`, une colonne qui n'existe **que**
+pendant un sprint (`body.sprintmode`). La carte y garde sa structure d'origine : l'ordre à
+gauche (`.sleft`), la liste de départ à droite (`.sright`), côte à côte dans `.sbody`.
+Pendant un sprint, **l'ovale et le journal restent affichés** — ils étaient masqués
+jusqu'ici.
 
 ## 9. Sprints
 

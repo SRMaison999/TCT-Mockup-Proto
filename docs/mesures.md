@@ -1536,3 +1536,21 @@ Relevé sur les deux blocs de la même course qu'au §28 :
 | Peloton | `2-Bunch` · `13 riders` · `−7 m` |
 
 Dépassement d'un en-tête, d'une ligne de coureur, du corps de la colonne : 0 px.
+
+## 30. La colonne de droite — build 116
+
+Fenêtre de 1920 px, rail du simulateur masqué, course menée jusqu'à l'ouverture du sprint 1.
+
+| Mesure | Valeur |
+|---|---|
+| Colonne de droite | 700 px (`flex:0 1 700px`, plancher 560 px) |
+| Ordre du sprint (`.sleft`) | 390 px, dont 120 px pour le nom |
+| Liste de départ (`.sright`) | 270 px, dont 90 px pour le nom |
+| En-tête de la carte | deux lignes, 58 px (il demande 706 px sur une seule) |
+| En-tête du tableau de l'ordre | une ligne, 20 px |
+| Ovale pendant le sprint | 874 px de large |
+| Ovale une fois la carte fermée | 1584 px |
+| Dépassement de la carte, de la liste, de la page | 0 px, 0 px, 0 px |
+
+À 620 px la carte débordait de 88 px, l'en-tête n'ayant pas la place de ses boutons. À
+700 px, il tient sur deux lignes et le nom d'un coureur garde 120 px dans l'ordre.
