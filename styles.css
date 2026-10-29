@@ -373,10 +373,13 @@ body.sprintmode #scard{display:flex}
 .startb.armed{background:var(--play);border-color:var(--play);color:#06220c}
 .startb.fs{background:#3a4046;border-color:var(--line2);color:var(--fg)}
 .startb.fs.confirm{background:#171a1d;border-color:var(--muted);font-size:15px;letter-spacing:.12em}
-/* Beside it, the button that arms the finish. It is NOT the start button: it stays neutral. */
+/* Beside it, the button that arms the finish. It is NOT the start button: at rest it stays neutral. Armed, it goes
+   green like everything else that waits for a rider — and that rule must come LAST and bite harder than the neutral
+   one, which is declared after .startb.armed and was silently cancelling it: the button armed without showing it. */
 .ifrow .startb{width:auto;padding:0 13px}
 .startb.finb{background:var(--deep);border-color:var(--line);color:var(--fg)}
 .startb.finb:hover{border-color:var(--muted)}
+.startb.finb.armed{background:var(--play);border-color:var(--play);color:#06220c}
 
 /* The laps to go show BOTH provenances with BOTH figures, and one of them is picked — the operator's rule for a
    disagreement with the lap counter (regles-operateur.md §13). The chosen figure is the green TO GO box; held back

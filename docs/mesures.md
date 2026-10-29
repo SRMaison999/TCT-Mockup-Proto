@@ -1220,6 +1220,23 @@ précédent, où le cadre rognait. La hauteur disponible n'est d'ailleurs pas bo
 mais par **les deux boutons de leader**, posés au milieu de chaque ligne droite, donc exactement
 au-dessus et au-dessous du panneau.
 
+**Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
+l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
+
+| État | Fond relevé |
+|---|---|
+| `ARM START` au repos | `rgb(255, 92, 92)` |
+| `START ARMED` | `rgb(28, 198, 52)` |
+| `FALSE START` | `rgb(58, 64, 70)` |
+| `ARM FINISH` au repos | `rgb(15, 17, 19)` |
+| `ARM FINISH` armé | `rgb(28, 198, 52)` |
+| `SET NEXT AS LEADER` armé | `rgb(28, 198, 52)` |
+| Ligne de la boucle armée | `stroke-opacity` à **1** |
+| `TO GO` exporté | `rgb(28, 198, 52)` |
+| `TO GO` retenu | `rgb(255, 92, 92)` |
+
+Avant correction, `ARM FINISH` armé relevait `rgb(15, 17, 19)` — la couleur du repos.
+
 **L'horloge arrêtée sur le vainqueur**, mesurée sur une course de 2 tours, ligne armée avant le
 départ : l'horloge s'est figée à **0:33.7** au passage du premier coureur sur la ligne, elle y
 était encore 2,5 secondes plus tard pendant que la course continuait derrière lui, et la ligne

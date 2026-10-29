@@ -274,6 +274,17 @@ erreur bien visible. Retenu : `serve.js` sert `.css` en `text/css`. **Tout nouve
 statique extrait du prototype (un autre `.js`, une image, …) doit vérifier que `serve.js` lui
 donne le bon type** avant de le charger par balise.
 
+**D17. Vérifier une classe au lieu de la couleur qu'elle produit.** Le bouton `ARM FINISH`
+armait correctement — `S.finArm` passait à `true`, la classe `armed` était posée — et ne
+changeait pas d'aspect d'un pixel : l'opérateur a signalé qu'il « ne fonctionne pas », et de son
+point de vue c'était exact. La cause est une règle de style : `.startb.finb`, qui pose son
+apparence neutre, est déclarée **après** `.startb.armed` et a la **même spécificité**, donc elle
+l'emporte et annule le vert en silence. Retenu : **un test d'interface affirme la couleur
+calculée, pas la classe**. `document.querySelector(x)` puis `getComputedStyle(...).backgroundColor`
+coûte une ligne de plus et attrape ce que `classList.contains` laissera toujours passer. Et quand
+deux règles décrivent le même élément dans deux états, celle de l'état particulier doit mordre
+plus fort que celle du repos, pas seulement venir après.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été
