@@ -125,6 +125,20 @@ moment (`cas-de-course.md`) — mais ce n'est pas fini :
 
 ---
 
+## 4 ter. Refaire les annotations de l'ovale
+
+Annoncé par l'opérateur le 29 octobre 2026 : « Pour la suite il va falloir refaire complètement
+les annotations qui suivent les coureurs sur l'ovale » (`regles-operateur.md` §17).
+
+**Le déblaiement est fait** à la build 93 : plus aucun texte n'est tracé sur l'ovale. Ce qui a
+été retiré est listé dans `architecture.md`.
+
+**Ce qui vient ensuite n'est pas défini** : ni ce qu'une annotation doit dire, ni où elle se
+pose, ni quand elle apparaît. Rien ne se code avant qu'il le dise ou qu'un écran lui soit
+proposé et approuvé (`pitfalls.md` A12, `regles-operateur.md` §14).
+
+---
+
 ## 5. Ce que le prototype ne simule pas du tout
 
 Aucun de ces points n'est un bug : ils n'ont jamais été construits.

@@ -671,6 +671,14 @@ Deux pièges s'y sont révélés, tous deux mesurés et non vus :
   reconstruire `#marks`, et un bouton dont l'état n'a pas changé n'est pas touché. C'est la même
   discipline que les builds 88 et 89.
 
+**Aucune annotation n'est tracée sur l'ovale** (`regles-operateur.md` §17, points 19 et 20,
+build 93). `renderOval()` ne produit plus que des bandes et des pastilles ; `#ovlabels` reste
+vide, et `putLabel()`, qui écartait les étiquettes les unes des autres, est supprimé avec elles.
+Ce qui est parti : le libellé du leader, le nom de chaque groupe avec son effectif et son statut,
+l'écart entre groupes, et l'étiquette « No points » avec son pointillé. `S.inelig` continue de
+marquer la pastille du coureur — c'est le texte qui est retiré, pas la mesure. **Les annotations
+sont à refaire entièrement** : ne pas en remettre une au passage.
+
 **Aucun repère de l'ovale n'est nommé** (`regles-operateur.md` §9, 29 octobre 2026, build 91).
 `renderMarks()` ne pose plus que des `<line>` : l'assistant `label()` qui écrivait « Finish »,
 « Pursuit A », « Pursuit B », « 200 m start » et « 100 m intermediate » est supprimé, et `#marks` ne

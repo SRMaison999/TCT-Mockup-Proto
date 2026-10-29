@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 92</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 93</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1284,11 +1284,8 @@ function renderMarks() {
   armLines(); armShown = []; syncArm();   // #marks has just been rebuilt: the three green lines are new nodes
 }
 function renderOval(G, M) {
-  let bands = '', dots = '', labels = '';
+  let bands = '', dots = '';
   const leaderS = G.leader.pos;
-  const placedLabels = [];
-  // a label that would sit on another is pushed down until it is clear
-  const putLabel = (x, y, html) => { let yy = y; const free = v => !placedLabels.some(l => Math.abs(l.x - x) < 110 && Math.abs(l.y - v) < 19); for (let i = 0; i < 6 && !free(yy); i++) yy += 19; if (yy > 575) { yy = y; for (let i = 0; i < 6 && !free(yy); i++) yy -= 19; } placedLabels.push({ x, y: yy }); return html.replace('%X', x.toFixed(0)).replace('%Y', yy.toFixed(0)); };
   // 1. bands: one per group drawn on the track, except a block that rides inside the bunch (its riders carry their marks)
   const drawn = G.groups.filter(g => !g.incident && g.rows.some(x => !x.m.off) && !(g !== G.bunch && G.bunch && g.cluster === G.bunchCluster && !g.op));
   G.groups.forEach((g, gi) => {
@@ -1338,28 +1335,11 @@ function renderOval(G, M) {
     const { p, nx, ny } = normalAt(x.m.pos), cx = p.x - nx * 34, cy = p.y - ny * 34;
     dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
-  // 3. labels: the leader first, then one per drawn group, then the gaps between drawn groups; none on top of another
-  const lp = normalAt(leaderS), ldx = 490 - lp.p.x, ldy = 295 - lp.p.y, ldd = Math.hypot(ldx, ldy) || 1;
-  labels += putLabel(lp.p.x - ldx / ldd * 78, lp.p.y - ldy / ldd * 78 + 4, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="700" fill="#2ED47A" stroke="#121416" stroke-width="3" paint-order="stroke">LEADER · BIB ${G.leaderBib}</text>`);
-  drawn.forEach((g, i) => {
-    const gi = G.groups.indexOf(g), rows = g.rows.filter(x => !x.m.off).sort((a, b) => a.behind - b.behind);
-    const sHead = leaderS - rows[0].behind, sTail = leaderS - rows[rows.length - 1].behind, p = pt((sHead + sTail) / 2), dx = 490 - p.x, dy = 295 - p.y, dd = Math.hypot(dx, dy) || 1;
-    const name = groupName(g, G) + ' · ' + rows.length + (g.pending ? (g.rows.some(x => x.pending > 0) ? ' · lap gained?' : ' · lap lost?') : '');
-    labels += putLabel(p.x - dx / dd * 58, p.y - dy / dd * 58 + 5, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Sans" font-size="19" font-weight="700" fill="${g.pending || g.op ? '#8FB4FF' : g === G.bunch ? '#ECEAE4' : '#F2A33A'}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${gi}" style="cursor:pointer">${name}</text>`);
-    const prev = drawn[i - 1];
-    if (prev) {
-      const gapM = g.head - prev.tail; if (gapM < 1) return;
-      const gapS = gapM / G.leader.spd, q = pt(leaderS - (prev.tail + g.head) / 2), ex = 490 - q.x, ey = 295 - q.y, ed = Math.hypot(ex, ey) || 1;
-      labels += putLabel(q.x - ex / ed * 56, q.y - ey / ed * 56 + 4, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" fill="#c9c6bd" stroke="#121416" stroke-width="3" paint-order="stroke">${gapM.toFixed(0)} m · ${gapS.toFixed(1)} s</text>`);
-    }
-  });
-  // the riders marked "No points": a thin dashed leader to a red "No points" text outside the track, like the other labels
-  for (const it of all) if (noPts.has(it.x.r.bib)) {
-    const { p } = normalAt(it.s), dx = p.x - 490, dy = p.y - 295, dd = Math.hypot(dx, dy) || 1, lx = p.x + dx / dd * 84, ly = p.y + dy / dd * 84;
-    labels += `<line x1="${it.cx.toFixed(1)}" y1="${it.cy.toFixed(1)}" x2="${lx.toFixed(1)}" y2="${ly.toFixed(1)}" stroke="#FF5C5C" stroke-width="1.5" stroke-dasharray="4 3" pointer-events="none"/>`;
-    labels += putLabel(lx, ly + 5, `<text x="%X" y="%Y" text-anchor="middle" font-family="IBM Plex Mono" font-size="14" font-weight="700" fill="#FF5C5C" stroke="#121416" stroke-width="3" paint-order="stroke">No points</text>`);
-  }
-  bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
+  // 3. NO label is drawn on the oval any more. The operator had the leader label, the group names with their
+  // count and their pending status, the gaps between groups, and the « No points » tag with its dashed leader all
+  // taken off on 29 October 2026: the annotations that follow the riders are to be redone from scratch, and the
+  // first step is an empty track. The groups stay selectable by their band, which carries the same data-gi.
+  bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = '';
   if (S.hover != null) { const d = document.getElementById('dot-' + S.hover); if (d) d.querySelector('circle').setAttribute('stroke-width', '4'); }
 }
 
@@ -2257,7 +2237,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 92';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 93';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

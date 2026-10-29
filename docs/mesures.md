@@ -1220,6 +1220,10 @@ précédent, où le cadre rognait. La hauteur disponible n'est d'ailleurs pas bo
 mais par **les deux boutons de leader**, posés au milieu de chaque ligne droite, donc exactement
 au-dessus et au-dessous du panneau.
 
+**Aucune annotation ne subsiste sur l'ovale**, build 93. Compté dans le DOM en pleine course,
+groupes séparés et écarts ouverts : **zéro** élément `<text>` dans `#oval` en dehors des dossards
+tracés dans les pastilles, et `#ovlabels` vide.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

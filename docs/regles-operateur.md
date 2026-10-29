@@ -1234,6 +1234,27 @@ Ce que cela fixe :
     s'estimer ; les cotes relevées sont dans `mesures.md` §26. **Un croquis qu'il fournit à la
     taille de l'écran est une cotation**, pas une suggestion.
 
+### Les annotations qui suivent les coureurs
+
+**29 octobre 2026.** Mot pour mot :
+
+> Pour la suite il va falloir refaire complètement les annotations qui suivent les coureurs sur
+> l'ovale. Dans un premier temps on va retrier les annotations et textes actuels.
+> Je les ai entourés en rose foncé sur ces captures. Regarde si il en existe d'autre encore et
+> supprime les toutes
+
+Les textes entourés sur ses deux captures sont **le libellé du leader** (« LEADER · BIB 1 »),
+**le nom de chaque groupe avec son effectif et son statut** (« Chase 1 · 2 », « Break 1 · 3 »,
+« Bunch · 13 · lap gained? ») et **l'écart entre deux groupes** (« 65 m · 3.9 s »).
+
+Une quatrième de la même famille n'apparaissait sur aucune des deux, faute de coureur concerné :
+l'étiquette **« No points »** reliée au dossard par un pointillé. Elle est retirée avec les
+autres, au titre du « supprime les toutes ».
+
+19. **Aucun texte n'est tracé sur l'ovale**, hors le dossard qui est dans la pastille du coureur.
+    Les bandes de groupe restent, et un groupe se sélectionne toujours en cliquant sa bande.
+20. **Les annotations sont à refaire entièrement.** Ce qui précède n'est que le déblaiement.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :
