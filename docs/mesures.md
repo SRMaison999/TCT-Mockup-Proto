@@ -1357,6 +1357,33 @@ par un test explicite contre les coureurs — ce qu'un badge ne doit jamais couv
 repousse par pas de 12 unités seulement, autant de fois qu'il le faut. Resserré sans ce test, il
 revenait **4** fois sur un coureur en 4 752 paires ; avec lui, **0**.
 
+**L'écart bulle → badge, constant tout autour**, build 105. L'opérateur a fourni cinq images du
+même virage où l'écart variait du simple au triple. Trois causes, toutes des erreurs de signe ou
+de direction, et aucune n'était celle que les premières mesures désignaient :
+
+| Cause | Effet |
+|---|---|
+| Le bout de la ligne se calculait `− normale × t`, hérité de l'époque où les badges étaient **dehors** et la profondeur positive. À l'intérieur elle est négative : la même soustraction envoyait le bout **au-delà** du badge | des lignes de 24 à 96 unités traversant tout |
+| Le test contre le panneau servait de **motif à reculer**, alors que les pas vont vers l'intérieur et que le panneau **est** à l'intérieur : chaque pas aggravait le recouvrement | le badge s'enfonçait de six pas |
+| Le rattrapage des coins par paliers de 12 unités | sauts de 22 unités en moyenne, 60 au pire |
+
+Deux fausses pistes en chemin, écartées par la mesure : la largeur de la bulle, soupçonnée de
+vaciller, est **rigoureusement constante** (86 unités, zéro variation sur 119 images) ; et
+« l'écart au coureur le plus proche » est un mauvais indicateur, puisqu'il change dès qu'un
+**autre** coureur devient le plus proche, même badge immobile.
+
+Mesuré après correction, sur 150 images :
+
+| | Avant | Après |
+|---|---|---|
+| Longueur de la ligne | 24,5 à 96,0 | **12,4 à 12,6** |
+| Saut d'une image à l'autre | 20,8 en moyenne, 70,8 au pire | **0,03 en moyenne, 0,1 au pire** |
+| Badge posé sur un coureur | 30 images sur 150 | **0** |
+
+Il subsiste **1 effleurement sur 1 216 paires** badge/coureur dans le cas à plusieurs groupes :
+un coin de badge frôle un coureur d'un autre groupe. L'éliminer demanderait de dégager le badge
+sur son coin, ce qui ramènerait les sauts — c'est le compromis assumé.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

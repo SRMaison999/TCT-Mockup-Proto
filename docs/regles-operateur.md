@@ -1422,6 +1422,13 @@ Puis, les badges s'étant trouvés trop loin :
 
 38. **Un badge se tient au plus près de sa bulle**, sans jamais couvrir un coureur.
 
+Puis, sur une séquence de cinq images prises dans le même virage :
+
+> Ca ne va pas bien. voici une séquence de 5 images dans le virage
+
+39. **L'écart entre une bulle et son badge est le même en tout point du vélodrome**, et ne
+    change pas d'une image à l'autre.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

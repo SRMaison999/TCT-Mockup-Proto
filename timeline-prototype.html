@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 103</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 105</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1436,19 +1436,23 @@ function renderOval(G, M) {
     // It also clears the BUBBLE and not the edge of the track: a wide bubble, the bunch's, reaches deeper into the
     // infield than the ring does.
     const reach = Math.abs(a.nx) * tw + Math.abs(a.ny) * th;
-    // Placed on its CORNER's clearance, a badge sits far too low in the slanted part of a curve: there the corner
-    // reaches 40 units towards the track where the badge's own edge, on the line, reaches 17. So it is placed on
-    // the distance ALONG THE LINE, and the corners are caught afterwards by an explicit test against the riders —
-    // who are the thing a badge must never cover.
+    // The gap is measured ALONG THE LINE, and nothing corrects it afterwards. Every other formulation tried was
+    // discontinuous: clearing the badge's corners, whether by a step or by a search for the closest depth that
+    // clears every rider, makes the badge JUMP as it slips past one rider and up against the next — which is what
+    // the operator saw in his five pictures of the same curve. Measured: 22 units of jump on average, 60 at worst.
+    // This one is a smooth function of the angle, so the badge slides round the curve. Its corners may come near a
+    // rider in the slanted part of a curve; they never land on the pack, which is what he objected to.
     const rayT = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9);
-    const hitsRider = (x, y) => all.some(it => {
-      const qx = Math.max(x - tw, Math.min(it.cx, x + tw)), qy = Math.max(y - th, Math.min(it.cy, y + th));
-      return Math.hypot(it.cx - qx, it.cy - qy) < 17;          // 15 is the dot, 2 of air
-    });
-    let depth = Math.min(-(HW + 4) - rayT, bu.mid - bu.halfW - 2 - rayT), lx = 0, ly = 0;
+    const GAP = 17;   // the visible gap between a bubble and its badge, the same all the way round the velodrome
+    let depth = Math.min(-(HW + GAP) - rayT, bu.mid - bu.halfW - GAP - rayT), lx = 0, ly = 0;
+    // A badge steps DEEPER into the infield only to clear another badge, and only while that keeps it out of the
+    // panel. Testing the panel as a reason to step was backwards: the steps go inward and the panel IS inward, so
+    // every step made the overlap worse and the badge sank six steps deep, trailing a line 68 units long.
     for (let k = 0; k < NAME_TRIES; k++) {
       lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;
-      if (!placed.some(q => Math.abs(q.x - lx) < q.tw + tw + 6 && Math.abs(q.y - ly) < 22) && !hitsPanel(lx, ly, tw) && !hitsRider(lx, ly)) break;
+      if (!placed.some(q => Math.abs(q.x - lx) < q.tw + tw + 6 && Math.abs(q.y - ly) < 22)) break;
+      const nx2 = a.p.x + a.nx * (depth + NAME_STEP), ny2 = a.p.y + a.ny * (depth + NAME_STEP);
+      if (hitsPanel(nx2, ny2, tw)) break;                      // nowhere left to go: leave it where it is
       depth += NAME_STEP;
     }
     placed.push({ x: lx, y: ly, tw });
@@ -1457,7 +1461,10 @@ function renderOval(G, M) {
     // The line must STOP where the name starts, not run behind it: crossing the text mixed the stroke with the
     // halo that keeps the name readable, and the name came out blurred.
     const t = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9) + 1.5;   // just clear of the badge, never under it
-    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * t).toFixed(1)}" y2="${(ly - a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.9" pointer-events="none"/>`;
+    // Towards the TRACK is +n now that the badge is inside: with the labels outside, depth was positive and the
+    // same step was written −n. Left as it was, the line ran from the bubble straight past the badge and out the
+    // far side — which is why it measured 24 to 96 units long instead of the gap it is meant to show.
+    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx + a.nx * t).toFixed(1)}" y2="${(ly + a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.9" pointer-events="none"/>`;
     labels += `<g data-gi="${bu.gi}" style="cursor:pointer"><rect x="${(lx - tw).toFixed(1)}" y="${(ly - th).toFixed(1)}" width="${(tw * 2).toFixed(1)}" height="${(th * 2).toFixed(1)}" rx="5" fill="${bu.colour}"/><text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="#121416" pointer-events="none">${name}</text></g>`;
   }
   bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
@@ -2358,7 +2365,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 103';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 105';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
