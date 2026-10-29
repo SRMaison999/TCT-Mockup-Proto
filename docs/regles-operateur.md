@@ -1331,6 +1331,13 @@ Puis, la bulle du dernier groupe restant trop grande :
     piste ni plusieurs mètres au-delà du premier et du dernier : elle se mesure **sur ses propres
     membres**, en largeur comme en longueur. Les cotes retenues sont dans `mesures.md` §26.
 
+Puis, sur la typographie de ces noms :
+
+> Maintenant il faut utiliser une police qui correspond à notre projet pour les noms des groupes
+
+28. **Le nom d'un groupe est écrit dans la police du projet**, la même que celle de son nom dans
+    la boîte de timeline.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 96</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 97</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1388,7 +1388,7 @@ function renderOval(G, M) {
     const edge = bu.mid + bu.halfW + 3;   // the line starts at the bubble's own outer edge, wherever it sits
     const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
     labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * 9).toFixed(1)}" y2="${(ly - a.ny * 9).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
-    labels += `<text x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Sans" font-size="15" font-weight="700" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${groupName(bu.g, G)}</text>`;
+    labels += `<text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${groupName(bu.g, G)}</text>`;
   }
   bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
   if (S.hover != null) { const d = document.getElementById('dot-' + S.hover); if (d) d.querySelector('circle').setAttribute('stroke-width', '4'); }
@@ -2288,7 +2288,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 96';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 97';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

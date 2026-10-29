@@ -285,6 +285,17 @@ coûte une ligne de plus et attrape ce que `classList.contains` laissera toujour
 deux règles décrivent le même élément dans deux états, celle de l'état particulier doit mordre
 plus fort que celle du repos, pas seulement venir après.
 
+**D18. Une `font-family` écrite dans un attribut SVG, sans repli.** Le nom d'un groupe sur
+l'ovale portait `font-family="IBM Plex Sans"` **seul**, alors que toute l'interface passe par
+`var(--sans)`, c'est-à-dire `'IBM Plex Sans', system-ui, sans-serif`. Partout où la police du
+projet n'est pas chargée — réseau coupé, feuille de Google Fonts bloquée, premier affichage —
+ces textes-là, et eux seuls, retombent sur la **serif** par défaut du navigateur, au milieu
+d'une interface sans serif. L'opérateur l'a vu avant moi : « il faut utiliser une police qui
+correspond à notre projet ». Retenu : **un texte SVG prend sa police par une classe CSS**, donc
+par la variable du projet et sa liste de repli, jamais par un attribut `font-family` nu. Il
+reste un cas du même défaut, les dossards tracés dans les pastilles (`IBM Plex Mono` nu) : il
+n'a pas été corrigé parce qu'il n'a pas été demandé.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été
