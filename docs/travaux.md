@@ -133,10 +133,8 @@ les annotations qui suivent les coureurs sur l'ovale » (`regles-operateur.md` �
 **Le déblaiement est fait** à la build 93 : plus aucun texte n'est tracé sur l'ovale. Ce qui a
 été retiré est listé dans `architecture.md`.
 
-**L'intérieur de l'ovale est vide depuis la build 108**, le bloc des champs en étant sorti pour
-laisser la place aux noms de groupes. Ce qui pourra y retourner n'est pas décidé : « on verra
-plus tard si on peut y remettre quelquechose » (`regles-operateur.md` §17). Ne rien y remettre
-sans qu'il le dise.
+**Ce que l'intérieur de l'ovale porte** est tranché depuis la build 109 : la rangée du départ
+et le champ `LEADER`, et rien d'autre (`regles-operateur.md` §17, point 43).
 
 **Ce qui vient ensuite n'est pas défini** : ni ce qu'une annotation doit dire, ni où elle se
 pose, ni quand elle apparaît. Rien ne se code avant qu'il le dise ou qu'un écran lui soit

@@ -1448,6 +1448,17 @@ mesure 48 unités, et un badge en demande exactement 48 — mot pour mot :
 42. **Ce qui pourra y retourner n'est pas décidé** : « on verra plus tard ». Ne rien y remettre
     sans qu'il le dise.
 
+Il l'a dit le même jour, mot pour mot :
+
+> bon c'est pas trop mal comme ça.
+>
+> Je pense qu'on peut remettre à l'intérieur la ligne des boutons ARM START - HORLOGE - ARM
+> FINISH et en dessous le champ LEADER
+
+43. **Retournent à l'intérieur de l'ovale** : la rangée `ARM START` · horloge · `ARM FINISH`,
+    et le champ `LEADER` en dessous. **Rien d'autre.** Le compteur de tours, le prochain sprint
+    et les tours restants restent au-dessus de l'ovale.
+
 Cela remplace le point 34 du même jour pour le bloc des champs seulement ; les **noms de
 groupes**, eux, restent à l'intérieur de l'ovale, ce qui était tout l'objet de ce déplacement.
 

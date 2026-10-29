@@ -1433,6 +1433,16 @@ D'où la décision de l'opérateur de sortir le bloc. Avec l'intérieur libre, l
 nette : ligne de **9,5 unités, saut de 0,00 d'une image à l'autre**, et **zéro** badge sur un
 coureur en 1 760 paires.
 
+**Ce qui est revenu à l'intérieur**, build 109 (`regles-operateur.md` §17, point 43). La
+rangée du départ et le champ `LEADER` font **84 unités** de haut pour 280 disponibles, et un
+badge se pose à **51 unités** du bord de piste : il reste une quarantaine d'unités de
+dégagement de chaque côté, là où le bloc entier n'en laissait aucune. Mesuré sur 202 images :
+**zéro** badge sous le bloc, **zéro** recouvrement entre badges, **zéro** hors du cadre.
+
+Le bloc n'est jamais une raison de quitter la place normale, seulement un veto sur un badge
+qu'on **pousse** : la ligne flotte alors de 2,5 unités en moyenne dans les parties obliques,
+contre 0,00 avec l'intérieur entièrement vide.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 
