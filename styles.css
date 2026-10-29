@@ -177,8 +177,7 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
   grid-template-rows:minmax(0,1fr) auto auto;gap:8px;overflow:hidden}
 /* La colonne ne se laisse plus rétrécir par le centre : sa largeur est fixée, entre 560 et 700 px. À 560 px, la
    place du nom dans l'ordre du sprint tombe à 0 et l'en-tête de la carte déborde. */
-.right{display:none;flex:0 0 auto;width:clamp(420px, 26%, 460px);min-height:0}
-body.sprintmode .right{display:flex}
+.right{display:flex;flex:0 0 auto;width:clamp(272px, 19%, 300px);min-height:0}
 .oval{grid-row:1;width:100%;min-height:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .oval svg{width:100%;height:100%;display:block;touch-action:none;user-select:none}
 .log{position:fixed;left:16px;right:16px;top:58px;bottom:16px;z-index:40;background:var(--deep);border:1px solid var(--acc);
@@ -197,13 +196,16 @@ body.sprintmode .right{display:flex}
 .lrow .m{overflow:hidden;text-overflow:ellipsis}
 @media (max-width:1000px){body{overflow:auto}.app{height:auto}.main{flex-wrap:wrap}.tl{flex-basis:100%;width:auto;height:auto}.tl .body{overflow:visible}.mid{flex-basis:100%;height:620px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+body:not(.sprintmode) #scard{border-color:var(--line)}
+body:not(.sprintmode) #scard .sh b{color:var(--muted)}
+body:not(.sprintmode) #scard .srow.empty{opacity:.5}
+
 /* Pendant un sprint, la carte s'ouvre dans la colonne de droite : l'ovale et le journal restent en place, ils ne sont
    plus masqués. Sa page redessinée du 29 octobre 2026. */
 .fld.acc{background:var(--acc-soft)}
 .fld.acc .v,.fld.acc .k{color:#c9d6f5}
 .chip.notp{border:1px dashed #8FB4FF}
-#scard{display:none;flex:1 1 auto;min-width:0;min-height:0;background:var(--panel);border:1px solid var(--acc);border-radius:4px;flex-direction:column;overflow:hidden}
-body.sprintmode #scard{display:flex}
+#scard{display:flex;flex:1 1 auto;min-width:0;min-height:0;background:var(--panel);border:1px solid var(--acc);border-radius:4px;flex-direction:column;overflow:hidden}
 .sh{display:flex;align-items:center;gap:6px;height:36px;padding:0 10px;border-bottom:1px solid var(--line);flex:0 0 auto;white-space:nowrap}
 /* Dans la colonne de droite, l'en-tête de la carte n'a plus 706 px à sa disposition mais 618 : il passe sur deux
    lignes au lieu d'être coupé. Rien n'en est retiré. */
@@ -218,14 +220,18 @@ body.sprintmode #scard{display:flex}
 .sh input{font:600 13px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:3px 8px;width:150px}
 .sh input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .sh input.err{border-color:var(--crit);background:#2a1414}
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(230px,1fr) minmax(166px,180px);gap:18px;padding:6px 10px 8px;overflow:auto}
+/* La carte est empilée, l'ordre au-dessus de la liste de départ : à deux colonnes elle demandait 420 px de large,
+   et l'ovale, limité à 850 px, laissait 230 px de vide en hauteur. Sur une colonne elle en demande 280 et l'ovale
+   récupère la largeur qui lui manquait (mesures.md §37). */
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);
+  gap:8px;padding:6px 8px 8px;overflow:auto}
 .sleft,.sright{min-width:0;display:flex;flex-direction:column}
-.shd{display:grid;grid-template-columns:30px 34px 44px minmax(0,1fr) 56px 28px 28px;gap:6px;align-items:center;height:20px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
-.shd.sl{grid-template-columns:34px 44px minmax(0,1fr)}
+.shd{display:grid;grid-template-columns:26px 34px 42px minmax(0,1fr) 54px 24px 24px;gap:4px;align-items:center;height:20px;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 4px}
+.shd.sl{grid-template-columns:34px 42px minmax(0,1fr)}
 .shd > span{overflow:hidden;text-overflow:ellipsis}
 .shd .srt{cursor:pointer}
 .shd .srt.on{color:#8FB4FF}
-.srow{display:grid;grid-template-columns:30px 34px 44px minmax(0,1fr) 56px 28px 28px;gap:6px;align-items:center;height:28px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
+.srow{display:grid;grid-template-columns:26px 34px 42px minmax(0,1fr) 54px 24px 24px;gap:4px;align-items:center;height:28px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;touch-action:none}
 .srow .pl{font:600 13px var(--mono);color:var(--muted);cursor:pointer;white-space:nowrap}
 .srow .pl.tgt{color:var(--acc)}
 .srow .noc{font:600 13px var(--mono);letter-spacing:.04em}
@@ -263,7 +269,7 @@ body.sprintmode #scard{display:flex}
 .stgt .btn.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
 .stgt input{font:600 14px var(--mono);color:var(--fg);background:var(--deep);border:1px solid var(--line2);border-radius:3px;padding:2px 6px;width:64px}
 .slrows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-.slrow{display:grid;grid-template-columns:34px 44px minmax(0,1fr);gap:6px;align-items:center;flex:0 0 auto;height:26px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
+.slrow{display:grid;grid-template-columns:34px 42px minmax(0,1fr);gap:4px;align-items:center;flex:0 0 auto;height:26px;padding:0 4px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
 .slrow .noc{font:600 13px var(--mono);letter-spacing:.04em}
 .slrow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .slrow .st{font:500 11px var(--mono);color:var(--muted);text-align:right;white-space:nowrap}

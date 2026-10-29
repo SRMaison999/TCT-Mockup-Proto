@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 123</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 124</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -56,7 +56,7 @@
       </section>
 
       <div class="oval">
-        <svg viewBox="0 0 980 590" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Track view" id="oval">
+        <svg viewBox="63 49 854 492" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Track view" id="oval">
           <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#8a8a8a" stroke="#b5884e" stroke-width="60"/>
           <rect x="143" y="158" width="694" height="274" rx="137" fill="none" stroke="#3b6ae8" stroke-width="6"/>
           <rect x="138.5" y="153.5" width="703" height="283" rx="141.5" fill="none" stroke="#111111" stroke-width="1.5"/>
@@ -2034,9 +2034,36 @@ function spClose(k) { const s = sp(k); S.sprintOpen = null; s.closed = true; log
 // ---------- the sprint card ----------
 const scard = $('#scard');
 const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo check needed · click to confirm"><path d="M4 7h3.5l2-2.5h5l2 2.5H20v12H4z" fill="none" stroke="#FF5C5C" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="#FF5C5C" stroke-width="2"/></svg>';
+// La liste de départ : entière, sur une colonne, triable, qu'un sprint soit ouvert ou non. Glisser ou double-clic
+// place un coureur quand un sprint est ouvert ; hors sprint elle ne fait que montrer le plateau.
+function startListHtml(k, seq, tgt, fin, N) {
+  const sort = S.slSort || 'bib', list = [...S.riders].sort((a, b) => sort === 'noc' ? (a.nat.localeCompare(b.nat) || a.bib - b.bib) : a.bib - b.bib);
+  let h = '<div class="sright">';
+  if (k != null) h += `<div class="stgt" title="Where the next rider goes: double-click in the start list, or a bib typed in the Manual box"><span class="k">Next</span><b>${ordinal(tgt)}</b>${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">` : [1, 2, 3, 4].map(p => `<button class="btn xs${tgt === p ? ' on' : ''}" data-sact="target:${p}">${p}</button>`).join('')}</div>`;
+  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' ▴' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' ▴' : ''}</span><span>${list.length} riders</span></div><div class="slrows">`;
+  for (const r of list) {
+    const e = k == null ? null : seq.find(x => x.bib === r.bib), w = S.withdrawn.get(r.bib), why = (k == null || e) ? null : spWhy(k, r.bib);
+    h += `<div class="slrow${e ? ' placed' : ''}${why ? ' out' : ''}" data-sl="${r.bib}" title="${r.name}${k == null ? '' : ' · double-click: ' + ordinal(tgt) + ' · drag onto the order'}">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span><span class="st">${e ? ordinal(e.place) + (e.held ? ' · held' : '') : w ? w.code : why ? why.replace(' · operator', '') : S.noTp.has(r.bib) ? 'no tp' : ''}</span></div>`;
+  }
+  return h + '</div></div>';
+}
+
+// Hors sprint, la carte reste en place et annonce le prochain : « il faut conserver la carte des sprints en
+// permanence » (l'opérateur, 29 octobre 2026). Elle ne porte alors aucune commande -- rien n'est à juger -- mais
+// garde ses places vides et la liste de départ entière.
+function waitingCardHtml() {
+  const lap = dispLap(), n = nextSprintNum(lap), left = sprintLap(n) - lap;
+  const head = S.finished ? 'RACE FINISHED' : 'SPRINT ' + n;
+  const sub = S.finished ? '' : left <= 0 ? 'this lap' : plural(left, 'lap') + ' to go';
+  let h = `<div class="sh"><b>${head}</b><span class="lapn">${sub}</span><span class="sp"></span><span class="cnt">waiting for the bell</span></div>`;
+  h += '<div class="sbody"><div class="sleft"><div class="shd"><span></span><span>BIB</span><span>NOC</span><span></span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">';
+  for (let p = 1; p <= SEND_PLACES; p++) h += `<div class="srow empty"><span class="pl">${p}</span><span></span><span class="nm">—</span><span></span><span></span><span></span></div>`;
+  h += '</div></div>' + startListHtml(null, [], 0, false, 0) + '</div>';
+  return h;
+}
 function renderCard() {
   const k = S.sprintOpen; document.body.classList.toggle('sprintmode', k != null);
-  if (k == null) { scard.innerHTML = ''; return; }
+  if (k == null) { scard.innerHTML = waitingCardHtml(); return; }
   const s = sp(k), O = spOrder(k), seq = O.seq, fin = isFinal(k), st = spSendState(k);
   const inRace = S.riders.filter(r => !S.withdrawn.has(r.bib)), N = fin ? Math.max(inRace.length, seq.length) : SEND_PLACES;
   const focused = document.activeElement && document.activeElement.id === 'sinp', inpVal = focused ? document.activeElement.value : (s.manualText || '');
@@ -2060,7 +2087,7 @@ function renderCard() {
     if (!r) continue;                  // ce dossard n'est plus dans la course : il n'a rien à dire sur cette carte
     h += `<div class="nts" title="${r.name}">${chip(r, 'notp')}<span class="noc">${r.nat}</span><span class="nm"><small>no transponder${g ? ' · in ' + groupName(g) : ''}</small></span>${[1, 2, 3, 4, 5].map(p => `<button class="btn xs" data-sact="hold:${bib}:${p}" title="BIB ${bib} will be ${ordinal(p)}: held until the next rider is read, or Send">${ordinal(p)}</button>`).join('')}<button class="btn xs quiet" data-sact="notpdismiss:${bib}" title="Not in the first places of this sprint">not placed</button></div>`;
   }
-  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span>drag to reorder</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
+  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span></span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
   const tgt = spTarget(k);
   // the crossings read while the rider was not eligible: kept where they were read, greyed, with no place
   const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
@@ -2090,16 +2117,7 @@ function renderCard() {
   } else if (S.withdrawn.size) {
     for (const [bib, w] of S.withdrawn) { const r = S.riders.find(x => x.bib === bib); h += `<div class="srow ne"><span class="pl"></span>${chip(r)}<span class="noc" title="${r.name}">${r.nat}</span><span class="why">${w.code} · Lap ${w.lap} · not ranked</span><span></span></div>`; }
   }
-  h += '</div><div class="sright">';
-  // the start list: fixed, whole, sortable; drag or double-click to place a rider
-  const sort = S.slSort || 'bib', list = [...S.riders].sort((a, b) => sort === 'noc' ? (a.nat.localeCompare(b.nat) || a.bib - b.bib) : a.bib - b.bib);
-  h += `<div class="stgt" title="Where the next rider goes: double-click in the start list, or a bib typed in the Manual box"><span class="k">Next</span><b>${ordinal(tgt)}</b>${fin ? `<input id="stgt" type="number" min="1" max="${N}" placeholder="place" title="Type a place and Enter">` : [1, 2, 3, 4].map(p => `<button class="btn xs${tgt === p ? ' on' : ''}" data-sact="target:${p}">${p}</button>`).join('')}</div>`;
-  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' ▴' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' ▴' : ''}</span><span>${list.length} riders</span><span></span></div><div class="slrows">`;
-  for (const r of list) {
-    const e = seq.find(x => x.bib === r.bib), w = S.withdrawn.get(r.bib), why = e ? null : spWhy(k, r.bib);
-    h += `<div class="slrow${e ? ' placed' : ''}${why ? ' out' : ''}" data-sl="${r.bib}" title="${r.name} · double-click: ${ordinal(tgt)} · drag onto the order">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span><span class="st">${e ? ordinal(e.place) + (e.held ? ' · held' : '') : w ? w.code : why ? why.replace(' · operator', '') : S.noTp.has(r.bib) ? 'no tp' : ''}</span></div>`;
-  }
-  h += '</div></div></div>';
+  h += '</div>' + startListHtml(k, seq, tgt, fin, N) + '</div>';
   scard.innerHTML = h;
   if (focused) { const i = $('#sinp'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
 }
@@ -2441,7 +2459,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 123';
+  $('#buildno').textContent = 'build 124';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

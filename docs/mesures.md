@@ -1685,3 +1685,27 @@ toute la hauteur disponible, son dessin calé en haut de son panneau
 
 Hors sprint, le dessin gagne encore : 697 → **771 px** de haut en 1440. Pendant un sprint, il
 reste limité par sa largeur, et les 150 px qui restent sont dans le panneau, sous la piste.
+
+## 37. Le cadre du dessin et la carte empilée — build 124
+
+La piste dessinée, en 1440 × 900, carte des sprints affichée :
+
+| | Piste à l'écran |
+|---|---|
+| Build 121 (cadre 980 × 590, carte 420 px sur deux colonnes) | 659 × 295 |
+| Cadre resserré sur son contenu (832 × 514) | 775 × 347 |
+| **+ carte empilée sur une colonne (272 px)** | **886 × 397** |
+
+Soit **+34 % en linéaire et +80 % en surface**. Deux causes, et non une :
+
+1. **Le cadre du dessin était trop grand.** Relevé sur un tour complet, le dessin occupe
+   `x 67..913` et `y 53..537` ; le cadre disait `0 0 980 590`. Il dit maintenant
+   `63 49 854 492`, soit le contenu plus 4 unités de marge. Vérifié sur 70 images d'un tour :
+   **0 fois** le dessin ne sort du cadre. Un premier essai à `84 38 832 514` coupait la bulle
+   du peloton dans le virage gauche -- les bulles dépassent la piste de 13 unités, ce qu'une
+   estimation ne donne pas et qu'un relevé sur un tour donne.
+2. **La carte prenait trop de largeur.** L'ovale est limité par sa largeur dès que la carte est
+   là : avec 420 px de carte il ne peut faire que 850 px de large, donc 525 de haut pour 755
+   disponibles, d'où 230 px de vide. Pour qu'il remplisse la hauteur il lui faudrait 1 222 px,
+   c'est-à-dire une carte de 46 px : **le vide ne peut pas être supprimé, seulement réduit.**
+   La carte empilée le ramène de 230 à 146 px.

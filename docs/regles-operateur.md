@@ -1695,3 +1695,11 @@ Puis, sur son propre croquis :
     de la ligne des propositions, pour que l'ovale ne saute pas quand il en arrive une : **il
     l'a refusé**. L'ovale prend donc toute la hauteur que les deux lignes du bas lui laissent,
     et il se redimensionne à l'arrivée d'une proposition.
+
+79. **La carte des sprints reste à l'écran en permanence.** Mot pour mot : « il faut conserver
+    la carte des sprints en permanence ». Hors sprint elle annonce le prochain -- `SPRINT n ·
+    x laps to go · waiting for the bell` -- garde ses places vides et la liste de départ
+    entière, et ne porte aucune commande puisque rien n'est à juger.
+80. **La carte est sur une seule colonne**, l'ordre au-dessus de la liste de départ. À deux
+    colonnes elle demandait 420 px de large, et l'ovale, limité à 850 px, laissait 230 px de
+    vide en hauteur. Sur une colonne elle en demande 272 et la piste gagne 90 % de surface.
