@@ -59,8 +59,7 @@
                       <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></div>
                     <div class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
                       <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></div>
-                    <div class="ifb togo" id="iftogo"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span>
-                      <button class="ifdot" id="iftogoexp" title="Hold the laps to go back from every output"></button></div>
+                    <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
                   </div>
                 </div>
               </div>
@@ -1162,15 +1161,18 @@ function renderTimeline(G) {
 // emits a click (pitfalls D2) — and this panel carries buttons.
 const IF = {};
 for (const k of ['leadchip', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
-                 'togoexp', 'togomode', 'lap', 'lapof']) IF[k] = $('#if' + k);
+                 'togomode', 'lap', 'lapof']) IF[k] = $('#if' + k);
 const SRC = { app: $('#srcapp'), cnt: $('#srccnt'), appk: $('#srcappk'), appv: $('#srcappv'), cntv: $('#srccntv') };
 // The two provenances are shown together, each with its own figure, and one of them is picked: that is the
 // operator's own rule for a linked lap counter — « un désaccord est signalé avec les deux valeurs plutôt que
 // corrigé en silence » (regles-operateur.md §13). The application's figure is either its own count or the
 // operator's; the lap counter's comes from the track, and nothing feeds it yet (travaux.md §4 bis).
 function appValue(autoVal) { return S.togoMode === 'manual' && S.togoManual != null ? S.togoManual : autoVal; }
-function counterValue() { return null; }
-function togoValue(autoVal) { const c = counterValue(); return S.togoPick === 'counter' && c != null ? c : appValue(autoVal); }
+// What the application receives from the lap counter on the track. The prototype has no such feed, so it reads the
+// same count the application makes (travaux.md §4 bis): the two provenances agree here, and the disagreement the
+// operator's §13 describes cannot be exercised until a real counter is simulated.
+function counterValue(autoVal) { return autoVal; }
+function togoValue(autoVal) { return S.togoPick === 'counter' ? counterValue(autoVal) : appValue(autoVal); }
 function renderStrip(G) {
   const lap = dispLap(), toGo = LAPS - lap, n = nextSprintNum(lap), nextSprint = sprintLap(n), sprintNow = sprintNumOf(lap) > 0;
   const lead = S.riders.find(r => r.bib === G.leaderBib);
@@ -1191,7 +1193,7 @@ function renderStrip(G) {
   const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
   IF.next.classList.toggle('acc', close);
   IF.next.classList.toggle('hot', close);
-  const cnt = counterValue();
+  const cnt = S.finished ? 0 : counterValue(toGo);
   SRC.appk.textContent = S.togoMode === 'manual' ? 'MANUAL' : 'AUTO';
   SRC.appv.textContent = S.finished ? 0 : appValue(toGo);
   SRC.cntv.textContent = cnt == null ? '—' : cnt;
@@ -1201,8 +1203,6 @@ function renderStrip(G) {
   IF.togomode.textContent = S.togoMode === 'manual' ? 'A' : 'M';
   IF.togov.textContent = S.finished ? 0 : togoValue(toGo);
   IF.togo.classList.toggle('noexp', !S.togoExport);
-  IF.togoexp.classList.toggle('off', !S.togoExport);
-  IF.togoexp.title = S.togoExport ? 'Hold the laps to go back from every output' : 'Send the laps to go to the outputs again';
   syncStart();
 }
 
@@ -1502,7 +1502,7 @@ function startClick() {
 $('#infield').addEventListener('click', e => {
   const t = e.target;
   if (t.id === 'startbtn') return startClick();
-  if (t.id === 'iftogoexp') {
+  if (t.closest('#iftogo')) {
     S.togoExport = !S.togoExport;
     logEvent('RACE', S.togoExport ? 'Laps to go sent to the outputs again' : 'Laps to go held back from every output', true);
     dirty = true; return render();

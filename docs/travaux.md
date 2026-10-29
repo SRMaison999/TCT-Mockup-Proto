@@ -120,7 +120,7 @@ moment (`cas-de-course.md`) — mais ce n'est pas fini :
 | a | **L'impulsion externe du départ.** « faire en sorte qu'une impulsion externe (comme un bouton pressoir) connectée à l'appli trig le départ de la course » | Une entrée extérieure déclenche le départ, et l'écran le montre comme s'il venait du bouton |
 | b | **Le départ de course distinct du `Play` du simulateur.** Aujourd'hui le même geste lance la course et l'horloge ; le tour de lancement, qui sépare les deux, n'est pas construit (§1 ci-dessus) | `START` part au coup de pistolet, et les coureurs peuvent rouler avant |
 | c | **La provenance `LAP COUNTER`.** Elle s'affiche, mais le lap counter relié n'est pas simulé (§5 ci-dessous) | Le nombre affiché vient vraiment du compteur, et un désaccord est signalé avec les deux valeurs (`regles-operateur.md` §13) |
-| c bis | **La valeur du lap counter.** Les deux provenances s'affichent côte à côte, mais celle du compteur relié n'a rien derrière elle : elle affiche `—`, et `TO GO` retombe sur l'application même quand le compteur est choisi | Le compteur relié donne sa valeur, et le désaccord avec l'application se voit |
+| c bis | **La valeur du lap counter.** Elle s'affiche, mais aucun compteur relié ne l'alimente : elle reprend le comptage de l'application, donc les deux provenances sont toujours d'accord tant que l'opérateur ne compte pas à la main | Le compteur relié donne sa propre valeur, et un désaccord qu'il n'a pas provoqué lui-même se voit |
 | d | **La retenue à l'export.** Le bouton bascule et la valeur se barre, mais les exports sont des fichiers qui ne la lisent pas encore (§5 ci-dessous) | Aucune sortie ne porte les tours restants quand l'opérateur les retient |
 
 ---

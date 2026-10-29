@@ -1192,6 +1192,27 @@ Ce que la maquette montre, et qui fait foi :
 13. **L'intérieur de l'ovale est gris clair** sur cette maquette, alors qu'il était noir. C'est
     la réponse au « Je ne sais pas encore » laissé plus haut.
 
+### Sa relecture du bloc des tours restants
+
+Sur une capture du bloc tel qu'il avait été codé, mot pour mot :
+
+> je ne t'ai pas dessiné ça comme ça ! le bouton carré n'a pas besoin d'être là. Le mode
+> export/non export change quand on clique dans la zone verte (ou rouge). A côté de LAP COUNTER
+> il faut afficher le nombre de tours du lap counter que l'on récupère dans l'appli (en
+> l'ocurrence 40)
+
+Puis, le même jour :
+
+> du coup le texte TO GO 40 peut être agrandi pour remplir sa place disponible
+
+Ce que cela fixe :
+
+14. **Il n'y a aucun bouton dans la boîte `TO GO`.** C'est **la zone elle-même qui se clique**
+    pour retenir les tours restants des sorties, ou les y renvoyer.
+15. **La ligne `LAP COUNTER` porte le nombre de tours reçu du compteur**, à côté de son nom,
+    comme la ligne de l'application porte le sien.
+16. **Le texte de `TO GO` remplit sa boîte**, la place n'étant plus disputée par un bouton.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

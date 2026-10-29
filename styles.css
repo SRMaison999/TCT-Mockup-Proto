@@ -394,18 +394,18 @@ body.sprintmode #scard{display:flex}
 .ifstep{display:none;gap:3px}
 .srcrow.manual .ifstep{display:inline-flex}
 .ifsb{height:16px;width:16px}
-#iftogo{height:28px;background:var(--play);border-color:var(--play)}
+/* The box is the button, so its figure fills it: nothing else competes for the room. */
+#iftogo{height:36px;background:var(--play);border-color:var(--play);cursor:pointer;justify-content:space-between}
+#iftogo:hover{filter:brightness(1.08)}
+#iftogo .ifk{font-size:13px;letter-spacing:.06em}
+#iftogo .ifv{font-size:27px;line-height:1}
 #iftogo .ifk,#iftogo .ifv{color:#06220c}
 .ifsb{font:600 11px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);
   border-radius:3px;width:20px;height:20px;line-height:1;padding:0;cursor:pointer}
 .ifsb:hover{border-color:var(--muted)}
-.ifdot{width:11px;height:11px;padding:0;border-radius:2px;background:#23272b;border:1px solid var(--line2);
-  cursor:pointer;flex-shrink:0}
-.ifdot:hover{border-color:var(--fg)}
 #iftogo.noexp{background:var(--crit);border-color:var(--crit)}
 #iftogo.noexp .ifk,#iftogo.noexp .ifv{color:#2a0808}
-#iftogo .ifdot{margin-left:auto;background:#06220c;border-color:#06220c}
-#iftogo.noexp .ifdot{background:#2a0808;border-color:#2a0808}
+
 
 /* The two leader buttons, each on its own loop. The Finish loop has none: the operator had it removed. */
 .armwrap{display:flex;align-items:center;justify-content:center;height:100%}
@@ -416,4 +416,4 @@ body.sprintmode #scard{display:flex}
 .armb.done{color:var(--play);border-color:var(--play);background:rgba(15,17,19,.92);font:600 12px var(--mono)}
 
 #ifpanel,.ifg,.ifrow,.armwrap{pointer-events:none}
-.ifb,.startb,.ifsb,.ifdot,.armb,.srcrow,.pick,.togobox{pointer-events:auto}
+.ifb,.startb,.ifsb,.armb,.srcrow,.pick,.togobox{pointer-events:auto}
