@@ -1333,6 +1333,19 @@ seconde et ne doit rien mesurer. Relevé : `1-Leaders` 73 unités de texte dans 
 Vérifié sur les trois groupes : **aucune ligne ne se termine à l'intérieur d'un badge**, et aucun
 texte ne déborde du sien.
 
+**Un badge ne recouvre jamais un coureur**, build 102. L'opérateur a vu celui du peloton posé sur
+sa propre tête de peloton. Deux causes, et la seconde ne se voyait que dans les virages :
+
+1. Le badge se posait à une profondeur **fixe depuis le bord de la piste**, alors que la bulle du
+   peloton descend plus profond que cet anneau : le badge retombait dedans. Il se tient
+   désormais au-delà de la **bulle**.
+2. Un badge est un rectangle **aligné sur l'écran**, mais son dégagement se mesure **le long de
+   la normale**. Ce qu'il avance vers la piste vaut `|nx| × demi-largeur + |ny| × demi-hauteur`,
+   et non la demi-hauteur seule : sur une ligne droite les deux coïncident, mais dans un virage
+   c'est la **largeur** qui pointe vers la piste, environ quatre fois plus. Premier correctif
+   seul : **59** recouvrements sur 4 880 paires badge/coureur. Les deux ensemble : **0** sur
+   4 832 paires, 93 images échantillonnées.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

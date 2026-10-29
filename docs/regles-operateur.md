@@ -1409,6 +1409,13 @@ Puis sa question, qui a décidé de la suite :
 36. **Le nom d'un groupe est posé dans un badge** à la couleur du groupe, et la ligne s'arrête
     au bord du badge.
 
+Sur la première version, le badge du peloton se posait sur ses propres coureurs :
+
+> Mais là ce n'est pas bien !
+
+37. **Un badge ne recouvre jamais un coureur.** Il se tient au-delà de la **bulle** de son
+    groupe, pas à une profondeur fixe depuis le bord de la piste.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :
