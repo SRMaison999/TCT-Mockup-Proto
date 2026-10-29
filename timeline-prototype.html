@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 98</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 99</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1097,10 +1097,35 @@ function chip(r, cls) { return `<span class="chip${r.dk ? ' dk' : ''}${cls ? ' '
 // corrected this on 29 October 2026. « Behind » is therefore only for a group that has another one behind it.
 // Incident groups keep their own name and take no rank: they are not a place in the race. What they will be called
 // is not settled; he has not decided yet, so nothing changes there.
-const GROUP_COLORS = ['#FF4FD8', '#29A8FF', '#F2A33A', '#2ED47A', '#C77DFF', '#FFD23F', '#FF7A5C', '#5CE1E6'];
+// The colours the operator chose on 29 October 2026: green at the front, red at the back, blue for the bunch, and
+// every other group a shade along the way. The ramp is laid over EVERY ranked group, the bunch included, and the
+// bunch then takes its blue on top — so green always lands on the head of the race and red always on its tail.
+// Spread over the groups OTHER than the bunch, a chase group would go red as soon as it was the last of that list,
+// while riding in front of the bunch.
+// Two ramps, pivoting on the bunch (operator, 29 October 2026): green to blue for the groups in front of it, blue
+// to red for those behind. The pivot is what makes it work — spread over every group at once, a chase group went
+// red while riding in front of the bunch.
+// The hues are chosen against the DRAWING, not for themselves. The track is wood, #b5884e, hue 33: anything amber
+// or orange sinks into it, which is exactly where a straight green-to-red ramp passes. These two ramps never go
+// near it — green to blue runs through teal, and blue to red climbs through violet and magenta rather than
+// descending back through green. The bunch's blue is also pulled towards cyan to part it from the track's own
+// royal blue (#1d4ed8, the côte d'azur and the stayers' line).
+const G_AHEAD = { h: [152, 200], s: [65, 90], l: [51, 58] };    // head → bunch
+const G_BEHIND = { h: [200, 360], s: [90, 100], l: [58, 68] };  // bunch → tail
+const G_BUNCH = 'hsl(200 90% 58%)';
 function groupRanked(G) { return (G || lastG).groups.filter(x => !x.incident); }
 function groupRank(g, G) { const i = groupRanked(G).indexOf(g); return i < 0 ? 0 : i + 1; }
-function groupColor(g, G) { const r = groupRank(g, G); return r ? GROUP_COLORS[(r - 1) % GROUP_COLORS.length] : '#9a9890'; }
+function groupColor(g, G) {
+  G = G || lastG;
+  if (g.incident) return '#9a9890';
+  if (g === G.bunch) return G_BUNCH;
+  const on = groupRanked(G), i = on.indexOf(g), bi = on.indexOf(G.bunch);
+  if (i < 0) return '#9a9890';
+  const mix = (a, t) => a[0] + (a[1] - a[0]) * t;
+  const ramp = (r, t) => `hsl(${(mix(r.h, t) % 360).toFixed(0)} ${mix(r.s, t).toFixed(0)}% ${mix(r.l, t).toFixed(0)}%)`;
+  if (bi < 0) return ramp(G_AHEAD, on.length > 1 ? i / (on.length - 1) : 0);   // no bunch on the track at all
+  return i < bi ? ramp(G_AHEAD, i / bi) : ramp(G_BEHIND, (i - bi) / (on.length - 1 - bi));
+}
 function groupName(g, G) {
   G = G || lastG;
   if (g.incident) return g.op.type === 'crash' ? 'Crash' : 'Mechanical';
@@ -2296,7 +2321,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 98';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 99';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

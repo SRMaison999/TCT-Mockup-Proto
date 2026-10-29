@@ -1258,6 +1258,38 @@ DOM, trois groupes : le point d'arrivée de chaque ligne tombe **hors** du recta
 **Plus aucune marque de leader sur l'ovale**, build 98 : zéro ligne et zéro cercle en `#2ED47A`
 dans `#riders`.
 
+**Les couleurs des groupes, build 99** (`regles-operateur.md` §17, points 31 à 33). L'opérateur
+a posé la contrainte — « il faut éviter les couleurs se rapprochant de celle de la piste » — et
+n'a donné aucune teinte. La piste est le bois **#b5884e, teinte 33°** ; c'est exactement là que
+passe un dégradé vert→rouge direct, par le jaune et l'orange. Les deux dégradés qu'il a demandés
+l'évitent d'eux-mêmes :
+
+| | Teinte | Chemin |
+|---|---|---|
+| Tête | **152°** vert | — |
+| Devant le peloton | 152° → 200° | par le turquoise |
+| Peloton | **200°** bleu cyan | écarté du bleu de la piste, #1d4ed8, teinte 222° |
+| Derrière le peloton | 200° → 360° **en montant** | par le violet et le magenta |
+| Queue | **360° = 0°** rouge | — |
+
+Le sens de la seconde rampe n'est pas indifférent : en **descendant** de 200 vers 0, elle
+repasserait par 120, c'est-à-dire par le vert de la tête de course — un groupe lâché prendrait
+la couleur du leader.
+
+Relevé sur quatre groupes forcés : `1-Leader` hsl(152 65% 51%), `2-Bunch` hsl(200 90% 58%),
+`3-Behind` hsl(280 95% 63%), `4-Last` hsl(0 100% 68%).
+
+**Les deux situations que l'opérateur a demandé de forcer**, build 99 :
+
+1. **Quatre groupes et plus.** Deux échappés, le peloton, deux lâchés et un dernier très lâché :
+   la course a montré `1-Leader · 2-Bunch · 3-Behind · 4-Last`, et à un autre moment
+   `1-Bunch · 2-Behind · 3-Behind · 4-Last`, donc **deux groupes `Behind` à la fois**. Le dernier
+   est bien `Last` dans tous les cas.
+2. **Le croisement de deux noms.** Échantillonné sur **91 images** de cette course, **377 paires**
+   de noms examinées : **zéro recouvrement**, et la distance minimale entre deux noms est tombée
+   à **87 unités** — c'est-à-dire juste au-dessus du dégagement de 86 que le code impose, donc le
+   décalage vers l'extérieur a bien joué.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

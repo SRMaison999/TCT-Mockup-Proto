@@ -1349,6 +1349,36 @@ Sur une capture rapprochée, deux défauts relevés par lui :
     piste faisaient partie des annotations retirées ; ils avaient été laissés derrière. Le champ
     `LEADER` du panneau le nomme.
 
+### Les couleurs des groupes
+
+**29 octobre 2026.** Mot pour mot :
+
+> Et puis il faut aussi toujours utiliser les mêmes couleurs pour les groupes. Je propose les
+> couleurs suivantes, dis-moi ce que tu en penses :
+>
+> Leader(s) - Vert
+> Peloton - Bleu
+> Last - Rouge
+> tous les autres groupes dans l'ordre chronologiques de la course des nuances allant du vert au
+> rouge
+
+Devant la remarque que le peloton coupe un dégradé vert→rouge unique, sa correction :
+
+> Dans ce cas étale un dégradé entre vert et bleu pour les groupes devant le peloton et un
+> dégradé entre bleu et rouge pour les groupes derrière le peloton
+
+Et la contrainte qui décide des teintes exactes :
+
+> je ne sais pas quelles couleurs utiliser pour faire bien. ce que je sais c'est qu'il faut
+> éviter les couleurs se rapprochant de celle de la piste
+
+31. **La couleur d'un groupe dépend de son rôle, pas de son rang** : elle ne change donc pas
+    parce qu'un autre groupe apparaît devant lui. **Vert** en tête, **bleu** au peloton,
+    **rouge** en queue.
+32. **Deux dégradés, pivotant sur le peloton** : vert → bleu devant lui, bleu → rouge derrière.
+33. **Aucune teinte ne doit se rapprocher de celle de la piste.** Les valeurs retenues sont dans
+    `mesures.md` §26 ; elles ne lui ont pas été demandées, il a seulement posé la contrainte.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

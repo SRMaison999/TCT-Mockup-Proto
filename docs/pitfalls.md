@@ -296,6 +296,17 @@ par la variable du projet et sa liste de repli, jamais par un attribut `font-fam
 reste un cas du même défaut, les dossards tracés dans les pastilles (`IBM Plex Mono` nu) : il
 n'a pas été corrigé parce qu'il n'a pas été demandé.
 
+**D19. `getBBox()` renvoie des zéros sur un élément non affiché.** En vérifiant que deux noms de
+groupes ne se recouvrent jamais, la mesure a annoncé **338 recouvrements sur 724 paires** et une
+distance minimale de **0** — deux étiquettes exactement au même point. C'était la mesure qui
+était fausse : la carte du sprint recouvre l'ovale par moments, et `getBBox()` sur un élément
+qui n'est pas rendu renvoie `{0,0,0,0}`, si bien que **toutes** les étiquettes se retrouvaient à
+l'origine, donc toutes « superposées ». Reprise sur les attributs `x`/`y`, en sautant les images
+où l'ovale n'est pas affiché, elle donne **zéro recouvrement**. Retenu : avant de corriger un
+code sur une mesure accablante, **vérifier que la mesure a regardé quelque chose de visible** —
+et, dans le doute, lire les coordonnées posées par le code plutôt que celles calculées par le
+moteur de rendu.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été
