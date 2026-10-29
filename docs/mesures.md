@@ -1951,3 +1951,40 @@ franchi après les cinq premiers, leurs lignes suivent les cinq places.
 produisant pas dans une course simulée (c'est le scénario que `travaux.md` §2 dit encore à
 construire) : la pastille `no pts` tient dans la colonne de 174 px sans la faire déborder
 (−5 px de marge), et le badge rend `1-Bunch · 2 NO PTS`, son fond s'élargissant avec le texte.
+
+## 50. Le scénario qui force l'inéligibilité, et sa vérification en course — build 147
+
+Construit le 29 octobre 2026, à la demande de l'opérateur. Il comble le manque que `mesures.md`
+§6 et `travaux.md` §2 signalaient depuis la build 53.
+
+### La recette, rejouable à la main
+
+1. Dans le rail du simulateur, onglet **Simulation** : donner **+4 m/s** aux deux premiers
+   coureurs de la liste -- ils feront l'échappée, donc le **groupe 1** -- et **−4 m/s** au
+   dernier, qui sera lâché.
+2. Lancer la course en ×16 et attendre. Vers **t = 353 s, au tour 22**, la règle déclare le
+   coureur lâché inéligible : il a perdu un tour et se retrouve **physiquement devant le
+   peloton**, donc plus près de la ligne que le groupe au-dessus de lui. Trois groupes sont
+   alors en course : `1-Leaders`, `2-Bunch`, `3-Last`.
+3. Sur la carte du sprint, ramener le prochain sprint sur le tour en cours avec la flèche
+   **←**.
+4. À la cloche, **couper `Live`** -- sans quoi les places partent et le sprint se referme deux
+   tours plus tard -- puis appuyer sur **`Clear and record`**, qui enregistre tout passage à
+   partir de cet instant, quel que soit le tour.
+5. Attendre le passage du coureur à un tour : il arrive **vingt-cinq secondes plus tard**
+   (t = 377,5 s).
+
+### Ce que la course montre alors, relevé dans le DOM
+
+| Où | Ce qui s'affiche |
+|---|---|
+| Ordre du sprint | les cinq places, puis `15 IRL · no points`, **grisé et sans rang** |
+| Compteur de la carte | `Not eligible · 1` |
+| Ligne du bloc | `16th · 15 IRL · no points · not eligible when he crossed`, sans flèche de reclassement |
+| Timeline | `15 IRL` avec la pastille `no pts`, dans le bloc `3-LAST · 1 RIDER · −271 m` |
+| Ovale | badge `3-Last · NO PTS` |
+
+**La fenêtre d'inéligibilité dure quatorze tours** dans ce réglage (du tour 22 au tour 36), ce
+qui laisse largement le temps d'ouvrir un sprint dessus. C'est pour cela que les quatre
+tentatives précédentes échouaient : elles attendaient que la fenêtre tombe d'elle-même sur un
+sprint, au lieu d'amener le sprint sur la fenêtre.

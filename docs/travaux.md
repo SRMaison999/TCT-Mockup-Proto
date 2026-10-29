@@ -441,13 +441,20 @@ Deux lectures possibles, à trancher par l'opérateur :
 peloton, et la place suivante y est juste.
 
 
-## 11. Le déclencheur d'inéligibilité ne se produit toujours pas en course simulée
+## 11. Le déclencheur d'inéligibilité — **construit et vérifié, build 147**
 
 Quatre tentatives le 29 octobre 2026 : deux coureurs lâchés pendant quarante tours, deux
 coureurs privés d'un tour par le bouton `−1 lap`, deux coureurs lancés assez vite pour en
 prendre un, et une course menée jusqu'au sprint final. **`S.inelig` est resté vide dans tous
 les cas** : les attardés sont absorbés par le peloton au moment où ils seraient devant lui.
 
-C'est le même manque que `travaux.md` §2 et `mesures.md` §6 signalent depuis la build 53. Tant
-qu'il n'est pas comblé, **la pastille `no pts` de la timeline et le suffixe du badge de l'ovale
-ne sont vérifiés qu'en apparence**, pas en course.
+**Le scénario a été construit le même jour** et il fonctionne : la recette est dans
+`mesures.md` §50. L'erreur des quatre tentatives était d'attendre que la fenêtre
+d'inéligibilité tombe d'elle-même sur un sprint ; il faut **amener le sprint sur la fenêtre**,
+avec la flèche ← de la carte, puis couper `Live` et appuyer sur `Clear and record` pour que le
+sprint reste ouvert jusqu'au passage du coureur à un tour.
+
+La pastille `no pts` de la timeline, le suffixe `· NO PTS` du badge de l'ovale, la ligne grisée
+sans rang et le compteur `Not eligible` sont donc **vérifiés en course**, et non plus en
+apparence. Le manque signalé par `mesures.md` §6 et `travaux.md` §2 depuis la build 53 est
+comblé.
