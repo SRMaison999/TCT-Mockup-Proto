@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 130</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 131</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1086,6 +1086,10 @@ const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
 // lines across it, the edges of a group's band, the tape strips on its outer half, and the clearance the infield
 // labels keep from its inner edge. Written into the decor itself so there is one number, not two that drift apart.
 const OVAL_W = 60, HW = OVAL_W / 2;
+// Les dossards sur la piste ne doivent pas en déborder (l'opérateur, 29 octobre 2026). La piste fait HW = 30 de
+// demi-largeur : un dossard de rayon DOT_R posé sur la file extérieure atteint LANE + DOT_R, qui doit rester sous
+// HW. Avec 10 et 19 il atteint 29 ; avec les 15 et 24 d'avant il atteignait 39, soit 9 au-delà du bord.
+const DOT_R = 10, LANE = 19, DOT_GAP = 24;
 $('#trackband').setAttribute('stroke-width', OVAL_W);
 const PATHLEN = path.getTotalLength();
 // The oval's `d` is fixed in the markup and never rewritten at runtime, so its geometry can be sampled once
@@ -1407,15 +1411,15 @@ function renderOval(G, M) {
   const all = [];
   for (const g of G.groups) for (const x of g.rows) if (!x.m.off) all.push({ x, g, s: leaderS - x.behind, along: ((((leaderS - x.behind) % TRACK) + TRACK) % TRACK) / TRACK * PATHLEN });
   all.sort((a, b) => a.along - b.along);
-  // each rider takes the first of three lanes across the track where he is at least 22 px from every rider already placed
-  const laneOff = [0, -24, 24], placedPts = [];
+  // chaque coureur prend la première des trois files où il est à DOT_GAP au moins de tous ceux déjà placés
+  const laneOff = [0, -LANE, LANE], placedPts = [];
   for (const it of all) {
     let best = null;
-    outer: for (const da of [0, 9, -9, 18, -18]) for (const lane of [0, 1, 2]) {   // lanes across, then a small nudge along the track
+    outer: for (const da of [0, 7, -7, 14, -14]) for (const lane of [0, 1, 2]) {   // lanes across, then a small nudge along the track
       const a = normalAt(it.s + da / PATHLEN * TRACK), cx = a.p.x + a.nx * laneOff[lane], cy = a.p.y + a.ny * laneOff[lane];
       const dmin = placedPts.reduce((m, q) => Math.min(m, Math.hypot(q.x - cx, q.y - cy)), Infinity);
       if (!best || dmin > best.dmin) best = { lane, cx, cy, dmin };
-      if (dmin >= 32) break outer;
+      if (dmin >= DOT_GAP) break outer;
     }
     placedPts.push({ x: best.cx, y: best.cy }); it.cx = best.cx; it.cy = best.cy; it.lane = best.lane;
   }
@@ -1424,7 +1428,7 @@ function renderOval(G, M) {
   // hold (29 October 2026, his black outlines), not to span the whole width of the track for seven metres beyond
   // each end. So each bubble is measured on its own members — the widest lane they occupy, and the distance from
   // the first of them to the last — plus the radius of a dot and a small margin.
-  const DOT_R = 15, BUB_M = 4, PXM_B = PATHLEN / TRACK;
+  const BUB_M = 4, PXM_B = PATHLEN / TRACK;
   G.groups.forEach((g, gi) => {
     if (!drawn.includes(g)) return;
     const mine = all.filter(it => it.g === g); if (!mine.length) return;
@@ -1453,12 +1457,12 @@ function renderOval(G, M) {
     // Nothing marks the race leader on the oval: the green ring and the green bar across the track were part of the
     // annotations the operator had taken off, and they had been left behind. The LEADER field names him.
     const stroke = x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : '#ECEAE4', sw = sel ? 3.5 : 1.5;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${x.r.color}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
   // riders off the track (incident) sit on the apron, greyed
   for (const g of G.groups) for (const x of g.rows) if (x.m.off) {
     const { p, nx, ny } = normalAt(x.m.pos), cx = p.x - nx * 34, cy = p.y - ny * 34;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
   // 3. the group names (operator, 29 October 2026). Each bubble is joined by a line to its name, and the name is
   // ALWAYS outside the track, at the SAME margin all the way round the velodrome: the ring is a constant depth
@@ -2477,7 +2481,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 130';
+  $('#buildno').textContent = 'build 131';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

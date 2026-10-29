@@ -1767,3 +1767,9 @@ mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les é
     « Drop here: new group » à « new group » -- à 118 px de large il tenait sur deux lignes, il
     en tient maintenant une. **Confirmé par l'opérateur le 29 octobre 2026** : « non c'est bien
     comme ça, garde "new group" ».
+
+89. **Un dossard sur la piste ne doit pas en déborder.** Mot pour mot : « il faudrait réduire
+    la taille des badges des coureurs sur la piste. De façon à ce qu'ils ne débordent pas de la
+    piste ». Le rayon d'un dossard passe de 15 à 10 et l'écart des files de 24 à 19, si bien
+    qu'un coureur de la file extérieure atteint 29 pour une demi-piste de 30. Il en atteignait
+    **39** auparavant, soit 9 au-delà du bord.

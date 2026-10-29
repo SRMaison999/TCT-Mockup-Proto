@@ -1788,3 +1788,23 @@ Nombre de groupes qui tiennent sans défiler, avec 24 coureurs :
 Au-delà, la colonne défile, mais l'en-tête du bloc reste collé en haut : vérifié en forçant le
 défilement, après 150 px de défilement l'en-tête est à 3 px du haut de la colonne au lieu
 d'être sorti de l'écran, et il porte toujours son nom, son nombre de coureurs et son écart.
+
+## 42. Les dossards sur la piste — build 131
+
+La piste fait `HW = 30` de demi-largeur dans le dessin. Un dossard posé sur la file extérieure
+atteint `LANE + DOT_R` depuis l'axe.
+
+| | Avant | Après |
+|---|---|---|
+| Rayon d'un dossard (`DOT_R`) | 15 | 10 |
+| Écart des files (`LANE`) | 24 | 19 |
+| Portée depuis l'axe | **39** pour 30 permis | **29** |
+| Écart minimal demandé entre deux dossards | 32 | 24 |
+| Décalages le long de la piste | 0, ±9, ±18 | 0, ±7, ±14 |
+| Taille du numéro | 13 | 10 |
+
+Relevé sur 60 images d'un tour, en mesurant la distance de chaque dossard au tracé de la piste :
+**débordement maximal 29,2** pour 30 permis, et **0 paire de dossards qui se chevauchent**.
+
+La bulle d'un groupe, qui se mesure sur ses coureurs (`LANE + DOT_R + BUB_M`), passe de 43 à
+33 : elle dépasse encore la piste de 3 unités, ce qui est voulu — c'est un halo.

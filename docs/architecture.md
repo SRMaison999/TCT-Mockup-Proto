@@ -346,7 +346,7 @@ produit aucune lecture.
   de validation. **Attention** : `.trow` est aussi le nom des lignes du panneau des
   transpondeurs, dont les règles sont portées par `#simtp` (`pitfalls.md` D20).
 - **`renderOval(G, M)`** : bandes (`#bands`), coureurs sur trois files (dossards de rayon
-  15, sans marque de tours) avec un pas minimal de 32 px, bulle de groupe à la couleur du
+  `DOT_R` = 10, files à `LANE` = 19, sans marque de tours) avec un pas minimal de `DOT_GAP` = 24, bulle de groupe à la couleur du
   groupe et badge de nom **à l'intérieur** de la piste, à marge constante. `pt(s)` et `normalAt(s)` projettent
   une distance de course sur le tracé SVG `#trackpath`, qui **commence au milieu de la ligne
   droite d’arrivée**, là où se trouve Pursuit A (§14) ; sens de course : bas vers la droite. `renderMarks()` calcule les repères des boucles et des bandes depuis
