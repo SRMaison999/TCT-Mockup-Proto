@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 94</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 95</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -1090,12 +1090,28 @@ function chipN(r, n) { return `<span class="cw">${chip(r)}<span class="cn">${n}<
 const PALETTE = ['#c8102e', '#f97316', '#eab308', '#16a34a', '#06b6d4', '#0284c7', '#1d4ed8', '#7c3aed', '#ec4899', '#9a7140', '#4b5563', '#ECEAE4'];
 function setColor(bib, color) { const r = S.riders.find(x => x.bib === bib); r.color = color; const n = parseInt(color.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255; r.dk = lum > 0.6; dirty = true; render(); }
 function chip(r, cls) { return `<span class="chip${r.dk ? ' dk' : ''}${cls ? ' ' + cls : ''}" style="background:${r.color}">${r.bib}</span>`; }
+// The operator's naming, 29 October 2026 (regles-operateur.md §17). A group carries its RANK in the race, counted
+// from the front, then what it is: the one in front leads, those between it and the bunch chase, the bunch is the
+// bunch, those behind it are behind, and the very last of them — when there is more than one — is the last.
+// The very last group behind the bunch is always « Last », even when it is the only one behind — the operator
+// corrected this on 29 October 2026. « Behind » is therefore only for a group that has another one behind it.
+// Incident groups keep their own name and take no rank: they are not a place in the race. What they will be called
+// is not settled; he has not decided yet, so nothing changes there.
+const GROUP_COLORS = ['#FF4FD8', '#29A8FF', '#F2A33A', '#2ED47A', '#C77DFF', '#FFD23F', '#FF7A5C', '#5CE1E6'];
+function groupRanked(G) { return (G || lastG).groups.filter(x => !x.incident); }
+function groupRank(g, G) { const i = groupRanked(G).indexOf(g); return i < 0 ? 0 : i + 1; }
+function groupColor(g, G) { const r = groupRank(g, G); return r ? GROUP_COLORS[(r - 1) % GROUP_COLORS.length] : '#9a9890'; }
 function groupName(g, G) {
   G = G || lastG;
   if (g.incident) return g.op.type === 'crash' ? 'Crash' : 'Mechanical';
-  if (g === G.bunch) return 'Bunch';
-  const onTrack = G.groups.filter(x => !x.incident), bi = onTrack.indexOf(G.bunch), i = onTrack.indexOf(g);
-  return bi < 0 || i < bi ? 'Break ' + (i + 1) : 'Chase ' + (i - bi);
+  const on = groupRanked(G), i = on.indexOf(g), bi = on.indexOf(G.bunch);
+  if (i < 0) return 'Group';
+  const rank = i + 1;
+  let role;
+  if (g === G.bunch) role = 'Bunch';
+  else if (i < bi || bi < 0) role = i === 0 ? (g.rows.length > 1 ? 'Leaders' : 'Leader') : 'Chase';
+  else role = i === on.length - 1 ? 'Last' : 'Behind';   // the very last group is always Last, even if it is alone
+  return rank + '-' + role;
 }
 // (a group a lap ahead or behind keeps its own block even when it rides inside the bunch: the timeline reads the race, the oval reads the track)
 function liveActions(p) { return p.actions.filter(a => !a.bib || p.bibs.includes(a.bib)); }
@@ -1128,7 +1144,9 @@ function renderTimeline(G) {
         qLines += `<div class="gq"><span><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b> · ${bibList(p.bibs)} · Lap ${p.lap}</span><span class="pa" data-pid="${p.id}">${btns}</span></div>`;
       } else propLines += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
     }
-    html += `<div class="tgrp${isLead ? ' lead' : ''}${g.pending ? ' pending' : ''}${g.op && !g.incident ? ' pinned' : ''}${g.incident ? ' incident' : ''}" data-gi="${gi}">
+    // The box carries the group's own colour, the same one its bubble has on the oval (regles-operateur.md §17).
+    const gcol = g.incident ? '' : ` style="--gcol:${groupColor(g, G)}"`;
+    html += `<div class="tgrp${isLead ? ' lead' : ''}${g.pending ? ' pending' : ''}${g.op && !g.incident ? ' pinned' : ''}${g.incident ? ' incident' : ' hascol'}" data-gi="${gi}"${gcol}>
       <div class="gh">${g.no ? '<span class="gno">' + g.no + '</span>' : ''}<b class="${g.incident ? 'crit' : ''}" data-selgroup="${gi}" title="Select every rider of this group">${name}</b><span class="gi" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')}">${info}</span>${g.incident ? '' : '<span class="ggap">' + (isLead ? 'leader' : (g.head < 0 ? '+' + (-g.head).toFixed(0) : '−' + g.head.toFixed(0)) + ' m') + '</span>'}${allOut ? '<span class="pill warn">out of sprint ' + sprintN + '</span>' : someOut ? '<span class="pill warn">part out of sprint ' + sprintN + '</span>' : ''}
         <span class="r">${g.op ? '<button class="btn xs quiet" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span></div>${qLines}`;
     html += propLines;
@@ -1284,17 +1302,18 @@ function renderMarks() {
   armLines(); armShown = []; syncArm();   // #marks has just been rebuilt: the three green lines are new nodes
 }
 function renderOval(G, M) {
-  let bands = '', dots = '';
-  const leaderS = G.leader.pos;
+  let bands = '', dots = '', labels = '';
+  const leaderS = G.leader.pos, bubbles = [];
   // 1. bands: one per group drawn on the track, except a block that rides inside the bunch (its riders carry their marks)
   const drawn = G.groups.filter(g => !g.incident && g.rows.some(x => !x.m.off) && !(g !== G.bunch && G.bunch && g.cluster === G.bunchCluster && !g.op));
   G.groups.forEach((g, gi) => {
     if (!drawn.includes(g)) return;
     const rows = g.rows.filter(x => !x.m.off).sort((a, b) => a.behind - b.behind);
     const sHead = leaderS - rows[0].behind, sTail = leaderS - rows[rows.length - 1].behind;
-    const colour = g.pending || g.op ? '#4F8CFF' : g === G.bunch ? '#ECEAE4' : '#F2A33A';
+    const colour = groupColor(g, G);   // the bubble carries the group's own colour, the same one its timeline box has
+    bubbles.push({ g, gi, sMid: (sHead + sTail) / 2, colour });
     const d = arcPath(sHead + 7, sTail - 7);
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.22" stroke-width="${OVAL_W + 2}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
+    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.32" stroke-width="${OVAL_W + 2}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
     bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="2"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none" transform="translate(0,0)"/>`;
     // crisp edges on both sides of the track
     for (const side of [-(HW + 1), HW + 1]) {
@@ -1334,11 +1353,27 @@ function renderOval(G, M) {
     const { p, nx, ny } = normalAt(x.m.pos), cx = p.x - nx * 34, cy = p.y - ny * 34;
     dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="15" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 4.5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="13" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
   }
-  // 3. NO label is drawn on the oval any more. The operator had the leader label, the group names with their
-  // count and their pending status, the gaps between groups, and the « No points » tag with its dashed leader all
-  // taken off on 29 October 2026: the annotations that follow the riders are to be redone from scratch, and the
-  // first step is an empty track. The groups stay selectable by their band, which carries the same data-gi.
-  bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = '';
+  // 3. the group names (operator, 29 October 2026). Each bubble is joined by a line to its name, and the name is
+  // ALWAYS outside the track, at the SAME margin all the way round the velodrome: the ring is a constant depth
+  // measured from the track, so it follows the oval instead of sitting at a fixed distance from a centre.
+  // Where two names would land on top of each other, the one further back in the race steps out one ring further —
+  // « le groupe qui se fait dépasser allonge la ligne » — so the overtaking group keeps the inner, natural place.
+  const NAME_RING = HW + 48, NAME_STEP = 26, NAME_CLEAR = 86;
+  const placed = [];
+  for (const bu of bubbles) {                       // bubbles are in race order, so the front group is placed first
+    const a = normalAt(bu.sMid);
+    let depth = NAME_RING, lx = 0, ly = 0;
+    for (let k = 0; k < 5; k++) {
+      lx = a.p.x + a.nx * depth; ly = a.p.y + a.ny * depth;
+      if (!placed.some(q => Math.hypot(q.x - lx, q.y - ly) < NAME_CLEAR)) break;
+      depth += NAME_STEP;
+    }
+    placed.push({ x: lx, y: ly });
+    const from = { x: a.p.x + a.nx * (HW + 4), y: a.p.y + a.ny * (HW + 4) };
+    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * 9).toFixed(1)}" y2="${(ly - a.ny * 9).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
+    labels += `<text x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Sans" font-size="15" font-weight="700" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${groupName(bu.g, G)}</text>`;
+  }
+  bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
   if (S.hover != null) { const d = document.getElementById('dot-' + S.hover); if (d) d.querySelector('circle').setAttribute('stroke-width', '4'); }
 }
 
@@ -2236,7 +2271,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 94';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 95';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

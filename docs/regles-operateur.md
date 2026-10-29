@@ -762,6 +762,9 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   tour de 195 secondes (`travaux.md` §8d). À trancher.
 - **Le bouton `Auto` du leader** : « je ne sais pas quoi faire avec ce bouton » (§17). Laissé
   dans la barre du haut en attendant, à côté du mot « Race leader » qui n'introduit plus que lui.
+- **Le nom des groupes d'incident sur l'ovale** : « je pense que ce sera "CRASH" sans numéro »,
+  mais il n'y a pas encore réfléchi (§17). Inchangé en attendant : `Crash` et `Mechanical`, sans
+  numéro et sans bulle.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ---
@@ -1263,6 +1266,58 @@ contour épaissi et un anneau clignotant.
 21. **Rien ne marque plus un coureur inéligible sur l'ovale** : ni texte, ni contour, ni anneau.
     **La mesure est intacte** — l'éligibilité continue d'être calculée et la carte du sprint
     continue de griser sa ligne (§8). C'est le dessin qui est retiré, pas la règle.
+
+### Les groupes sur l'ovale : bulles, noms et couleurs
+
+**29 octobre 2026.** Sur son croquis, mot pour mot :
+
+> maintenant ce que l'on va faire pour représenter les groupe sur l'ovale, c'est créer une bulle
+> autour des coureurs d'un groupe. Chaque bulle aura une autre couleur qui correspondra à la
+> couleur de sa box dans la timeline.
+>
+> La dénomination actuelle des groupes ne va pas du tout. On va faire comme suit :
+>
+> * Si il y a un groupe en tête de course  > 1-Leader ou 1-Leaders (selon le nombre de membres
+>   du groupe)
+> * Si il y a un groupe autre que le peloton derrière les leaders  > 2-Chase
+> * Si il y a encore un autre groupe autre que le peloton derrière 2-Chase  >  3-Chase
+>
+> et ainsi de suite si il y a d'autres groupes entre les leaders et le peloton....
+>
+> * Peloton > 4-Bunch (le numéro 4 est dans cet exemple utilisé car j'ai déjà les groupes 1 à 3
+>   devant le peloton)
+> * Si il y a un groupe derrière le peloton > 5-Behind
+> * Si il y a un tout dernier groupe > 6-Last
+>
+> Pour indiquer les noms des groupe sur l'ovale il faudra que les groupes soient marqués par une
+> bulle ou une sorte de halo autour des coureurs avec une ligne vers un texte indiquant le nom du
+> groupe. Cette ligne qui sépare le groupe du nom du groupe devra toujours faire en sorte que le
+> nom du groupe soit affiché à l'extérieur de la piste, en tout temps et avec la même marge tout
+> autour du vélodrome.
+>
+> Tous les groupes doivent avoir le nom de leur groupe en dehors de la piste avec la même marge.
+>
+> Si un groupe en dépasse un autre, il faut momentanément que le group qui se fait dépasser
+> allonge la ligne qui sépare la bulle du nom de groupe afin que les nom de groupes ne se
+> chevauchent pas
+
+Et sa correction, le même jour, sur un cas qui avait été mal lu :
+
+> Un seul groupe derrière le peloton 5-Behind — jamais Last tout seul > FAUX ! Un seul groupe
+> derrière le peloton ça doit être "x-Last"
+>
+> Les groupe d'incidents je n'y ai pas encore réfléchi, mais je pense que ce sera "CRASH" sans
+> numéro
+
+22. **Un groupe porte son rang dans la course, compté depuis la tête**, puis ce qu'il est.
+23. **Le tout dernier groupe est toujours `Last`**, même s'il est seul derrière le peloton.
+    `Behind` ne sert donc qu'à un groupe qui en a encore un derrière lui.
+24. **Les groupes d'incident n'ont pas de numéro** et gardent leur nom. **Ce nom n'est pas
+    tranché** : « je n'y ai pas encore réfléchi » (§15).
+25. **Chaque groupe a sa couleur**, la même sur sa bulle et sur sa boîte de timeline.
+26. **Le nom est toujours hors de la piste, à la même marge tout autour**, relié à sa bulle par
+    une ligne, et **le groupe dépassé allonge la sienne** pour que deux noms ne se chevauchent
+    pas.
 
 ### La couleur de l'intérieur de l'ovale
 
