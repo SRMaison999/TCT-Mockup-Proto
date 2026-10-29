@@ -1935,3 +1935,19 @@ sien.
 
 Les lignes grisées se placent dans l'ordre des passages : les deux coureurs ci-dessus ayant
 franchi après les cinq premiers, leurs lignes suivent les cinq places.
+
+## 49. L'annonce des coureurs sans points — build 147
+
+**Vérifié en course**, sur un sprint ouvert avec deux passages jugés inéligibles :
+
+| | Résultat |
+|---|---|
+| Compteur de la carte | `Not eligible · 2` |
+| Lignes du bloc | `15th · 12 SUI · no points · not eligible when he crossed`, `16th · 52 ITA · …` |
+| Flèche de reclassement | absente sur ces deux lignes, présente sur un écarté par l'opérateur |
+| Lignes grisées de l'ordre | `12 SUI no points`, `52 ITA no points`, sans rang |
+
+**Vérifié en apparence seulement** pour la timeline et le badge, l'état `S.inelig` ne se
+produisant pas dans une course simulée (c'est le scénario que `travaux.md` §2 dit encore à
+construire) : la pastille `no pts` tient dans la colonne de 174 px sans la faire déborder
+(−5 px de marge), et le badge rend `1-Bunch · 2 NO PTS`, son fond s'élargissant avec le texte.

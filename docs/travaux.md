@@ -439,3 +439,15 @@ Deux lectures possibles, à trancher par l'opérateur :
 
 **Rien n'est codé en attendant.** Le sprint final n'est pas concerné : il classe tout le
 peloton, et la place suivante y est juste.
+
+
+## 11. Le déclencheur d'inéligibilité ne se produit toujours pas en course simulée
+
+Quatre tentatives le 29 octobre 2026 : deux coureurs lâchés pendant quarante tours, deux
+coureurs privés d'un tour par le bouton `−1 lap`, deux coureurs lancés assez vite pour en
+prendre un, et une course menée jusqu'au sprint final. **`S.inelig` est resté vide dans tous
+les cas** : les attardés sont absorbés par le peloton au moment où ils seraient devant lui.
+
+C'est le même manque que `travaux.md` §2 et `mesures.md` §6 signalent depuis la build 53. Tant
+qu'il n'est pas comblé, **la pastille `no pts` de la timeline et le suffixe du badge de l'ovale
+ne sont vérifiés qu'en apparence**, pas en course.

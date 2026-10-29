@@ -85,7 +85,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .gh span b{color:#8FB4FF}
 .btn.ok{background:#143824;border-color:var(--good);color:var(--good);font-weight:700}
 .trow .lap .btn.ok{padding:0 5px;height:18px;line-height:16px;margin-left:3px}
-.trow{touch-action:none;display:grid;grid-template-columns:38px 24px minmax(0,1fr);gap:7px;align-items:center;height:28px;padding:0 6px;border-radius:3px;cursor:grab;user-select:none}
+.trow{touch-action:none;display:grid;grid-template-columns:38px 24px minmax(0,1fr) auto;gap:7px;align-items:center;height:28px;padding:0 6px;border-radius:3px;cursor:grab;user-select:none}
 .trow{position:relative}
 .trow:hover{background:#20242a}
 .trow:hover{background:#262b33}
@@ -97,6 +97,10 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 .trow .noc{font:600 14px var(--mono);letter-spacing:.02em;color:var(--fg);overflow:hidden}
 .trow .chip{height:24px;min-width:34px;font:600 14px var(--mono);padding:0 5px}
 .trow.marked .noc{color:var(--warn)}
+/* Un coureur privé de points le dit sur sa ligne, et pas seulement par la couleur de son code pays. */
+.trow .npts{font:700 9px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:#2a0d0d;background:var(--crit);
+  border-radius:3px;padding:1px 4px;white-space:nowrap}
+.trow.nopts .noc{color:var(--crit)}
 /* Un tour en attente de validation se voit sur la ligne, sans lui prendre de place : le ✓ est dans la carte. */
 .trow.pend{box-shadow:inset 0 0 0 1px #8FB4FF;background:#18203099}
 .trow.pend .noc{color:#8FB4FF}
@@ -144,7 +148,7 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 .tier{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 4px 3px}
 .tier:first-child{padding-top:2px}
 .wd{border:1px solid var(--line2);border-radius:4px;background:#141618;padding:3px 4px 4px;margin-top:6px;opacity:.85}
-.wd .trow{cursor:default;grid-template-columns:38px 24px minmax(0,1fr)}
+.wd .trow{cursor:default;grid-template-columns:38px 24px minmax(0,1fr) auto}
 .gh .ggap{flex:0 0 auto;font:600 10px var(--mono);color:#121416;font-variant-numeric:tabular-nums}
 /* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
    et à droite de la timeline (l'opérateur, 29 octobre 2026). */

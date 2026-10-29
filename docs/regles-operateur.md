@@ -1838,3 +1838,17 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
 102. **Un sprint fermé ne revient pas dans la carte.** Juste après `Close`, la carte
      réaffichait « SPRINT 1 · waiting for the bell » -- le sprint que l'on venait de clore.
      Elle montre maintenant le prochain sprint **non jugé**.
+
+103. **Un coureur privé de points le dit partout où il apparaît.** « Il faut qu'ils y soient
+     aussi. Il faut aussi que dans le timeline ils soient indiqués comme non éligible quand
+     c'est le cas. Et dans l'ovale aussi. Je verrais bien une info dans le badge de leur
+     groupe » (29 octobre 2026). Donc :
+     - **dans la carte du sprint**, « Not eligible » compte et liste les deux sortes : ceux que
+       l'opérateur a écartés, et ceux que la règle de course a rendus inéligibles au moment de
+       leur passage, avec le motif « no points · not eligible when he crossed ». La flèche de
+       reclassement n'est offerte que pour les premiers : elle ne dégriserait pas un passage ;
+     - **dans la timeline**, sa ligne porte une pastille rouge `no pts` et son code pays passe
+       au rouge ;
+     - **sur l'ovale**, le badge de son groupe le dit : `1-Bunch · 2 NO PTS` quand une partie
+       du groupe est concernée, `· NO PTS` quand tout le groupe l'est. C'est la seule marque
+       qui revient sur la piste depuis le retrait des annotations.
