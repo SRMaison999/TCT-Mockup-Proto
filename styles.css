@@ -7,10 +7,13 @@
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);overflow:hidden}
 .app{height:100%;box-sizing:border-box;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px}
-.bar{display:flex;align-items:center;gap:8px;height:36px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:0 10px;flex:0 0 auto}
+.bar{display:flex;align-items:center;gap:6px;height:36px;background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:0 10px;flex:0 0 auto}
 .bar h1{font:600 15px var(--sans);margin:0;white-space:nowrap}
 .bar .sub{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar .bld{flex:0 0 auto;color:var(--dim);font:500 12px var(--mono);white-space:nowrap}
+/* Quand la barre est pleine, c'est le mot « Race leader » qui cède avant le bouton « Race log » : il n'introduit
+   qu'un bouton dont l'opérateur a dit « je m'en fous », et son bouton garde son infobulle. */
+.bar .lbl{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .sp{flex:1 1 auto}
 .btn{font:500 13px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:4px;padding:5px 10px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--muted)}
@@ -344,6 +347,9 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .cfgfield{display:flex;align-items:center;gap:8px}
 .clock{font:600 18px var(--mono);color:var(--fg);background:#17191c;border:1px solid var(--line2);border-radius:4px;padding:3px 12px;font-variant-numeric:tabular-nums}
 /* the transport block, once moved into the top bar by railHide */
+/* La barre du haut est pleine en 1440 avec le rail ouvert : sans cette ligne le sélecteur était comprimé à 2 px
+   de large, donc invisible et incliquable. Mesuré. */
+#layseg{flex:0 0 auto}
 #layseg .btn{font-family:var(--mono);letter-spacing:-1px}
 .bar #simtransport{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .bar #simtransport .sh{padding:0;gap:6px}
@@ -355,8 +361,13 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 #simtransport{--tph:38px}
 .bar #simtransport{--tph:26px}
 #simtransport .btn,#simtransport .seg,#simtransport .clock,#simtransport .simstate{height:var(--tph);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;line-height:1}
-#simtransport .simstate{flex:0 0 120px;width:120px}
-#simtransport .simstate.off{visibility:hidden}
+/* Le champ prend la place de son texte, et pas davantage : « REC » n'a pas besoin des 120 px que demande
+   « PLAYING RACE 2 ». C'est ce qui faisait déborder la barre en 1440 avec le rail ouvert. */
+#simtransport .simstate{flex:0 0 auto;min-width:0;padding:0 2px}
+/* Vide, le champ d'état ne garde plus ses 120 px : avec le rail ouvert en 1440 la barre débordait de 82 px et le
+   bouton « Race log » en sortait. C'est toujours UN seul champ pour REC et PLAYING RACE (règle du 28 octobre 2026),
+   mais il ne réserve sa place que lorsqu'il a quelque chose à dire. */
+#simtransport .simstate.off{display:none}
 #simtransport .seg .btn{height:100%;border-radius:0}
 .bar h1{display:none}   /* le transport occupe l'en-tête ; le sous-titre porte le numéro de build */
 .btn.lg{padding:8px 16px;font-size:16px}

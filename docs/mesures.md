@@ -1823,3 +1823,25 @@ Relevé sur 60 images d'un tour, distance au tracé de la piste, bord du trait c
 |---|---|---|
 | Dossard le plus éloigné | 29,1 | 30 |
 | Bord de bulle le plus éloigné | **29,3** | 30 |
+
+## 43. La barre du haut en 1440 avec le rail ouvert — build 133
+
+En rendant la disposition en colonne celle par défaut, trois défauts de la barre sont apparus à
+la mesure, qu'aucune capture n'avait montrés :
+
+| Défaut | Mesure | Correction |
+|---|---|---|
+| Le sélecteur de disposition était écrasé | **2 px** de large, incliquable | `flex:0 0 auto` |
+| Le champ d'état vide gardait sa place | 120 px pour rien | il ne la prend que lorsqu'il a un texte |
+| Le champ d'état réservait la place du plus long | 120 px pour « REC » qui en demande 44 | il prend la largeur de son texte |
+
+État final, barre de 945 px (rail ouvert) et 1406 px (rail masqué) :
+
+| Texte du champ d'état | Dépassement | `Race log` visible | Sélecteur visible |
+|---|---|---|---|
+| vide | 0 px | oui | oui |
+| `REC` (44 px) | 0 px | oui | oui |
+| `PLAYING RACE 2` (109 px) | 0 px | oui | oui |
+
+Quand la barre est pleine, c'est le mot « RACE LEADER » qui cède — de 85 px à 0 dans le cas le
+plus serré — et non le bouton `Race log`.

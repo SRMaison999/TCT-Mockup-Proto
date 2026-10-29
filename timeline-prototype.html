@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 132</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 133</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -33,13 +33,13 @@
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
-    <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
-    <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <span class="seg" id="layseg" title="Where the proposals and the actions go, under the oval"><button class="btn xs on" data-lay="stack" title="Proposals above, actions below">&#9647;&#9473;</button><button class="btn xs quiet" data-lay="side" title="Actions on the left, proposals on the right">&#9475;&#9647;</button></span>
-    <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
-    <span style="width:1px;height:22px;background:var(--line2);margin:0 4px"></span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
   </div>
 
@@ -1863,6 +1863,7 @@ function setLayout(v) {
     const on = b.dataset.lay === v; b.classList.toggle('on', on); b.classList.toggle('quiet', !on); });
 }
 $('#layseg').addEventListener('click', e => { const b = e.target.closest('[data-lay]'); if (!b) return; setLayout(b.dataset.lay); });
+setLayout('side');   // la disposition par défaut, choisie par l'opérateur le 29 octobre 2026
 
 // Le panneau des passages s'ouvre par-dessus l'écran de course, depuis la barre du haut, et se referme. Il n'est
 // plus affiché en permanence (l'opérateur, 29 octobre 2026).
@@ -2488,7 +2489,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 132';
+  $('#buildno').textContent = 'build 133';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

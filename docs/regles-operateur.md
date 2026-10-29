@@ -1777,3 +1777,7 @@ mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les é
 90. **La bulle d'un groupe ne déborde pas non plus.** « oui rentre la bulle aussi ». Ses deux
     bords sont calculés puis ramenés dans la piste, et son milieu s'en déduit -- borner la
     seule largeur ne suffisait pas, une bulle décentrée dépassait encore d'un côté.
+
+91. **La disposition en colonne est celle par défaut.** « je préfère la deuxième disposition,
+    garde-la par défaut » : les actions à gauche, les propositions à droite. L'autre reste à un
+    clic dans la barre du haut.
