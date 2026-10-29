@@ -1723,3 +1723,21 @@ proposer (§14, point 1 et point 3).
     - **les actions en colonne à gauche**, les propositions à leur droite.
 83. **C'est un choix de l'utilisateur, pas un réglage d'essai.** Il reste dans la barre du
     haut, il ne disparaîtra pas.
+
+### Les commandes respirent
+
+**29 octobre 2026.** Mot pour mot :
+
+> je ne sais pas comment te faire comprendre qu'il ne faut PAS tout serrer ! Pour les humains
+> c'est très difficile à s'y retrouver ! Les actions présentent beaucoup de boutons tous très
+> rapprochés les uns des autres, et alors même qu'il y a beaucoup de place sur la page !
+
+Puis, sur la carte de proposition : « et c'est la même chose pour les propositions ! ».
+
+84. **Les boutons des actions et des propositions sont à taille normale**, pas en petit
+    format : 13 px de texte, 7 px de marge intérieure verticale, 13 px horizontale.
+85. **Ils sont espacés** : 8 px entre deux boutons d'une même famille, 10 px entre deux
+    familles, qui vont chacune à la ligne. La ligne de sélection est séparée du reste par un
+    trait.
+86. **La place disponible se remplit, elle ne se laisse pas serrer.** C'est une règle générale
+    de l'écran, pas un réglage de cette barre.

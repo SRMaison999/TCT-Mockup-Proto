@@ -1747,3 +1747,18 @@ Une proposition de tour à trois dossards affichée, rail masqué.
 
 La zone remplit exactement ce que l'ovale laisse : il n'y a plus de place vide nulle part,
 dans l'une comme dans l'autre disposition.
+
+## 40. Les commandes aérées — build 128
+
+| | Avant | Après |
+|---|---|---|
+| Bouton d'action : texte | 12 px | 13 px |
+| Bouton d'action : marges intérieures | 2 × 7 px | 7 × 13 px |
+| Écart entre deux boutons | 4 px | 8 px |
+| Écart entre deux familles de boutons | 5 px | 10 px, chaque famille à la ligne |
+| Hauteur de la barre d'actions (1440, empilée) | 60 px | 182 px |
+| Carte de proposition : marges intérieures | 5 × 7 px | 12 × 16 px |
+| Carte de proposition : ✓ d'un coureur | 17 px de haut | 29 px |
+
+La barre d'actions occupe maintenant 182 px des 333 px de la zone en 1440, et la carte de
+proposition 143 px. Rien ne déborde dans aucune des deux dispositions, à 1440 comme à 1920.

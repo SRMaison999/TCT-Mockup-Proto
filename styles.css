@@ -144,35 +144,46 @@ body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
 /* La colonne des actions : la barre de sélection en haut, les propositions en dessous. Elle est à gauche de l'ovale
    et à droite de la timeline (l'opérateur, 29 octobre 2026). */
 .acts{grid-row:2;grid-column:1;min-width:0;display:flex;flex-direction:row;align-items:flex-start;gap:8px}
-.acts .tbar{flex:1 1 280px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 8px 6px}
+.acts .tbar{flex:1 1 280px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px 12px}
 /* Les deux dispositions, au choix depuis la barre du haut. */
 .below{grid-row:2;min-height:0;display:grid;gap:8px;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}
 body.lay-side .below{grid-template-columns:268px minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
-.props{grid-row:1;grid-column:1;min-height:0;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px}
+.props{grid-row:1;grid-column:1;min-height:0;overflow-y:auto;display:flex;flex-wrap:wrap;align-content:flex-start;gap:10px}
 body.lay-side .props{grid-column:2;grid-row:1}
 body.lay-side .acts{grid-column:1;grid-row:1;flex-direction:column;overflow-y:auto}
 body.lay-side .acts .tbar{flex:0 0 auto;width:100%}
-/* La carte d'une proposition de tour, d'après son croquis : les dossards empilés à gauche sous un en-tête BIB,
-   avec drapeau et code pays ; le reste à droite. */
-.props .gq{flex:0 0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:start}
-.props .gq .pbs{display:flex;flex-direction:column;gap:2px}
-.props .gq .pbs > .k{font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-left:2px}
-.props .gq .pb{display:grid;grid-template-columns:34px 20px auto auto;gap:4px;align-items:center}
-.props .gq .pb .noc{font:600 12px var(--mono);letter-spacing:.02em;color:var(--fg)}
-.props .gq .pb .btn{padding:0 5px;height:17px;line-height:15px}
-.props .gq .pr{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
-.props .gq .pt{font:600 12px var(--sans);color:#c9d6f5;white-space:nowrap}
-.props .gq .pl{font:500 11px var(--mono);color:var(--muted)}
-.props .prop{flex:1 1 320px}
-.props .gq,.props .prop{background:#1a2238;border-left:3px solid var(--acc);border-radius:3px;margin:0;padding:5px 7px;height:auto;min-height:26px;white-space:normal;align-items:flex-start;flex-wrap:wrap;row-gap:4px}
+/* La carte d'une proposition, d'après son croquis : les dossards empilés à gauche sous un en-tête BIB, avec
+   drapeau et code pays ; le reste à droite. Elle respire autant que les actions -- l'opérateur, 29 octobre 2026 :
+   « et c'est la même chose pour les propositions ! ». */
+.props .gq{flex:0 0 auto;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 24px;align-items:start}
+.props .gq .pbs{display:flex;flex-direction:column;gap:6px}
+.props .gq .pbs > .k{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-left:2px}
+.props .gq .pb{display:grid;grid-template-columns:34px 22px 42px auto;gap:10px;align-items:center}
+.props .gq .pb .noc{font:600 13px var(--mono);letter-spacing:.02em;color:var(--fg)}
+.props .gq .pb .btn{padding:6px 12px;height:auto;line-height:1;font-size:13px;border-radius:4px}
+.props .gq .pr{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.props .gq .pr .btn{padding:6px 12px;font-size:13px;border-radius:4px}
+.props .gq .pt{font:600 14px var(--sans);color:#c9d6f5;white-space:nowrap}
+.props .gq .pa{display:flex;gap:8px}
+.props .gq .pl{font:500 12px var(--mono);color:var(--muted)}
+.props .prop{flex:1 1 320px;font-size:13px;gap:10px}
+.props .prop .btn{padding:6px 12px;font-size:13px;border-radius:4px}
+.props .gq,.props .prop{background:#1a2238;border-left:3px solid var(--acc);border-radius:4px;margin:0;padding:12px 16px;height:auto;min-height:26px;white-space:normal;align-items:flex-start;flex-wrap:wrap;row-gap:4px}
 .props .gq span,.props .prop .pt{white-space:normal;overflow:visible;text-overflow:clip}
-.tbar{display:flex;flex-wrap:wrap;align-items:center;gap:5px 8px;font-size:12px;color:var(--muted);box-sizing:border-box}
+/* Les actions respirent. L'opérateur, 29 octobre 2026 : « Les actions présentent beaucoup de boutons tous très
+   rapprochés les uns des autres, et alors même qu'il y a beaucoup de place sur la page ». Les boutons passent donc
+   à la taille normale, chaque famille va à la ligne, et les familles sont séparées par un trait. */
+.tbar{display:flex;flex-direction:column;align-items:stretch;gap:10px;font-size:13px;color:var(--muted);box-sizing:border-box}
 .tbar b{color:var(--fg)}
-.tbar .selinfo{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
-.tbar .grpb{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
-.tbar .selinfo{flex:0 1 auto}
-.tbar .ledger{flex:1 1 100%}
-.tbar .sep{width:1px;height:18px;background:var(--line2);margin:0 4px}
+.tbar .selinfo{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-width:0;font-size:13px;
+  padding-bottom:6px;border-bottom:1px solid var(--line)}
+.tbar .selinfo > span,.tbar .selinfo > b{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbar .selinfo .clr{margin-left:auto;flex:0 0 auto;padding:4px 10px}
+.tbar .grpb{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tbar .grpb .btn{padding:7px 13px;font-size:13px;border-radius:4px}
+.tbar .grpb .btn.xs{padding:7px 13px;font-size:13px;border-radius:4px}
+.tbar .ledger{flex:0 0 auto}
+.tbar .sep{width:1px;height:22px;background:var(--line2);margin:0 4px}
 /* centre */
 /* L'écran de course : l'ovale en haut, qui ne fait que la hauteur de son dessin, et sous lui la zone des
    propositions et des actions, qui prend tout le reste -- **rien n'est vide** -- l'opérateur, 29 octobre 2026 : « Pourquoi laisses-tu un espace vide en-dessous des actions ? ».

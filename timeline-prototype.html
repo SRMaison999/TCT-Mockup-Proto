@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 127</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 128</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1263,7 +1263,7 @@ function renderTimeline(G) {
       <span class="ctr"><span class="k">lost</span><button class="btn xs" data-lsub="lost" data-bib="${one}"${l.lost ? '' : ' disabled'} title="One lap lost fewer">−</button><b class="down">${l.lost}</b><button class="btn xs" data-ladd="lost" data-bib="${one}" title="One lap lost more">+</button></span>
       <span class="r"><button class="btn xs quiet" data-ledger="${one}">✕</button></span></div>
       <div class="lh"><span class="k lbl">Colour</span><span class="pal">${PALETTE.map(c => `<button class="sw${c.toLowerCase() === r.color.toLowerCase() ? ' on' : ''}" data-color="${c}" data-bib="${one}" style="background:${c}" title="${c}"></button>`).join('')}<input type="color" value="${r.color}" data-colorpick="${one}" title="Any colour"></span></div></div>`; }
-  tbar.innerHTML = `<span class="selinfo">${sel.size ? '<b>' + (gsel ? groupName(gsel, G) + ' · ' : '') + plural(bibs.length, 'rider') + '</b> · ' + bibList(bibs) : '<span class="lbl">No selection · click riders or a group name</span>'}</span><button class="btn xs quiet" data-act="clear"${dis}>Clear</button>${solo}
+  tbar.innerHTML = `<span class="selinfo">${sel.size ? '<b>' + (gsel ? groupName(gsel, G) + ' · ' : '') + plural(bibs.length, 'rider') + '</b> · ' + bibList(bibs) : '<span class="lbl">No selection · click riders or a group name</span>'}<button class="btn xs quiet clr" data-act="clear"${dis}>Clear</button></span>${solo}
     <span class="grpb"><button class="btn xs" data-act="lap" data-v="1"${dis} title="Selected riders gain a lap">+1 lap</button><button class="btn xs" data-act="lap" data-v="-1"${dis} title="Selected riders lose a lap">−1 lap</button><button class="btn xs" data-act="sprint"${dis} title="Selected riders are ignored in the next sprint, or back in it">${allOutSel ? 'Back in sprint ' + sprintN : 'Ignore in sprint ' + sprintN}</button><button class="btn xs" data-act="notp"${dis} title="Selected riders have no transponder: carried with their group, placed by hand in the sprints">${allNoTpSel ? 'Transponder back' : 'No transponder'}</button><button class="btn xs" data-act="swaptp"${bibs.length === 2 ? '' : ' disabled'} title="The two selected riders carry each other's transponder: exchange the attribution">Swapped</button></span>
     <span class="grpb"><button class="btn xs primary" data-act="group" data-type="manual"${dis} title="New group with the selected riders">Group</button><button class="btn xs danger" data-act="group" data-type="crash"${dis} title="Crash group with the selected riders">Crash</button><button class="btn xs danger" data-act="group" data-type="mech"${dis} title="Mechanical group with the selected riders">Mech.</button><span class="sep"></span><button class="btn xs" data-act="merge"${canMerge ? '' : ' disabled'} title="Merge this group with the group above (select exactly one group)">Merge ↑</button><button class="btn xs primary" data-act="back"${canBack ? '' : ' disabled'} title="Riders of this incident back in the race">Back in race</button></span>
     <span class="grpb"><button class="btn xs danger" data-act="wd" data-v="ABD"${dis} title="Selected riders withdraw by themselves">ABD</button><button class="btn xs danger" data-act="wd" data-v="DNF"${dis} title="Selected riders put out of the race by the commissaires">DNF</button><button class="btn xs danger" data-act="wd" data-v="DSQ"${dis} title="Selected riders disqualified">DSQ</button></span>${led}`;
@@ -2475,7 +2475,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 127';
+  $('#buildno').textContent = 'build 128';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
