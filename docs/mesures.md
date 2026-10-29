@@ -1318,6 +1318,21 @@ comparait la **distance entre les centres** de deux noms, ce qui le déclenchait
 ne se gênaient pas et les projetait loin de la piste en traînant une longue ligne — c'était
 l'autre moitié de ce que l'opérateur voyait. Il compare maintenant leurs **boîtes**.
 
+**Les noms dans des badges**, build 101. L'opérateur voyait la ligne continuer derrière le nom
+et a proposé le badge. La ligne s'arrêtait pourtant déjà au bord de la **boîte** du texte : le
+calcul était juste, mais quand elle arrive en diagonale elle sort par le bord **haut** de cette
+boîte, donc elle vient toucher les lettres et leur halo sombre — à l'œil, elle passe dessous. Un
+bord franc règle la question.
+
+La largeur du badge demandait la largeur **réelle** du nom : estimée à 4,3 unités par caractère,
+elle se trompait assez pour étrangler le texte ou laisser du vide. Elle est mesurée une fois par
+nom sur un élément de texte gardé hors cadre, puis retenue — `renderOval()` tourne vingt fois par
+seconde et ne doit rien mesurer. Relevé : `1-Leaders` 73 unités de texte dans 91 de badge,
+`2-Bunch` 63 dans 81, `3-Last` 48 dans 66.
+
+Vérifié sur les trois groupes : **aucune ligne ne se termine à l'intérieur d'un badge**, et aucun
+texte ne déborde du sien.
+
 **Les neuf couleurs d'état, relevées sur le rendu** et non sur les classes, après que
 l'opérateur a signalé qu'`ARM FINISH` ne fonctionnait pas (`pitfalls.md` D17) :
 

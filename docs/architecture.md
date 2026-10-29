@@ -682,6 +682,11 @@ marques rouges qui disaient la même chose sur la pastille — contour épaissi 
 toujours la ligne du coureur. C'est le dessin qui est retiré, pas la règle. **Les annotations
 sont à refaire entièrement** : ne pas en remettre une au passage.
 
+**La largeur d'un nom de groupe se mesure, elle ne s'estime pas.** `labelWidth()` interroge
+`getComputedTextLength()` sur `#gmeas`, un élément de texte laissé hors cadre, **une seule fois
+par nom distinct**, et garde le résultat dans une `Map`. `renderOval()` tourne vingt fois par
+seconde : il lit la table, il ne mesure jamais. C'est la même discipline que `pathTable` (D15).
+
 **Aucun repère de l'ovale n'est nommé** (`regles-operateur.md` §9, 29 octobre 2026, build 91).
 `renderMarks()` ne pose plus que des `<line>` : l'assistant `label()` qui écrivait « Finish »,
 « Pursuit A », « Pursuit B », « 200 m start » et « 100 m intermediate » est supprimé, et `#marks` ne

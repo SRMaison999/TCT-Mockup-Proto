@@ -1398,6 +1398,17 @@ Puis sa question, qui a décidé de la suite :
     pouvoir se poser. Ils ne bougent jamais, le nom suit son groupe : c'est au nom qu'il faut
     la place.
 
+### Les noms dans des badges
+
+**29 octobre 2026.** Mot pour mot :
+
+> on peut voir que les lignes séparant les bulles des textes ne s'arrêtent pas au texte, elles
+> continuent derrière le texte. Je me demande si ce ne serait pas mieux si les textes étaient
+> insérés dans des sortes de badges...
+
+36. **Le nom d'un groupe est posé dans un badge** à la couleur du groupe, et la ligne s'arrête
+    au bord du badge.
+
 ### La couleur de l'intérieur de l'ovale
 
 Sur la question de savoir si l'intérieur de l'ovale doit s'éclaircir, puisque sa maquette le montrait blanc :

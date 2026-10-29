@@ -6,7 +6,7 @@
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated · build 100</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated · build 101</span>
     <span class="sp"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
@@ -36,6 +36,7 @@
           <g id="bands"></g>
           <g id="riders"></g>
           <g id="ovlabels"></g>
+          <text id="gmeas" class="glabel" x="-9999" y="-9999" aria-hidden="true"></text>
           <g id="infield">
             <foreignObject id="armfo1" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
             <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
@@ -1097,6 +1098,18 @@ function chip(r, cls) { return `<span class="chip${r.dk ? ' dk' : ''}${cls ? ' '
 // corrected this on 29 October 2026. « Behind » is therefore only for a group that has another one behind it.
 // Incident groups keep their own name and take no rank: they are not a place in the race. What they will be called
 // is not settled; he has not decided yet, so nothing changes there.
+// A name is set in a badge (operator, 29 October 2026), so its width has to be the REAL one: estimated at so many
+// units a character, the badge either strangles the name or hangs off it. It is measured once per distinct name on
+// a text node kept off the canvas, then remembered — renderOval runs twenty times a second and must not measure.
+const NAME_W = new Map();
+function labelWidth(txt) {
+  if (NAME_W.has(txt)) return NAME_W.get(txt);
+  const m = $('#gmeas'); if (!m) return txt.length * 8.6;
+  m.textContent = txt;
+  const w = m.getComputedTextLength() || txt.length * 8.6;
+  NAME_W.set(txt, w);
+  return w;
+}
 // The colours the operator chose on 29 October 2026: green at the front, red at the back, blue for the bunch, and
 // every other group a shade along the way. The ramp is laid over EVERY ranked group, the bunch included, and the
 // bunch then takes its blue on top — so green always lands on the head of the race and red always on its tail.
@@ -1412,7 +1425,7 @@ function renderOval(G, M) {
   for (const bu of bubbles) {                       // bubbles are in race order, so the front group is placed first
     const a = normalAt(bu.sMid);
     const name = groupName(bu.g, G);
-    const tw = name.length * 4.3 + 4, th = 10;      // half-width and half-height of the name's box
+    const tw = labelWidth(name) / 2 + 9, th = 12;   // half-width and half-height of the BADGE, padding included
     // Two names clash only when their BOXES would meet. Measured on the distance between their centres instead,
     // the test fired on names that were nowhere near each other and threw them far off the track, trailing a long
     // line behind them — which is the other half of what the operator saw.
@@ -1427,9 +1440,9 @@ function renderOval(G, M) {
     const from = { x: a.p.x + a.nx * edge, y: a.p.y + a.ny * edge };
     // The line must STOP where the name starts, not run behind it: crossing the text mixed the stroke with the
     // halo that keeps the name readable, and the name came out blurred.
-    const t = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9) + 4;
-    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * t).toFixed(1)}" y2="${(ly - a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.85" pointer-events="none"/>`;
-    labels += `<text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="${bu.colour}" stroke="#121416" stroke-width="3" paint-order="stroke" data-gi="${bu.gi}" style="cursor:pointer">${name}</text>`;
+    const t = Math.min(Math.abs(a.nx) > 0.01 ? tw / Math.abs(a.nx) : 1e9, Math.abs(a.ny) > 0.01 ? th / Math.abs(a.ny) : 1e9) + 1.5;   // just clear of the badge, never under it
+    labels += `<line x1="${from.x.toFixed(1)}" y1="${from.y.toFixed(1)}" x2="${(lx - a.nx * t).toFixed(1)}" y2="${(ly - a.ny * t).toFixed(1)}" stroke="${bu.colour}" stroke-width="1.5" opacity="0.9" pointer-events="none"/>`;
+    labels += `<g data-gi="${bu.gi}" style="cursor:pointer"><rect x="${(lx - tw).toFixed(1)}" y="${(ly - th).toFixed(1)}" width="${(tw * 2).toFixed(1)}" height="${(th * 2).toFixed(1)}" rx="5" fill="${bu.colour}"/><text class="glabel" x="${lx.toFixed(1)}" y="${(ly + 5).toFixed(1)}" text-anchor="middle" fill="#121416" pointer-events="none">${name}</text></g>`;
   }
   bandsG.innerHTML = bands; ridersG.innerHTML = dots; labelsG.innerHTML = labels;
   if (S.hover != null) { const d = document.getElementById('dot-' + S.hover); if (d) d.querySelector('circle').setAttribute('stroke-width', '4'); }
@@ -2329,7 +2342,7 @@ function railHide(h) {
   $('.bar').classList.toggle('withtransport', h);
 }
 function syncSub() {
-  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 100';
+  $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated · build 101';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
