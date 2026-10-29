@@ -1502,3 +1502,26 @@ Fenêtre de 1920 px, prototype ouvert en `file://`, rail du simulateur ouvert pu
 Le bloc ne bouge plus d'un pixel quand le rail se ferme, puisqu'il ne change plus de parent. Le
 champ d'état garde ses 120 px même vide — c'est ce qui tient l'écart entre l'horloge et
 `Replay`, et c'est voulu : un seul champ dit `REC` ou `PLAYING RACE n` (§17, 28 octobre 2026).
+
+## 28. La timeline resserrée — build 114
+
+Fenêtre de 1920 px, rail du simulateur masqué, course lancée puis un groupe de trois coureurs
+créé à la main pour obtenir deux blocs.
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Largeur de la colonne | 360 px | 292 px |
+| Colonnes d'une ligne de coureur | `34px 24px 36px 1fr 0 62px` | `34px 22px 36px 1fr 0 auto` |
+| Barre d'actions au survol | `left:108px right:66px`, 158 px utiles | `left:40px right:3px`, 220 px utiles |
+| Place demandée par les quatre boutons | 214 px | 214 px |
+| Dépassement d'une ligne, d'un en-tête, du corps | — | 0 px, 0 px, 0 px |
+| Dépassement de la page | — | 0 px |
+
+La barre d'actions du survol laisse **40 px** au dossard, sans quoi plus aucune ligne n'est
+sélectionnable : couvrant toute la largeur, elle interceptait le clic et le transformait en
+« +1 lap ». C'est cette contrainte, et non l'esthétique, qui fixe la largeur de la colonne :
+les quatre boutons demandent 214 px, donc la colonne ne peut pas descendre sous 292 px tant
+qu'ils sont là.
+
+Couleurs des bordures gauches relevées sur les deux blocs : `rgb(49, 211, 135)` pour
+`1-Leaders`, `rgb(52, 180, 244)` pour `2-Bunch` — les couleurs de leurs bulles sur l'ovale.

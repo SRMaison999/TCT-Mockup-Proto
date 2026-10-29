@@ -1542,3 +1542,17 @@ du simulateur, le champ unique qui dit `REC` ou `PLAYING RACE n`, puis `Replay` 
     déplace plus rien : le rail se réduit à son bouton `Simulator` et les commandes de lecture
     restent là où elles sont. Le titre « Lap timeline · prototype » laisse la place ; le
     sous-titre, qui porte le numéro de build, reste.
+
+### La timeline compacte
+
+**29 octobre 2026.** Sa page redessinée montre une colonne de timeline resserrée : chaque bloc
+de groupe porte **quatre choses** — son numéro, son nom, le nombre de coureurs et l'écart — et
+chaque ligne de coureur **trois** : le dossard, le drapeau et le code pays.
+
+54. **L'en-tête d'un bloc ne porte que ces quatre champs.** La mention « race leader » qui
+    suivait le nombre de coureurs a été retirée : le champ de l'écart dit déjà « leader » pour
+    le groupe de tête, et la colonne resserrée coupait le texte. **Écart par rapport à un
+    comportement validé, signalé le 29 octobre 2026 ; à confirmer ou à rétablir.**
+55. **Une ligne de coureur ne porte plus son nom.** Le nom reste dans l'infobulle de la ligne
+    et dans le classement. Les marqueurs d'état — hors piste, sans transpondeur, non lu, hors
+    sprint, sans points — restent sur la ligne : leur retrait n'a pas été demandé.

@@ -307,6 +307,17 @@ code sur une mesure accablante, **vérifier que la mesure a regardé quelque cho
 et, dans le doute, lire les coordonnées posées par le code plutôt que celles calculées par le
 moteur de rendu.
 
+**D20. Une classe courte redéclarée plus bas pour un autre panneau.** `.trow` désigne à la
+fois une ligne de coureur de la timeline et une ligne du panneau des transpondeurs. La règle
+du second, écrite une centaine de lignes plus bas dans `styles.css` avec **la même
+spécificité**, l'emportait : les lignes de la timeline tiraient leurs colonnes
+(`44px 34px …`), leur fond et leur barre de gauche d'un panneau qui n'a rien à voir avec
+elles, et la règle écrite pour elles ne servait à rien. Rien ne le signalait, puisque le
+résultat restait lisible. Découvert en resserrant la colonne : la grille ne bougeait pas.
+Corrigé en préfixant les règles du panneau par `#simtp`. Même famille que F5, et même leçon
+que D17 : **la cascade tranche par l'ordre à spécificité égale**, donc une classe courte se
+porte sur un conteneur, et on vérifie la valeur calculée, jamais la règle écrite.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été
