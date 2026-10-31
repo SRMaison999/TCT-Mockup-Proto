@@ -2054,3 +2054,57 @@ l'ordre en cède 72 à ce qu'elle porte en plus.
 Soit 23 + 19 + 877 + 30 = 949 d'un côté, 19 + 930 = 949 de l'autre. Les deux tiennent donc les
 vingt-quatre coureurs d'une course pleine, avec neuf lignes de marge dans l'ordre et onze dans
 la liste.
+
+## 24. La timeline, l'ovale et l'ordre du sprint (build 149, 31 octobre 2026)
+
+Relevé dans la page, écran de 1800 × 1000, simulateur caché, course de référence.
+
+### Ce que coûte la timeline
+
+| Élément | Avant | Après |
+|---|---|---|
+| Une ligne de coureur | 28,0 px | 28,0 px (22,4 au plancher du resserrement) |
+| Un en-tête de groupe | 39,6 px | **17,8 px** |
+| Une bande « new group » | 15,6 px | 15,6 px, inchangée — c'est une zone de dépôt (D3) |
+| Hauteur disponible | 886 px | 886 px |
+
+**Avant**, vérifié en créant les groupes un à un : 16 coureurs tiennent jusqu'à **6 groupes**,
+et la colonne déroule à partir du **7e**. Chaque groupe supplémentaire coûtait exactement
+**64 px** (mesuré : 919 → 983 → 1047 → 1111).
+
+**Après**, même vérification : 16 coureurs et **8 groupes** ne déroulent pas, et `--tlz` reste
+à 1. À 620 px de haut la colonne se resserre d'elle-même à **0,95** et ne déroule pas.
+
+À 24 coureurs — le maximum posé par l'opérateur — les deux constantes donnent **3 groupes**
+avant, et **10** après, resserrement compris.
+
+### La taille maximale de l'ovale
+
+Condition : la piste peinte entière et les deux boutons `SET NEXT AS LEADER` restent visibles
+(`regles-operateur.md` §17 point 111). Mesuré en déplaçant le cadre et en projetant les quatre
+coins par `getScreenCTM()` — **et non par `getBoundingClientRect()` sur le ruban, qui ne compte
+pas son trait de 60 et annonçait un cran de trop** (même famille que D19).
+
+| Disposition | Zone de l'ovale | Maximum |
+|---|---|---|
+| Écran de référence | 1060 × 576 | 100 % |
+| Colonne du sprint à 460 px | 1112 × 576 | 110 % |
+| Ovale en pleine hauteur | 1012 × 888 | 100 % |
+| Fenêtre de 2560 × 1400 | 2529 × 1461 | 100 % |
+
+La zone à garder visible mesure 837 × 488 dans un cadre de 854 × 492 : il reste 2 % de marge en
+largeur, 0,8 % en hauteur. **Le maximum ne dépasse donc jamais 1,02, sur aucun écran.** Donner
+de la hauteur à l'ovale n'achète rien tant que la largeur borne, et inversement.
+
+### Le glissé d'une poignée ne reconstruit pas la timeline
+
+Course à ×1, observateur de mutations sur `#tlbody` : **2 reconstructions en 1,6 s** hors
+glissé, **0** pendant un glissé de 1,6 s, la poignée toujours active. C'est le fanion `drag` du
+moteur qui tient (D1).
+
+### Le drapeau dans l'ordre du sprint
+
+Ligne de 227 px. Avant : `22 · 32 · 38 · 62 · 22 · 22` + 5 px de gouttière, l'écart réservant
+62 px pour **43,2 px** d'encre (« +0.147 », et « manual » vaut le même) et le NOC 38 px pour
+**23,4** (« GBR »). Après : `22 · 32 · 22 · 26 · 46,7 · 22 · 22`, la colonne inchangée, l'écart
+gardant 46,7 px pour 43,2 d'encre. Le drapeau mesure 22 × 15 px, comme dans la timeline.

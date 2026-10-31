@@ -67,13 +67,133 @@
 .rows.pass .mk{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
 .rows.pass .none{font:500 12px var(--sans);color:var(--dim);padding:14px 8px}
 .rows.pass .foot{font:500 11px var(--sans);color:var(--dim);padding:10px 8px 2px}
+
+/* ---- les quatre poignées (l'opérateur, 31 octobre 2026) ------------------
+   Chaque zone garde exactement sa place : la poignée ne fait que poser une
+   largeur ou une hauteur, dans une variable que la zone lit. Sans variable,
+   la valeur est celle de styles.css — l'écran est au pixel près celui d'avant
+   tant que personne n'a touché une poignée.
+
+   Rien de tout cela n'entre dans styles.css : cette feuille sert aussi aux
+   deux autres prototypes, et eux ne changent pas.
+
+   Chaque sélecteur porte son parent : à spécificité égale c'est l'ordre qui
+   tranche, et une règle qui ne gagne que parce qu'elle est écrite plus bas est
+   exactement ce qui a coûté les pitfalls D17 et D20. */
+.main > .tl{width:var(--w-tl, 174px)}
+.main > .right{width:var(--w-right, clamp(500px, 29%, 560px))}
+.mid > .below{height:var(--h-below, auto)}
+/* Les propositions défilent plutôt que d'être rognées quand la zone du bas est
+   resserrée. La barre d'actions, elle, ne défile jamais : « la barre d'actions
+   ne doit jamais avoir à défiler pour être vue en entier » (l'opérateur,
+   29 octobre 2026) — c'est elle qui fait le plancher de la poignée. */
+.below > .props{overflow-y:auto}
+
+.rsz{flex:0 0 auto;align-self:stretch;position:relative;z-index:6;background:0;border:0;padding:0}
+.main > .rsz{width:6px;cursor:col-resize}
+.mid > .rsz{height:6px;cursor:row-resize}
+body.lay-side .below > .rsz{cursor:col-resize}
+body:not(.lay-side) .below > .rsz{cursor:row-resize}
+.rsz::after{content:"";position:absolute;inset:2px;border-radius:2px;background:transparent}
+.main > .rsz::after,.below > .rsz::after{inset:2px 1px}
+.mid > .rsz::after{inset:1px 2px}
+.rsz:hover::after,.rsz.on::after{background:var(--acc)}
+body.rszing{user-select:none}
+body.rszing.col{cursor:col-resize}
+body.rszing.row{cursor:row-resize}
+
+/* La poignée des actions prend sa place dans la grille de la zone du bas, dans
+   les deux dispositions. Les zones gardent l'ordre qu'elles avaient. */
+.mid > .rsz{order:2}
+.mid > .below{order:3}
+body.lay-side .mid > .below{grid-template-columns:var(--w-acts, 290px) 6px minmax(0,1fr)}
+body.lay-side .below > .acts{grid-column:1;grid-row:1}
+body.lay-side .below > .rsz{grid-column:2;grid-row:1}
+body.lay-side .below > .props{grid-column:3;grid-row:1}
+body:not(.lay-side) .mid > .below{grid-template-rows:var(--h-props, auto) 6px auto}
+body:not(.lay-side) .below > .props{grid-row:1;grid-column:1}
+body:not(.lay-side) .below > .rsz{grid-row:2;grid-column:1}
+body:not(.lay-side) .below > .acts{grid-row:3;grid-column:1}
+
+/* ---- la timeline : son en-tête, ses bandes de dépôt, sa taille ----------
+   « je pense que les titres des groupes devraient être réduits en hauteur »
+   (l'opérateur, 31 octobre 2026). L'en-tête passe donc sur UNE ligne : le nom,
+   l'effectif et l'écart y tiennent — mesuré, 150,4 px d'encre pour 164 px
+   utilisables — et il passe de 39,6 px à ~24. Rien n'est retiré : les quatre
+   choses que porte l'en-tête (regles-operateur.md §17) y sont toutes. Ce qui
+   ne tient pas, une pastille d'état ou la longue ligne d'un groupe
+   d'incident, passe à la ligne suivante et cet en-tête-là reste haut. */
+.tl .gh{flex-direction:row;align-items:center;flex-wrap:wrap;gap:0 6px;margin-bottom:2px}
+.tl .gh > .ghl:first-child{flex:0 1 auto}
+.tl .gh > .ghl:last-of-type{flex:1 1 auto;justify-content:flex-end}
+.tl .gh .pill{margin-top:0;align-self:center}
+/* Ce qui ne tient pas sur la ligne passe dessous, et l'en-tête reprend deux lignes — mais
+   deux lignes resserrées : c'est la hauteur qui était demandée, pas le nombre de lignes. */
+.tl .gh .gn{line-height:1.15}
+.tl .gh .gi,.tl .gh .ggap{line-height:1.2}
+
+/* Les deux bandes « new group » restent atteignables même quand la colonne
+   déroule : « il faut bien s'assurer que les boutons permettant de créer un
+   groupe au-dessus du groupe le plus haut et un groupe au-dessous du groupe le
+   plus bas soient accessibles pour un drag'n'drop de coureurs » (l'opérateur,
+   31 octobre 2026). Elles sont épinglées en haut et en bas, et gardent leur
+   hauteur : une zone de dépôt ne bouge pas sous le curseur (pitfalls D3). */
+.tl .body > .tgap:first-child{position:sticky;top:0;z-index:4;background:var(--panel)}
+.tl .body > .tgap.last{position:sticky;bottom:0;z-index:4;background:var(--panel)}
+
+/* La taille des lignes. 1 = la taille d'origine, au pixel près. */
+.tl{position:relative;--tlz:1}
+.tl .trow{height:calc(28px * var(--tlz))}
+.tl .trow .chip{height:calc(24px * var(--tlz));min-width:calc(34px * var(--tlz));font-size:calc(14px * var(--tlz))}
+.tl .trow .noc{font-size:calc(14px * var(--tlz))}
+.tl .trow .flag{width:calc(22px * var(--tlz));height:calc(15px * var(--tlz))}
+.tl .trow .npts{font-size:calc(9px * var(--tlz))}
+.tl .gh{padding:calc(2px * var(--tlz)) 6px calc(2px * var(--tlz))}
+.tl .gh .gn{font-size:calc(12px * var(--tlz))}
+.tl .gh .gi,.tl .gh .ggap{font-size:calc(9px * var(--tlz))}
+
+.tlzoom{position:absolute;top:5px;right:7px;z-index:7;background:var(--deep);opacity:0;pointer-events:none;transition:opacity .12s}
+.tl:hover > .tlzoom,.tlzoom:focus-within{opacity:1;pointer-events:auto}
+body.dragging .tl > .tlzoom{opacity:0;pointer-events:none}
+.tlzoom .btn.tlzv{min-width:52px;font:500 12px var(--mono)}
+
+/* ---- le drapeau dans l'ordre du sprint ----------------------------------
+   Sept colonnes au lieu de six, et la colonne ne s'élargit pas : le drapeau
+   est payé sur l'écart (62 px réservés pour 43 d'encre) et sur le NOC (38 pour
+   23). L'en-tête porte la même grille, sinon les deux ne sont plus alignés. */
+#scard .sleft .shd,#scard .sleft .srow{grid-template-columns:22px 32px 22px 26px minmax(0,1fr) 22px 22px}
+#scard .sleft .flag{width:22px;height:15px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+
+/* ---- la taille des éléments de chaque zone ------------------------------
+   « j'ai besoin de pouvoir ajuster la taille des éléments ! » (l'opérateur,
+   31 octobre 2026). Un réglage par zone, dessiné comme celui de l'ovale, posé
+   DANS la zone qu'il commande (sa règle du 29 octobre), et qui ne paraît qu'au
+   survol : ces trois-là seraient sinon trois objets de plus à regarder en
+   permanence sur un écran dont toute l'histoire est le retrait.
+
+   Chacun ne touche qu'au CONTENU de sa zone. La zone, elle, se règle à la
+   poignée — les deux ne font pas la même chose : la poignée donne de la place,
+   le réglage donne de la taille. */
+#scard{zoom:var(--z-sprint, 1);flex:1 1 auto;min-width:0}
+.below > .props > *{zoom:var(--z-props, 1)}
+.acts > .tbar{zoom:var(--z-acts, 1)}
+
+.zsel{position:absolute;z-index:7;background:var(--deep);opacity:0;pointer-events:none;transition:opacity .12s}
+.zsel .btn.zv{min-width:52px;font:500 12px var(--mono)}
+.main > .right{position:relative}
+.mid > .below{position:relative}
+.zsel[data-zone="sprint"]{top:6px;right:8px}
+.zsel[data-zone="props"]{top:-3px;right:2px}
+.zsel[data-zone="acts"]{top:9px;right:62px}
+.right:hover > .zsel,.below:hover > .zsel,.acts:hover > .zsel,.zsel:focus-within{opacity:1;pointer-events:auto}
+body.dragging .zsel,body.cdragging .zsel,body.rszing .zsel{opacity:0;pointer-events:none}
 </style>
 
 <div class="shell">
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 148 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 149 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -118,7 +238,14 @@
   <div class="main">
     <section class="tl" aria-label="Lap timeline">
       <div class="body" id="tlbody"></div>
+      <!-- Le réglage de taille de la timeline. Il flotte au-dessus de la colonne et ne paraît qu'au survol :
+           la place verticale est justement ce qui manque ici, une barre permanente en prendrait. -->
+      <span class="seg tlzoom" id="tlzoom" title="The size of the rows. The column keeps its width."><button class="btn xs quiet" data-tlz="-1" title="Smaller rows">&minus;</button><button class="btn xs quiet tlzv" data-tlz="0" id="tlzv" title="Back to the original size">100 %</button><button class="btn xs quiet" data-tlz="1" title="Larger rows">+</button></span>
     </section>
+
+    <!-- Les quatre poignées (l'opérateur, 31 octobre 2026). Elles vivent sur les coutures qui existaient déjà :
+         aucune zone n'est déplacée, chacune reçoit seulement une largeur ou une hauteur que l'opérateur pose. -->
+    <div class="rsz" data-rsz="tl" title="Drag to resize the timeline · double-click to reset"></div>
 
     <section class="mid">
       <!-- La barre d'actions et les cartes de proposition : à gauche de l'ovale, à droite de la timeline, et non
@@ -128,7 +255,9 @@
            colonne à gauche des propositions. Dans les deux cas la zone prend toute la place laissée par l'ovale. -->
 
       <div class="oval">
-        <svg viewBox="63 49 854 492" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Track view" id="oval">
+        <!-- Calé en haut ET à gauche : le réglage de taille ouvre le cadre vers la droite et vers le bas, et le
+             virage de gauche comme le haut de la piste ne bougent plus d'un pixel (l'opérateur, 31 octobre 2026). -->
+        <svg viewBox="63 49 854 492" preserveAspectRatio="xMinYMin meet" role="img" aria-label="Track view" id="oval">
           <rect id="trackband" x="110" y="125" width="760" height="340" rx="170" fill="#8a8a8a" stroke="#b5884e" stroke-width="60"/>
           <rect x="143" y="158" width="694" height="274" rx="137" fill="none" stroke="#3b6ae8" stroke-width="6"/>
           <rect x="138.5" y="153.5" width="703" height="283" rx="141.5" fill="none" stroke="#111111" stroke-width="1.5"/>
@@ -173,10 +302,18 @@
         <span class="seg ovzoom" id="ovzoom" title="La taille du dessin de l'ovale. Le reste de l'ecran ne bouge pas."><button class="btn xs quiet" data-ovz="-1" title="Reduire l'ovale">&minus;</button><button class="btn xs quiet ovzv" data-ovz="0" id="ovzv" title="Revenir a la taille d'origine">100 %</button><button class="btn xs quiet" data-ovz="1" title="Agrandir l'ovale">+</button></span>
       </div>
 
+      <div class="rsz" data-rsz="below" title="Drag to resize the oval · double-click to reset"></div>
+
       <div class="below">
         <div class="props" id="propcard"></div>
+        <!-- Le réglage de taille des propositions. Il est HORS de #propcard : le moteur réécrit ce conteneur
+             une fois par seconde, et un bouton remplacé entre l'appui et le relâchement n'émet pas de clic
+             (pitfalls D2). Il en va de même pour celui de la carte du sprint, posé hors de #scard. -->
+        <span class="seg zsel" data-zone="props" title="The size of the proposals"><button class="btn xs quiet" data-zs="-1" title="Smaller">&minus;</button><button class="btn xs quiet zv" data-zs="0" title="Back to the original size">100 %</button><button class="btn xs quiet" data-zs="1" title="Larger">+</button></span>
+        <div class="rsz" data-rsz="acts" title="Drag to resize the actions · double-click to reset"></div>
         <section class="acts" aria-label="Actions">
           <div class="tbar" id="tbar"></div>
+          <span class="seg zsel" data-zone="acts" title="The size of the action bar"><button class="btn xs quiet" data-zs="-1" title="Smaller">&minus;</button><button class="btn xs quiet zv" data-zs="0" title="Back to the original size">100 %</button><button class="btn xs quiet" data-zs="1" title="Larger">+</button></span>
           <!-- Le sélecteur des deux dispositions est DANS la zone qu'il commande, pas dans la barre du haut
                (l'opérateur, 29 octobre 2026). -->
           <span class="seg" id="layseg" title="Where the proposals and the actions go"><button class="btn xs quiet" data-lay="stack" title="Proposals above, actions below">&#9647;&#9473;</button><button class="btn xs on" data-lay="side" title="Actions on the left, proposals on the right">&#9475;&#9647;</button></span>
@@ -184,10 +321,13 @@
       </div>
     </section>
 
+    <div class="rsz" data-rsz="right" title="Drag to resize the sprint column · double-click to reset"></div>
+
     <!-- La colonne de droite : la carte du sprint et la liste de départ côte à côte, à droite de l'ovale (sa page
          redessinée du 29 octobre 2026). Hors sprint la colonne n'existe pas, et l'ovale reprend toute la largeur. -->
     <section class="right" id="rightcol" aria-label="Sprint">
       <section id="scard" aria-label="Sprint"></section>
+      <span class="seg zsel" data-zone="sprint" title="The size of the sprint card"><button class="btn xs quiet" data-zs="-1" title="Smaller">&minus;</button><button class="btn xs quiet zv" data-zs="0" title="Back to the original size">100 %</button><button class="btn xs quiet" data-zs="1" title="Larger">+</button></span>
     </section>
   </div>
 </div>
@@ -2225,7 +2365,11 @@ function renderCard() {
     <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
     ${open ? `<button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
   h += '<div class="sbody"><div class="sleft"><div class="ssec">Order<span class="hint">drag a line to reorder</span></div>';
-  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
+  // Le drapeau de l'ordre du sprint (l'opérateur, 31 octobre 2026, sur sa capture : « je pense qu'il y a la place
+  // pour placer un drapeau dans la zone que j'ai encadré en rouge »). La colonne ne s'élargit pas d'un pixel : les
+  // 27 px qu'il demande sont pris sur l'écart, qui en réservait 62 pour 43 d'encre, et sur le NOC, qui en réservait
+  // 38 pour 23. Une colonne de plus dans l'en-tête comme dans les lignes, pour que les deux restent alignés.
+  h += `<div class="shd"><span></span><span>BIB</span><span></span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
   const tgt = spTarget(k);
   // the crossings read while the rider was not eligible: kept where they were read, greyed, with no place
   const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
@@ -2237,13 +2381,13 @@ function renderCard() {
   for (const g of grey) rows.push({ g });
   for (const row of rows) {
     if (row.g) { const gr = S.riders.find(x => x.bib === row.g.bib);
-      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
+      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}${flag(gr.nat)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
       continue; }
     const e = row.e, place = row.place;
-    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
+    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
     const r = S.riders.find(x => x.bib === e.bib), cls = e.held ? 'held' : e.photo ? 'cam' : e.sent ? 'sent' : '';
     const mark = e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : '';
-    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span>
+    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}${flag(r.nat)}<span class="noc">${r.nat}</span>
       <span class="gp">${mark}</span>
       <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" title="Photo finish: confirm" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">↑</button>' : ''}</span>
       <span class="ic"><button class="btn xs quiet" data-sact="remove:${e.bib}" title="Out of this order">×</button></span></div>`;
@@ -2631,7 +2775,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 148';
+  $('#buildno').textContent = 'build 149 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
@@ -3016,36 +3160,256 @@ setInterval(frame, 50);   // a timer, not requestAnimationFrame: it keeps runnin
 
 /* ---- 1. la taille de l'ovale --------------------------------------------
    L'ovale est dessiné dans un viewBox fixe, et sa boîte ne bouge pas : c'est
-   le viewBox que ce réglage ouvre ou resserre autour de son centre. Le dessin
-   grandit ou rapetisse donc SEUL — la boîte de l'ovale, la timeline, les
-   propositions, la barre d'actions et la colonne du sprint gardent leur
-   taille et leur place au pixel près.
+   le viewBox que ce réglage ouvre ou resserre. Le dessin grandit ou rapetisse
+   donc SEUL — la timeline, les propositions, la barre d'actions et la colonne
+   du sprint gardent leur taille et leur place au pixel près.
+
+   DEPUIS LE 31 OCTOBRE 2026, il s'ouvre par son COIN HAUT-GAUCHE et non plus
+   par son centre : « je voudrais que la partie supérieure de l'ovale soit
+   toujours fixe en haut de sa zone, et la partie gauche fixe également près
+   de la timeline, quelle que soit la taille qu'on lui applique ». x et y ne
+   bougent donc plus, seules la largeur et la hauteur du cadre changent, et le
+   dessin est calé xMinYMin.
 
    Rien d'autre n'en dépend : renderOval, renderMarks et les étiquettes
    travaillent en unités du viewBox, et la sélection comme le glisser-déposer
    passent par le DOM (closest, elementFromPoint), jamais par une conversion de
    coordonnées. */
 const OVB = { x: 63, y: 49, w: 854, h: 492 };          // le viewBox d'origine, écrit dans le HTML
-const OVC = { x: OVB.x + OVB.w / 2, y: OVB.y + OVB.h / 2 };
 const OVZ_MIN = 0.6, OVZ_MAX = 1.8, OVZ_STEP = 0.1;
-let ovZoom = 1;
-const ovzv = $('#ovzv');
+let ovZoom = 1, tlZoom = 1;
+const ovzv = $('#ovzv'), ovalZone = $('.oval');
+
+/* CE QUI DOIT RESTER VISIBLE, dans les mots de l'opérateur, 31 octobre 2026 :
+   « C'est sur les côtés le ruban marron, dessus et dessous ce sont les bords
+   supérieurs et inférieurs respectivement des boutons SET NEXT AS LEADERS ».
+   Les quatre cotes sont donc RELEVÉES du dessin, jamais écrites à la main :
+   le ruban porte son trait de 60 de part et d'autre, et les deux boutons
+   portent leur y. Ils ne bougent jamais (regles-operateur.md §17, point 35),
+   c'est pourquoi ils font une borne fiable. */
+const KEEP = (() => {
+  const b = $('#trackband'), a1 = $('#armfo1'), a2 = $('#armfo2');
+  const x = +b.getAttribute('x'), w = +b.getAttribute('width'), sw = +b.getAttribute('stroke-width');
+  return { x1: x + w + sw / 2, y1: +a2.getAttribute('y') + +a2.getAttribute('height') };
+})();
+/* La taille maximale n'est pas 180 % : c'est celle au-delà de laquelle cette
+   zone-là commencerait à être rognée. Elle dépend de la place que la boîte de
+   l'ovale a reçue, donc elle se recalcule à chaque coup de poignée et à chaque
+   changement de fenêtre. Mesuré sur l'écran de référence : 100 % — l'ovale y
+   occupe déjà toute la place qu'il a. Le « + » sert alors à revenir après un
+   « − », ce qui est sa raison d'être (l'opérateur, 31 octobre 2026). */
+function ovalMax() {
+  const r = ovalZone.getBoundingClientRect();
+  if (!r.width || !r.height) return OVZ_MAX;     // zone pas rendue : on ne décide rien sur une mesure vide (pitfalls D19)
+  const k = Math.min(r.width / OVB.w, r.height / OVB.h);   // l'échelle du dessin à 100 %, côté le plus contraignant
+  const z = Math.min(r.width / (k * (KEEP.x1 - OVB.x)), r.height / (k * (KEEP.y1 - OVB.y)));
+  return Math.max(OVZ_MIN, Math.min(OVZ_MAX, Math.floor(z * 10 + 1e-9) / 10));
+}
 function setOvalZoom(k) {
-  ovZoom = Math.max(OVZ_MIN, Math.min(OVZ_MAX, Math.round(k * 10) / 10));
-  const w = OVB.w / ovZoom, h = OVB.h / ovZoom;
-  oval.setAttribute('viewBox', [OVC.x - w / 2, OVC.y - h / 2, w, h].map(v => v.toFixed(1)).join(' '));
+  const max = ovalMax();
+  ovZoom = Math.max(OVZ_MIN, Math.min(max, Math.round(k * 10) / 10));
+  oval.setAttribute('viewBox', [OVB.x, OVB.y, OVB.w / ovZoom, OVB.h / ovZoom].map(v => v.toFixed(1)).join(' '));
   ovzv.textContent = Math.round(ovZoom * 100) + ' %';
   const z = $('#ovzoom');
   z.querySelector('[data-ovz="-1"]').disabled = ovZoom <= OVZ_MIN;
-  z.querySelector('[data-ovz="1"]').disabled = ovZoom >= OVZ_MAX;
+  z.querySelector('[data-ovz="1"]').disabled = ovZoom >= max;
   ovzv.disabled = ovZoom === 1;
 }
 $('#ovzoom').addEventListener('click', e => {
   const b = e.target.closest('[data-ovz]'); if (!b || b.disabled) return;
   const d = +b.dataset.ovz;
   setOvalZoom(d === 0 ? 1 : ovZoom + d * OVZ_STEP);
+  saveLayout();
 });
-setOvalZoom(1);
+
+/* ---- 1 bis. les quatre poignées -----------------------------------------
+   Demandées le 31 octobre 2026 : « je voudrais pouvoir agrandir/réduire les
+   zones de la timeline, des boutons d'actions, des propositions, des sprints
+   à l'aide de poignées ».
+
+   Trois règles tenues ici, et aucune n'est négociable :
+   · le glissé passe par le POINTEUR, jamais par le drag natif (pitfalls D3) ;
+   · la timeline n'est pas reconstruite pendant le glissé (pitfalls D1) — on
+     pose le fanion `drag` du moteur, celui-là même qui garde le glisser-
+     déposer des coureurs ;
+   · on n'écrit qu'une variable CSS : aucune zone n'est déplacée, et sans
+     variable l'écran est au pixel près celui d'avant.
+
+   « TOUT DOIT RESTER IDENTIQUE SI PERSONNE NE TOUCHE LES POIGNÉES OU LES
+   BOUTONS » (l'opérateur, 31 octobre 2026) : ce qui est posé est gardé sur le
+   poste et relu au chargement, le réglage de l'ovale compris. */
+const LKEY = 'tct.layout';
+const LAY = { tl: null, right: null, below: null, acts: null, props: null };
+const CSSVAR = { tl: '--w-tl', right: '--w-right', below: '--h-below', acts: '--w-acts', props: '--h-props' };
+
+// Les planchers. Celui de la zone du bas n'est pas un chiffre : c'est la hauteur de la barre
+// d'actions, parce que « la barre d'actions ne doit jamais avoir à défiler pour être vue en
+// entier » (l'opérateur, 29 octobre 2026). Les autres sont mesurés sur l'écran de référence.
+const RZ = {
+  tl:    { axis: 'x', sign:  1, el: '.tl',    min: () => 160, max: () => 420 },
+  right: { axis: 'x', sign: -1, el: '.right', min: () => 500, max: () => 900 },
+  below: { axis: 'y', sign: -1, el: '.below', min: () => Math.ceil($('.acts').getBoundingClientRect().height),
+           max: () => Math.max(120, $('.mid').getBoundingClientRect().height - 240) },
+  acts:  { axis: 'x', sign:  1, el: '.acts',  min: () => 200, max: () => 520 },
+  props: { axis: 'y', sign:  1, el: '.props', min: () => 60,
+           max: () => Math.max(60, $('.below').getBoundingClientRect().height - 120) },
+};
+function rzKey(k) { return k === 'acts' && !document.body.classList.contains('lay-side') ? 'props' : k; }
+function applyLayout() {
+  for (const k in CSSVAR) LAY[k] == null
+    ? document.documentElement.style.removeProperty(CSSVAR[k])
+    : document.documentElement.style.setProperty(CSSVAR[k], LAY[k] + 'px');
+}
+function saveLayout() { try { localStorage.setItem(LKEY, JSON.stringify({ ...LAY, oval: ovZoom, tl_z: tlZoom, z: { ...ZV } })); } catch (e) {} }
+function loadLayout() {
+  try { const d = JSON.parse(localStorage.getItem(LKEY) || '{}');
+    for (const k in CSSVAR) if (typeof d[k] === 'number' && isFinite(d[k])) LAY[k] = Math.round(d[k]);
+    if (typeof d.oval === 'number' && isFinite(d.oval)) ovZoom = d.oval;
+    if (typeof d.tl_z === 'number' && isFinite(d.tl_z)) tlZoom = d.tl_z;
+    if (d.z) for (const k in ZV) if (typeof d.z[k] === 'number' && isFinite(d.z[k])) ZV[k] = d.z[k];
+  } catch (e) {}
+  applyLayout();
+}
+
+/* Le cran de la poignée de l'ovale : la hauteur en dessous de laquelle l'ovale cesse d'être
+   borné par sa largeur et commence à rapetisser. Au-dessus, lui donner de la hauteur ne change
+   rien au dessin ; en dessous, chaque pixel coûte. C'est une information, pas une interdiction
+   (l'opérateur, 31 octobre 2026 : « ok »). */
+function belowDetent() {
+  const o = ovalZone.getBoundingClientRect(), b = $('.below').getBoundingClientRect();
+  return Math.round(b.height + (o.height - o.width * OVB.h / OVB.w));
+}
+let rz = null;
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest('.rsz'); if (!h || e.button !== 0) return;
+  const key = rzKey(h.dataset.rsz), spec = RZ[key];
+  rz = { h, key, spec, x: e.clientX, y: e.clientY, start: $(spec.el).getBoundingClientRect()[spec.axis === 'x' ? 'width' : 'height'] };
+  h.classList.add('on');
+  try { h.setPointerCapture(e.pointerId); } catch (err) {}   // la capture est un confort, pas une condition : le move et le up sont écoutés sur le document
+  document.body.classList.add('rszing', spec.axis === 'x' ? 'col' : 'row');
+  drag = drag || ['rsz'];           // le moteur ne reconstruit plus la timeline tant qu'on glisse (pitfalls D1)
+  e.preventDefault();
+});
+document.addEventListener('pointermove', e => {
+  if (!rz) return;
+  const d = rz.spec.axis === 'x' ? e.clientX - rz.x : e.clientY - rz.y;
+  let v = Math.round(rz.start + d * rz.spec.sign);
+  if (rz.key === 'below') { const c = belowDetent(); if (Math.abs(v - c) <= 10) v = c; }
+  LAY[rz.key] = Math.max(rz.spec.min(), Math.min(rz.spec.max(), v));
+  applyLayout();
+});
+document.addEventListener('pointerup', () => {
+  if (!rz) return;
+  rz.h.classList.remove('on');
+  document.body.classList.remove('rszing', 'col', 'row');
+  rz = null;
+  if (drag && drag[0] === 'rsz') drag = null;
+  setOvalZoom(ovZoom);              // la zone a changé de taille : la limite du « + » n'est plus la même
+  saveLayout();
+  dirty = true; render();
+});
+// Double-clic : la zone reprend la taille qu'elle a dans la feuille de style, comme le bouton
+// du milieu de l'ovale ramène à 100 %.
+document.addEventListener('dblclick', e => {
+  const h = e.target.closest('.rsz'); if (!h) return;
+  LAY[rzKey(h.dataset.rsz)] = null;
+  applyLayout(); setOvalZoom(ovZoom); saveLayout(); dirty = true; render();
+});
+/* La limite du « + » dépend de la place que la boîte de l'ovale a reçue, et cette place change
+   pour trois raisons : la fenêtre, une poignée, et le simulateur qu'on montre ou qu'on cache.
+   Un observateur de taille les couvre toutes les trois et ne coûte rien entre deux changements —
+   la relire à chaque image coûterait, et c'est exactement ce que pitfalls D15 interdit.
+   Il règle aussi le premier affichage : au moment où ce fichier s'exécute la page n'est pas
+   encore disposée, la boîte mesure zéro, et on ne décide rien sur une mesure vide (D19). */
+new ResizeObserver(() => setOvalZoom(ovZoom)).observe(ovalZone);
+
+/* ---- 1 ter. la taille de la timeline, et le scroll qu'on retarde --------
+   Deux choses, et elles ne font pas la même.
+
+   LE BOUTON est à l'opérateur : « Et si l'opérateur souhaite l'agrandir ??? »
+   (31 octobre 2026). Il pose la taille de référence, elle est gardée, et rien
+   ne la dépasse jamais.
+
+   LE RESSERREMENT est automatique, et il ne va que VERS LE BAS. Le nombre de
+   groupes change pendant que l'opérateur a autre chose à faire : mesuré sur
+   l'écran de référence, une ligne coûte 28 px et un groupe 64, pour 886 px
+   disponibles — à 24 coureurs la colonne déroule dès le 4e groupe. La timeline
+   resserre donc juste ce qu'il faut pour tenir, et revient EXACTEMENT à la
+   taille posée dès qu'il y a de nouveau la place.
+
+   En dessous du plancher elle déroule, et c'est voulu : « évidemment qu'on ne
+   peut pas éviter le scroll indéfiniment ! Si il y a 24 groupes ça va
+   forcément déborder. Mais le but est d'éviter le plus possible le scroll »
+   (l'opérateur, 31 octobre 2026). Les deux bandes de dépôt restent épinglées,
+   donc atteignables même là. */
+const TLZ_MIN = 0.6, TLZ_MAX = 1.8, TLZ_STEP = 0.1;
+const TLZ_FLOOR = 0.8;       // 22 px par ligne : en dessous le dossard n'est plus lisible d'un coup d'œil
+const tlzv = $('#tlzv'), tlEl = $('.tl');
+let tlApplied = 1;                         // la taille réellement à l'écran : celle posée, ou moins si la colonne est pleine
+function tlFit() {
+  if (!tlbody.clientHeight) return;        // colonne pas rendue : on ne décide rien sur une mesure vide (pitfalls D19)
+  let z = tlZoom;
+  tlEl.style.setProperty('--tlz', z);
+  while (z > TLZ_FLOOR && tlbody.scrollHeight > tlbody.clientHeight + 1) {
+    z = Math.max(TLZ_FLOOR, +(z - 0.05).toFixed(2));
+    tlEl.style.setProperty('--tlz', z);
+  }
+  tlApplied = z; tlSync();
+}
+/* Le bouton dit ce qui est À L'ÉCRAN, pas ce qui est demandé : quand la colonne est pleine, la
+   taille appliquée est sous celle posée, et le « + » est alors grisé — un bouton qui ne peut
+   rien faire se montre comme tel, exactement comme celui de l'ovale. */
+function tlSync() {
+  tlzv.textContent = Math.round(tlApplied * 100) + ' %';
+  $('#tlzoom [data-tlz="-1"]').disabled = tlZoom <= TLZ_MIN;
+  $('#tlzoom [data-tlz="1"]').disabled = tlZoom >= TLZ_MAX || tlApplied < tlZoom - 1e-9;
+  tlzv.disabled = tlZoom === 1 && tlApplied === 1;
+}
+function setTlZoom(k) {
+  tlZoom = Math.max(TLZ_MIN, Math.min(TLZ_MAX, Math.round(k * 10) / 10));
+  tlApplied = tlZoom; tlSync();
+  tlFit();
+}
+$('#tlzoom').addEventListener('click', e => {
+  const b = e.target.closest('[data-tlz]'); if (!b || b.disabled) return;
+  const d = +b.dataset.tlz;
+  setTlZoom(d === 0 ? 1 : tlZoom + d * TLZ_STEP);
+  saveLayout();
+});
+/* La mise à la hauteur se fait quand la timeline vient d'être reconstruite, et à ce moment-là
+   seulement : la relire à chaque image coûterait une disposition forcée vingt fois par seconde,
+   ce que pitfalls D15 interdit. On enveloppe donc renderTimeline au lieu de surveiller render. */
+const baseRenderTimeline = renderTimeline;
+renderTimeline = function (G) { baseRenderTimeline(G); tlFit(); };
+// La colonne change aussi de hauteur sans que la timeline soit reconstruite : la fenêtre, et la
+// poignée du haut. Même observateur que pour l'ovale, pour la même raison (D15).
+new ResizeObserver(() => tlFit()).observe(tlbody);
+
+/* ---- 1 quater. la taille des éléments des trois autres zones ------------
+   Même objet que celui de l'ovale, même plage, même bouton du milieu qui
+   ramène à 100 %. Chacun est posé hors du conteneur que le moteur réécrit,
+   pour qu'un appui ne tombe jamais sur un bouton remplacé (pitfalls D2). */
+const ZCSS = { sprint: '--z-sprint', props: '--z-props', acts: '--z-acts' };
+const ZV = { sprint: 1, props: 1, acts: 1 };
+function syncZone(k) {
+  const s = document.querySelector(`.zsel[data-zone="${k}"]`);
+  document.documentElement.style.setProperty(ZCSS[k], ZV[k]);
+  s.querySelector('.zv').textContent = Math.round(ZV[k] * 100) + ' %';
+  s.querySelector('[data-zs="-1"]').disabled = ZV[k] <= OVZ_MIN;
+  s.querySelector('[data-zs="1"]').disabled = ZV[k] >= OVZ_MAX;
+  s.querySelector('.zv').disabled = ZV[k] === 1;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('.zsel [data-zs]'); if (!b || b.disabled) return;
+  const k = b.closest('.zsel').dataset.zone, d = +b.dataset.zs;
+  ZV[k] = d === 0 ? 1 : Math.max(OVZ_MIN, Math.min(OVZ_MAX, Math.round((ZV[k] + d * OVZ_STEP) * 10) / 10));
+  syncZone(k); saveLayout(); dirty = true; render();
+});
+
+loadLayout();
+setOvalZoom(ovZoom);
+setTlZoom(tlZoom);
+for (const k in ZCSS) syncZone(k);
 
 /* ---- 2. l'onglet Passings (page 3d de la maquette) -----------------------
    Tout ce qui s'affiche ici est relevé de l'installation telle que le moteur

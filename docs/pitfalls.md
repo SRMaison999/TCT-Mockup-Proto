@@ -637,3 +637,31 @@ est décidé, et **du français dans une interface entièrement en anglais**. M�
 **La règle** : avant de livrer, relire tous les textes visibles d'une maquette et vérifier
 qu'ils viennent de la documentation ou de la build en cours, et qu'ils sont dans la langue de
 l'interface.
+
+### D27 · Trois lignes de commentaire posées hors de leur commentaire
+
+En ajoutant les poignées (build 149), un paragraphe d'explication a été inséré **après** le
+`*/` du commentaire qui le précédait, en gardant son propre `*/` à la fin. Les trois lignes
+orphelines ont donc été lues comme un sélecteur, qui a avalé la règle suivante : la timeline
+gardait obstinément ses 174 px alors que `--w-tl` valait bien 420 px, et la poignée paraissait
+ne rien faire. Aucune erreur, aucun avertissement — une feuille de style ignore ce qu'elle ne
+comprend pas et passe à la suite.
+
+Ce qui a permis de le voir : avoir comparé **la variable et la valeur calculée** plutôt que la
+variable seule. `getComputedStyle(el).width` disait `174px` quand
+`getPropertyValue('--w-tl')` disait `420px` ; les deux ensemble désignent la cascade, l'une
+seule n'aurait rien dit. Même leçon que D17 et D20 : **on affirme la valeur calculée, jamais la
+règle écrite.**
+
+### D26 bis · Le script qui produisait les deux versions n'existe plus
+
+D26 dit qu'un fichier produit ne se retouche pas, qu'on corrige le script et qu'on régénère.
+Le script qui fabriquait `timeline-prototype_mixed.html` et
+`timeline-prototype_new_look_3a_3d.html` à partir de `timeline-prototype.html` était jetable :
+il n'est pas dans le dépôt, et il n'y a donc plus rien à corriger ni à régénérer. **Les deux
+fichiers sont devenus leur propre source** et s'éditent directement.
+
+Ce que D26 garde de valable : les trois fichiers partagent `styles.css` et une copie du même
+moteur. Une correction utile aux trois se fait donc **trois fois**, ou dans `styles.css` quand
+elle est purement visuelle — et une modification propre à une version n'a rien à faire dans
+`styles.css`, qui les sert toutes.

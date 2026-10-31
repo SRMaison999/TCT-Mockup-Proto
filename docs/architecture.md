@@ -1074,3 +1074,106 @@ des trois boucles.
 Comme dans `timeline-prototype_new_look_3a_3d.html` : le prototype n'a ni horloge murale ni
 niveau de signal, donc la colonne Time porte le **temps de course** à la milliseconde, et la
 colonne Signal porte ce qui existe vraiment, les comptages.
+
+## 22. Les poignées, la timeline élastique et les réglages par zone (build 149)
+
+Demandés le 31 octobre 2026, consignés mot pour mot dans `regles-operateur.md` §17,
+points 110 à 120. Tout vit dans `timeline-prototype_mixed.html` — son bloc `<style>` et la fin
+de son IIFE. **Rien n'entre dans `styles.css`** : cette feuille sert aussi à
+`timeline-prototype.html` et à `timeline-prototype_new_look_3a_3d.html`, qui ne changent pas.
+Chaque surcharge porte son parent dans le sélecteur (`.main > .tl`, `.mid > .below`) : à
+spécificité égale c'est l'ordre qui tranche, et c'est ce qui a coûté D17 et D20.
+
+### L'ovale calé en haut à gauche
+
+`preserveAspectRatio` passe de `xMidYMin` à `xMinYMin`, et le réglage ne déplace plus l'origine
+du `viewBox` : `x` et `y` restent à 63 et 49, seules la largeur et la hauteur changent.
+
+Le maximum n'est plus 180 % : `ovalMax()` le calcule à partir de ce que l'opérateur a défini
+comme « rogné » (§17 point 111) — à droite le bord peint du ruban, en haut et en bas les bords
+extérieurs des deux boutons `SET NEXT AS LEADER`. Les quatre cotes sont **relevées du dessin**
+(`#trackband`, `#armfo1`, `#armfo2`), jamais écrites à la main.
+
+**Ce que l'arithmétique impose.** La zone à garder visible mesure 837 × 488 unités dans un
+cadre de 854 × 492 : il reste 2 % de marge en largeur et 0,8 % en hauteur. Le maximum vaut donc
+au mieux 1,02 **sur n'importe quel écran**, et avec un pas de 10 % le `+` est grisé dès 100 %.
+C'est voulu et ce n'est pas un bouton mort : il sert à remonter après un `−` (§17 point 113).
+Agrandir réellement l'ovale passe par les poignées, qui agrandissent sa zone.
+
+La limite se recalcule par un `ResizeObserver` sur `.oval` — il couvre la fenêtre, les poignées
+et le simulateur qu'on montre ou qu'on cache, et il règle aussi le premier affichage, où la
+boîte mesure encore zéro (D19). La relire à chaque image coûterait une disposition forcée vingt
+fois par seconde (D15).
+
+### Les quatre poignées
+
+Sur les quatre coutures qui existaient déjà : timeline ↔ milieu, milieu ↔ colonne du sprint,
+ovale ↔ zone du bas, et actions ↔ propositions (verticale en disposition « côte à côte »,
+horizontale en « empilée »). Chacune n'écrit **qu'une variable CSS** — `--w-tl`, `--w-right`,
+`--h-below`, `--w-acts`, `--h-props` — que la zone lit avec sa valeur d'origine en repli :
+sans variable, l'écran est au pixel près celui d'avant.
+
+Le glissé passe par le pointeur, jamais par le drag natif (D3), et pose le fanion `drag` du
+moteur pendant toute sa durée, celui-là même qui garde le glisser-déposer des coureurs : la
+timeline n'est pas reconstruite tant qu'on glisse (D1). **Mesuré** : 2 reconstructions en 1,6 s
+hors glissé, 0 pendant. Un double-clic rend à la zone la taille de la feuille de style.
+
+**Les planchers.** La colonne du sprint ne descend pas sous 500 px. La timeline ne descend pas
+sous 160 px — elle doit garder dossard, drapeau, NOC et `no pts` (§17 point 114 et la demande du
+31 octobre). La zone du bas ne descend pas sous la hauteur de la barre d'actions, parce que
+« la barre d'actions ne doit jamais avoir à défiler pour être vue en entier » (29 octobre
+2026) ; les propositions, elles, défilent plutôt que d'être rognées. La poignée de l'ovale
+**marque d'un cran** la hauteur en dessous de laquelle le dessin cesse d'être borné par sa
+largeur et commence à rapetisser : une information, pas une interdiction.
+
+### La timeline qui se met à la hauteur
+
+Deux choses distinctes. Le **bouton** pose la taille de référence de l'opérateur, de 60 % à
+180 %, et elle est gardée. Le **resserrement** est automatique et ne va que vers le bas : après
+chaque reconstruction, `tlFit()` baisse `--tlz` par pas de 0,05 jusqu'à ce que la colonne tienne
+ou jusqu'au plancher de 0,8 — 22 px par ligne, en dessous le dossard n'est plus lisible d'un
+coup d'œil. Au-delà elle déroule, et c'est voulu (§17 point 116).
+
+Le bouton du milieu affiche la taille **appliquée**, pas celle demandée, et le `+` est grisé
+quand la colonne est pleine : un bouton qui ne peut rien faire se montre comme tel.
+
+`tlFit()` est appelée en enveloppant `renderTimeline`, pas dans `render()` : une fois par
+reconstruction au lieu de vingt fois par seconde (D15). Un `ResizeObserver` sur `#tlbody`
+rattrape les changements de hauteur qui ne passent pas par une reconstruction — la fenêtre et
+la poignée.
+
+**Les deux bandes « new group » sont épinglées** en haut et en bas de la colonne
+(`position:sticky`), et gardent leur hauteur : une zone de dépôt ne bouge pas sous le curseur
+(D3). Elles restent donc atteignables même quand la colonne déroule — c'est exactement le cas
+où l'opérateur en a besoin.
+
+**L'en-tête de groupe passe sur une ligne** quand les trois textes y tiennent, et se resserre
+dans tous les cas : 39,6 px avant, **17,8 px** mesurés après. Ce qui ne tient pas — une pastille
+d'état, la longue ligne d'un groupe d'incident — passe dessous, et cet en-tête-là reste haut.
+
+### Les réglages par zone
+
+Trois de plus, pour la carte du sprint, les propositions et la barre d'actions, dessinés comme
+celui de l'ovale. Ils agissent par `zoom` sur le contenu de leur zone : `#scard`,
+`.below > .props > *`, `.acts > .tbar`. La zone, elle, se règle à la poignée — la poignée donne
+de la place, le réglage donne de la taille.
+
+Chacun est posé **hors** du conteneur que le moteur réécrit : `#propcard` et `#scard` sont
+refaits une fois par seconde, et un bouton remplacé entre l'appui et le relâchement n'émet pas
+de clic (D2). Ils ne paraissent qu'au survol de leur zone, comme celui de la timeline : la place
+verticale est justement ce qui manque, et une barre permanente en prendrait.
+
+### Le drapeau dans l'ordre du sprint
+
+Sept colonnes au lieu de six, **sans élargir la colonne** : les 27 px du drapeau sont pris sur
+l'écart, qui réservait 62 px pour 43,2 d'encre, et sur le NOC, qui en réservait 38 pour 23,4.
+Mesuré après : la colonne de l'écart garde 46,7 px pour 43,2 d'encre. L'en-tête porte la même
+grille, sinon les deux ne sont plus alignés.
+
+### Ce qui est gardé
+
+Une seule clé, `tct.layout` : les cinq variables des poignées, le réglage de l'ovale, celui de
+la timeline et les trois réglages de zone. Relue au chargement, réécrite à chaque geste.
+« TOUT DOIT RESTER IDENTIQUE SI PERSONNE NE TOUCHE LES POIGNEES OU LES BOUTONS » (§17
+point 119). Une nouvelle course ne remet rien à zéro : la disposition est celle du poste, pas
+celle de la course, et rien de tout cela n'entre dans une course enregistrée.

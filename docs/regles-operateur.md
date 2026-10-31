@@ -1896,3 +1896,71 @@ final ! l'ovale est beaucoup trop grand, la timeline beaucoup trop petite », pu
      boutons, et « déposer ici » dans la zone de dépôt. Sa réaction : « Qu'est-ce c'est que
      texte ??? ». Les deux sont retirés : du texte inventé, et en français dans une interface
      qui n'est qu'en anglais.
+
+### Les poignées, et la taille des éléments · 31 octobre 2026
+
+Demandé après l'audit de la version mixte. Mot pour mot :
+
+> Ce que je voudrais, c'est que la partie supérieure de l'ovale soit toujours fixe en haut de
+> sa zone, et la partie gauche fixe également près de la timeline, quelle que soit la taille
+> qu'on lui applique.
+>
+> Ensuite je voudrais pouvoir agrandir/réduire les zones de la timeline, des boutons
+> d'actions, des propositions, des sprints à l'aide de « poignées », comme c'est le cas dans
+> cette interface Claude code pour resizer les différentes parties de la page.
+>
+> Et finalement pouvoir resizer les éléments de chaque zone, comme c'est déjà le cas pour
+> l'ovale.
+
+110. **L'ovale s'ouvre par son coin haut-gauche.** Le haut du dessin ne quitte pas le haut de
+     sa zone, et son côté gauche ne quitte pas le bord de la timeline, à n'importe quelle
+     taille.
+
+111. **« La piste commence à être rognée » a une définition, et c'est la sienne** : « C'est
+     sur les côtés le ruban marron, dessus et dessous ce sont les bords supérieurs et
+     inférieurs respectivement des boutons "SET NEXT AS LEADERS" ». Le bouton `+` du réglage
+     de l'ovale s'arrête là, et non à une valeur écrite d'avance.
+
+112. **Les boutons `SET NEXT AS LEADER` ne bougent pas.** Ses mots : « Les boutons SET NEXT AS
+     LEADER restent là où ils sont ! ». Le point 35 tient donc inchangé, et c'est lui qui
+     fixe le plafond du réglage.
+
+113. **Le `+` sert à revenir, pas à dépasser.** « Si j'utilise "-" peut-être que vais-je avoir
+     envie de revenir en arrière et donc je vais avoir besoin de "+" !!! ». Le réglage est
+     donc une plage 60 %–100 % sur l'écran de référence, et le `+` est grisé en haut de plage
+     comme le `−` l'est en bas.
+
+114. **Les titres de groupe sont réduits en hauteur.** « je pense que les titres des groupes
+     devraient être réduits en hauteur ». Rien n'en est retiré : les quatre choses du point
+     §17 y restent.
+
+115. **Les deux bandes de dépôt restent atteignables.** « il faut bien s'assurer que les
+     boutons permettant de créer un groupe au-dessus du groupe le plus haut et un groupe
+     au-dessous du groupe le plus bas soient accessibles pour un drag'n'drop de coureurs ».
+     Elles sont donc épinglées en haut et en bas de la colonne, y compris quand elle déroule.
+
+116. **Le scroll se retarde, il ne se supprime pas.** « évidemment qu'on ne peut pas éviter le
+     scroll indéfiniment ! Si il y a 24 groupes ça va forcément déborder. Mais le but est
+     d'éviter le plus possible le scroll ». La timeline resserre donc ce qu'elle contient
+     jusqu'à un plancher, et déroule au-delà.
+
+117. **La timeline garde un bouton de taille.** « ?? Comment ça aucun bouton ? Et si
+     l'opérateur souhaite l'agrandir ??? ». La taille qu'il pose est un plafond : le
+     resserrement automatique ne va que vers le bas, et revient exactement à sa valeur dès
+     qu'il y a la place.
+
+118. **Un drapeau entre dans l'ordre du sprint, le nom n'y revient pas.** Sur la largeur de la
+     colonne : « Je suis d'accord ! Je pense que le nom n'est pas vraiment nécessaire dans
+     l'ordre, en revanche un drapeau serait utile ». Et, sur la place disponible, capture à
+     l'appui : « je pense qu'il y a la place pour placer un drapeau dans la zone que j'ai
+     encadré en rouge, non ? ». La colonne ne s'élargit pas pour autant.
+
+119. **Rien ne bouge si personne n'y touche.** Ses mots, en capitales : « TOUT DOIT RESTER
+     IDENTIQUE SI PERSONNE NE TOUCHE LES POIGNEES OU LES BOUTONS POUR AGRANDIR OU REDUIRE LES
+     ELEMENTS !!!!!!!!!!!! ». Les tailles posées sont donc gardées sur le poste et relues au
+     chargement, le réglage de l'ovale compris. La seule chose qui bouge sans lui est le
+     resserrement du point 116, et il revient toujours à ce qu'il a posé.
+
+120. **Il faut pouvoir régler la taille des éléments, zone par zone.** « Je ne sais pas, mais
+     j'ai besoin de pouvoir ajuster la taille des éléments ! » — la forme était laissée
+     ouverte, la capacité non.
