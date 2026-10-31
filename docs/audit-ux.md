@@ -399,7 +399,14 @@ points 136 à 141 ; ce qu'elles laissent à faire est dans `travaux.md`.
 | **E** · le panneau de l'ovale | « Sortir aussi les réglages du panneau », vers « la barre du haut » | tranché, **sort de cette liste** |
 | **F** · la barre d'onglets | « On ne change rien » | **sort de cette liste**, rien à faire |
 
-**Rien de tout cela n'est encore codé.** Le prototype est à la build 155.
+**Les points A, C et E sont codés en build 159** (`architecture.md` §34, `mesures.md` §33), et
+**le point B l'est en builds 156 et 157** — son option 2, puis le carré du badge retiré. **La
+section B de cet audit est donc entièrement traitée** : les cinq points sont tranchés, et les
+quatre qui demandaient du code l'ont reçu.
+
+**La section A tient entière**, ses quatorze points, à ceci près que le point 9
+(`LAP COUNTER` recopie le compte de l'application) a seulement **changé de place** avec le
+panneau : il est dans la barre du haut, et il recopie toujours.
 
 ## Ce que le design réussit
 
