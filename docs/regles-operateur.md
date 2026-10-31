@@ -708,6 +708,17 @@ on ne code qu'après son accord explicite.
 Une précision que l'opérateur donne sur le matériel ou sur la course est un **fait**, pas une
 demande de le coder.
 
+**Rien n'entre dans le prototype sans l'accord explicite de l'opérateur.** Validé le
+31 octobre 2026, dans ses mots : « Rien n'entre dans le prototype sans mon accord explicite.
+Par défaut, on dessine ce que j'ai décrit, on retire ce que je rejette, on n'ajoute rien. Quand
+je demande un audit ou un avis, la réponse peut contenir ce que je n'ai pas demandé — mais elle
+reste une liste de propositions, et chaque point attend mon accord avant d'entrer dans le
+code. »
+
+Cette règle délimite la précédente. L'opérateur l'a posée en constatant que « on n'ajoute rien »
+bloquait le cas où il demande lui-même un audit : la règle porte sur **ce qui entre dans le
+prototype**, pas sur ce qui peut être dit en réponse à une demande d'avis.
+
 **On ne modifie jamais un comportement approuvé sans le dire.** C'est arrivé plusieurs fois et
 cela a coûté la confiance de l'opérateur. Tout écart par rapport à un comportement validé se
 propose avant d'être codé. Cela vaut en particulier pour les tours, les groupes, le merge et
