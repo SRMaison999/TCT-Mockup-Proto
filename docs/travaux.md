@@ -536,3 +536,23 @@ départ doit survivre au déménagement de `ARM START`.
 **On saura que c'est fini quand** : le panneau ne porte plus que cinq champs, la barre du haut
 porte les commandes sorties sans rien perdre d'autre, et la course de référence se lance et
 s'arrête depuis la barre comme elle le faisait depuis l'ovale.
+
+---
+
+## 13 bis. Les trois postes du §13 sont livrés — **build 159, 31 octobre 2026**
+
+Les trois sont codés et vérifiés dans la page (`architecture.md` §34, `mesures.md` §33) :
+
+- **13a** — la carte d'une proposition de tour passe en ambre tant qu'elle attend, et le champ
+  du prochain sprint redescend en bleu pendant ce temps. Vérifié aux deux moments : tour 8 sans
+  proposition, champ ambre ; tour 40 avec proposition, carte ambre et champ bleu.
+- **13b** — `--dim` éclairci, et l'indice d'onglet sorti des capitales. C'était la seule phrase
+  en capitales de l'écran.
+- **13c** — le panneau de l'ovale réduit à cinq champs et 64 px ; `ARM START`, `ARM FINISH` et
+  la paire de provenances dans la barre du haut. Vérifié à la souris depuis leur nouvelle
+  place : les cinq commandes répondent.
+
+**Ce que ces trois postes n'ont pas touché, et qui tient toujours** : le point 9 de
+`audit-ux.md` — `LAP COUNTER` affiche encore le compte de l'application, puisque
+`counterValue()` le recopie. Le déménagement n'a pas changé ce qu'il montre, seulement où il
+est. Le point reste entier dans la liste A.

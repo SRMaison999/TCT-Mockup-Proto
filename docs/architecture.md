@@ -1654,3 +1654,56 @@ qu'il a demandé d'aligner. Mesuré dans la page sur la course de référence me
 **Ce que cela coûte, et qu'il verra** : la start list ne remplit plus sa colonne. À seize
 coureurs il reste du vide sous la dernière ligne, là où les lignes s'étiraient pour le prendre.
 C'est la contrepartie directe d'un pas fixe, et c'est le pas qu'il a demandé.
+
+---
+
+## 34. Les trois points de design tranchés entrent dans le code (build 159)
+
+Ses points 136, 138, 139 et 140 de `regles-operateur.md` §17, codés ensemble sur sa demande
+— « Attaque ça ! ». Les chiffres sont dans `mesures.md` §33.
+
+### La proposition qui attend passe en orange
+
+La carte `.gq` porte `hot`, et une règle lui donne l'ambre `--warn` que le champ du prochain
+sprint portait déjà : **aucun signal nouveau n'est inventé**. Tout ce qui est écrit dessus passe
+au brun foncé, les numéros de dossard compris — ils sont blancs depuis la build 157, et blanc
+sur ambre ne se lit pas.
+
+L'autre moitié est dans `syncInfield` : `IF.next` garde `acc` mais perd `hot` tant qu'une
+proposition de tour attend, par `lapProposalWaiting()`. Cette fonction compte la mise en
+sommeil comme partout ailleurs — une proposition endormie n'est pas affichée, donc elle
+n'allume rien.
+
+**Ce que le code ne fait pas** : seules les propositions de **tour** s'allument. Les autres
+(`alone`, `back`, `missing`, `spd`, `tape`…) gardent leur ligne bleue. C'est la carte qu'il a
+vue et choisie, et allumer les sept en même temps aurait défait le foyer unique.
+
+### Les gris et les capitales
+
+Un seul jeton change, `--dim`, et les treize règles qui le portent suivent. L'indice d'onglet
+quitte `.lbl` pour une classe à lui, `.loghint`, sans capitales : c'est une phrase, et une
+phrase en capitales se lit lettre par lettre. **Les en-têtes de colonne gardent les leurs.**
+
+### Le panneau de l'ovale, et la barre du haut
+
+Le panneau garde cinq champs sur deux lignes : l'horloge et `LAP` à gauche, `TO GO` et `LEADER`
+au milieu, le prochain sprint à droite sur toute la hauteur — c'est le seul des cinq qui doit
+s'attraper du coin de l'œil. Le `foreignObject` passe de 92 à 64 px et descend de 14, pour que
+son milieu ne bouge pas. **`PANELS`, qui écarte les badges de groupe, lit ces attributs dans le
+DOM** : l'évitement suit tout seul, sans rien à changer.
+
+Partent dans `#barctl`, dans la barre du haut : `ARM START`, `ARM FINISH`, et la paire
+`AUTO` / `LAP COUNTER` avec ses boutons de choix, son bascule `M` et ses pas `− / +`. **Les
+mêmes éléments, les mêmes identifiants.** La paire s'empile sur deux lignes de 15 px, parce que
+la barre fait 36 px et que chaque ligne en faisait 22 dans le panneau.
+
+**Le piège, et comment il est évité** : le gestionnaire de ces commandes était posé sur
+`#infield`. Déplacées, elles en sortaient et ne répondaient plus à rien. Il est donc **nommé**,
+`onRaceControl`, et posé sur `#infield` — pour `TO GO`, qui reste dans l'ovale — et sur
+`#barctl`. La double confirmation du faux départ n'est pas touchée : elle est dans
+`startClick`, que le gestionnaire appelle.
+
+**Ce qui cède quand la barre est pleine** : le groupe ne se resserre jamais ; c'est le
+sous-titre, qui a déjà ses points de suspension, qui s'efface. Avec le simulateur ouvert, le
+titre et le sous-titre disparaissent — ils disparaissaient déjà avant cette build, à cette
+largeur.

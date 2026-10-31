@@ -2447,3 +2447,48 @@ soit sa taille de police.
 Le défaut **ne se voit pas** quand les coureurs sont étalés : un échappé seul, ou deux groupes
 séparés, portent leur NOC sans rien recouvrir. C'est le peloton groupé qui le produit, et le
 peloton groupé est l'état normal de la course.
+
+---
+
+## 33. Les trois points de design tranchés (build 159, 31 octobre 2026)
+
+Mesuré dans la page, course de référence chargée et rejouée.
+
+### Un seul foyer à la fois
+
+| Moment | Proposition en attente | La carte | Le champ du prochain sprint |
+|---|---|---|---|
+| tour 8, sprint 1 à 2 tours | non | — | **ambre** (`ifb acc hot`) |
+| tour 40, sprint 4 ce tour-ci | **oui** | **ambre** `rgb(242,163,58)` | **bleu** (`ifb acc`, **pas** `hot`) |
+
+Sur la carte ambre, le titre, le tour et les numéros de dossard sont mesurés à
+`rgb(42,27,5)` — le brun foncé du champ `hot`. Les deux cartes d'une même course (« Lap
+gained? » et « Lap lost? ») s'allument **toutes les deux** quand elles attendent ensemble : le
+foyer unique est posé entre la proposition et le sprint, pas entre deux propositions.
+
+### Le gris et les capitales
+
+| | Avant | Après |
+|---|---|---|
+| jeton `--dim` | `#5f5c55` | **`#8a8780`** |
+| contraste sur `--deep` / lignes / `--panel` | 2,84 / 2,64 / 2,51 | **5,28 / 4,91 / 4,67** |
+| indice d'onglet | `FACTS ONLY · NEWEST FIRST`, 11 px, capitales | **`facts only · newest first`**, 12 px, `text-transform: none` |
+
+L'indice d'onglet était la **seule phrase en capitales** de l'écran : il portait `.lbl`, la voix
+des en-têtes de colonne. Les autres textes en `--dim` — les raisons d'inéligibilité, les notes
+barrées du registre, les indices de la carte de sprint — étaient déjà en minuscules et n'ont
+reçu que l'éclaircissement.
+
+### Le panneau de l'ovale
+
+| | Avant | Après |
+|---|---|---|
+| hauteur du panneau | 92 px | **64 px** |
+| commandes au centre de l'ovale | 12 | **5** |
+| `y` du `foreignObject` | 249 | 263 — le milieu ne bouge pas |
+
+Vérifié depuis la barre du haut, à la souris : le bascule `M` passe `#srcapp` en
+`srcrow on manual`, l'étiquette devient `MANUAL` et les pas `− / +` paraissent ; le bouton de
+choix du compteur passe `#srccnt` en `on` et retire `on` à `#srcapp` ; `ARM START` devient
+`START ARMED`, et `ARM FINISH` prend `armed`. Les cinq commandes déplacées répondent donc au
+même geste depuis leur nouvelle place.

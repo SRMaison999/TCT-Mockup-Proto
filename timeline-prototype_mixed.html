@@ -331,7 +331,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 158 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 159 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -356,6 +356,23 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
         </div>
     </div>
     <span class="sp"></span>
+    <!-- CE QUI EST SORTI DU PANNEAU DE L'OVALE (l'opérateur, 31 octobre 2026, point 140 :
+         « Dans la barre du haut »). Les mêmes éléments, les mêmes identifiants, les mêmes
+         écouteurs : seul leur endroit a changé. La paire de provenances tient sur deux lignes
+         de 15 px, parce que la barre fait 36 px de haut et qu'elles en faisaient 22 chacune. -->
+    <span id="barctl">
+      <button class="startb barb" id="startbtn">ARM START</button>
+      <button class="startb finb barb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
+      <span class="togopair">
+        <span class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
+          <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
+          <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
+          <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></span>
+        <span class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
+          <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></span>
+      </span>
+    </span>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
     <span class="lbl">Race leader</span>
     <button class="btn quiet" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
     <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
@@ -408,26 +425,25 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
           <g id="ovlabels"></g>
           <text id="gmeas" class="glabel" x="-9999" y="-9999" aria-hidden="true"></text>
           <g id="infield">
-            <foreignObject id="ifpanel" x="267" y="249" width="446" height="92">
+            <!-- LE PANNEAU NE GARDE QUE CE QUI SE LIT EN COURSE (l'opérateur, 31 octobre 2026,
+                 regles-operateur.md §17 point 139) : l'horloge, LAP, TO GO, LEADER et le prochain
+                 sprint. La paire AUTO / LAP COUNTER, ses boutons de choix, le bascule M, les pas
+                 − / + et les deux boutons d'armement sont partis dans la barre du haut, qu'il a
+                 choisie (point 140) — ils sont dans #barctl, en haut de ce fichier.
+                 92 px deviennent 64, et le panneau reste centré au même endroit : il descend de
+                 14 px pour que son milieu ne bouge pas. -->
+            <foreignObject id="ifpanel" x="267" y="263" width="446" height="64">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifcols">
                 <div class="ifcol">
-                  <button class="startb" id="startbtn">ARM START</button>
                   <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
-                  <button class="startb finb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
-                </div>
-                <div class="ifcol">
-                  <div class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
-                    <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
-                    <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
-                    <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></div>
-                  <div class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
-                    <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></div>
-                  <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
-                </div>
-                <div class="ifcol">
                   <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
+                </div>
+                <div class="ifcol">
+                  <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
                   <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
-                  <div class="ifb" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
+                </div>
+                <div class="ifcol">
+                  <div class="ifb tall" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
                 </div>
               </div>
             </foreignObject>
@@ -471,7 +487,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
      retirés de la page le 29 octobre 2026 et demandé qu'on aille les chercher dans un menu de la barre du haut. Le
      panneau s'ouvre par-dessus l'écran de course et se referme. -->
 <div class="log" id="log" hidden>
-  <div class="hd"><span class="lbl" id="loghint" style="color:var(--dim)">finish-line order of every lap · leader first · newest lap first</span><span class="xb" id="xbtns"></span><button class="btn xs quiet" id="logclose" title="Back to the race screen">Close</button></div>
+  <div class="hd"><span class="loghint" id="loghint">finish-line order of every lap · leader first · newest lap first</span><span class="xb" id="xbtns"></span><button class="btn xs quiet" id="logclose" title="Back to the race screen">Close</button></div>
   <!-- Les filtres de l'onglet Passings : la page 3d de TCT Points Race - mockups.html. Ils ne paraissent
        que sur cet onglet. -->
   <div class="pfilt" id="pfilt" hidden>
@@ -1567,6 +1583,12 @@ function groupName(g, G) {
 function liveActions(p) { return p.actions.filter(a => !a.bib || p.bibs.includes(a.bib)); }
 let shownProps = null;
 function proposalsFor(g) { const out = S.proposals.filter(p => !(S.snoozed[p.key] && S.t < S.snoozed[p.key]) && p.bibs.some(b => g.bibs.includes(b)) && !shownProps.has(p)); for (const p of out) shownProps.add(p); return out; }
+// UN SEUL FOYER À LA FOIS (l'opérateur, 31 octobre 2026, regles-operateur.md §17 point 136).
+// Une proposition de tour vaut ±20 points et reste affichée jusqu'à validation ou rejet (§4) :
+// tant qu'elle attend, c'est elle qui porte l'ambre, et le champ du prochain sprint redescend en
+// bleu accentué. La mise en sommeil est comptée comme partout ailleurs — une proposition
+// endormie n'est pas affichée, donc elle n'allume rien.
+function lapProposalWaiting() { return S.proposals.some(p => p.kind === 'lap' && !(S.snoozed[p.key] && S.t < S.snoozed[p.key])); }
 
 function renderTimeline(G) {
   lastG = G; shownProps = new Set();
@@ -1605,7 +1627,7 @@ function renderTimeline(G) {
         }).join('');
         const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib)
           .map(x => `<button class="btn xs${/all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${/all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
-        props += `<div class="gq" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${perBib}</span><span class="pr"><span class="pt"><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b></span><span class="pa">${btns}</span><span class="pl">Lap ${p.lap}</span></span></div>`;
+        props += `<div class="gq hot" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${perBib}</span><span class="pr"><span class="pt"><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b></span><span class="pa">${btns}</span><span class="pl">Lap ${p.lap}</span></span></div>`;
       } else props += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
     }
     // The box carries the group's own colour, the same one its bubble has on the oval (regles-operateur.md §17).
@@ -1724,7 +1746,7 @@ function renderStrip(G) {
   // immanquable » (operator, 29 October 2026). Two laps out and nearer, the box stops being a quiet field.
   const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
   IF.next.classList.toggle('acc', close);
-  IF.next.classList.toggle('hot', close);
+  IF.next.classList.toggle('hot', close && !lapProposalWaiting());   // un seul foyer : voir lapProposalWaiting
   const cnt = S.finished ? 0 : counterValue(toGo);
   SRC.appk.textContent = S.togoMode === 'manual' ? 'MANUAL' : 'AUTO';
   SRC.appv.textContent = S.finished ? 0 : appValue(toGo);
@@ -2165,7 +2187,10 @@ function startClick() {
   }
   dirty = true; render();
 }
-$('#infield').addEventListener('click', e => {
+// Les commandes de course répondent au même geste où qu'elles soient. Depuis la build 159 une
+// partie est dans la barre du haut et le reste dans l'ovale : le gestionnaire est donc nommé, et
+// posé sur les deux. `TO GO` est resté dans l'ovale, les armements et les provenances sont partis.
+function onRaceControl(e) {
   const t = e.target;
   if (t.id === 'startbtn') return startClick();
   if (t.id === 'armfinish') {
@@ -2197,7 +2222,9 @@ $('#infield').addEventListener('click', e => {
     S.togoManual = Math.max(0, Math.min(LAPS, appValue(LAPS - dispLap()) + (+st.dataset.togo)));
     dirty = true; return render();
   }
-});
+}
+$('#infield').addEventListener('click', onRaceControl);
+$('#barctl').addEventListener('click', onRaceControl);
 $('#leaderauto').addEventListener('click', () => { pushUndo('leader auto'); S.leader = null; S.arm = null; logEvent('LEADER', 'Race leader taken from the track', true); syncArm(); dirty = true; render(); });
 // The three leader buttons sit on the track at their own loop. Armed, the button AND the loop's line go green and
 // wait; the moment a rider is read there, both come back to normal and the button shows his number for a moment
@@ -2983,7 +3010,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 158 · mixed';
+  $('#buildno').textContent = 'build 159 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

@@ -2137,3 +2137,8 @@ l'écran, une à la fois.
      lignes ne s'étirent plus, donc il reste de la place sous la dernière. Sa réponse, le
      31 octobre 2026 : « **Laisse le vide sous la start list.** » Ce vide est donc **voulu** :
      il ne se rattrape ni en étirant les lignes, ni en remontant le bas de la colonne.
+
+147. **Le NOC qui se recouvre sur l'ovale reste tel quel.** On lui a montré la mesure — dans un
+     peloton groupé, 13 étiquettes sur 16 tombent sur le dossard d'un voisin (`mesures.md`
+     §32). Sa réponse, le 31 octobre 2026 : « **on ne va rien changer ici !** » Ni l'écart des
+     trois files, ni l'affichage du NOC, ni le dossard rond. Le recouvrement est **accepté**.
