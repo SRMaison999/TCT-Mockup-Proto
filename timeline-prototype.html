@@ -595,7 +595,7 @@ function computeGroups(M) {
   for (const x of reads) { S.posOf[x.r.bib] = x.m.pos; S.spdOf[x.r.bib] = x.m.spd; }
   // 2. race distance of each rider: measured crossings, brought back by the credited laps the loops confirm
   const inBunchCluster = new Set(bunchCluster.rows.map(x => x.r.bib)); S.inBunch = inBunchCluster;
-  // §2 of rules-eligibility-merge.md: a rider takes the bunch's lap the moment there is no cassure left between him
+  // §2 of docs/regles-operateur.md: a rider takes the bunch's lap the moment there is no cassure left between him
   // and the bunch, wherever on the track that happens. Membership of the cluster IS that test (§3). And because the
   // cluster means they are at the same point on the track, the difference between their race distances is within a
   // few metres of a whole number of laps: the rounding below is exact, it decides nothing.
@@ -866,7 +866,7 @@ function addProposal(p) { if (S.proposals.some(q => q.key === p.key) || S.dismis
 function detect(G, M) {
   const now = S.t, lap = raceLap();
   tapeCount();
-  // 1. laps gained / lost — §2, §3 and §4 of docs/rules-eligibility-merge.md, and nothing else.
+  // 1. laps gained / lost — §2, §3 and §4 of docs/regles-operateur.md, and nothing else.
   //    WHEN: the instant there is no cassure left between the rider and the bunch, "peu importe à quel endroit de
   //    la piste". That test is exactly what put him in the bunch's cluster (§3), so the event is: he was not in it
   //    on the frame before, he is now. No distance to the bunch is tested, and no tolerance is invented.
