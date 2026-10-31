@@ -58,8 +58,18 @@ l'audit) ». Elle **sort donc aussi le point 1**, qui est réécrit plus bas. Le
 dépendait à demi — un appui qui ne produit rien ne donne aucun retour — et il n'en dépend plus
 qu'au sens où l'appui lui-même ne se voit toujours pas.
 
+La **build 155** retire la disposition empilée et son sélecteur, sur sa demande
+(`architecture.md` §29, `regles-operateur.md` §17 point 135). Elle **ne touche aucun point de
+cette liste** : aucun n'est écrit contre une disposition plutôt que l'autre, et toutes les
+mesures qui précèdent ont été prises en « côte à côte », la seule qui reste.
+
+**Reste de la liste au terme des builds 149 à 155** : les points 1 et 3 en sont sortis, le
+point 17 est résolu aux quatre cinquièmes. **Les quatorze autres points tiennent entiers**, et
+la section B entière avec eux — y compris les trois points de catégorie B, qui n'ont toujours
+pas reçu d'accord.
+
 **Attention pour la suite de cette liste** : les numéros de ligne donnés plus bas sont ceux de
-la build 149. Les builds 150 à 154 ont déplacé le fichier ; les repères nommés
+la build 149. Les builds 150 à 155 ont déplacé le fichier ; les repères nommés
 (`renderTimeline`, `counterValue`, `#tbar`) restent justes, les numéros non.
 
 ---
@@ -89,8 +99,10 @@ de l'appui, rien ne bouge : le retour n'arrive qu'après, quand l'action a produ
 Depuis la build 154, l'action finit par arriver — le point 1 est corrigé — mais rien ne dit
 toujours que le doigt a été senti.
 
-**Où** — `styles.css` : 0 occurrence de `:active`. Bloc `<style>` de la version mixte : 0 non
-plus. Seul `:focus-visible` existe (`styles.css:21`).
+**Où** — `styles.css` : 0 occurrence de `:active`. Bloc `<style>` de la version mixte : **une**
+depuis la build 150, `.zlab:active`, et elle ne porte que l'étiquette de taille d'une zone —
+pas un des boutons que ce point nomme. Seul `:focus-visible` existe ailleurs
+(`styles.css:21`).
 
 **Angle** — 1.
 
