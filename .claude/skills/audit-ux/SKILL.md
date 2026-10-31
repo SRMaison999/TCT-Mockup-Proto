@@ -1,6 +1,6 @@
 ---
 name: audit-ux
-description: Audite Timing/timeline-prototype_mixed.html, du prototype Course aux points — carte de sprint, timeline, ovale, console. Vérifie le retour au clic, la densité utile, le vocabulaire visible, l'origine affichée des déductions et la réversibilité, contre les principes de forme de docs/concept.md. Rend une liste de propositions, jamais une modification. Audite chacun des onglets.
+description: Audite timeline-prototype_mixed.html, du prototype Course aux points — carte de sprint, timeline, ovale, console. Vérifie le retour au clic, la densité utile, le vocabulaire visible, l'origine affichée des déductions et la réversibilité, contre les principes de forme de docs/concept.md. Rend une liste de propositions, jamais une modification. Audite chacun des onglets.
 ---
 
 # Auditer un écran du prototype
