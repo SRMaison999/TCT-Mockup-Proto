@@ -55,6 +55,8 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 | Fichier | Rôle |
 |---|---|
 | `timeline-prototype.html` | **Le prototype** (un seul fichier, aucune dépendance). L'en-tête affiche « build N », incrémenté à chaque publication ; actuellement **build 87** |
+| `timeline-prototype_new_look_3a_3d.html` | **Version alternative du prototype** : le même moteur, présenté sous le dessin des pages 3a, 3b, 3c et 3d de `TCT Points Race - mockups.html` — un écran, quatre onglets (Race, Results, Log, Passings). L'ancien écran reste dans le fichier, hors champ, parce que le moteur y écrit. Décrite dans `docs/architecture.md` §20 |
+| `timeline-prototype_mixed.html` | **Version alternative du prototype** : son écran et ses fonctions tels quels, plus deux choses — un réglage de la taille du dessin de l'ovale qui ne déplace rien d'autre, et **six onglets disponibles en tout temps** sous la barre du haut, dessinés comme les pages 3a–3d — la page de course elle-même, Crossings, Decisions, Sprints, Standings, et un **Passings** repris de la page 3d. Décrite dans `docs/architecture.md` §21 |
 | `maquette-groupes.html` | Maquette des décisions du 25 octobre 2026, dérivée du prototype, **conservée comme témoin** : les décisions ont depuis été codées dans le prototype. `maquette-groupes.jpg` en est une capture |
 | `maquette-simulateur.html` | Maquette de l'écran de **simulateur de courses de test** (composer un scénario). Maquette seule, pas de moteur |
 | `console-course-aux-points.html` | Première maquette, abandonnée pour son interface, mais dont le **moteur d'inférence** a été validé et doit être repris dans l'implémentation réelle (voir `docs/concept.md`) |

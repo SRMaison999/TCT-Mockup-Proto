@@ -340,6 +340,27 @@ a rendu **toute** la carte inerte hors sprint : le tri de la liste de départ pa
 pays ne répondait plus, sans aucune erreur. Retenu : **en rendant permanent ce qui était
 conditionnel, relire les gardes qui portaient sur la condition.**
 
+**D25. `innerText` rend une chaîne vide dans un sous-arbre `visibility:hidden`.** La version
+alternative `timeline-prototype_new_look_3a_3d.html` garde l'ancien écran dans le document
+pour que le moteur continue d'y écrire, et il avait d'abord été mis en `visibility:hidden`.
+Les actions passaient bien, mais le moteur construit son libellé d'annulation avec
+`b.innerText.trim()` du bouton pressé : le journal écrivait « Undone:  · BIB 9 », sans le mot
+*DNF*, et aucune erreur n'était levée. `innerText` suit le rendu, `textContent` suit le
+document. Retenu : **pour garder un écran mesurable mais invisible, le sortir du champ
+(`left:-20000px`), pas le cacher** — `getComputedTextLength`, `getBoundingClientRect` et
+`innerText` veulent tous un élément rendu.
+
+**D26. Retoucher le fichier produit au lieu du script qui le produit.** Les deux versions
+alternatives sont fabriquées par un petit script qui part de `timeline-prototype.html` et
+pose ses ajouts sur des ancres. Pour corriger un débordement d'une ligne de filtres, le
+`<span class="sp"></span>` de trop a été retiré **du fichier produit**, par une expression
+régulière — qui a emporté du même coup **cinq autres ressorts légitimes** du balisage
+d'origine, dans la barre du haut et dans l'en-tête du simulateur. Aucune erreur, aucun
+symptôme visible sur l'écran regardé : le compte est passé de 9 à 4, et c'est le seul
+signe. Retenu : **un fichier produit ne se retouche pas — on corrige le script et on
+régénère**, et on vérifie la régénération en comparant le balisage à l'original, pas en
+regardant l'écran.
+
 ## F. Sprints
 
 **F1. L'écran du sprint a été dessiné dix fois avant d'être codé.** Chaque maquette a été

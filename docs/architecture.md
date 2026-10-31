@@ -940,3 +940,137 @@ croix nordiques, les triangles de guindant, les étoiles et le pavillon du Commo
 sorte qu'une nation tienne sur une ligne. Les bandes et les croix sont exactes ; un emblème —
 aigle, armoiries, cèdre — est ramené à une forme de la bonne couleur au bon endroit.
 `flag(noc)` rend le rectangle gris pour un code inconnu, comme avant.
+
+## 20. `timeline-prototype_new_look_3a_3d.html` : le même moteur sous un autre écran
+
+Une **version alternative** du prototype, demandée le 31 octobre 2026 : le moteur de
+`timeline-prototype.html`, présenté sous le dessin des pages **3a, 3b, 3c et 3d** de
+`TCT Points Race - mockups.html` — un seul écran, quatre onglets (Race, Results, Log,
+Passings), le bandeau d'état au-dessus des quatre, de sorte qu'il ne quitte jamais l'écran.
+
+**Le moteur n'est pas réécrit.** L'ancien écran reste entier dans le document, dans un
+`<div id="legacy">`, **déplacé hors champ** (`left:-20000px`) et non caché : toutes les
+fonctions de rendu continuent d'y écrire et d'y mesurer, donc `renderTimeline`,
+`renderOval`, `renderStrip`, `renderMarks`, `centreInk` et `labelWidth` travaillent encore
+sur des boîtes réelles. La couche de présentation est ajoutée à la fin de l'IIFE et
+s'accroche à `render()` par une seule ligne :
+
+```js
+const nlBaseRender = render;
+render = function () { nlBaseRender(); try { nlRender(); } catch (e) { console.error(e); } };
+```
+
+**Ce qui est déplacé, et non redessiné.** `#scard` (la carte du sprint) et `#rail` (le
+simulateur) sont `appendChild`és dans la nouvelle disposition au démarrage : ce sont les
+vrais, avec leur glisser-déposer, leurs boutons et leurs fichiers.
+
+**Ce qui est transmis, et non réimplémenté.** Chaque commande de la barre d'actions presse le
+bouton que le moteur écoute déjà (`#startbtn`, `#armfinish`, `[data-pick]`, `[data-arm]`,
+`#undo`, `#railshow`/`#railhide`). La colonne des faits reproduit le protocole `data-pid` /
+`data-pact` du moteur et confie ses clics à `onStripClick` : un fait se valide ici exactement
+comme sur l'ancien écran. La ligne « Enter a fact » écrit les dossards tapés dans
+`S.selection`, puis presse le bouton correspondant de `#tbar` ; si le moteur l'a laissé
+désactivé, rien ne se passe.
+
+**Un seul ajout au moteur**, purement additif : `logEvent()` écrit désormais `lap` sur la
+ligne du journal (`dispLap()` sous `try`), parce que l'onglet Log a une colonne Lap. Aucune
+autre fonction ne lit ce champ.
+
+**SET NEXT LEADER** est un seul bouton pour les deux boucles que le moteur arme : un clic
+parcourt Pursuit B → Pursuit A → éteint, et la pastille dit laquelle est armée. Chaque clic
+est **un** clic du moteur, donc le journal enregistre un armement, pas deux.
+
+**NEUTRALISE RACE** est dessiné comme la maquette le montre et **n'est branché sur rien** :
+l'opérateur n'a énoncé aucune règle de neutralisation (`pitfalls.md` A12).
+
+**Trois endroits où la maquette demande ce que le moteur ne mesure pas**, et ce qui y est
+mis à la place :
+- 3a, « The result this produces » : la maquette donne des écarts en secondes. Ici c'est
+  l'échelle d'éligibilité relue dans l'ordre, et l'écart est **le mètre que cette échelle
+  porte déjà** — pas un temps que personne n'a chronométré.
+- 3c, les filtres *Layer* et *Origin* : le journal ne porte ni l'un ni l'autre. Ce sont une
+  **lecture** de ce qu'il porte (`op` pour *Official* / *Decided*, le type d'événement pour
+  *Measured* / *Inferred*). Ces trois mots viennent de la maquette, pas de l'opérateur ; si
+  l'opérateur en donne d'autres, ils changent dans `nlOriginOf()` et nulle part ailleurs.
+- 3d, « Time of day » et le niveau de signal : le prototype n'a ni horloge murale ni dBm. La
+  colonne porte le **temps de course** à la milliseconde, et la colonne Signal porte ce qui
+  existe vraiment — les comptages du tape switch face aux lectures de la boucle.
+
+Le fichier est autonome comme l'original : il charge `styles.css` et `flags.js`, et tout le
+CSS du nouvel écran est dans un `<style>` de l'en-tête, préfixé `nl-`.
+
+
+## 21. `timeline-prototype_mixed.html` : l'écran du prototype, plus deux choses
+
+Demandée le 31 octobre 2026. **L'écran et les fonctions de `timeline-prototype.html` sont
+conservés tels quels** — la timeline, l'ovale, les propositions, la barre d'actions, la carte
+du sprint et le simulateur ne changent ni de dessin ni de comportement. Hors la feuille de
+style ajoutée, le balisage ne diffère de l'original que par **cinq endroits**, et le moteur
+n'est pas retouché : tout l'ajout tient à la fin de l'IIFE et n'enveloppe que deux fonctions,
+`render()` et `renderLog()`.
+
+### La taille de l'ovale
+
+L'ovale est dessiné dans un `viewBox` fixe (`63 49 854 492`) ; le réglage ouvre ou resserre ce
+viewBox **autour de son centre**, et rien d'autre. Mesuré sur la course de référence à 60 %,
+140 % et retour : la timeline, `.mid`, la boîte de l'ovale, la zone du bas, la colonne de
+droite et la carte du sprint rendent **exactement les mêmes rectangles**, au pixel près. C'est
+le dessin qui grandit ou rapetisse, pas sa place.
+
+Rien d'autre n'en dépend : `renderOval`, `renderMarks` et les étiquettes travaillent en unités
+du viewBox, et la sélection comme le glisser-déposer passent par le DOM (`closest`,
+`elementFromPoint`), jamais par une conversion de coordonnées — vérifié, un clic sur un point
+de l'ovale à 130 % sélectionne bien son coureur.
+
+Le bouton du milieu porte la taille et ramène à 100 %. La plage est 60 %–180 %, par pas de
+10 %. Le réglage ne vit que le temps de la page : il n'est pas gardé sur le disque, personne ne
+l'a demandé.
+
+**Ce que l'arithmétique impose, et qu'il faut savoir.** Avec `preserveAspectRatio="…meet"`, le
+dessin est toujours borné par le plus contraignant des deux côtés de sa boîte. Quand la boîte
+est plus étroite que le rapport 854:492 — c'est le cas sur un écran de 1800 px, où l'ovale fait
+612 × 621 et le dessin 612 × 352 —, **la largeur est déjà saturée** : au-delà de 100 % les deux
+bouts des virages sortent du cadre, et un coureur qui s'y trouve n'est plus visible. Sur un
+écran plus large la boucle devient bornée par la hauteur, il reste du jeu horizontal, et
+l'agrandissement est alors sans perte. Agrandir sans rien rogner et sans toucher au reste est
+**géométriquement impossible** dans une boîte fixe : c'est un fait, pas un choix de code.
+
+### Les six onglets, disponibles en tout temps
+
+**La page de course est un onglet comme les autres.** La barre d'onglets ne vit plus dans
+l'en-tête du journal : elle est posée sous la barre du haut, entre elle et `.main`, et elle ne
+quitte jamais l'écran. Six onglets : **Race**, puis Crossings, Decisions, Sprints, Standings
+et **Passings**. L'écran s'ouvre sur Race.
+
+C'est le **même `#logtabs`** qu'avant, déplacé dans le balisage, avec un bouton de plus devant
+les autres. Le gestionnaire du moteur n'est donc pas touché : il pose `logTab`, les classes et
+l'indice comme il l'a toujours fait, et appelle `render()`. Il ne reste ici que deux choses à
+faire : écrire l'indice des deux onglets que sa table ne connaît pas (`race` et `pass`), et
+ouvrir ou fermer le journal selon l'onglet.
+
+Le bouton **Race log** de la barre du haut et le **Close** du journal n'ont plus d'objet : les
+onglets les remplacent, et ils sont retirés de la vue. Ils restent dans le document avec leurs
+écouteurs, et la touche **Échap** appelle toujours `logOpen(false)` — c'est pourquoi
+`syncTabs()` refait l'accord entre l'onglet et l'écran **à chaque image** plutôt qu'au seul
+changement d'onglet : un appel égaré se rattrape en 50 ms au lieu de laisser l'écran dans un
+état que l'onglet dément. Échap ramène en outre l'onglet sur Race, pour que les deux disent la
+même chose.
+
+**Le journal garde sa position d'avant** — par-dessus la page de course, et non à sa place ;
+seul son bord haut descend sous la barre d'onglets. Ce n'est pas un détail de dessin : c'est ce
+qui laisse `.main` **dessiné et mesurable**. `#gmeas` y mesure la largeur des étiquettes de
+l'ovale, et dans un `display:none` il rendrait 0 pour toujours, car `labelWidth()` garde ce
+qu'il a mesuré (`pitfalls.md` D25).
+
+### L'onglet Passings
+
+Il reprend la page 3d. `renderLog()` est **enveloppée, pas réécrite** : les onglets `race` et
+`pass` sont traités avant elle, les quatre autres lui reviennent inchangés. Sa table est
+relevée de l'installation telle que le moteur l'a enregistrée — le journal de passage propre à
+chaque boucle (`S.reads`) et le comptage que le passage d'un groupe a produit sur chaque tape
+switch (`S.tapePass`) — avec les filtres *Source* et *Unmatched only*, et le relevé de santé
+des trois boucles.
+
+Comme dans `timeline-prototype_new_look_3a_3d.html` : le prototype n'a ni horloge murale ni
+niveau de signal, donc la colonne Time porte le **temps de course** à la milliseconde, et la
+colonne Signal porte ce qui existe vraiment, les comptages.
