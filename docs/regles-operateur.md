@@ -2119,3 +2119,16 @@ l'écran, une à la fois.
      transpondeur, hors piste — et ces trois états passent sur le **numéro lui-même**, dans
      les mêmes trois couleurs. **Le dossard rond de l'ovale n'est pas touché** : ce n'est pas
      un badge, c'est la place du coureur sur la piste.
+
+144. **Le drapeau quitte l'ordre du sprint et passe dans la start list.** Ses mots, le
+     31 octobre 2026 : « **On va retirer le drapeau de la colonne de l'ordre, et on va
+     l'afficher dans la colonne de la start list.** » Cela **referme son point 118 du même
+     jour**, qui l'avait fait entrer dans l'ordre — « je pense que le nom n'est pas vraiment
+     nécessaire dans l'ordre, en revanche un drapeau serait utile ». Le NOC reste des deux
+     côtés ; c'est le drapeau seul qui se déplace.
+
+145. **Les lignes de la start list sont serrées au pas de la timeline.** Ses mots, le
+     31 octobre 2026 : « **on va également resserrer les lignes de la start list, l'espacement
+     entre les lignes doit être le même que dans la timeline** ». La timeline tient ses lignes
+     à 28 px ; la start list les tenait entre 26 et 34 selon la place, en s'étirant pour
+     remplir sa colonne. Elle les tient maintenant à **28 px fixes**, et ne s'étire plus.

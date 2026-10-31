@@ -262,14 +262,17 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .sh input.err{border-color:var(--crit);background:#2a1414}
 /* La carte respire comme les actions : lignes plus hautes, marges plus larges, et la rangée « place suivante »
    sous l'ordre, à gauche, où la place ne manque pas. */
-.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 78px 172px;gap:9px;padding:7px 8px;overflow:hidden}
+/* La start list passe de 78 à 105 px le 31 octobre 2026 : le drapeau quitte l'ordre et vient ici,
+   et il emporte sa largeur avec lui — 22 px et son écart de 5. La colonne de l'ordre les rend
+   exactement, donc la carte ne s'élargit pas d'un pixel. */
+.sbody{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 105px 172px;gap:9px;padding:7px 8px;overflow:hidden}
 .sleft,.sright,.sctl{min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 .ssec{display:flex;align-items:baseline;gap:7px;padding:0 2px 4px;font:600 11px var(--sans);letter-spacing:.06em;
   text-transform:uppercase;color:var(--muted)}
 .ssec .hint{font:500 11px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
 /* Aucune colonne souple vide : chaque colonne porte quelque chose, et l'ecart se cale a droite. */
 .shd{display:grid;grid-template-columns:22px 32px 38px minmax(0,1fr) 22px 22px;gap:5px;align-items:center;height:19px;white-space:nowrap;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 2px}
-.shd.sl{grid-template-columns:32px minmax(0,1fr)}
+.shd.sl{grid-template-columns:32px 22px minmax(0,1fr)}   /* la colonne du drapeau, depuis le 31 octobre 2026 */
 .shd > span{overflow:hidden;text-overflow:ellipsis}
 .shd .srt{cursor:pointer}
 .shd .srt.on{color:#8FB4FF}
@@ -298,7 +301,11 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 /* La bande de depot ferme la colonne de l'ordre : elle vaut zero quand les 24 places sont prises. */
 .sdrop{flex:0 0 auto;height:24px;margin:4px 1px 0;border:1px dashed var(--line2);border-radius:4px}
 .sdrop.over{box-shadow:inset 0 2px 0 var(--acc);border-color:var(--acc)}
-.slrow{display:grid;grid-template-columns:32px minmax(0,1fr);gap:5px;align-items:center;flex:1 1 26px;min-height:26px;max-height:34px;padding:0 2px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
+/* Le drapeau est ici depuis le 31 octobre 2026, et les lignes sont serrées au pas de la timeline :
+   « resserrer les lignes de la start list, l'espacement entre les lignes doit être le même que dans
+   la timeline ». La timeline tient ses lignes à 28 px (`.trow`), donc 28 px fixes — elles ne
+   s'étirent plus pour remplir la colonne, et ne se tassent plus quand la liste s'allonge. */
+.slrow{display:grid;grid-template-columns:32px 22px minmax(0,1fr);gap:5px;align-items:center;flex:0 0 28px;height:28px;box-sizing:border-box;padding:0 2px;border-top:1px solid var(--line);font-size:13px;user-select:none;cursor:grab;touch-action:none}
 .slrow .noc{font:600 13px var(--mono);letter-spacing:.04em}
 .slrow.placed .chip{opacity:.4}
 .slrow.placed .noc{color:var(--muted)}

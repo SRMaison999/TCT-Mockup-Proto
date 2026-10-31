@@ -179,12 +179,16 @@ body.lay-side .below > .props{grid-column:4;grid-row:1}
 
 /* La taille des lignes se règle à CTRL + molette au-dessus de la colonne. */
 
-/* ---- le drapeau dans l'ordre du sprint ----------------------------------
-   Sept colonnes au lieu de six, et la colonne ne s'élargit pas : le drapeau
-   est payé sur l'écart (62 px réservés pour 43 d'encre) et sur le NOC (38 pour
-   23). L'en-tête porte la même grille, sinon les deux ne sont plus alignés. */
-#scard .sleft .shd,#scard .sleft .srow{grid-template-columns:22px 32px 22px 26px minmax(0,1fr) 22px 22px}
-#scard .sleft .flag{width:22px;height:15px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+/* ---- le drapeau passe de l'ordre à la start list ------------------------
+   « on va retirer le drapeau de la colonne de l'ordre, et on va l'afficher
+   dans la colonne de la start list » (l'opérateur, 31 octobre 2026). Son
+   point 118 du même jour, qui l'avait fait entrer dans l'ordre, est donc
+   refermé par lui. L'ordre reprend ses six colonnes d'origine — la règle de
+   `styles.css` suffit, il n'y a plus rien à surcharger ici — et le NOC y
+   retrouve les 38 px qu'il avait cédés au drapeau.
+   La start list passe de deux colonnes à trois, et son en-tête avec elle,
+   sinon les deux ne sont plus alignés. */
+#scard .sright .flag{width:22px;height:15px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
 
 /* ---- la taille des éléments de chaque zone ------------------------------
    « j'ai besoin de pouvoir ajuster la taille des éléments ! » (l'opérateur,
@@ -327,7 +331,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 157 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 158 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2524,13 +2528,13 @@ const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo c
 function startListHtml(k, seq, tgt, fin, N) {
   const sort = S.slSort || 'bib', list = [...S.riders].sort((a, b) => sort === 'noc' ? (a.nat.localeCompare(b.nat) || a.bib - b.bib) : a.bib - b.bib);
   let h = '<div class="sright">';
-  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' \u25b4' : ''}</span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' \u25b4' : ''}</span></div><div class="slrows">`;
+  h += `<div class="shd sl"><span class="srt${sort === 'bib' ? ' on' : ''}" data-sact="sort:bib">BIB${sort === 'bib' ? ' \u25b4' : ''}</span><span></span><span class="srt${sort === 'noc' ? ' on' : ''}" data-sact="sort:noc">NOC${sort === 'noc' ? ' \u25b4' : ''}</span></div><div class="slrows">`;
   for (const r of list) {
     const e = k == null ? null : seq.find(x => x.bib === r.bib), w = S.withdrawn.get(r.bib), why = (k == null || e) ? null : spWhy(k, r.bib);
     // La colonne du rang a ete retiree : elle recopiait l'ordre affiche juste a gauche (l'operateur, 29 octobre 2026).
     // Le grise dit qu'il est place, le pointille qu'il n'a pas de transpondeur, le fonce qu'il ne marque pas ici.
     const ttl = r.name + (w ? ' \u00b7 ' + w.code : e ? ' \u00b7 ' + ordinal(e.place) + (e.held ? ' \u00b7 held' : '') : why ? ' \u00b7 ' + why.replace(' \u00b7 operator', '') : S.noTp.has(r.bib) ? ' \u00b7 no transponder' : '') + (k == null ? '' : ' \u00b7 double-click: ' + ordinal(tgt) + ' \u00b7 drag onto the order');
-    h += `<div class="slrow${e ? ' placed' : ''}${(why || w) ? ' out' : ''}" data-sl="${r.bib}" title="${ttl}">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}<span class="noc">${r.nat}</span></div>`;
+    h += `<div class="slrow${e ? ' placed' : ''}${(why || w) ? ' out' : ''}" data-sl="${r.bib}" title="${ttl}">${chip(r, S.noTp.has(r.bib) ? 'notp' : '')}${flag(r.nat)}<span class="noc">${r.nat}</span></div>`;
   }
   return h + '</div></div>';
 }
@@ -2573,7 +2577,7 @@ function renderCard() {
   // pour placer un drapeau dans la zone que j'ai encadré en rouge »). La colonne ne s'élargit pas d'un pixel : les
   // 27 px qu'il demande sont pris sur l'écart, qui en réservait 62 pour 43 d'encre, et sur le NOC, qui en réservait
   // 38 pour 23. Une colonne de plus dans l'en-tête comme dans les lignes, pour que les deux restent alignés.
-  h += `<div class="shd"><span></span><span>BIB</span><span></span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
+  h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
   const tgt = spTarget(k);
   // the crossings read while the rider was not eligible: kept where they were read, greyed, with no place
   const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
@@ -2585,13 +2589,13 @@ function renderCard() {
   for (const g of grey) rows.push({ g });
   for (const row of rows) {
     if (row.g) { const gr = S.riders.find(x => x.bib === row.g.bib);
-      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}${flag(gr.nat)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
+      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
       continue; }
     const e = row.e, place = row.place;
-    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
+    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
     const r = S.riders.find(x => x.bib === e.bib), cls = e.held ? 'held' : e.photo ? 'cam' : e.sent ? 'sent' : '';
     const mark = e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : '';
-    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}${flag(r.nat)}<span class="noc">${r.nat}</span>
+    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span>
       <span class="gp">${mark}</span>
       <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" title="Photo finish: confirm" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">↑</button>' : ''}</span>
       <span class="ic"><button class="btn xs quiet" data-sact="remove:${e.bib}" title="Out of this order">×</button></span></div>`;
@@ -2979,7 +2983,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 157 · mixed';
+  $('#buildno').textContent = 'build 158 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

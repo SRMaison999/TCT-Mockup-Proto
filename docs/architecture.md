@@ -1624,3 +1624,33 @@ sert donc plus qu'à lui.
 
 **Une marque reste encadrée, et c'est voulu** : la place vide de la carte de sprint, le `·`
 dans son cadre tireté. Elle ne désigne aucun coureur — elle dit qu'une place n'est pas prise.
+
+---
+
+## 33. Le drapeau change de colonne, et la start list se resserre (build 158)
+
+Ses deux demandes du 31 octobre 2026 (`regles-operateur.md` §17 points 144 et 145).
+
+**Le drapeau passe de l'ordre à la start list.** Dans l'ordre, les sept colonnes que la build
+149 avait faites pour le loger redeviennent les **six d'origine** : la surcharge
+`#scard .sleft .shd,#scard .sleft .srow` est retirée, et la règle de `styles.css` reprend la
+main. Le NOC y **retrouve ses 38 px**, qu'il avait cédés au drapeau — mesuré après coup :
+`22px 32px 38px 22,4px 22px 22px`.
+
+Dans la start list, la grille passe de deux colonnes à trois, `32px 22px minmax(0,1fr)`, et
+l'en-tête `.shd.sl` suit — sans quoi `BIB` et `NOC` ne sont plus au-dessus de leur colonne.
+
+**La colonne de la start list s'élargit de 78 à 105 px, et la carte ne bouge pas.** Le drapeau
+emporte sa largeur d'une colonne à l'autre : 22 px et son écart de 5, soit les 27 px que
+l'ordre vient de rendre. La carte reste à 500 px, vérifié : elle ne déborde pas.
+
+**Les lignes de la start list sont à 28 px fixes.** Elles étaient en `flex:1 1 26px` entre 26 et
+34 px, donc elles s'étiraient pour remplir la colonne et se tassaient quand la liste
+s'allongeait. Elles sont maintenant `flex:0 0 28px` avec `box-sizing:border-box`, pour que le
+filet du haut tienne **dans** les 28 px : sans cela le pas aurait fait 29, et le pas est ce
+qu'il a demandé d'aligner. Mesuré dans la page sur la course de référence menée à l'arrivée :
+**pas de 28 px dans la start list, pas de 28 px dans la timeline.**
+
+**Ce que cela coûte, et qu'il verra** : la start list ne remplit plus sa colonne. À seize
+coureurs il reste du vide sous la dernière ligne, là où les lignes s'étiraient pour le prendre.
+C'est la contrepartie directe d'un pas fixe, et c'est le pas qu'il a demandé.
