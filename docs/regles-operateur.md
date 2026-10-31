@@ -1997,3 +1997,35 @@ Après avoir essayé la build 149, en réponse à l'audit `audit-ux.md`. Ses mot
      de sa main plutôt que choisie parmi celles posées, le 31 octobre 2026 : « le registre
      s'affiche à droite de la fenêtre d'actions ». Il ne pousse donc rien, ni la barre ni
      l'ovale.
+
+### Le registre debout, et ce qu'on lui retire · 31 octobre 2026, troisième tour
+
+Après avoir vu le registre sorti de la barre en build 150. Ses mots, entiers.
+
+126. **Le registre se tient debout.** « le registre pourrait être positionné verticalement ».
+     Couché il demandait toute la largeur laissée par la fenêtre d'actions ; debout il prend la
+     forme de la colonne d'actions à sa gauche et rend cette largeur aux propositions.
+
+127. **La sélection des couleurs sort du registre.** « il faut retirer la sélection des
+     couleurs, c'est inutile ». Elle était le seul endroit du prototype où la couleur d'un
+     coureur se changeait ; il l'a su avant de trancher, et il a tranché.
+
+128. **Le registre n'a qu'une bordure, la sienne.** « je trouve bizarre cette espèce de bordure
+     tout autour du registre ». Le conteneur qui le porte ne se montre pas : il ne sert qu'à
+     tenir la place à droite de la fenêtre d'actions.
+
+### Le registre doit être de la même page · 31 octobre 2026, quatrième tour
+
+129. **Le registre porte le style du reste de la page, et ses options s'alignent.** « ce
+     registre est de piètre qualité, il ne correspond pas au reste de la page au niveau du
+     style des composants, et les options ne sont pas alignées ». Mesuré avant correction :
+     boutons de 21 px contre 32 dans la fenêtre d'actions posée à 22 px de là, deux fonds de
+     panneau différents, et les trois commandes décalées de 16 px d'une ligne à l'autre parce
+     que « gained » est plus long que « lost ».
+
+130. **Le registre porte toute la sélection.** Son choix entre deux réponses posées, le
+     31 octobre 2026 : « Toute la sélection », une ligne par coureur avec son compte gagnés /
+     perdus. Cela **ouvre son point 70 du 29 octobre**, qui réservait `Laps…` au coureur seul :
+     le bouton s'allume maintenant dès qu'il y a une sélection, et un clic sur l'en-tête d'un
+     bloc ouvre donc le registre du groupe entier. `Leader` reste à un seul coureur — il
+     désigne le leader, et il n'y en a qu'un.

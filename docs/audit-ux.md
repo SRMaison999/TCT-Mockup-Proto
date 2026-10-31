@@ -394,11 +394,15 @@ réutilisant le `hot` déjà approuvé plutôt qu'en inventant un signal.
 Les seize coureurs par défaut (`:415` et suivantes) portent quatre rouges (`#c8102e` SUI,
 `#ef4444` DEN, `#d62828` ESP, `#9f1239` POR), trois verts, trois bleus et deux quasi-noirs. Sur
 la timeline la pastille fait 34 px et porte le chiffre : ça passe. **Sur l'ovale elle fait
-environ 7 px de rayon**, et deux rouges voisins dans le même peloton sont le même point. La
-palette du sélecteur ne compte que douze couleurs pour un peloton fixé à 24.
+environ 7 px de rayon**, et deux rouges voisins dans le même peloton sont le même point.
 
 **Angle** — 7. **Proposition** : une attribution qui garantit un écart minimal entre deux
 couleurs du même groupe, et qui tient à 24.
+
+**Depuis la build 151**, ce point ne se corrige plus à la main en course : l'opérateur a retiré
+la sélection des couleurs du registre (`regles-operateur.md` §17 point 127), et c'était le seul
+endroit où la couleur d'un coureur se changeait. La douzaine de couleurs qu'elle proposait pour
+un peloton fixé à 24 n'est plus le sujet ; l'attribution, elle, l'est entièrement.
 
 ### C. Une seule voix typographique pour quatre métiers, et trop pâle
 

@@ -2175,3 +2175,112 @@ et le resserrement passe la barre à **70 %** sans rognage.
 
 Molette **sans** CTRL : aucun réglage ne bouge. Avec CTRL, l'événement est annulé, donc la page
 entière ne zoome pas. À 100 % aucune étiquette n'existe dans le DOM.
+
+## 26. Le registre debout (build 151, 31 octobre 2026)
+
+Fenêtre de 1900 × 1000, simulateur masqué, centre de 1098 px, fenêtre d'actions de 290 px,
+course de référence chargée, un coureur sélectionné et le registre ouvert.
+
+### Les trois étapes, mesurées l'une après l'autre
+
+| | Registre | Sa colonne | Propositions | Ovale |
+|---|---|---|---|---|
+| Couché, encadré (build 150) | 363 × 58 px | 389 px | 389 px | 514 px |
+| Debout, encadré | 150 × 148 | 176 | 602 | 514 |
+| Debout, sans la palette | 137 × 83 | 163 | 616 | 514 |
+| Debout, sans palette ni cadre | **137 × 83** | **137** | **642** | **514** |
+
+Les propositions récupèrent **253 px** de largeur, et l'ovale ne bouge pas d'un pixel à aucune
+étape.
+
+### D'où venait la bordure
+
+Deux boîtes emboîtées, chacune avec son trait de 0,8 px, son fond et son arrondi de 4 px :
+conteneur **389 × 83**, carte **364 × 58** — soit **25 px de cadre muet sur chaque côté**.
+Après : le conteneur mesure exactement la carte, 137 × 83, sans trait ni fond ni marge.
+
+### Ce qui ne bouge toujours pas (build 151 vérifiée)
+
+| État | Zone du bas | Ovale | Propositions |
+|---|---|---|---|
+| Registre fermé | 352 px | 513 px | 778 px |
+| Registre ouvert | **352** | **513** | 640 |
+
+En disposition empilée : barre d'actions à 952 px, registre posé à 1178 px pour une barre qui
+finit à 1170 — à droite, et sans défilement. Poignée de l'ovale tirée à fond, registre ouvert :
+zone du bas **168 px**, ovale **697 px**, barre resserrée à **60 %**, registre toujours entier
+sans défiler (84 px dans 168). Les compteurs agissent dans leur nouveau conteneur : gagné 0 → 1
+→ 0.
+
+### Ce qu'il faut de largeur pour que le registre paraisse (build 151)
+
+Fenêtre élargie pas à pas, simulateur masqué, colonne du sprint ouverte à son plancher de
+500 px, fenêtre d'actions à 290 px, un coureur sélectionné et le registre ouvert.
+
+| Fenêtre | Centre | Fenêtre d'actions | Registre | Propositions |
+|---|---|---|---|---|
+| 1024 px | 264 px | 290 — **déborde de 40** | **0** | **0** |
+| 1200 | 440 | 290 | 120 | 0 |
+| 1300 | 540 | 290 | **137** | 83 |
+| 1400 | 640 | 290 | 137 | 183 |
+| 1900 | 1099 | 290 | 137 | 642 |
+
+En dessous de 1300 px de fenêtre, ce n'est pas le registre qui manque de place : c'est **toute
+la zone à droite de la fenêtre d'actions**, propositions comprises, et à 1024 la fenêtre
+d'actions elle-même déborde du centre de 40 px. Le registre n'y est pour rien, et les
+propositions disparaissaient déjà avant lui.
+
+La colonne du registre est passée de `minmax(0,auto)` à `auto` : un plancher à zéro la laissait
+écraser à **0 px** alors que la carte était bien ouverte dans le DOM — le registre s'ouvrait
+sans rien montrer. Avec `auto` elle ne descend pas sous la largeur minimale de la carte, 120 px.
+
+## 27. Le registre aux mesures de la page (build 152, 31 octobre 2026)
+
+Fenêtre de 1900 × 1000, simulateur masqué, un coureur sélectionné, registre ouvert.
+
+| | Avant (build 151) | Après (build 152) |
+|---|---|---|
+| Bouton du registre | 23 × 21 px | **36 × 33** |
+| Bouton de la fenêtre d'actions | 66 × 32 | 67 × 33 |
+| Corps / marges / arrondi du registre | 12 px · 2/7 · 3 px | **13 px · 7/13 · 4 px** |
+| Fond · trait du registre | `#141618` · `#3a4046` | **`#1b1e21` · `#2d3237`** |
+| Fond · trait de la fenêtre d'actions | `#1b1e21` · `#2d3237` | inchangé |
+
+### L'alignement des deux lignes
+
+| | − | chiffre | + |
+|---|---|---|---|
+| « gained », avant | 590 | 617 | 635 |
+| « lost », avant | 574 | 601 | 619 |
+| **les deux, après** | **597** | **643** | **673** |
+
+Le décalage valait 16 px, soit exactement l'écart entre les deux libellés (42 px et 26 px).
+
+Carte **191 × 122 px**, propositions **587 px**, zone du bas **352** et ovale **513** : aucun
+des deux n'a bougé.
+
+## 28. Le registre à plusieurs coureurs (build 153, 31 octobre 2026)
+
+Fenêtre de 1900 × 1000, simulateur masqué, course de référence chargée.
+
+| Coureurs sélectionnés | Carte | Boîte | Défile ? | Propositions | Ovale |
+|---|---|---|---|---|---|
+| aucun | — (`Laps…` grisé) | 0 | — | 778 px | 513 px |
+| 1 | 299 × 104 px | 299 × 104 | non | 481 | **513** |
+| 2 | 299 × 145 | 299 × 145 | non | 479 | **513** |
+| 16 (clic sur l'en-tête du bloc) | 299 × 719 | 314 × 352 | **oui** | 464 | **513** |
+
+Environ **40 px par coureur**. La zone du bas reste à 352 px et l'ovale à 513 dans les quatre
+cas : la fenêtre d'actions ne bouge pas plus qu'avant.
+
+### Les colonnes sont communes aux seize lignes
+
+| | abscisse |
+|---|---|
+| les seize − de `gained` | **583 px**, une seule valeur |
+| les seize + de `lost` | **780 px**, une seule valeur |
+
+### Le bon coureur
+
+Seize coureurs ouverts, appui sur le + de la **deuxième** ligne (BIB 3) : colonne `gained`
+`0 · 1 · 0 · 0`. Appui sur le − de la même ligne : `0 · 0 · 0 · 0`. Aucune autre ligne touchée.

@@ -1268,3 +1268,104 @@ point 17 de `audit-ux.md`. Celle du filtre de Passings reste.
 **Ce qui n'a pas changé** : `tct.layout` garde les mêmes clés, et le `+` muet de l'ovale à
 100 % est devenu une molette muette — la limite de §22 tient, agrandir réellement l'ovale passe
 par sa poignée, qui marche maintenant.
+
+## 24. Le registre debout (build 151)
+
+Demandé le 31 octobre 2026 après essai de la build 150, consigné mot pour mot dans
+`regles-operateur.md` §17, points 126 à 128. Trois changements, tous dans le bloc `<style>` de
+`timeline-prototype_mixed.html` sauf un, et **rien n'entre dans `styles.css`** : la carte
+`.ledger` y garde exactement les règles qu'elle avait quand elle vivait dans la barre, parce
+que les deux autres prototypes s'en servent encore.
+
+### Debout
+
+`#ledgerbox .ledger` passe en colonne, à la largeur de son contenu (`width:max-content`), et
+ses `.lh` passent en colonne aussi. Le **✕ monte dans le coin** de la carte en absolu : il la
+ferme, il n'est pas une ligne de plus à lire. Les deux compteurs prennent toute la largeur
+(`justify-content:space-between`), donc les − et les + tombent au même endroit d'une ligne à
+l'autre.
+
+Conséquence sur la grille : la colonne du registre reprend `auto` et **la règle `.hasledger`
+disparaît**, avec la classe que le moteur posait. `auto` et non `minmax(0,auto)` : un plancher
+à zéro laisse la colonne s'écraser à 0 px dès que le centre manque de place, et le registre
+s'ouvre alors sans rien montrer — la carte est dans le DOM, large de rien. Le partage à parts égales
+n'existait que pour empêcher un registre couché de 343 px d'écraser les propositions ; un
+registre de 137 px n'écrase rien.
+
+### Sans la palette
+
+La ligne « Colour » sort du gabarit. `PALETTE` et `setColor()` **restent dans le moteur**,
+intacts, sans rien qui les atteigne à l'écran : la couleur revient en une ligne si l'opérateur
+la redemande, et les écouteurs `[data-color]` / `[data-colorpick]` n'ont rien à recevoir en
+attendant. La variable `r` du gabarit, qui ne servait qu'à la palette, est retirée avec elle.
+
+### Sans le cadre
+
+`#ledgerbox` perd `background`, `border`, `padding` et `border-radius` — il ne garde que
+`min-width`, `overflow`, `align-self` et `max-height`, c'est-à-dire ce qui tient la place et
+rien qui se voie. C'étaient **deux boîtes emboîtées**, chacune avec son trait, son fond et son
+arrondi : la carte porte les siens depuis toujours, le conteneur a été habillé par erreur en
+build 150.
+
+## 25. Le registre reprend le style de la page (build 152)
+
+Demandé le 31 octobre 2026, consigné mot pour mot dans `regles-operateur.md` §17 point 129.
+Tout est dans le bloc `<style>` de `timeline-prototype_mixed.html`, et **rien dans
+`styles.css`** : la carte `.ledger` y garde ses règles pour les deux autres prototypes.
+
+### Pourquoi les boutons étaient deux fois plus petits
+
+« Les actions présentent beaucoup de boutons tous très rapprochés les uns des autres, et alors
+même qu'il y a beaucoup de place sur la page » (l'opérateur, 29 octobre 2026) a été appliqué à
+`.tbar .grpb .btn` (`styles.css:197`). Les boutons du registre ne sont pas dans un `.grpb` :
+ils n'ont jamais été touchés, et depuis que le registre a quitté la barre en build 150, plus
+rien ne les atteignait. Les **trois mêmes déclarations** sont reprises pour
+`#ledgerbox .ledger .btn`, pas d'autres, pour que les deux ne puissent plus diverger sans
+qu'on le voie.
+
+### L'alignement sans largeur écrite à la main
+
+Chaque `.ctr` passe en `display:contents` : ses quatre éléments deviennent ceux de la grille de
+la `.lh` au-dessus, et les deux lignes partagent donc **une seule grille**. La colonne du
+libellé est la même pour les deux, dimensionnée par le plus long — aucun nombre à maintenir si
+un libellé change. Le `<b>` du titre prend `grid-column:1 / -1` pour garder sa ligne entière.
+
+**Mesuré** : le −, le chiffre et le + à **597 / 643 / 673** sur les deux lignes, contre
+590/617/635 et 574/601/619 avant. Boutons du registre **36 × 33**, boutons de la fenêtre
+d'actions **67 × 33** — même hauteur, même corps, même arrondi. Même fond `--panel` et même
+trait `--line` des deux côtés.
+
+## 26. Le registre à plusieurs coureurs (build 153)
+
+Demandé le 31 octobre 2026, consigné mot pour mot dans `regles-operateur.md` §17 point 130.
+
+### `S.ledger` n'appartient plus à un dossard
+
+Il valait le dossard dont le registre était ouvert, et se remettait à `null` dès que la
+sélection n'était plus un seul coureur. Il vaut maintenant **ouvert ou fermé** : `Laps…`
+bascule (`data-ledger="1"`), le ✕ ferme (`data-ledger="0"`), et la seule remise à zéro
+automatique est la sélection vidée. Le registre suit donc la sélection sans se refermer quand
+elle change — c'est ce qui permet d'ajouter un coureur en le regardant.
+
+### Une ligne par coureur, une seule grille
+
+`.lgt` porte **sept colonnes** — pastille, puis − chiffre + pour les gagnés, idem pour les
+perdus — et **toutes les lignes sont dans la même grille**, donc les colonnes sont communes.
+**Mesuré** à seize coureurs : une seule abscisse pour les seize − de `gained` (583 px) et une
+seule pour les seize + de `lost` (780 px).
+
+Les deux mots `gained` et `lost` sont portés **une fois**, en en-tête de colonne, et non
+répétés à chaque ligne : c'est ce qui permet à la carte de tenir à seize. L'identité du coureur
+est sa **pastille colorée**, celle de la timeline, de l'ovale et de la carte du sprint — aucun
+repère neuf n'est introduit.
+
+Les attributs n'ont pas changé : chaque bouton porte `data-ladd` / `data-lsub` et son
+`data-bib`, donc `onStripClick` agit déjà sur le bon coureur sans une ligne de plus.
+**Vérifié** : le + de la deuxième ligne (BIB 3) ne touche que la deuxième ligne.
+
+### Ce que cela coûte, et ce que cela ne coûte pas
+
+Environ **40 px par coureur**. Au-delà de sept, la carte défile dans sa colonne : la règle du
+29 octobre 2026 interdit le défilement à la **barre d'actions**, pas au registre. À seize
+coureurs la carte fait 299 × 719 px dans une boîte de 314 × 352, et **l'ovale ne bouge pas** —
+513 px, comme à un coureur et comme registre fermé.
