@@ -2101,3 +2101,12 @@ l'écran, une à la fois.
      documents. Le point F **sort de la liste**, et sa demande du 31 octobre — « six onglets
      disponibles en tout temps », « La page de course est un onglet comme les autres » — tient
      entière.
+
+### L'option 2 des couleurs, et ce que la timeline garde · 31 octobre 2026, sixième tour
+
+142. **C'est l'option 2 qu'il veut essayer, et la timeline garde ses badges.** Ses mots, le
+     31 octobre 2026 : « **je veux essayer l'option 2 pour les couleurs. mais attention, dans
+     la timeline les badges ne doivent pas être « 12 SUI » ! Dans la timeline tout reste comme
+     précédemment sauf les couleurs, qui disparaissent au profit du blanc** ». Le dossard est
+     donc **blanc partout**, avec le seul numéro, et le **NOC n'est attaché qu'à l'ovale**. La
+     colonne du drapeau et celle du NOC de la timeline ne bougent pas — elles existaient déjà.

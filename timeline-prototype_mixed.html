@@ -327,7 +327,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 155 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 156 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1477,7 +1477,14 @@ function chipN(r, n) { return `<span class="cw">${chip(r)}<span class="cn">${n}<
 
 const PALETTE = ['#c8102e', '#f97316', '#eab308', '#16a34a', '#06b6d4', '#0284c7', '#1d4ed8', '#7c3aed', '#ec4899', '#9a7140', '#4b5563', '#ECEAE4'];
 function setColor(bib, color) { const r = S.riders.find(x => x.bib === bib); r.color = color; const n = parseInt(color.slice(1), 16), lum = (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255; r.dk = lum > 0.6; dirty = true; render(); }
-function chip(r, cls) { return `<span class="chip${r.dk ? ' dk' : ''}${cls ? ' ' + cls : ''}" style="background:${r.color}">${r.bib}</span>`; }
+// L'OPTION 2 DE L'OPÉRATEUR, 31 octobre 2026 (regles-operateur.md §17 point 142) : les coureurs
+// n'ont plus de couleur. Le dossard est blanc partout, et le NOC est attaché au dossard SUR
+// L'OVALE seulement — « dans la timeline tout reste comme précédemment sauf les couleurs ».
+// `r.color` reste dans les données, chargé et enregistré avec la liste de départ : il n'est
+// simplement plus dessiné. Rien ne le change depuis que la sélection des couleurs est sortie du
+// registre (build 151), donc le rendre à nouveau tient en remettant `r.color` ici.
+const BIB_FILL = '#ECEAE4';
+function chip(r, cls) { return `<span class="chip dk${cls ? ' ' + cls : ''}" style="background:${BIB_FILL}">${r.bib}</span>`; }
 // The operator's naming, 29 October 2026 (regles-operateur.md §17). A group carries its RANK in the race, counted
 // from the front, then what it is: the one in front leads, those between it and the bunch chase, the bunch is the
 // bunch, those behind it are behind, and the very last of them — when there is more than one — is the last.
@@ -1697,8 +1704,8 @@ function renderStrip(G) {
   IF.time.classList.toggle('stopped', S.winT != null);
   FINB.classList.toggle('armed', S.finArm);
   IF.leadchip.textContent = lead ? lead.bib : '—';
-  IF.leadchip.style.background = lead ? lead.color : 'var(--line2)';
-  IF.leadchip.classList.toggle('dk', !!(lead && lead.dk));
+  IF.leadchip.style.background = lead ? BIB_FILL : 'var(--line2)';
+  IF.leadchip.classList.toggle('dk', !!lead);
   // The leader box carries his number and nothing else (operator, 29 October 2026). He said « retire » — so the
   // speed and the way he was named are gone, not moved into a tooltip where they would have survived his decision.
   // « SPRINT 3 - 6 LAPS », the operator's own wording, 29 October 2026.
@@ -1796,6 +1803,15 @@ function renderMarks() {
   $('#marks').innerHTML = h;
   armLines(); armShown = []; syncArm();   // #marks has just been rebuilt: the three green lines are new nodes
 }
+// Le NOC attaché au dossard, sur l'ovale seulement (l'opérateur, 31 octobre 2026). Trois lettres
+// ne tiennent pas dans un dossard de rayon 10 : elles sont donc écrites dessous. Le texte est
+// cerné de noir avant d'être rempli (`paint-order`), parce qu'il tombe tantôt sur le gris de la
+// piste, tantôt sur le marron du ruban, tantôt sur le fond de l'infield.
+function nocText(cx, cy, nat) {
+  return `<text x="${cx.toFixed(1)}" y="${(cy + DOT_R + 9).toFixed(1)}" text-anchor="middle"`
+    + ` font-family="IBM Plex Sans" font-size="9" font-weight="700" fill="${BIB_FILL}"`
+    + ` stroke="#111" stroke-width="2.5" paint-order="stroke" pointer-events="none">${nat}</text>`;
+}
 function renderOval(G, M) {
   let bands = '', dots = '', labels = '';
   const leaderS = G.leader.pos, bubbles = [];
@@ -1858,12 +1874,12 @@ function renderOval(G, M) {
     // Nothing marks the race leader on the oval: the green ring and the green bar across the track were part of the
     // annotations the operator had taken off, and they had been left behind. The LEADER field names him.
     const stroke = x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : '#ECEAE4', sw = sel ? 3.5 : 1.5;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${x.r.color}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${BIB_FILL}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="#111" pointer-events="none">${x.r.bib}</text>${nocText(cx, cy, x.r.nat)}</g>`;
   }
   // riders off the track (incident) sit on the apron, greyed
   for (const g of G.groups) for (const x of g.rows) if (x.m.off) {
     const { p, nx, ny } = normalAt(x.m.pos), cx = p.x - nx * 34, cy = p.y - ny * 34;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${x.r.color}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="${x.r.dk ? '#111' : '#fff'}" pointer-events="none">${x.r.bib}</text></g>`;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" opacity="0.6" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · off track</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${BIB_FILL}" stroke="#FF5C5C" stroke-width="2" stroke-dasharray="2 2"/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="#111" pointer-events="none">${x.r.bib}</text>${nocText(cx, cy, x.r.nat)}</g>`;
   }
   // 3. the group names (operator, 29 October 2026). Each bubble is joined by a line to its name, and the name is
   // ALWAYS outside the track, at the SAME margin all the way round the velodrome: the ring is a constant depth
@@ -2960,7 +2976,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 155 · mixed';
+  $('#buildno').textContent = 'build 156 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

@@ -1562,3 +1562,32 @@ rouge pour le Portugal, le vert pour l'Italie — et le dit à l'écran pour qu'
 Les points A, C, E et F de la planche sont **tranchés** depuis (`regles-operateur.md` §17,
 points 136 et 138 à 141) ; leurs sections restent dans la planche tant que le code ne les a pas
 rattrapés, et le travail correspondant est dans `travaux.md` §13.
+
+---
+
+## 31. Les dossards en blanc, et le NOC sur l'ovale (build 156)
+
+Son option 2, essayée sur sa demande du 31 octobre 2026 (`regles-operateur.md` §17 points 137
+et 142). **Quatre endroits dessinaient la couleur d'un coureur, et c'est tout** : `chip()`, la
+case `LEADER` du panneau de l'ovale, et les deux lignes qui dessinent un dossard sur la piste —
+celui qui roule et celui qui est hors piste.
+
+Un seul jeton les remplace, `BIB_FILL = '#ECEAE4'`, et le texte du dossard passe au noir
+partout. **`r.color` n'est pas retiré des données** : il reste dans `RIDERS`, dans `S.riders`,
+et il est toujours chargé et enregistré avec la liste de départ. Il n'est simplement plus
+dessiné. Comme plus rien ne le change depuis que la sélection des couleurs est sortie du
+registre (build 151, point 127), revenir en arrière tient en remettant `x.r.color` aux quatre
+endroits.
+
+**Le NOC est attaché au dossard sur l'ovale, et nulle part ailleurs.** `nocText(cx, cy, nat)`
+écrit les trois lettres sous le dossard, à `DOT_R + 9` ; le texte est cerné de noir avant
+d'être rempli (`paint-order="stroke"`), parce qu'il tombe tantôt sur le gris de la piste,
+tantôt sur le marron du ruban. **La timeline, elle, ne change que de couleur** : « dans la
+timeline tout reste comme précédemment sauf les couleurs ». Sa colonne de drapeaux et sa
+colonne de NOC existaient déjà et n'ont pas bougé.
+
+**Le défaut que le dessin produit, et qui n'est pas corrigé** : dans un peloton groupé, **13
+étiquettes NOC sur 16 tombent sur le dossard d'un autre coureur**. Les trois files de coureurs
+sont espacées de 19 unités, les dossards en font 20 de diamètre, et il reste 9 unités pour une
+étiquette qui en fait 10,4. Les chiffres sont dans `mesures.md` §32. **Rien n'a été inventé
+pour le contourner** : il attend sa décision.

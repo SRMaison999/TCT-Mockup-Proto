@@ -2419,3 +2419,31 @@ Les quatre couleurs suivantes des seize sont à moins de ΔE 20 : `#c8102e` / `#
 **La taille réelle du dossard sur l'ovale** : `DOT_R = 10` unités SVG, environ **7 px à
 l'écran** sur l'écran de référence. Le cercle porte bien le numéro, en `font-size` 10 et
 `font-weight` 700 — c'est la couleur qui se lit sans lire, pas le numéro.
+
+---
+
+## 32. Le NOC attaché au dossard sur l'ovale (build 156, 31 octobre 2026)
+
+Mesuré dans la page, course de référence chargée et mise en pause au tour 1, les seize coureurs
+dans le peloton. Les boîtes sont celles que le navigateur rend, pas un calcul.
+
+| | |
+|---|---|
+| Dossards dessinés sur l'ovale | 16 |
+| Dossards portant leur NOC | **16** |
+| Hauteur d'une étiquette NOC | 10,4 px |
+| NOC qui en recouvre un autre | **0** |
+| **NOC qui tombe sur le dossard d'un autre coureur** | **13 sur 16** |
+
+Les treize : SUI sur 7, COL sur 18, FRA sur 18 et sur 9, ESP sur 9 et sur 67, KAZ sur 67 et sur
+70, BEL sur 70 et sur 23, JPN sur 23 et sur 4, IRL sur 4.
+
+**Pourquoi.** Les coureurs sont rangés en **trois files** espacées de `LANE = 19` unités, et un
+dossard a `DOT_R = 10` de rayon, donc 20 de diamètre. Entre le bas d'un dossard et le haut de
+celui de la file voisine il reste **9 unités** ; l'étiquette en fait 10,4. Dans un peloton
+compact il n'y a pas la place d'une deuxième ligne de texte sous chaque dossard, quelle que
+soit sa taille de police.
+
+Le défaut **ne se voit pas** quand les coureurs sont étalés : un échappé seul, ou deux groupes
+séparés, portent leur NOC sans rien recouvrir. C'est le peloton groupé qui le produit, et le
+peloton groupé est l'état normal de la course.
