@@ -1,0 +1,533 @@
+<title>Design — les cinq points restants</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Planche de propositions pour la section B de docs/audit-ux.md, 31 octobre 2026.
+   CE FICHIER NE TOUCHE PAS AU PROTOTYPE. Il n'est qu'un dessin : chaque point y est montré
+   « aujourd'hui » puis en une ou deux réponses posées, et chacune attend l'accord de
+   l'opérateur avant d'entrer dans le code (sa règle du 31 octobre 2026, §14).
+   Les textes d'interface sont en anglais, les explications en français. */
+body{overflow:auto}
+.pl{max-width:1180px;margin:0 auto;padding:18px 20px 60px}
+.pl h1{font:600 20px var(--sans);margin:0 0 4px}
+.pl .lead{color:var(--muted);font-size:13px;margin:0 0 22px;line-height:1.5}
+.pt{border-top:1px solid var(--line);padding:20px 0 4px}
+.pt h2{font:600 15px var(--sans);margin:0 0 3px}
+.pt h2 em{font-style:normal;color:var(--muted);font-weight:500}
+.pt .why{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 14px;max-width:860px}
+.cols{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+/* le panneau de l'ovale est montré à sa taille réelle, 446 × 92 px : sa colonne doit donc
+   être plus large que les autres, sinon la troisième colonne du panneau est rognée. */
+.cols.wide>.card{flex:1 1 100%}
+.card{flex:1 1 320px;min-width:300px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px 13px}
+.card.now{border-style:dashed}
+.card>h3{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}
+.card.now>h3{color:var(--crit)}
+.card.pick>h3{color:var(--good)}
+.card p{font-size:12.5px;line-height:1.5;color:var(--muted);margin:9px 0 0}
+.card p b{color:var(--fg);font-weight:600}
+.demo{background:var(--deep);border:1px solid var(--line);border-radius:4px;padding:11px}
+.mz{color:var(--dim);font:500 11px var(--mono);margin:8px 0 0}
+.ans{display:flex;gap:7px;align-items:baseline;font-size:12.5px;line-height:1.5;color:var(--muted);margin:7px 0 0}
+.ans .n{flex:0 0 auto;font:600 11px var(--mono);color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:3px;padding:1px 5px}
+
+/* 1 — la hiérarchie */
+.pcard{background:var(--acc-soft);border:1px solid var(--acc);border-radius:4px;padding:7px 9px;max-width:270px}
+.pcard .ph{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#8FB4FF}
+.pcard .pb{display:flex;align-items:center;gap:6px;margin:6px 0 0}
+.pcard .pl2{font:500 11px var(--mono);color:var(--muted);margin:5px 0 0}
+.pcard.hotp{background:var(--warn);border-color:var(--warn)}
+.pcard.hotp .ph,.pcard.hotp .pl2{color:#2a1b05;font-weight:700}
+.row2{display:flex;gap:10px;align-items:flex-start}
+.quietz{opacity:.45}
+
+/* 2 — les couleurs */
+.swr{display:flex;flex-wrap:wrap;gap:3px}
+.sw{width:30px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font:600 11px var(--mono)}
+.dup{outline:2px solid var(--crit);outline-offset:1px}
+
+/* 3 — la voix typographique */
+.vx{display:grid;grid-template-columns:118px 1fr;gap:6px 12px;align-items:center}
+.vx .job{font:500 11px var(--mono);color:var(--muted)}
+.v10{font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.v10m{font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.v11f{font:600 11px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--fg)}
+.v10n{font:500 10px var(--sans);letter-spacing:0;color:var(--muted)}
+.grey{display:flex;gap:0;margin:0}
+.grey div{flex:1 1 0;padding:7px 6px;font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;text-align:center}
+
+/* 4 — le panneau de l'ovale */
+/* Le panneau est montré avec les classes réelles de styles.css — .ifcols, .ifcol, .ifb,
+   .srcrow, .startb — pour que ce soit la vraie taille qui se juge, et non une imitation.
+   Seuls le cadre de 446 × 92 px et la ligne TO GO, qui porte un id dans le prototype,
+   sont redits ici. */
+.ifdemo{position:relative;width:446px;height:92px;background:#15181b;border:1px solid var(--line2);border-radius:4px}
+.ifdemo .ifcols{height:100%;align-items:center}
+.ifdemo .ifcol .togo{height:32px}
+.ifdemo .ifcol .togo .ifk{font-size:12px}
+.ifdemo .ifcol .togo .ifv{font-size:24px}
+.ring{outline:2px solid var(--crit);outline-offset:1px;border-radius:3px}
+
+/* 5 — la barre d'onglets */
+.tbdemo{display:flex;align-items:stretch;height:34px;border-bottom:1px solid var(--line);background:var(--deep)}
+.tbdemo button{align-self:stretch;padding:0 14px;background:0;border:0;font:500 13px var(--sans);color:var(--muted);cursor:default;white-space:nowrap}
+.tbdemo button.on{font-weight:600;color:var(--fg);box-shadow:inset 0 -2px 0 var(--acc)}
+.tbdemo .gap{width:1px;background:var(--line);margin:6px 10px}
+.tbdemo .back{font-weight:600;color:var(--fg)}
+</style>
+
+<div class="pl">
+<h1>Les cinq points de design encore à fixer</h1>
+<p class="lead">
+  Section B de <b>docs/audit-ux.md</b>, menée le 31 octobre 2026 sur <b>timeline-prototype_mixed.html</b>,
+  build 155. Le point D est sorti de la liste en build 149 ; les cinq autres n'ont jamais reçu d'accord.<br>
+  <b>Rien ici n'est codé.</b> Chaque point est montré tel qu'il est aujourd'hui, puis en une ou deux
+  réponses posées. L'opérateur en choisit une, en écrit une autre, ou laisse le point où il est.
+</p>
+
+<!-- ─────────────────────────────  A  ───────────────────────────── -->
+<div class="pt">
+<h2>A · La hiérarchie est plate — <em>rien ne dit où regarder</em></h2>
+<p class="why">
+  Huit zones du même poids visuel. Le mécanisme existe pourtant, et il est approuvé : le champ du
+  prochain sprint devient <b>hot</b> à deux tours — « Quand le nombre de tours jusqu'au prochain Sprint
+  arrive à 2 il faut que le champ devienne très visible et immanquable » (29 octobre 2026). Il n'est
+  utilisé qu'une fois. Une proposition « Lap gained? », qui vaut ±20 points et qui reste affichée
+  jusqu'à validation ou rejet (§4), est une petite boîte bleue du même poids que la barre d'actions à côté.
+</p>
+<div class="cols">
+
+  <div class="card now">
+    <h3>Aujourd'hui</h3>
+    <div class="demo">
+      <div class="row2">
+        <div class="pcard">
+          <div class="ph">Lap gained?</div>
+          <div class="pb"><span class="chip" style="background:#c8102e">12</span><span class="pill acc">SUI</span></div>
+          <div class="pl2">Lap 11</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div class="lbl">Selection</div>
+          <div style="display:flex;gap:4px"><button class="btn xs">+1 lap</button><button class="btn xs">−1 lap</button><button class="btn xs">Laps…</button></div>
+          <div style="display:flex;gap:4px"><button class="btn xs">Leader</button><button class="btn xs quiet">Clear</button></div>
+        </div>
+      </div>
+    </div>
+    <p>Les deux blocs pèsent pareil. Le seul endroit de l'écran qui sait crier est le champ du
+      prochain sprint, à l'autre bout.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 1 — la proposition prend le <code>hot</code> déjà approuvé</h3>
+    <div class="demo">
+      <div class="row2">
+        <div class="pcard hotp">
+          <div class="ph">Lap gained?</div>
+          <div class="pb"><span class="chip" style="background:#c8102e">12</span><span class="pill" style="border-color:#2a1b05;color:#2a1b05">SUI</span></div>
+          <div class="pl2">Lap 11</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px" class="quietz">
+          <div class="lbl">Selection</div>
+          <div style="display:flex;gap:4px"><button class="btn xs">+1 lap</button><button class="btn xs">−1 lap</button><button class="btn xs">Laps…</button></div>
+          <div style="display:flex;gap:4px"><button class="btn xs">Leader</button><button class="btn xs quiet">Clear</button></div>
+        </div>
+      </div>
+    </div>
+    <p><b>Un seul foyer à la fois.</b> Tant qu'une proposition attend, c'est elle qui porte l'ambre, et
+      le champ du prochain sprint redescend en bleu accentué. Aucun signal nouveau n'est inventé.</p>
+    <p><b>Ce que ça coûte :</b> l'ambre est la couleur <code>--warn</code>. Une proposition n'est pas une
+      alerte, et le mot « hot » servirait alors à deux choses.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 2 — rien ne s'allume, c'est le reste qui se retire</h3>
+    <div class="demo">
+      <div class="row2">
+        <div class="pcard">
+          <div class="ph">Lap gained?</div>
+          <div class="pb"><span class="chip" style="background:#c8102e">12</span><span class="pill acc">SUI</span></div>
+          <div class="pl2">Lap 11</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px" class="quietz">
+          <div class="lbl">Selection</div>
+          <div style="display:flex;gap:4px"><button class="btn xs">+1 lap</button><button class="btn xs">−1 lap</button><button class="btn xs">Laps…</button></div>
+          <div style="display:flex;gap:4px"><button class="btn xs">Leader</button><button class="btn xs quiet">Clear</button></div>
+        </div>
+      </div>
+    </div>
+    <p>La carte garde exactement l'habit qu'elle a. Ce sont les commandes voisines qui pâlissent tant
+      qu'une proposition attend, et qui reviennent dès qu'elle est tranchée.</p>
+    <p><b>Ce que ça coûte :</b> un écran qui pâlit par endroits pendant qu'on travaille, et des
+      commandes moins lisibles au moment précis où l'on veut peut-être s'en servir.</p>
+  </div>
+</div>
+</div>
+
+<!-- ─────────────────────────────  B  ───────────────────────────── -->
+<div class="pt">
+<h2>B · Les couleurs des coureurs ne tiennent pas à 24</h2>
+<p class="why">
+  Les seize coureurs par défaut portent <b>quatre rouges</b>, trois verts, trois bleus et deux
+  quasi-noirs. Sur la timeline la pastille fait 34 px et porte le chiffre : ça passe. Sur l'ovale le
+  dossard fait <b>10 unités de rayon, environ 7 px à l'écran</b> — le chiffre y est bien, en corps 10,
+  mais c'est la couleur qui se lit sans lire. Et un dix-septième coureur <b>reprend la couleur du
+  premier à l'identique</b> : l'ajout au registre reboucle sur une liste de seize
+  (<code>palette[RIDERS.length % palette.length]</code>).<br>
+  Depuis la build 151 cela ne se corrige plus à la main en course : « il faut retirer la sélection des
+  couleurs, c'est inutile » (31 octobre 2026). C'est donc l'attribution, et elle seule, qui est en jeu.
+</p>
+<div class="cols">
+
+  <div class="card now">
+    <h3>Aujourd'hui · 16 fournies, puis repli</h3>
+    <div class="demo">
+      <div class="swr" id="swNow"></div>
+      <div class="mz">écart minimal entre deux couleurs : ΔE 9,7 — #d62828 (ESP) contre #ef4444 (DEN)</div>
+      <div class="mz">à 24 coureurs, écart minimal : ΔE 0,0 — les huit derniers sont des copies exactes</div>
+      <div style="margin:11px 0 0"><div class="lbl" style="margin-bottom:4px">Le peloton sur l'ovale, à la taille réelle</div>
+        <svg width="330" height="46" viewBox="0 0 330 46" id="ovNow"></svg></div>
+    </div>
+    <p>Les cadres rouges marquent les paires que l'œil ne sépare pas à 7 px. Les quatre rouges du
+      peloton de référence sont <b>SUI, ESP, DEN et POR</b>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 1 — une roue de 24, calculée</h3>
+    <div class="demo">
+      <div class="swr" id="swWheel"></div>
+      <div class="mz">écart minimal entre deux couleurs : ΔE 12,5 — <b>plus écarté à 24 que les seize d'aujourd'hui</b></div>
+      <div style="margin:11px 0 0"><div class="lbl" style="margin-bottom:4px">Le même peloton sur l'ovale</div>
+        <svg width="330" height="46" viewBox="0 0 330 46" id="ovWheel"></svg></div>
+    </div>
+    <p>24 teintes régulières sur trois clartés alternées, pour que deux voisines de la roue ne soient
+      jamais voisines de clarté. Le texte du dossard passe au noir sur les claires — le mécanisme
+      <code>dk</code> existe déjà et se calcule tout seul.</p>
+    <p><b>Ce que ça coûte :</b> la ressemblance avec les couleurs nationales est perdue pour tout le
+      monde. SUI ne serait plus rouge.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 2 — garder les nations, séparer les doublons</h3>
+    <div class="demo">
+      <div class="swr" id="swMix"></div>
+      <div class="mz">écart minimal : ΔE 14,8 — <b>plus écarté que la roue calculée</b>, et les quatre rouges deviennent un seul rouge</div>
+      <div style="margin:11px 0 0"><div class="lbl" style="margin-bottom:4px">Le même peloton sur l'ovale</div>
+        <svg width="330" height="46" viewBox="0 0 330 46" id="ovMix"></svg></div>
+    </div>
+    <p>Les douze couleurs qui ne se confondent avec rien sont gardées telles quelles. Seules celles qui
+      se doublent changent, et les huit suivantes viennent de la roue.</p>
+    <p><b>Ce que ça coûte :</b> <b>SUI garde son rouge, ESP, DEN et POR le perdent.</b> Et la garantie
+      ne vaut que pour ce peloton-ci : une autre liste de départ peut ramener deux couleurs voisines.</p>
+  </div>
+</div>
+</div>
+
+<!-- ─────────────────────────────  C  ───────────────────────────── -->
+<div class="pt">
+<h2>C · Une seule voix typographique pour quatre métiers, et trop pâle</h2>
+<p class="why">
+  Le même traitement — <b>10 px, capitales, interlettrage .07em, <code>--muted</code> ou
+  <code>--dim</code></b> — sert d'en-tête de colonne, de titre de bloc, d'indice d'onglet et
+  d'étiquette de champ. Et <code>--dim</code> (<code>#5f5c55</code>) est mesuré à
+  <b>2,8 : 1</b> sur le fond de page, <b>2,6 : 1</b> sur le fond des lignes — pour du 10 px en
+  capitales, quand le plancher habituel du texte est 4,5 : 1. <code>--muted</code> est à 6,6 : 1 et ne
+  pose aucun problème : c'est <code>--dim</code> seul qui est en cause, sur <b>13 règles</b> de
+  <code>styles.css</code>.
+</p>
+<div class="cols">
+
+  <div class="card now">
+    <h3>Aujourd'hui</h3>
+    <div class="demo">
+      <div class="vx">
+        <span class="job">en-tête de colonne</span><span class="v10m">BIB &nbsp; NAME &nbsp; NOC &nbsp; GAP</span>
+        <span class="job">titre de bloc</span><span class="v10m">GROUP 2 · 14 RIDERS</span>
+        <span class="job">indice d'onglet</span><span class="v10">FACTS ONLY · NEWEST FIRST</span>
+        <span class="job">étiquette de champ</span><span class="v10m">NEXT PLACE</span>
+      </div>
+      <div class="grey" style="margin-top:12px">
+        <div style="background:#0f1113;color:#5f5c55">DIM SUR LE FOND</div>
+        <div style="background:#17191c;color:#5f5c55">DIM SUR UNE LIGNE</div>
+        <div style="background:#1b1e21;color:#5f5c55">DIM SUR UN PANNEAU</div>
+      </div>
+      <div class="mz">2,84 : 1 &nbsp;·&nbsp; 2,64 : 1 &nbsp;·&nbsp; 2,51 : 1</div>
+    </div>
+    <p>Quatre métiers, une voix. Et la voix la plus pâle est celle qui porte les phrases
+      d'explication — l'indice d'onglet, les raisons d'inéligibilité, les notes du registre.</p>
+  </div>
+
+  <div class="card pick">
+    <h3>Réponse 1 — un seul changement : <code>--dim</code> remonte</h3>
+    <div class="demo">
+      <div class="vx">
+        <span class="job">en-tête de colonne</span><span class="v10m">BIB &nbsp; NAME &nbsp; NOC &nbsp; GAP</span>
+        <span class="job">titre de bloc</span><span class="v10m">GROUP 2 · 14 RIDERS</span>
+        <span class="job">indice d'onglet</span><span style="font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:#8a8780">FACTS ONLY · NEWEST FIRST</span>
+        <span class="job">étiquette de champ</span><span class="v10m">NEXT PLACE</span>
+      </div>
+      <div class="grey" style="margin-top:12px">
+        <div style="background:#0f1113;color:#8a8780">DIM SUR LE FOND</div>
+        <div style="background:#17191c;color:#8a8780">DIM SUR UNE LIGNE</div>
+        <div style="background:#1b1e21;color:#8a8780">DIM SUR UN PANNEAU</div>
+      </div>
+      <div class="mz">5,28 : 1 &nbsp;·&nbsp; 4,91 : 1 &nbsp;·&nbsp; 4,67 : 1</div>
+    </div>
+    <p><code>--dim</code> passe de <code>#5f5c55</code> à <code>#8a8780</code> : <b>le premier gris qui
+      passe 4,5 : 1 sur les trois fonds de la page.</b> Un seul jeton change, les 13 règles suivent, et
+      la hiérarchie <code>fg</code> › <code>muted</code> › <code>dim</code> est conservée.</p>
+    <p><b>Ce que ça coûte :</b> ce qui était volontairement effacé se voit un peu plus. Les textes
+      barrés du registre et les lignes grises des sprints remontent avec.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 2 — en plus, les quatre métiers se séparent</h3>
+    <div class="demo">
+      <div class="vx">
+        <span class="job">en-tête de colonne</span><span class="v10m">BIB &nbsp; NAME &nbsp; NOC &nbsp; GAP</span>
+        <span class="job">titre de bloc</span><span class="v11f">GROUP 2 · 14 RIDERS</span>
+        <span class="job">indice d'onglet</span><span class="v10n">Facts only · newest first</span>
+        <span class="job">étiquette de champ</span><span class="v10m">NEXT PLACE</span>
+      </div>
+      <div class="grey" style="margin-top:12px">
+        <div style="background:#0f1113;color:#8a8780">DIM SUR LE FOND</div>
+        <div style="background:#17191c;color:#8a8780">DIM SUR UNE LIGNE</div>
+        <div style="background:#1b1e21;color:#8a8780">DIM SUR UN PANNEAU</div>
+      </div>
+      <div class="mz">le même gris, et deux voix de plus</div>
+    </div>
+    <p>L'en-tête de colonne et l'étiquette de champ gardent la voix d'aujourd'hui. Le <b>titre de bloc</b>
+      monte à 11 px en <code>--fg</code> : c'est un nom, pas une étiquette. L'<b>indice d'onglet</b>
+      quitte les capitales : c'est une phrase, et une phrase en capitales se lit lettre par lettre.</p>
+    <p><b>Ce que ça coûte :</b> ça touche les titres de groupe, dont il a réglé la hauteur
+      le 31 octobre 2026 (« je pense que les titres des groupes devraient être réduits en hauteur »).
+      Monter de 10 à 11 px va dans l'autre sens.</p>
+  </div>
+</div>
+</div>
+
+<!-- ─────────────────────────────  E  ───────────────────────────── -->
+<div class="pt">
+<h2>E · Le panneau à l'intérieur de l'ovale est trop chargé — <em>catégorie B</em></h2>
+<p class="why">
+  <b>Le principe contredit</b> — sa page redessinée du 29 octobre 2026, « Les champs ressortent de
+  l'ovale », et son deuxième dessin de l'intérieur. Il a tranché deux fois dans ce sens : « le badge du
+  sprint est dans l'ovale, il n'y a pas de problème ! », « le LAP 21 / 40 est dans l'ovale, il n'y a pas
+  de problème ! ».<br>
+  <b>Pourquoi le dire quand même</b> — 446 × 92 px, environ 4 % de l'écran, douze commandes en corps 11,
+  au centre exact du seul dessin où l'on lit des positions. Et <b>la moitié de ce qu'il contient ne sert
+  à rien aujourd'hui</b> : <code>counterValue()</code> renvoie le compte de l'application, donc
+  <code>AUTO</code> et <code>LAP COUNTER</code> affichent toujours le même nombre et le choix entre les
+  deux ne peut rien changer (c'est le point 9 de la liste A).
+</p>
+<div class="cols wide">
+
+  <div class="card now">
+    <h3>Aujourd'hui · douze commandes</h3>
+    <div class="demo" style="display:flex;justify-content:center">
+      <div class="ifdemo">
+        <div class="ifcols">
+          <div class="ifcol">
+            <button class="startb">ARM START</button>
+            <div class="ifb ifclock"><span class="ifv">5:12.4</span></div>
+            <button class="startb finb">ARM FINISH</button>
+          </div>
+          <div class="ifcol">
+            <div class="srcrow on ring"><span class="ifk">AUTO</span><span class="srcv">21</span>
+              <span class="ifstep" style="display:inline-flex"><button class="ifsb">−</button><button class="ifsb">+</button></span>
+              <button class="ifsb modeb">M</button><button class="pick"></button></div>
+            <div class="srcrow ring"><span class="ifk">LAP COUNTER</span><span class="srcv">21</span><button class="pick"></button></div>
+            <div class="ifb togo"><span class="ifk">TO GO</span><span class="ifv">21</span></div>
+          </div>
+          <div class="ifcol">
+            <div class="ifb"><span class="ifk">LAP</span><span class="ifv">19</span><span class="ifu">/ 40</span></div>
+            <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip chip" style="background:#0284c7">52</span></div>
+            <div class="ifb hot"><span class="ifk">SPRINT</span><span class="ifv sm">2</span><span class="ifu">- 1 LAP</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>Les deux lignes encadrées sont celles qui affichent <b>le même nombre par construction</b>, avec
+      un bouton pour choisir laquelle sort.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 1 — seule la provenance s'en va</h3>
+    <div class="demo" style="display:flex;justify-content:center">
+      <div class="ifdemo">
+        <div class="ifcols">
+          <div class="ifcol">
+            <button class="startb">ARM START</button>
+            <div class="ifb ifclock"><span class="ifv">5:12.4</span></div>
+            <button class="startb finb">ARM FINISH</button>
+          </div>
+          <div class="ifcol">
+            <div class="ifb togo" style="height:50px"><span class="ifk">TO GO</span><span class="ifv" style="font-size:30px">21</span></div>
+            <div class="srcrow"><span class="ifk">LAP COUNTER</span><span class="srcv" style="color:var(--muted)">—</span>
+              <span class="ifstep" style="display:inline-flex"><button class="ifsb">−</button><button class="ifsb">+</button></span>
+              <button class="ifsb modeb">M</button></div>
+          </div>
+          <div class="ifcol">
+            <div class="ifb"><span class="ifk">LAP</span><span class="ifv">19</span><span class="ifu">/ 40</span></div>
+            <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip chip" style="background:#0284c7">52</span></div>
+            <div class="ifb hot"><span class="ifk">SPRINT</span><span class="ifv sm">2</span><span class="ifu">- 1 LAP</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p><b>Douze commandes passent à neuf</b>, et rien ne quitte le panneau. Les deux boutons de choix
+      disparaissent tant qu'aucun compteur n'est branché ; la ligne du compteur de piste reste, et dit
+      <code>—</code> plutôt qu'un chiffre recopié. <code>TO GO</code> prend la place rendue et devient
+      le plus gros nombre du panneau. Les pas <code>−</code> / <code>+</code> et le bascule
+      <code>M</code> restent, attachés à <code>TO GO</code>.</p>
+    <p><b>Ce que ça coûte :</b> rien de ce qu'il a voulu groupé n'est sorti — mais le panneau reste à
+      446 × 92 px au centre de l'ovale.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 2 — le panneau garde ce qui se lit en course</h3>
+    <div class="demo" style="display:flex;justify-content:center">
+      <div class="ifdemo" style="height:64px">
+        <div class="ifcols">
+          <div class="ifcol">
+            <div class="ifb ifclock"><span class="ifv">5:12.4</span></div>
+            <div class="ifb"><span class="ifk">LAP</span><span class="ifv">19</span><span class="ifu">/ 40</span></div>
+          </div>
+          <div class="ifcol">
+            <div class="ifb togo"><span class="ifk">TO GO</span><span class="ifv">21</span></div>
+            <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip chip" style="background:#0284c7">52</span></div>
+          </div>
+          <div class="ifcol">
+            <div class="ifb hot" style="height:60px"><span class="ifk">SPRINT</span><span class="ifv sm">2</span><span class="ifu">- 1 LAP</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>Sortent : la paire <code>AUTO</code> / <code>LAP COUNTER</code> et ses boutons de choix, le
+      bascule <code>M</code>, les pas <code>−</code> / <code>+</code>, <code>ARM START</code> et
+      <code>ARM FINISH</code>. Restent l'horloge, <code>LAP</code>, <code>TO GO</code>,
+      <code>LEADER</code> et le prochain sprint. <b>92 px deviennent 64 px</b>, et cinq commandes
+      restent au centre au lieu de douze.</p>
+    <p><b>Ce que ça coûte :</b> la perte du regroupement voulu — tout l'état de la course au même
+      endroit, au centre du regard. Et <b>il reste à dire où vont les sortis</b> : la barre du haut, un
+      onglet, ou derrière un clic sur <code>TO GO</code>. Un réglage sorti du panneau est un réglage
+      qu'il faut aller chercher quand il sert vraiment, c'est-à-dire quand le compteur de piste se trompe.</p>
+  </div>
+</div>
+</div>
+
+<!-- ─────────────────────────────  F  ───────────────────────────── -->
+<div class="pt">
+<h2>F · La barre d'onglets fait de la course un écran parmi six — <em>catégorie B</em></h2>
+<p class="why">
+  <b>Le principe contredit</b> — sa demande du 31 octobre 2026 : « <b>six onglets disponibles en tout
+  temps</b> », et « La page de course est un onglet comme les autres ».<br>
+  <b>Pourquoi le dire quand même</b> — pendant une course il n'y a pas six écrans : il y en a un, et cinq
+  documents. Quatre des cinq — Crossings, Decisions, Sprints, Standings — ne servent à aucune décision à
+  prendre dans la seconde. Et un onglet ouvert couvre l'écran de course : si une proposition
+  « Lap gained? » arrive pendant qu'on est sur Passings, <b>aucun signe n'arrive</b> — la barre ne porte
+  que <code>on</code> et <code>quiet</code>. C'est le point 4 de la liste A, vu par la forme.
+</p>
+<div class="cols">
+
+  <div class="card now">
+    <h3>Aujourd'hui · six pairs</h3>
+    <div class="demo" style="padding:0">
+      <div class="tbdemo">
+        <button>Race</button><button class="on">Passings</button><button>Crossings</button>
+        <button>Decisions</button><button>Sprints</button><button>Standings</button>
+      </div>
+    </div>
+    <p>Six boutons identiques. Celui qui ramène à la course est le premier d'une liste, et rien ne le
+      distingue de la liste.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 1 — Race se détache, sans rien ajouter</h3>
+    <div class="demo" style="padding:0">
+      <div class="tbdemo">
+        <button class="back">← Race</button><span class="gap"></span>
+        <button class="on">Passings</button><button>Crossings</button>
+        <button>Decisions</button><button>Sprints</button><button>Standings</button>
+      </div>
+    </div>
+    <p>Un retour à gauche, séparé par un filet des cinq documents. <b>Les six restent disponibles en
+      tout temps</b>, et aucun élément n'est ajouté à la barre : seuls un filet et une flèche.</p>
+    <p><b>Ce que ça coûte :</b> la régularité demandée, et le dessin propre des pages 3a–3d.</p>
+  </div>
+
+  <div class="card">
+    <h3>Réponse 2 — Race porte la marque de ce qui attend</h3>
+    <div class="demo" style="padding:0">
+      <div class="tbdemo">
+        <button style="position:relative">Race <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn);vertical-align:2px;margin-left:3px"></span></button>
+        <button class="on">Passings</button><button>Crossings</button>
+        <button>Decisions</button><button>Sprints</button><button>Standings</button>
+      </div>
+    </div>
+    <p>La barre ne change pas de forme. Un point ambre paraît sur <i>Race</i> <b>uniquement</b> quand
+      une proposition attend, et disparaît dès qu'elle est validée ou rejetée. C'est le même ambre que
+      le point A, et il ne paraît jamais pendant qu'on est sur <i>Race</i>.</p>
+    <p><b>Ce que ça coûte :</b> un élément de plus dans une barre voulue nue, et un clignotement de plus
+      dans le champ de vision — ce qu'il a précisément écarté avec « on n'ajoute rien ».</p>
+  </div>
+</div>
+</div>
+
+<div class="pt">
+  <p class="why" style="margin:0">
+    <b>Et les quatorze points de la liste A</b> — les boutons sans retour d'appui, le
+    « Sent · live » qui n'agit pas, la proposition qui n'affiche pas son origine, l'Undo qui détruit
+    la proposition, <code>LAP COUNTER</code>, la colonne <code>GAP</code>, les colonnes vides de
+    Standings, l'infobulle française — <b>tiennent entiers et ne sont pas dans cette planche</b>. Ils
+    sont dans <code>docs/audit-ux.md</code>, section A, dans l'ordre de la gêne en course.
+  </p>
+</div>
+</div>
+
+<script>
+// Les trois jeux de couleurs, montrés tels qu'ils sortiraient du code.
+const NOW16 = [['52','#0284c7'],['12','#c8102e'],['7','#f97316'],['61','#eab308'],['18','#9f1239'],['3','#1d4ed8'],
+  ['9','#16a34a'],['1','#d62828'],['67','#4b5563'],['58','#06b6d4'],['70','#22c55e'],['46','#111827'],
+  ['23','#ef4444'],['11','#ec4899'],['4','#1e3a8a'],['15','#15803d']];
+// la roue de 24 : trois clartés alternées, écart minimal mesuré ΔE 12,5
+const WHEEL = ['#ed5678','#ff8c88','#b5472b','#d3712e','#e4a455','#856700','#929008','#a1bb58','#377919','#1fa04d',
+  '#3bc791','#008064','#00a5a0','#00c8da','#007faa','#009fe6','#00bdff','#0072cc','#3e8af6','#aca6ff',
+  '#8454b3','#c767c7','#f98dcf','#bc3671'];
+// la réponse 2 : on garde ce qui ne se confond avec rien, on remplace les doublons
+const MIX = ['#0284c7','#c8102e','#f97316','#eab308','#bc3671','#1d4ed8','#16a34a','#d3712e','#4b5563','#00c8da',
+  '#a1bb58','#111827','#aca6ff','#ec4899','#1e3a8a','#008064',
+  '#ff8c88','#856700','#3bc791','#8454b3','#f98dcf','#00bdff','#b5472b','#007faa'];
+// les paires que l'œil ne sépare pas à 7 px, dans le jeu d'aujourd'hui
+const DUPS = new Set(['#c8102e','#d62828','#ef4444','#9f1239','#16a34a','#22c55e','#15803d','#1d4ed8','#1e3a8a']);
+
+const dark = h => { const n = parseInt(h.slice(1), 16);
+  return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255 > 0.6; };
+
+function swatches(el, list, bibs, mark) {
+  document.getElementById(el).innerHTML = list.map((c, i) => {
+    const col = Array.isArray(c) ? c[1] : c, lab = bibs ? (Array.isArray(c) ? c[0] : '·') : (i + 1);
+    return `<span class="sw${mark && DUPS.has(col) ? ' dup' : ''}" style="background:${col};color:${dark(col) ? '#111' : '#fff'}">${lab}</span>`;
+  }).join('');
+}
+// à droite des seize fournies, les huit du repli : les copies exactes du début de liste
+swatches('swNow', NOW16.concat(NOW16.slice(0, 8)), true, true);
+swatches('swWheel', WHEEL, false, false);
+swatches('swMix', MIX, false, false);
+
+// Un peloton de douze dossards à la taille de l'ovale : r = 7 px, chiffre en corps 10.
+function bunch(el, cols) {
+  const dots = cols.slice(0, 12).map((c, i) => {
+    const col = Array.isArray(c) ? c[1] : c, bib = Array.isArray(c) ? c[0] : String(i + 1);
+    const cx = 16 + i * 26, cy = 23;
+    return `<circle cx="${cx}" cy="${cy}" r="10" fill="${col}" stroke="#0f1113" stroke-width="1.5"/>`
+      + `<text x="${cx}" y="${cy + 3.4}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10"`
+      + ` font-weight="700" fill="${dark(col) ? '#111' : '#fff'}">${bib}</text>`;
+  }).join('');
+  document.getElementById(el).innerHTML = dots;
+}
+// l'ordre est celui du peloton : les quatre rouges de la liste de référence s'y suivent
+bunch('ovNow', [NOW16[1], NOW16[7], NOW16[12], NOW16[4], NOW16[6], NOW16[10], NOW16[15], NOW16[5],
+  NOW16[14], NOW16[0], NOW16[9], NOW16[3]]);
+bunch('ovWheel', WHEEL.slice(0, 12));
+bunch('ovMix', [MIX[1], MIX[7], MIX[12], MIX[4], MIX[6], MIX[10], MIX[15], MIX[5], MIX[14], MIX[0], MIX[9], MIX[3]]);
+</script>

@@ -1503,3 +1503,39 @@ colonne du sprint, ovale et actions.
 boutons, tombe à 308 px, et l'ovale gagne 41 px. Registre ouvert : 299 × 104 à droite de la
 fenêtre, qui ne bouge pas. Course de référence à ×16 jusqu'à 2:31.9, trois groupes formés :
 **une seule taille relevée** sur 22, 516/349, et aucun vide.
+
+---
+
+## 30. `maquette-design-b.html` : les cinq points de design posés (31 octobre 2026)
+
+**Ce fichier n'est pas du prototype.** C'est une **planche de propositions**, construite le
+31 octobre 2026 sur sa demande d'attaquer les derniers points de design — les points **A, B, C,
+E et F** de `audit-ux.md` section B, les seuls qui n'aient jamais reçu d'accord (le point D est
+sorti de la liste en build 149). Elle ne modifie rien : le prototype reste à la build 155.
+
+**Ce qu'elle contient.** Cinq sections, une par point. Chacune montre l'écran **tel qu'il est
+aujourd'hui**, dans un cadre tireté, puis **une ou deux réponses posées**, chacune avec ce
+qu'elle apporte et **ce qu'elle coûte**. Les deux points de catégorie B — E et F — rappellent
+en tête le principe qu'ils contredisent, avec sa date et ses mots.
+
+**Comment elle est faite.** Même convention que les autres maquettes : pas de `doctype`, le
+`serve.js` l'enveloppe. Elle charge `styles.css` et montre les composants avec **leurs vraies
+classes** — `.ifcols`, `.ifcol`, `.ifb`, `.srcrow`, `.startb`, `.chip`, `.lgtab`, `.pill` —
+pour que ce soit la vraie taille et la vraie couleur qui se jugent, et non une imitation. Son
+bloc `<style>` ne porte que la mise en page de la planche, le cadre de 446 × 92 px du panneau
+de l'ovale, et la ligne `TO GO` (qui porte un `id` dans le prototype, pas une classe).
+
+Le script en fin de fichier ne sert qu'à dessiner les trois jeux de couleurs du point B : les
+pastilles, et un peloton de douze dossards à `r = 10`, la taille réelle sur l'ovale. Les
+couleurs y sont écrites en dur, telles qu'elles sortiraient du code.
+
+**Les chiffres qu'elle avance** — contrastes des gris, écarts ΔE entre couleurs de dossard —
+sont dans `mesures.md` §31. Elle n'en invente aucun.
+
+**Ce qu'il faut en faire.** Une réponse qu'il choisit entre dans `regles-operateur.md` §17,
+mot pour mot, puis dans `travaux.md`. Un point qu'il laisse où il est reste dans
+`audit-ux.md`. Quand les cinq sont tranchés, la planche n'a plus d'objet et se retire.
+
+**À savoir pour la relire** : un `node serve.js` lancé avant que le serveur ne sache servir le
+CSS rend la planche — et le prototype — sans style, tout en blanc. Le `serve.js` du dépôt le
+sait ; il suffit de relancer.

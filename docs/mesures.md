@@ -2370,3 +2370,52 @@ pas sur le même élément — et rien ne se passait. Même essai sur le **✓ d
 
 Vérifié à la souris, pas en synthétique : `Laps…` ouvre le registre, `+1 lap` crédite le tour
 et vide la sélection, et Undo devient disponible.
+
+---
+
+## 31. Le contraste des gris, et l'écart des couleurs de dossard (31 octobre 2026)
+
+Mesures prises pour la planche `maquette-design-b.html`, qui pose les cinq points de design
+restants de `audit-ux.md` section B. **Rien n'a été modifié pour les prendre.**
+
+### Les gris sur les trois fonds de la page
+
+Rapports de contraste WCAG, calculés sur les jetons de `styles.css:3-4`. Les trois fonds sont
+`--deep` `#0f1113` (le fond des blocs), `#17191c` (le fond des lignes de la timeline) et
+`--panel` `#1b1e21` (le fond des panneaux).
+
+| Gris | sur `#0f1113` | sur `#17191c` | sur `#1b1e21` |
+|---|---|---|---|
+| `--dim` `#5f5c55` **(aujourd'hui)** | 2,84 | 2,64 | 2,51 |
+| `#6b6860` | 3,40 | 3,17 | 3,01 |
+| `#74716a` | 3,89 | 3,62 | 3,44 |
+| `#7c7972` | 4,36 | 4,06 | 3,85 |
+| `#858178` | 4,87 | 4,54 | **4,31** |
+| `#8a8780` | 5,28 | 4,91 | **4,67** |
+| `--muted` `#9a9890` | 6,55 | 6,10 | 5,79 |
+
+**`#8a8780` est le premier gris qui passe 4,5 : 1 sur les trois fonds** : `#858178` y échoue
+sur `--panel`. `--dim` est porté par **13 règles** de `styles.css`.
+
+**Correction d'un chiffre de l'audit** : `audit-ux.md` section B point C donnait `--muted` à
+« 7,4 : 1 ». La mesure ne le retrouve sur aucun des fonds de la page — elle donne **6,55** au
+mieux, sur `--deep`. La conclusion du point ne change pas : `--muted` passe 4,5 : 1 partout,
+c'est `--dim` seul qui est en cause.
+
+### L'écart entre les couleurs de dossard
+
+Écart ΔE 76 dans CIELAB entre les deux couleurs **les plus proches** d'un jeu.
+
+| Jeu | Coureurs | Écart minimal | La paire la plus proche |
+|---|---|---|---|
+| Les seize fournies (`RIDERS`) | 16 | **9,7** | `#d62828` ESP / `#ef4444` DEN |
+| Les mêmes, poussées à 24 par `addRosterRider` | 24 | **0,0** | les huit derniers sont des **copies exactes** des huit premiers |
+| Roue calculée de 24, trois clartés alternées | 24 | **12,5** | `#009fe6` / `#00bdff` |
+| Les nations gardées, doublons remplacés | 24 | **14,8** | `#0284c7` ITA / `#007faa` |
+
+Les quatre couleurs suivantes des seize sont à moins de ΔE 20 : `#c8102e` / `#d62828` (9,9),
+`#c8102e` / `#ef4444` (13,0), `#16a34a` / `#22c55e` (14,1), `#16a34a` / `#15803d` (17,6).
+
+**La taille réelle du dossard sur l'ovale** : `DOT_R = 10` unités SVG, environ **7 px à
+l'écran** sur l'écran de référence. Le cercle porte bien le numéro, en `font-size` 10 et
+`font-weight` 700 — c'est la couleur qui se lit sans lire, pas le numéro.

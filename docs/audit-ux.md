@@ -379,6 +379,14 @@ l'étiquette de taille de la build 150, sont en anglais.
 
 Même règle : des propositions, pas des décisions.
 
+**Les cinq points restants sont dessinés.** Le 31 octobre 2026, sur sa demande d'attaquer les
+derniers points de design, les points A, B, C, E et F ont été portés dans une planche —
+`maquette-design-b.html`, décrite dans `architecture.md` §30. Chacun y est montré **tel qu'il
+est aujourd'hui**, puis en **une ou deux réponses posées**, avec ce que chacune coûte. La
+planche ne touche pas au prototype : **aucune des réponses n'est codée**, et chacune attend son
+accord. Les chiffres qu'elle avance — contrastes des gris, écarts entre couleurs de dossard —
+sont dans `mesures.md` §31.
+
 ## Ce que le design réussit
 
 - **La double lecture est la bonne idée, et elle est bien tenue.** La timeline répond « qui est
@@ -426,9 +434,12 @@ Le même traitement — 10 px, majuscules, interlettrage `.07em`, `--muted` ou `
 d'en-tête de colonne, de titre de bloc, d'indice d'onglet et d'étiquette de champ.
 
 **Mesuré** sur les jetons de `styles.css:3-4` : `--dim` (`#5f5c55`) sur `--deep` (`#0f1113`)
-donne **≈ 2,9 : 1**, et sur le fond des lignes (`#17191c`) **≈ 2,6 : 1**. Le plancher habituel
-pour du texte est 4,5 : 1, et il s'agit ici de 10 px en capitales. `--muted` est à 7,4 : 1 et ne
-pose aucun problème : c'est `--dim` seul qui est en cause.
+donne **2,84 : 1**, et sur le fond des lignes (`#17191c`) **2,64 : 1**. Le plancher habituel
+pour du texte est 4,5 : 1, et il s'agit ici de 10 px en capitales. `--muted` passe 4,5 : 1 sur
+les trois fonds et ne pose aucun problème : c'est `--dim` seul qui est en cause, sur **13
+règles** de `styles.css`. Le tableau complet, et le premier gris qui passe le plancher partout,
+sont dans `mesures.md` §31 — qui corrige au passage le « 7,4 : 1 » donné ici le matin même pour
+`--muted` : la mesure ne le retrouve sur aucun fond de la page.
 
 ### D. Le réglage de taille de l'ovale ne pouvait pas tenir sa promesse
 
