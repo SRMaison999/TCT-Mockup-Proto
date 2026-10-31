@@ -2132,3 +2132,8 @@ l'écran, une à la fois.
      entre les lignes doit être le même que dans la timeline** ». La timeline tient ses lignes
      à 28 px ; la start list les tenait entre 26 et 34 selon la place, en s'étirant pour
      remplir sa colonne. Elle les tient maintenant à **28 px fixes**, et ne s'étire plus.
+
+146. **Le vide sous la start list reste.** On lui a montré la contrepartie du pas fixe — les
+     lignes ne s'étirent plus, donc il reste de la place sous la dernière. Sa réponse, le
+     31 octobre 2026 : « **Laisse le vide sous la start list.** » Ce vide est donc **voulu** :
+     il ne se rattrape ni en étirant les lignes, ni en remontant le bas de la colonne.
