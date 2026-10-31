@@ -717,7 +717,7 @@ un bouton de 52) est un lien invisible entre deux règles éloignées. Quand on 
 ce que le dégagement dégageait, il faut le suivre. Ici il en restait un vers un objet qui
 n'était plus là, et il en manquait un vers celui qui y était.
 
-### D29 · D2 payé une deuxième fois, deux ans après, sur d'autres boutons
+### D30 · D2 payé une deuxième fois, deux ans après, sur d'autres boutons
 
 D2 avait été compris pour l'ovale et appliqué là. Trois conteneurs que le moteur réécrit une
 fois par seconde — `#tbar`, `#propcard`, `#ledgerbox` — ont gardé leurs écouteurs en `click`

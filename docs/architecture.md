@@ -1474,7 +1474,7 @@ l'état.
 ## 29. Une seule disposition sous l'ovale (build 155)
 
 « Le sélecteur de disposition part pour de bon, retire les deux dispositions et garde seulement
-côte à côte » (l'opérateur, 31 octobre 2026, `regles-operateur.md` §17 point 134). Il avait
+côte à côte » (l'opérateur, 31 octobre 2026, `regles-operateur.md` §17 point 135). Il avait
 offert le choix le 29 octobre ; il l'a repris deux jours plus tard, le lendemain du jour où la
 commande avait quitté la barre d'actions (§27).
 
