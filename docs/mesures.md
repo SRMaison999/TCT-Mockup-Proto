@@ -2492,3 +2492,56 @@ Vérifié depuis la barre du haut, à la souris : le bascule `M` passe `#srcapp`
 choix du compteur passe `#srccnt` en `on` et retire `on` à `#srcapp` ; `ARM START` devient
 `START ARMED`, et `ARM FINISH` prend `armed`. Les cinq commandes déplacées répondent donc au
 même geste depuis leur nouvelle place.
+
+---
+
+## 34. Les deux bandes « new group » font la même chose (31 octobre 2026)
+
+Vérifié sur sa remarque : « jusqu'à présent cela fonctionnait pour créer un groupe au-dessous de
+la timeline mais au-dessus ça ne fonctionnait pas ». Mesuré dans la page, course de référence
+chargée, peloton de seize, gestes envoyés comme de vrais appuis-glissés.
+
+| Ce qu'on fait | Ce qui arrive |
+|---|---|
+| Le coureur **de tête** (15) déposé sur la bande du **HAUT** | groupe créé, il paraît **en haut** : `1-Leader [15]` |
+| Le coureur **de queue** (52) déposé sur la bande du **HAUT** | groupe créé, il paraît **en bas** : `2-Last [52]` |
+
+**Les deux bandes sont atteignables** : `elementFromPoint` les rend toutes les deux, elles sont
+épinglées en haut et en bas de la colonne, et chacune reçoit bien le dépôt.
+
+**Ce qui ne se passe pas** : la bande choisie n'a **aucun effet**. `z.dataset.newgroup` porte
+l'indice de la bande, il est lu dans le gestionnaire — `if (z.dataset.newgroup != null)` — puis
+**jamais transmis** : `newGroup(drag, 'manual')` ne le reçoit pas. Le groupe est poussé dans
+`S.groups` sans position, et la timeline le range d'après la place de ses coureurs **sur la
+piste**.
+
+Le dépôt sur la bande du **bas** paraît donc marcher, et celui du **haut** paraît ne rien faire :
+dans les deux cas le groupe se range là où le coureur se trouve, et un coureur qu'on sort du
+peloton est le plus souvent derrière.
+
+**Ce qui place un groupe dans la timeline.** Les groupes sont rangés sur `g.head`, le plus petit
+`behind` de leurs coureurs — leur retard **en mètres** sur le leader, calculé depuis la position
+mesurée. Un groupe manuel n'a pas de place à lui : ses coureurs gardent celle que les boucles
+leur donnent. C'est pourquoi la bande ne peut rien changer tant que le groupe n'a pas de
+position propre.
+
+**Ce qui existe déjà pour un coureur que les boucles ne voient pas.** Un coureur sans
+transpondeur roule **derrière un hôte** (`S.noTp`, bib → hôte). Et s'il a sa propre position —
+un contact de ruban que l'opérateur lui attribue — elle est gardée dans `S.noTpRec` et le porte
+**seul**, à sa vitesse, sans hôte. Ce deuxième mécanisme est exactement la forme qu'aurait
+« l'opérateur dit où il est ».
+
+**Ce qui n'existe pas.** Un coureur **avec** un transpondeur est lu trois fois par tour, et sa
+position est extrapolée de sa dernière lecture à chaque image. Une place qu'on lui donnerait à
+la main serait écrasée à la lecture suivante, c'est-à-dire en une fraction de seconde.
+
+### La bande de dépôt, avant et après (build 160)
+
+| | Avant | Après |
+|---|---|---|
+| Hauteur d'une bande d'extrémité | **15,6 px** | **30 px** |
+| Écart entre la bande du haut et le premier bloc | **1 px** | **9 px** |
+| Hauteur d'une ligne de coureur, pour comparer | 28 px | 28 px |
+
+Vérifié après correction : un coureur lâché sur le **bord haut** de la bande et un coureur lâché
+sur son **bord bas** créent tous les deux le groupe. Les deux bandes restent atteignables.

@@ -1707,3 +1707,38 @@ la barre fait 36 px et que chaque ligne en faisait 22 dans le panneau.
 sous-titre, qui a déjà ses points de suspension, qui s'efface. Avec le simulateur ouvert, le
 titre et le sous-titre disparaissent — ils disparaissaient déjà avant cette build, à cette
 largeur.
+
+---
+
+## 35. Sa refonte de la page — **commencée, build 160**
+
+Sa maquette du 31 octobre 2026 (`regles-operateur.md` §17 points 148 et 149). **Ce qui est fait
+à ce jour, et ce qui ne l'est pas**, pour qu'on reprenne sans deviner.
+
+### Fait
+
+- **La timeline court du haut en bas de l'écran.** `.app` est devenu une rangée : la colonne de
+  la timeline et sa poignée d'un côté, une colonne `.work` de l'autre, qui porte la barre puis
+  la scène `.stage` — l'ovale, sa poignée et la colonne de sprint. Deux sélecteurs ont suivi le
+  déménagement, `.main > .right` devenu `.stage > .right`, et la poignée de droite avec.
+- **Les six onglets sont dans la barre**, et la deuxième ligne a disparu. Le journal s'ouvrait
+  sous la barre d'onglets ; il s'ouvre maintenant sous la barre elle-même (`placeLog`).
+- **Le titre, le sous-titre, `Race leader` et `Auto` ont quitté la barre.** Le bouton `Auto`
+  reste dans le document avec son écouteur, caché par `.gone`, comme `Race log` avant lui : le
+  retirer casserait `$('#leaderauto')`.
+- **Le sous-titre est descendu dans l'ovale**, en noir, dans `#ovtitle`, et il porte les tours,
+  les sprints et la longueur de piste — « Men's Points Race - 40 laps - 4 sprints - 250m ».
+  `syncSub` l'écrit là au lieu de `#subtitle`, qui n'existe plus.
+- **Le numéro de build est seul**, à droite : `160`.
+- **Les deux bandes « new group » sont visables** : 28 px de haut, la hauteur d'une ligne de
+  coureur, et 9 px séparent celle du haut du premier bloc (point 150, `mesures.md` §34).
+
+### Pas fait
+
+- Les champs du panneau en **boîtes blanches à texte noir**, leur nouvelle disposition —
+  horloge et `LAP` en haut, `LEADER` et `TO GO` en bas, `SPRINT` à droite sur deux hauteurs — et
+  `TO GO` seul en vert.
+- `LEADER` portant le **drapeau et le NOC** en plus du numéro.
+- L'horloge à **`00:00.0` en marche et `12:26.54` à l'arrêt** : `fmtT` donne aujourd'hui
+  `0:00.0`, un seul chiffre de minutes et une décimale toujours.
+- Les boutons renommés **`SET LEADER`**, à la place exacte qu'ils occupent (point 149).

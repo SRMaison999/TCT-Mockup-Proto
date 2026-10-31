@@ -556,3 +556,25 @@ Les trois sont codés et vérifiés dans la page (`architecture.md` §34, `mesur
 `audit-ux.md` — `LAP COUNTER` affiche encore le compte de l'application, puisque
 `counterValue()` le recopie. Le déménagement n'a pas changé ce qu'il montre, seulement où il
 est. Le point reste entier dans la liste A.
+
+---
+
+## 14. Créer un groupe au-dessus de la timeline — **constaté, décision reportée**
+
+Sa demande et ses mots sont dans `regles-operateur.md` §17 point 151 ; ils ne sont pas recopiés
+ici. Ce qui a été **constaté** et **mesuré** est dans `mesures.md` §34.
+
+**L'état** : les deux bandes « new group » reçoivent bien le dépôt, mais la bande choisie n'a
+aucun effet — `z.dataset.newgroup` est lu et jamais transmis, et le groupe se range d'après la
+position mesurée de ses coureurs. **La taille de la bande, elle, est corrigée** (build 160) ;
+c'est la seule partie livrée.
+
+**Pourquoi c'est en attente et non en cours** : donner une place à un groupe demande une
+position que le logiciel n'a pas. Pour un coureur sans transpondeur le mécanisme existe déjà —
+`S.noTpRec`, qui le porte seul à sa vitesse. Pour un coureur que les boucles lisent trois fois
+par tour, toute place posée à la main est écrasée à la lecture suivante. Sa vraie demande — une
+course où **personne** ne porte de transpondeur, et où la timeline est entièrement la sienne —
+est une pièce à dessiner avant d'être codée. Il a répondu « On remet à plus tard » le
+31 octobre 2026.
+
+**On saura que c'est fini quand** : il aura tranché la forme, et pas avant.

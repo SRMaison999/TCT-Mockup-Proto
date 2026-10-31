@@ -2142,3 +2142,37 @@ l'écran, une à la fois.
      peloton groupé, 13 étiquettes sur 16 tombent sur le dossard d'un voisin (`mesures.md`
      §32). Sa réponse, le 31 octobre 2026 : « **on ne va rien changer ici !** » Ni l'écart des
      trois files, ni l'affichage du NOC, ni le dossard rond. Le recouvrement est **accepté**.
+
+### La refonte de la page, et les bandes de dépôt · 31 octobre 2026, septième tour
+
+148. **Il a refait le design de la page, et c'est celui-là qu'il veut.** Ses mots, le
+     31 octobre 2026, capture à l'appui : « **J'ai refait le design de la page et c'est comme ça
+     que je la veux** ». Treize changements ont été relevés sur son image et relus avec lui ; il
+     en a corrigé trois (point 149). Les dix autres tiennent : les six onglets **dans** la barre,
+     le titre et le sous-titre hors de la barre, `Race leader` et `Auto` retirés, le numéro de
+     build seul, le sous-titre **descendu dans l'ovale** avec les tours, les sprints et la
+     longueur de piste, les champs du panneau en **boîtes blanches à texte noir**, leur nouvelle
+     disposition, `TO GO` seul en vert, `LEADER` portant le numéro **et** le drapeau **et** le
+     NOC, et l'ovale plus grand.
+
+149. **Ses trois corrections, mot pour mot.** « **la timeline occupe maintenant TOUTE la hauteur
+     de l'écran !** » ; « **Il faut afficher 00:00.0, mais quand le chronomètre s'arrête il faut
+     afficher 12:26.54** » — deux chiffres de minutes toujours, une décimale en marche, **deux à
+     l'arrêt** ; « **les boutons SET LEADER gardent la place exacte qu'ils avaient** », ce qui
+     laisse intact le plafond du réglage de l'ovale (point 112).
+
+150. **La bande « new group » doit avoir de la place.** Ses mots, le 31 octobre 2026 : « **je
+     voulais que tu laisse un peu de marge entre le bouton "new group" et la timeline.
+     Actuellement c'est beaucoup trop serré. Je viens de tester et j'ai dû m'y reprendre à
+     10 fois pour réussir à faire glisser un coureur dans la zone** ». Mesuré avant correction :
+     la bande faisait 15,6 px de haut et 1 px la séparait du premier bloc.
+
+151. **Créer un groupe au-dessus doit marcher pour tous les coureurs.** Ses mots, le 31 octobre
+     2026 : « **Tous ! I faut aussi imaginer que parfois l'utilisateur n'aura aucun transpondeurs
+     pour équiper les coureurs. Il devra pourtant créer des groupes dans sa timeline pour pouvoir
+     suivre la course correctement. Il faut donc donner la flexibilité** ». Et son exemple :
+     « **si par exemple un coureur s'échappe en tête et qu'il ne porte pas de transpondeur, je
+     dois avoir la possibilité de créer un groupe au-dessus du bunch dans la timeline** ».
+     **Rien n'est codé** : on lui a montré que la place donnée à la main est écrasée à la lecture
+     suivante pour un coureur que les boucles voient, et sa réponse du même jour a été « **On
+     remet à plus tard** ».
