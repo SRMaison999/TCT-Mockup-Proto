@@ -1591,3 +1591,36 @@ colonne de NOC existaient déjà et n'ont pas bougé.
 sont espacées de 19 unités, les dossards en font 20 de diamètre, et il reste 9 unités pour une
 étiquette qui en fait 10,4. Les chiffres sont dans `mesures.md` §32. **Rien n'a été inventé
 pour le contourner** : il attend sa décision.
+
+---
+
+## 32. Le badge s'en va, le numéro reste (build 157)
+
+Sa demande du 31 octobre 2026 (`regles-operateur.md` §17 point 143), venue en regardant une
+ligne de timeline : le carré blanc autour du dossard part, le chiffre reste.
+
+**Ce qui change, en trois règles de `styles.css` et une ligne de script.** `.chip` perd son
+fond, ses coins et son ombre portée, et prend `--fg` ; `chip()` n'écrit plus de fond en ligne ;
+la case `LEADER` du panneau de l'ovale perd le sien aussi. **La boîte garde sa largeur et sa
+hauteur** — c'est elle qui aligne les colonnes d'un bout à l'autre de l'écran, et la vérifier
+l'a confirmé : le numéro, le drapeau et le NOC restent centrés sur la même ligne.
+
+**Ce que le carré portait, et qui n'a pas été perdu.** Son cadre tireté disait trois choses, et
+elles passent sur le numéro dans les mêmes couleurs — mesuré dans la page, sur une sonde posée
+hors de la course :
+
+| État | Avant | Maintenant |
+|---|---|---|
+| transpondeur muet (`silent`) | cadre tireté orange | **numéro orange** `#F2A33A` |
+| pas de transpondeur (`notp`) | cadre tireté bleu | **numéro bleu** `#8FB4FF` |
+| hors piste (`off`) | cadre tireté rouge, 75 % | **numéro rouge** `#FF5C5C`, 75 % |
+
+C'est le seul point de cette build qu'il n'a pas énoncé : il a demandé le retrait du carré, pas
+le sort de ce que le carré portait. Effacer les trois états sans rien dire aurait été pire.
+
+**Le dossard rond de l'ovale ne bouge pas.** Ce n'est pas un badge : c'est la place du coureur
+sur la piste, et son cercle blanc porte le numéro plus le NOC de la build 156. `BIB_FILL` ne
+sert donc plus qu'à lui.
+
+**Une marque reste encadrée, et c'est voulu** : la place vide de la carte de sprint, le `·`
+dans son cadre tireté. Elle ne désigne aucun coureur — elle dit qu'une place n'est pas prise.

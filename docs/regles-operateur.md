@@ -2110,3 +2110,12 @@ l'écran, une à la fois.
      précédemment sauf les couleurs, qui disparaissent au profit du blanc** ». Le dossard est
      donc **blanc partout**, avec le seul numéro, et le **NOC n'est attaché qu'à l'ovale**. La
      colonne du drapeau et celle du NOC de la timeline ne bougent pas — elles existaient déjà.
+
+143. **Plus de badge : le dossard est le numéro, sans le carré.** Ses mots, le 31 octobre
+     2026 : « **non je veux plus les badges ! Je veux les numéros de dossards sans le carré
+     dans lequel ils sont enfermés** ». Le fond, les coins arrondis et l'ombre portée s'en
+     vont ; il ne reste que le chiffre. **Ce qu'il n'a pas dit, et qui a donc été décidé en le
+     disant** : le cadre tireté du badge portait trois états — transpondeur muet, pas de
+     transpondeur, hors piste — et ces trois états passent sur le **numéro lui-même**, dans
+     les mêmes trois couleurs. **Le dossard rond de l'ovale n'est pas touché** : ce n'est pas
+     un badge, c'est la place du coureur sur la piste.

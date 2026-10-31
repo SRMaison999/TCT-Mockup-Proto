@@ -327,7 +327,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 156 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 157 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -1483,8 +1483,11 @@ function setColor(bib, color) { const r = S.riders.find(x => x.bib === bib); r.c
 // `r.color` reste dans les données, chargé et enregistré avec la liste de départ : il n'est
 // simplement plus dessiné. Rien ne le change depuis que la sélection des couleurs est sortie du
 // registre (build 151), donc le rendre à nouveau tient en remettant `r.color` ici.
+// Et depuis la build 157, le carré est parti lui aussi : « je veux les numéros de dossards sans
+// le carré dans lequel ils sont enfermés ». Il ne reste que le numéro. `BIB_FILL` ne sert donc
+// plus qu'au dossard rond de l'ovale, qui n'est pas un badge mais la place du coureur sur la piste.
 const BIB_FILL = '#ECEAE4';
-function chip(r, cls) { return `<span class="chip dk${cls ? ' ' + cls : ''}" style="background:${BIB_FILL}">${r.bib}</span>`; }
+function chip(r, cls) { return `<span class="chip${cls ? ' ' + cls : ''}">${r.bib}</span>`; }
 // The operator's naming, 29 October 2026 (regles-operateur.md §17). A group carries its RANK in the race, counted
 // from the front, then what it is: the one in front leads, those between it and the bunch chase, the bunch is the
 // bunch, those behind it are behind, and the very last of them — when there is more than one — is the last.
@@ -1704,8 +1707,8 @@ function renderStrip(G) {
   IF.time.classList.toggle('stopped', S.winT != null);
   FINB.classList.toggle('armed', S.finArm);
   IF.leadchip.textContent = lead ? lead.bib : '—';
-  IF.leadchip.style.background = lead ? BIB_FILL : 'var(--line2)';
-  IF.leadchip.classList.toggle('dk', !!lead);
+  IF.leadchip.style.background = 'none';     // le carré est parti là aussi : il ne reste que le numéro
+  IF.leadchip.classList.toggle('dk', false);
   // The leader box carries his number and nothing else (operator, 29 October 2026). He said « retire » — so the
   // speed and the way he was named are gone, not moved into a tooltip where they would have survived his decision.
   // « SPRINT 3 - 6 LAPS », the operator's own wording, 29 October 2026.
@@ -2976,7 +2979,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 156 · mixed';
+  $('#buildno').textContent = 'build 157 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
