@@ -19,6 +19,7 @@ body{overflow:auto}
 /* le panneau de l'ovale est montré à sa taille réelle, 446 × 92 px : sa colonne doit donc
    être plus large que les autres, sinon la troisième colonne du panneau est rognée. */
 .cols.wide>.card{flex:1 1 100%}
+.card.wide3{flex:1 1 300px}
 .card{flex:1 1 320px;min-width:300px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px 13px}
 .card.now{border-style:dashed}
 .card>h3{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 9px}
@@ -191,33 +192,59 @@ body{overflow:auto}
       peloton de référence sont <b>SUI, ESP, DEN et POR</b>.</p>
   </div>
 
-  <div class="card">
-    <h3>Réponse 1 — une roue de 24, calculée</h3>
+  <div class="card wide3">
+    <h3>Option 1 — tout le monde en blanc, que le numéro</h3>
     <div class="demo">
-      <div class="swr" id="swWheel"></div>
-      <div class="mz">écart minimal entre deux couleurs : ΔE 12,5 — <b>plus écarté à 24 que les seize d'aujourd'hui</b></div>
-      <div style="margin:11px 0 0"><div class="lbl" style="margin-bottom:4px">Le même peloton sur l'ovale</div>
-        <svg width="330" height="46" viewBox="0 0 330 46" id="ovWheel"></svg></div>
+      <div class="lbl" style="margin-bottom:5px">Dans la timeline</div>
+      <div class="swr" id="chipW"></div>
+      <div style="margin:12px 0 0"><div class="lbl" style="margin-bottom:4px">Le peloton sur l'ovale, à la taille réelle</div>
+        <svg width="330" height="46" viewBox="0 0 330 46" id="ovW"></svg></div>
     </div>
-    <p>24 teintes régulières sur trois clartés alternées, pour que deux voisines de la roue ne soient
-      jamais voisines de clarté. Le texte du dossard passe au noir sur les claires — le mécanisme
-      <code>dk</code> existe déjà et se calcule tout seul.</p>
-    <p><b>Ce que ça coûte :</b> la ressemblance avec les couleurs nationales est perdue pour tout le
-      monde. SUI ne serait plus rouge.</p>
+    <p>Plus aucune couleur de coureur nulle part. <b>Le numéro devient la seule identité</b>, et il est
+      déjà là — sur l'ovale il est écrit dans le dossard, en corps 10.</p>
+    <p><b>Ce qu'il reste de couleur :</b> les bulles de groupe sur l'ovale gardent la leur, et les
+      bordures qui disent l'état d'un coureur — tiretée orange pour un transpondeur muet, tiretée rouge
+      pour un coureur hors piste — se voient <b>mieux</b> sur du blanc que sur du rouge ou du bleu.</p>
+    <p><b>Ce que ça coûte :</b> on ne repère plus un coureur du coin de l'œil, il faut lire. Et sur un
+      peloton de 24, c'est 24 numéros à lire au lieu d'une tache de couleur à reconnaître.</p>
   </div>
 
-  <div class="card">
-    <h3>Réponse 2 — garder les nations, séparer les doublons</h3>
+  <div class="card wide3">
+    <h3>Option 2 — en blanc, avec le NOC attaché</h3>
     <div class="demo">
-      <div class="swr" id="swMix"></div>
-      <div class="mz">écart minimal : ΔE 14,8 — <b>plus écarté que la roue calculée</b>, et les quatre rouges deviennent un seul rouge</div>
-      <div style="margin:11px 0 0"><div class="lbl" style="margin-bottom:4px">Le même peloton sur l'ovale</div>
-        <svg width="330" height="46" viewBox="0 0 330 46" id="ovMix"></svg></div>
+      <div class="lbl" style="margin-bottom:5px">Dans la timeline</div>
+      <div class="swr" id="chipN"></div>
+      <div style="margin:12px 0 0"><div class="lbl" style="margin-bottom:4px">Le peloton sur l'ovale, à la taille réelle</div>
+        <svg width="330" height="60" viewBox="0 0 330 60" id="ovN"></svg></div>
     </div>
-    <p>Les douze couleurs qui ne se confondent avec rien sont gardées telles quelles. Seules celles qui
-      se doublent changent, et les huit suivantes viennent de la roue.</p>
-    <p><b>Ce que ça coûte :</b> <b>SUI garde son rouge, ESP, DEN et POR le perdent.</b> Et la garantie
-      ne vaut que pour ce peloton-ci : une autre liste de départ peut ramener deux couleurs voisines.</p>
+    <p>Le même blanc, et le pays collé au numéro. Dans la timeline le badge s'allonge et porte
+      <b>12 SUI</b> d'un seul tenant.</p>
+    <p><b>Ce que ça coûte :</b> <b>le NOC ne tient pas dans le dossard de l'ovale.</b> À 7 px, trois
+      lettres ne rentrent pas : elles sont dessinées ici <b>sous</b> le dossard, en corps 7. Elles
+      doublent la hauteur de chaque coureur sur la piste, et deux coureurs proches se recouvrent — c'est
+      visible ci-dessus sur les deux derniers.</p>
+  </div>
+
+  <div class="card wide3">
+    <h3>Option 3 — la couleur du drapeau du pays</h3>
+    <div class="demo">
+      <div class="lbl" style="margin-bottom:5px">Dans la timeline</div>
+      <div class="swr" id="chipF"></div>
+      <div class="mz">onze paires se ressemblent — <b>GER et BEL sont la même couleur</b> (noir), SUI et POR à ΔE 2,8, DEN et JPN à 5,0</div>
+      <div style="margin:12px 0 0"><div class="lbl" style="margin-bottom:4px">Le peloton sur l'ovale, à la taille réelle</div>
+        <svg width="330" height="46" viewBox="0 0 330 46" id="ovF"></svg></div>
+    </div>
+    <p>Chaque coureur prend la couleur dominante du drapeau de son pays : rouge pour la Suisse et le
+      Danemark, jaune pour l'Espagne et la Colombie, noir pour l'Allemagne et la Belgique, bleu ciel
+      pour le Kazakhstan.</p>
+    <p><b>Ce que ça coûte :</b> <b>la règle du drapeau sépare moins bien qu'aujourd'hui, pas mieux.</b>
+      Avec ce peloton-ci elle donne <b>cinq rouges</b> (SUI, NED, POR, DEN, JPN) au lieu de quatre, trois
+      verts, trois bleus et <b>deux noirs identiques</b>. C'est la règle appliquée à la lettre, et c'est
+      le résultat qu'elle donne.</p>
+    <p>Un drapeau a souvent deux ou trois couleurs. <b>Laquelle est « la » couleur du pays n'est pas
+      écrit</b> : pour le Portugal j'ai pris le rouge, qui occupe les trois cinquièmes ; pour l'Italie
+      le vert. Dites-moi si vous l'entendiez autrement — par exemple le drapeau entier dessiné dans le
+      badge, à la place d'une couleur unie.</p>
   </div>
 </div>
 </div>
@@ -489,14 +516,13 @@ body{overflow:auto}
 const NOW16 = [['52','#0284c7'],['12','#c8102e'],['7','#f97316'],['61','#eab308'],['18','#9f1239'],['3','#1d4ed8'],
   ['9','#16a34a'],['1','#d62828'],['67','#4b5563'],['58','#06b6d4'],['70','#22c55e'],['46','#111827'],
   ['23','#ef4444'],['11','#ec4899'],['4','#1e3a8a'],['15','#15803d']];
-// la roue de 24 : trois clartés alternées, écart minimal mesuré ΔE 12,5
-const WHEEL = ['#ed5678','#ff8c88','#b5472b','#d3712e','#e4a455','#856700','#929008','#a1bb58','#377919','#1fa04d',
-  '#3bc791','#008064','#00a5a0','#00c8da','#007faa','#009fe6','#00bdff','#0072cc','#3e8af6','#aca6ff',
-  '#8454b3','#c767c7','#f98dcf','#bc3671'];
-// la réponse 2 : on garde ce qui ne se confond avec rien, on remplace les doublons
-const MIX = ['#0284c7','#c8102e','#f97316','#eab308','#bc3671','#1d4ed8','#16a34a','#d3712e','#4b5563','#00c8da',
-  '#a1bb58','#111827','#aca6ff','#ec4899','#1e3a8a','#008064',
-  '#ff8c88','#856700','#3bc791','#8454b3','#f98dcf','#00bdff','#b5472b','#007faa'];
+// Les nations de la liste de référence, dans l'ordre des dossards de NOW16.
+const NOC = ['ITA','SUI','NED','COL','POR','FRA','SLO','ESP','GER','KAZ','BRA','BEL','DEN','JPN','GBR','IRL'];
+// Option 3 : la couleur dominante du drapeau. Le Portugal prend le rouge (trois cinquièmes du
+// drapeau), l'Italie le vert, le Japon le rouge du disque. Ce choix est à confirmer par l'opérateur.
+const FLAG = {ITA:'#008C45',SUI:'#D52B1E',NED:'#AE1C28',COL:'#FCD116',POR:'#DA291C',FRA:'#002395',
+  SLO:'#005DA4',ESP:'#FFC400',GER:'#000000',KAZ:'#00AFCA',BRA:'#009739',BEL:'#000000',
+  DEN:'#C8102E',JPN:'#BC002D',GBR:'#012169',IRL:'#169B62'};
 // les paires que l'œil ne sépare pas à 7 px, dans le jeu d'aujourd'hui
 const DUPS = new Set(['#c8102e','#d62828','#ef4444','#9f1239','#16a34a','#22c55e','#15803d','#1d4ed8','#1e3a8a']);
 
@@ -511,8 +537,18 @@ function swatches(el, list, bibs, mark) {
 }
 // à droite des seize fournies, les huit du repli : les copies exactes du début de liste
 swatches('swNow', NOW16.concat(NOW16.slice(0, 8)), true, true);
-swatches('swWheel', WHEEL, false, false);
-swatches('swMix', MIX, false, false);
+
+// Les trois options qu'il a demandées le 31 octobre 2026, dessinées avec le badge réel de la page.
+function chips(el, mode) {
+  document.getElementById(el).innerHTML = NOW16.map(([bib], i) => {
+    const noc = NOC[i];
+    if (mode === 'white') return `<span class="chip dk" style="background:#ECEAE4">${bib}</span>`;
+    if (mode === 'noc') return `<span class="chip dk" style="background:#ECEAE4">${bib} ${noc}</span>`;
+    const c = FLAG[noc];
+    return `<span class="chip${dark(c) ? ' dk' : ''}" style="background:${c}">${bib}</span>`;
+  }).join('');
+}
+chips('chipW', 'white'); chips('chipN', 'noc'); chips('chipF', 'flag');
 
 // Un peloton de douze dossards à la taille de l'ovale : r = 7 px, chiffre en corps 10.
 function bunch(el, cols) {
@@ -526,8 +562,20 @@ function bunch(el, cols) {
   document.getElementById(el).innerHTML = dots;
 }
 // l'ordre est celui du peloton : les quatre rouges de la liste de référence s'y suivent
-bunch('ovNow', [NOW16[1], NOW16[7], NOW16[12], NOW16[4], NOW16[6], NOW16[10], NOW16[15], NOW16[5],
-  NOW16[14], NOW16[0], NOW16[9], NOW16[3]]);
-bunch('ovWheel', WHEEL.slice(0, 12));
-bunch('ovMix', [MIX[1], MIX[7], MIX[12], MIX[4], MIX[6], MIX[10], MIX[15], MIX[5], MIX[14], MIX[0], MIX[9], MIX[3]]);
+const ORDER = [1, 7, 12, 4, 6, 10, 15, 5, 14, 0, 9, 3];
+bunch('ovNow', ORDER.map(i => NOW16[i]));
+bunch('ovW', ORDER.map(i => [NOW16[i][0], '#ECEAE4']));
+bunch('ovF', ORDER.map(i => [NOW16[i][0], FLAG[NOC[i]]]));
+
+// L'option 2 sur l'ovale : le NOC ne tient pas dans un dossard de 7 px, il est donc écrit dessous.
+// Les deux derniers sont rapprochés exprès, pour montrer ce que donnent deux coureurs proches.
+document.getElementById('ovN').innerHTML = ORDER.map((idx, i) => {
+  const bib = NOW16[idx][0], noc = NOC[idx];
+  const cx = 16 + i * 26 + (i >= 10 ? -14 : 0), cy = 20;
+  return `<circle cx="${cx}" cy="${cy}" r="10" fill="#ECEAE4" stroke="#0f1113" stroke-width="1.5"/>`
+    + `<text x="${cx}" y="${cy + 3.4}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10"`
+    + ` font-weight="700" fill="#111">${bib}</text>`
+    + `<text x="${cx}" y="${cy + 19}" text-anchor="middle" font-family="IBM Plex Sans" font-size="7"`
+    + ` font-weight="700" fill="#ECEAE4">${noc}</text>`;
+}).join('');
 </script>

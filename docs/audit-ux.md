@@ -379,13 +379,27 @@ l'étiquette de taille de la build 150, sont en anglais.
 
 Même règle : des propositions, pas des décisions.
 
-**Les cinq points restants sont dessinés.** Le 31 octobre 2026, sur sa demande d'attaquer les
-derniers points de design, les points A, B, C, E et F ont été portés dans une planche —
-`maquette-design-b.html`, décrite dans `architecture.md` §30. Chacun y est montré **tel qu'il
-est aujourd'hui**, puis en **une ou deux réponses posées**, avec ce que chacune coûte. La
-planche ne touche pas au prototype : **aucune des réponses n'est codée**, et chacune attend son
-accord. Les chiffres qu'elle avance — contrastes des gris, écarts entre couleurs de dossard —
-sont dans `mesures.md` §31.
+**Les cinq points restants sont dessinés, et quatre sont tranchés.** Le 31 octobre 2026, sur sa
+demande d'attaquer les derniers points de design, les points A, B, C, E et F ont été portés
+dans une planche — `maquette-design-b.html`, décrite dans `architecture.md` §30. Chacun y est
+montré **tel qu'il est aujourd'hui**, puis en réponses posées, avec ce que chacune coûte. Les
+chiffres qu'elle avance — contrastes des gris, écarts entre couleurs de dossard — sont dans
+`mesures.md` §31.
+
+**La première fournée a été présentée en bloc, et il l'a refusée** : « Mais je ne comprends rien
+à ce que tu me dis », puis « une chose après l'autre ok ? ». Les cinq ont été reposées une à
+une, en montrant ce qui change à l'écran. Ses réponses sont dans `regles-operateur.md` §17,
+points 136 à 141 ; ce qu'elles laissent à faire est dans `travaux.md`.
+
+| Point | Sa réponse, 31 octobre 2026 | Où il en est |
+|---|---|---|
+| **A** · la hiérarchie | « La carte passe en orange » | tranché, **sort de cette liste** |
+| **B** · les couleurs à 24 | ni l'une ni l'autre — trois options de lui, à essayer | **rouvert**, dessiné, pas tranché |
+| **C** · les gris et la voix | « Les éclaircir, et les phrases quittent les capitales » | tranché, **sort de cette liste** |
+| **E** · le panneau de l'ovale | « Sortir aussi les réglages du panneau », vers « la barre du haut » | tranché, **sort de cette liste** |
+| **F** · la barre d'onglets | « On ne change rien » | **sort de cette liste**, rien à faire |
+
+**Rien de tout cela n'est encore codé.** Le prototype est à la build 155.
 
 ## Ce que le design réussit
 

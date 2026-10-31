@@ -1539,3 +1539,26 @@ mot pour mot, puis dans `travaux.md`. Un point qu'il laisse où il est reste dan
 **À savoir pour la relire** : un `node serve.js` lancé avant que le serveur ne sache servir le
 CSS rend la planche — et le prototype — sans style, tout en blanc. Le `serve.js` du dépôt le
 sait ; il suffit de relancer.
+
+**Mise à jour du 31 octobre 2026, même jour.** Le point B de la planche a été **redessiné** :
+il ne porte plus la roue calculée ni le remplacement des doublons — l'opérateur a écarté les
+deux et en a demandé trois autres (`regles-operateur.md` §17 point 137). La planche montre
+donc maintenant, à côté de l'état d'aujourd'hui, ses trois options : **tout en blanc**, **blanc
+avec le NOC attaché**, et **la couleur du drapeau du pays**. Chacune est dessinée dans la
+timeline avec le badge réel et sur l'ovale à `r = 10`, la taille réelle.
+
+Deux choses que le dessin a révélées, et qui sont dites sur la planche :
+
+- l'option 2 ne tient pas dans le dossard de l'ovale — trois lettres ne rentrent pas à 7 px, le
+  NOC est donc écrit **sous** le dossard et double la hauteur de chaque coureur sur la piste ;
+- l'option 3 **sépare moins bien qu'aujourd'hui** : la règle du drapeau donne cinq rouges au
+  lieu de quatre, et `GER` et `BEL` exactement la même couleur. Les écarts sont dans
+  `mesures.md` §31.
+
+**Une question reste ouverte dans l'option 3** : un drapeau a deux ou trois couleurs, et
+laquelle est « la » couleur du pays n'est écrit nulle part. Le dessin prend la dominante — le
+rouge pour le Portugal, le vert pour l'Italie — et le dit à l'écran pour qu'il corrige.
+
+Les points A, C, E et F de la planche sont **tranchés** depuis (`regles-operateur.md` §17,
+points 136 et 138 à 141) ; leurs sections restent dans la planche tant que le code ne les a pas
+rattrapés, et le travail correspondant est dans `travaux.md` §13.

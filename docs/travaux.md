@@ -489,3 +489,50 @@ de son pavé, les boutons `1st` à `4th` même quand la place annoncée dépasse
 il faut pouvoir viser n'importe quel rang jusqu'au vingt-quatrième. La maquette montrait les
 quatre boutons ; les remplacer aurait retiré une possibilité que personne n'a demandé de
 retirer.
+
+---
+
+## 13. Les trois points de design qu'il a tranchés le 31 octobre 2026
+
+Ils viennent de `audit-ux.md` section B, reposés un par un et tranchés le même jour. Ses mots
+sont dans `regles-operateur.md` §17, points 136, 138, 139 et 140 — **ils ne sont pas recopiés
+ici**. Les trois sont **dessinés et approuvés, pas codés** : le prototype est à la build 155.
+Le point F a été refusé par lui et ne laisse aucun travail ; le point B est rouvert et attend
+son choix entre ses trois options, donc il n'entre pas dans cette liste.
+
+### 13a. La proposition qui attend passe en orange
+
+Une carte de proposition en attente prend l'orange du champ du prochain sprint, et **le champ
+du sprint redevient bleu pendant ce temps**. Le traitement existe déjà — c'est `.ifb.hot`,
+posé par `syncInfield` à deux tours du sprint.
+
+**On saura que c'est fini quand** : sur la course de référence, à l'apparition de la
+proposition « Lap gained? · BIB 12 », la carte est orange et le champ `SPRINT` est bleu ; dès
+qu'elle est validée ou rejetée, la carte disparaît et le champ reprend son orange s'il est
+encore à deux tours ou moins.
+
+### 13b. Les petits textes gris s'éclaircissent, et les phrases quittent les capitales
+
+Deux choses dans le même poste. Le jeton `--dim` monte au premier gris qui passe 4,5 : 1 sur
+les trois fonds de la page — la valeur et les mesures sont dans `mesures.md` §31. Et les
+**phrases** passent en minuscules : l'indice d'onglet, la raison d'inéligibilité, les notes du
+registre. **Les en-têtes de colonne gardent leurs capitales.**
+
+**On saura que c'est fini quand** : aucune règle de `styles.css` ne porte plus l'ancien
+`--dim`, et les trois endroits nommés ci-dessus se lisent en minuscules pendant que `BIB`,
+`NAME`, `NOC` et `GAP` restent en capitales.
+
+### 13c. Le panneau de l'ovale ne garde que ce qui se lit en course
+
+Restent dans le panneau : l'horloge, `LAP`, `TO GO`, `LEADER` et le prochain sprint. Partent
+vers **la barre du haut** : la paire `AUTO` / `LAP COUNTER` et ses boutons de choix, le bascule
+`M`, les pas `−` / `+`, `ARM START` et `ARM FINISH`.
+
+**Attention, trois choses à ne pas casser** : les boutons `SET NEXT AS LEADER` ne bougent pas
+et continuent de fixer le plafond du réglage de l'ovale (§17 point 112) ; le badge du sprint et
+le `LAP 21 / 40` restent dans l'ovale, il l'a dit deux fois ; et la double confirmation du faux
+départ doit survivre au déménagement de `ARM START`.
+
+**On saura que c'est fini quand** : le panneau ne porte plus que cinq champs, la barre du haut
+porte les commandes sorties sans rien perdre d'autre, et la course de référence se lance et
+s'arrête depuis la barre comme elle le faisait depuis l'ovale.

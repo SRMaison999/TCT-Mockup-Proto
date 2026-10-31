@@ -2058,3 +2058,46 @@ Après avoir vu le registre sorti de la barre en build 150. Ses mots, entiers.
      qu'il avait ouvert le 29 octobre (« On peut positionner les actions et propositions de
      deux manières différentes. Je trouve qu'offrir cette flexibilité à l'utilisateur est très
      intéressante ») est donc refermé par lui, et la disposition empilée sort du code.
+
+### Les cinq points de design de l'audit · 31 octobre 2026, cinquième tour
+
+Les cinq points de `audit-ux.md` section B, posés un par un après qu'il a écarté une première
+fournée présentée en bloc : « **Mais je ne comprends rien à ce que tu me dis** », puis « **une
+chose après l'autre ok ?** ». Les questions ont été reposées en montrant ce qui change à
+l'écran, une à la fois.
+
+136. **Une proposition qui attend passe en orange.** Son choix, le 31 octobre 2026 : « **La
+     carte passe en orange** ». La carte prend l'orange vif du champ du prochain sprint tant
+     qu'elle attend, et **pendant ce temps le champ du sprint redevient bleu** : une seule
+     chose crie à la fois. C'est le point A de `audit-ux.md` section B.
+
+137. **Les couleurs des coureurs : trois options à essayer, aucune des deux posées.** Il a
+     écarté la roue calculée et le remplacement des doublons, et a écrit les siennes, le
+     31 octobre 2026 : « **on va essayer trois options : 1. tout le monde en blanc, sans
+     couleur, que le numéro 2 comme option 1 mais avec NOC attaché. 3. les numéros et les
+     badges prennent la couleur du drapeau du pays** ». Les trois se **dessinent** avant
+     d'être codées ; rien n'est tranché.
+
+138. **Les petits textes gris s'éclaircissent, et les phrases quittent les capitales.** Son
+     choix, le 31 octobre 2026 : « **Les éclaircir, et les phrases quittent les capitales** ».
+     Les en-têtes de colonne gardent leurs capitales ; ce sont les **phrases** — l'indice
+     d'onglet, la raison d'inéligibilité, les notes du registre — qui passent en minuscules.
+     C'est le point C.
+
+139. **Le panneau de l'ovale ne garde que ce qui se lit en course.** Son choix, le 31 octobre
+     2026 : « **Sortir aussi les réglages du panneau** ». Restent l'horloge, `LAP`, `TO GO`,
+     `LEADER` et le prochain sprint. Sortent la paire `AUTO` / `LAP COUNTER` et ses boutons de
+     choix, le bascule `M`, les pas `−` / `+`, `ARM START` et `ARM FINISH`. C'est le point E,
+     de catégorie B : il contredit sa page redessinée du 29 octobre 2026, et **c'est lui qui
+     l'a rouverte**.
+
+140. **Ce qui sort du panneau va dans la barre du haut.** Son choix, le 31 octobre 2026 :
+     « **Dans la barre du haut** ». Le réglage des tours et les deux boutons d'armement
+     rejoignent la barre qui court en haut de l'écran, toujours visibles, hors du dessin de la
+     piste.
+
+141. **La barre des six onglets ne bouge pas.** Son choix, le 31 octobre 2026 : « **On ne
+     change rien** ». Ni le point orange sur `Race`, ni le détachement de `Race` des cinq
+     documents. Le point F **sort de la liste**, et sa demande du 31 octobre — « six onglets
+     disponibles en tout temps », « La page de course est un onglet comme les autres » — tient
+     entière.
