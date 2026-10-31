@@ -42,13 +42,21 @@ Elle touche cette liste sur trois points, sans en résoudre aucun en entier :
 - **point 3** : la ligne qui dit sur quoi on agit gagne 18 px — le `Clear` dégageait 62 px pour
   le groupe de boutons retiré, il n'en dégage plus que 44 pour l'étiquette. Elle reste coupée ;
 - **point 1** : la barre d'actions est toujours reconstruite une fois par seconde. Les deux
-  boutons du coureur seul y sont maintenant en permanence, donc reconstruits eux aussi.
+  boutons du coureur seul y sont maintenant en permanence, donc reconstruits eux aussi. La
+  build 154 l'a corrigé depuis — non pas en cessant de reconstruire, mais en cessant de
+  dépendre du `click` pour agir.
 
 La **build 154** répond elle aussi à une demande de l'opérateur, pas à cette liste — le coin de
 la barre d'actions déblayé, la ligne réduite aux dossards et la fenêtre d'actions qui remplit
 sa zone (`architecture.md` §27, `regles-operateur.md` §17 points 131 à 133). Elle **sort le
 point 3 de la liste** : il n'y a plus de texte à tronquer. Et elle résout la moitié restante
 du **point 17** côté ovale, la dernière infobulle française étant celle de Passings.
+
+La même **build 154** porte en plus la seule chose de cette liste qu'il ait demandée
+directement : « corrige la reconstruction du registre et de la barre d'actions (point 1 de
+l'audit) ». Elle **sort donc aussi le point 1**, qui est réécrit plus bas. Le point 2 en
+dépendait à demi — un appui qui ne produit rien ne donne aucun retour — et il n'en dépend plus
+qu'au sens où l'appui lui-même ne se voit toujours pas.
 
 **Attention pour la suite de cette liste** : les numéros de ligne donnés plus bas sont ceux de
 la build 149. Les builds 150 à 154 ont déplacé le fichier ; les repères nommés
@@ -58,35 +66,28 @@ la build 149. Les builds 150 à 154 ont déplacé le fichier ; les repères nomm
 
 # A. Les dix-sept points
 
-## 1. Les boutons qui tranchent sont reconstruits une fois par seconde
+## 1. Les boutons qui tranchent sont reconstruits une fois par seconde — **traité, build 154**
 
-**Ce que c'est** — Le ✓ d'une proposition et les boutons de la barre d'actions sont détruits et
-recréés toutes les secondes pendant que la course avance ; un appui à cheval sur la
-reconstruction n'émet aucun `click`, et rien ne se passe.
+**Traité et codé en build 154** (`architecture.md` §28), sur sa demande du 31 octobre 2026 :
+« corrige la reconstruction du registre et de la barre d'actions ». `#tbar`, `#propcard` et
+`#ledgerbox` répondent au **relâchement du pointeur**, et la garde exige que l'appui ait
+commencé dans la même zone — la zone survit à la reconstruction, le bouton non.
 
-**Où** — `timeline-prototype_mixed.html:1496` et `:1514` (`propcard.innerHTML`,
-`tbar.innerHTML` dans `renderTimeline`), déclenchées depuis `render()` ligne `:1855` sur
-`S.t - lastTl >= 1`. Écouteurs en `click` lignes `:1884` et `:1885`.
+**Vérifié** (`mesures.md` §30) : appui enfoncé sur le `+` d'un tour, 1,7 s de course, bouton
+d'origine détaché, relâchement sur celui recréé — le tour est crédité. Même essai sur le ✓
+d'une proposition : validée. Avant, aucun `click` n'était émis et rien ne se passait.
 
-**Mesuré** — observateur de mutations, course à ×1 : 6 reconstructions complètes en 6 s de
-`#tbar` et `#scard`, 5 en 5 s de `#propcard` avec la carte « Lap gained? · BIB 12 » affichée.
-
-**Angle** — 1, retour au clic et appui unique. C'est `pitfalls.md` **D2**, déjà payé une fois :
-le panneau central y a échappé parce qu'il est *écrit en place et jamais reconstruit*. La carte
-des propositions et la barre d'actions n'ont pas eu ce traitement, et ce sont elles qui portent
-✓, ✕, +1 lap, DNF, DSQ.
-
-**Ce que cela changerait** — passer ces deux zones au relâchement du pointeur comme l'ovale
-(`:1662` d'origine), la timeline et la carte de sprint le font déjà, ou n'en réécrire que ce
-qui a changé.
+Les zones que ce point ne nommait pas gardent leur `click` : `#tlbody`, qui porte le
+glisser-déposer des coureurs, et `#scard`.
 
 ---
 
 ## 2. Aucun bouton ne montre qu'il a été pressé
 
 **Ce que c'est** — Il n'existe pas une seule règle `:active` dans tout le prototype. Au moment
-de l'appui, rien ne bouge : le retour n'arrive qu'après, quand l'action a produit son effet —
-et quand elle n'en produit pas (point 1), il n'arrive jamais.
+de l'appui, rien ne bouge : le retour n'arrive qu'après, quand l'action a produit son effet.
+Depuis la build 154, l'action finit par arriver — le point 1 est corrigé — mais rien ne dit
+toujours que le doigt a été senti.
 
 **Où** — `styles.css` : 0 occurrence de `:active`. Bloc `<style>` de la version mixte : 0 non
 plus. Seul `:focus-visible` existe (`styles.css:21`).

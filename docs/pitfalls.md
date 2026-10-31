@@ -716,3 +716,22 @@ Corollaire, celui-là payé deux fois : un dégagement écrit en pixels (`margin
 un bouton de 52) est un lien invisible entre deux règles éloignées. Quand on retire ou déplace
 ce que le dégagement dégageait, il faut le suivre. Ici il en restait un vers un objet qui
 n'était plus là, et il en manquait un vers celui qui y était.
+
+### D29 · D2 payé une deuxième fois, deux ans après, sur d'autres boutons
+
+D2 avait été compris pour l'ovale et appliqué là. Trois conteneurs que le moteur réécrit une
+fois par seconde — `#tbar`, `#propcard`, `#ledgerbox` — ont gardé leurs écouteurs en `click`
+jusqu'à la build 154, et l'audit du 31 octobre 2026 a dû redécouvrir le même défaut sur les
+boutons qui portent ✓, +1 lap, DNF, DSQ et les compteurs de tours. **Mesuré** : 6
+reconstructions en 6 s de course, et un appui à cheval sur l'une d'elles n'émettait rien.
+
+Ce qui l'a laissé passer : D2 était écrit comme une leçon sur *l'ovale*, pas comme une règle
+sur *tout conteneur réécrit*. Une leçon rangée sous l'objet où on l'a apprise ne se retrouve
+pas quand le même piège revient ailleurs.
+
+Retenu, et c'est la forme générale : **tout conteneur que le moteur réécrit pendant que la
+course avance ne peut pas porter d'écouteur `click`.** Il écoute le relâchement du pointeur, et
+la garde compare le CONTENEUR de l'appui à celui du relâchement — le conteneur survit à la
+reconstruction, le bouton non. Un relâchement nu ne suffit pas : sans cette garde, un coureur
+lâché depuis la timeline ou une poignée relâchée au-dessus de la zone presse un bouton que
+personne n'a visé.

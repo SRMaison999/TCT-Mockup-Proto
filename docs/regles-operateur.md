@@ -2047,3 +2047,7 @@ Après avoir vu le registre sorti de la barre en build 150. Ses mots, entiers.
      « La barre grandit pour le remplir ». Agrandir la zone grossit donc les commandes, la
      resserrer les resserre — le point 122 dans l'autre sens. Le réglage manuel de cette zone
      disparaît : deux commandes pour la même grandeur étaient une de trop.
+
+134. **Les boutons qui tranchent répondent au relâchement.** « Oui, corrige la reconstruction
+     du registre et de la barre d'actions (point 1 de l'audit) ». C'est le point 1 de
+     `audit-ux.md`, qu'il a sorti de la liste ce jour-là.

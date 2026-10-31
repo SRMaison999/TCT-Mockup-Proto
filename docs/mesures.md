@@ -2331,3 +2331,42 @@ barre à 290 px de large.
 Course de référence, ×16 jusqu'à 2:45.7, trois groupes formés : **une seule valeur relevée**
 sur 25, ovale 517 px / fenêtre 349 px, et un vide constant de 4 px. Avec le registre d'un
 coureur ouvert : fenêtre 349 px, ovale 516 px, registre 299 px de large à droite de la fenêtre.
+
+## 30. L'appui à cheval sur la reconstruction (build 154, 31 octobre 2026)
+
+Fenêtre de 1900 × 1000, course de référence rejouée, registre ouvert sur un coureur.
+
+### La reconstruction, avant correction
+
+Observateur de mutations sur `#tbar` et `#ledgerbox`, course à ×1 : **6 reconstructions en
+6 secondes** de chacune des deux.
+
+### L'appui à cheval
+
+Appui enfoncé sur le `+` de `gained`, 1,7 s d'attente pendant que la course avance, puis
+relâchement.
+
+| | |
+|---|---|
+| Bouton d'origine encore dans la page ? | **non**, détaché |
+| Ce qui est sous le pointeur au relâchement | le `+` de `gained`, **recréé** |
+| `gained` avant | 0 |
+| `gained` après | **1** |
+
+Avant la correction, aucun `click` n'était émis dans ce cas — appui et relâchement ne tombaient
+pas sur le même élément — et rien ne se passait. Même essai sur le **✓ d'une proposition**
+« Lap gained? · BIB 12 » : ✓ d'origine détaché, relâchement sur celui recréé, proposition
+**validée**, carte vidée et Undo disponible.
+
+### Les trois gardes
+
+| Geste | Effet |
+|---|---|
+| Relâchement dans la zone **sans appui** dans la zone (coureur lâché depuis la timeline) | aucun — 1 reste 1 |
+| Appui et relâchement avec le **bouton droit** | aucun |
+| Appui sur un bouton **grisé** (le `−` de `lost` à 0) | aucun — 0 reste 0 |
+
+### Le clic ordinaire marche toujours
+
+Vérifié à la souris, pas en synthétique : `Laps…` ouvre le registre, `+1 lap` crédite le tour
+et vide la sélection, et Undo devient disponible.

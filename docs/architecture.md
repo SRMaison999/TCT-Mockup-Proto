@@ -1425,3 +1425,37 @@ Elle sort de `ZCSS` / `ZV` et de la liste des zones de CTRL + molette : **sa tai
 plus**, elle se déduit de la place qu'on lui donne. `--z-acts` n'est plus écrite que par
 `actsFit()`. Les quatre autres zones — ovale, timeline, carte du sprint, propositions — gardent
 CTRL + molette et leur étiquette.
+
+## 28. Les boutons qui tranchent répondent au relâchement (build 154)
+
+Demandé le 31 octobre 2026, consigné mot pour mot dans `regles-operateur.md` §17 point 134.
+C'est le **point 1 de `audit-ux.md`**, qui sort de la liste.
+
+### Pourquoi un clic se perdait
+
+`renderTimeline` réécrit `#tbar`, `#propcard` et `#ledgerbox` une fois par seconde pendant que
+la course avance. Un `click` n'existe que si l'appui **et** le relâchement tombent sur le même
+élément ; entre les deux, le bouton a été détruit et recréé, donc le navigateur n'émet rien et
+l'appui est perdu. Sur le `+` d'un tour, cela vaut ±20 points. C'est `pitfalls.md` **D2**, payé
+une deuxième fois.
+
+### Le relâchement, mais pas nu
+
+Les trois zones écoutent maintenant `pointerup` : la cible est résolue **au relâchement**, sur
+le bouton qui est alors là. C'est ce que l'ovale, la timeline et la carte du sprint font déjà.
+
+Un relâchement nu ferait trop : un coureur lâché depuis la timeline, ou une poignée relâchée
+au-dessus des propositions, presseraient un bouton que personne n'a visé. La garde `pressed()`
+exige donc que **l'appui ait commencé dans la même zone** — et c'est là qu'est l'astuce : la
+zone survit à la reconstruction, c'est son contenu qui est refait. La garde compare des
+**conteneurs**, là où `click` comparait des **boutons**. Elle rejette aussi le bouton droit et
+le bouton grisé, que `click` écartait tout seul.
+
+Un `pointerdown` en capture sur le document tient `pressZone` à jour ; il n'y a pas de
+désinscription à gérer, et aucune zone n'a besoin de connaître les autres.
+
+### Ce qui n'a pas changé
+
+`tlbody` garde son `click` : il porte le glisser-déposer des coureurs, et rien ne l'a demandé.
+`#scard` aussi — le point 1 ne le nomme pas. Les écouteurs `input` de la pipette restent en
+l'état.
