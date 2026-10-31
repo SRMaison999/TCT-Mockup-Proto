@@ -1369,3 +1369,59 @@ Environ **40 px par coureur**. Au-delà de sept, la carte défile dans sa colonn
 29 octobre 2026 interdit le défilement à la **barre d'actions**, pas au registre. À seize
 coureurs la carte fait 299 × 719 px dans une boîte de 314 × 352, et **l'ovale ne bouge pas** —
 513 px, comme à un coureur et comme registre fermé.
+
+
+## 27. Le coin déblayé, et la fenêtre d'actions qui remplit sa zone (build 154)
+
+Demandés le 31 octobre 2026, consignés mot pour mot dans `regles-operateur.md` §17, points 131
+à 133. Tout vit dans `timeline-prototype_mixed.html`.
+
+### Trois objets à la même adresse
+
+Le coin haut-droit de la barre portait trois objets **empilés**, pas rangés côte à côte.
+Mesuré, barre de 290 px : `Clear` de 421 à 462, le sélecteur de disposition de 435 à 498,
+l'étiquette de taille de 458 à 498. Le sélecteur porte `#layseg{position:absolute;top:9px;
+right:10px}` dans `styles.css` depuis le 29 octobre ; l'étiquette de la build 150 a été posée à
+`top:9px; right:10px` — **la même adresse, au pixel près**. Et le `margin-right` du `Clear`,
+réduit de 62 à 44 px pour l'étiquette, ne dégageait plus le sélecteur.
+
+Les deux partent (§17 point 131). Le `Clear` reste et n'a plus rien à dégager :
+`margin-right:0`. Le sélecteur **ne va pas dans la barre du haut** : « le sélecteur est DANS la
+zone qu'il commande, pas dans la barre du haut » (29 octobre 2026), et l'opérateur n'a pas dit
+où le mettre. Les deux dispositions restent entières dans la feuille de style et dans
+`setLayout()`, qui tolère maintenant l'absence de `#layseg` ; **la disposition empilée n'a donc
+plus de commande**, et `lay-side` est la seule atteignable.
+
+### La ligne de sélection
+
+`tbar.innerHTML` ne compose plus que `bibList(bibs)` (§17 point 132). Sans sélection la ligne
+est vide, le `Clear` désactivé. Le nom du groupe et l'effectif restent lisibles là où ils sont
+déjà, sur l'en-tête du bloc dans la timeline. Le point 3 de `audit-ux.md` tombe par là : il n'y
+a plus de texte à tronquer.
+
+### La fenêtre remplit sa zone
+
+`actsFit()` cherche maintenant la **plus grande** taille qui tient, et non plus seulement la
+plus grande qui ne dépasse pas : il part de la taille courante et marche dans le sens qui
+manque — d'un état stable cela coûte une mesure, et la boucle ne fait plusieurs pas que juste
+après un coup de poignée (D15). Plancher et plafond restent `OVZ_MIN` et `OVZ_MAX`, 60 % et
+180 %.
+
+Le pas passe de 5 % à **1 %**, et c'est lui qui décide du vide restant : la barre se remet sur
+un nombre entier de lignes, donc elle grandit par sauts. Mesuré sur une zone de 551 px : 68 px
+de vide à 5 %, **0 px à 1 %**. C'est un pas d'ajustement, pas un seuil de l'opérateur.
+
+**La zone porte le panneau**, et non plus la barre posée dedans :
+`body.lay-side .below > .acts` prend le fond, la bordure et le rayon, `.acts > .tbar` les perd.
+La fenêtre d'actions fait ainsi exactement la taille qu'on lui donne à la poignée ; sans cela
+il restait un bord de panneau avec du fond nu en dessous, « perdu pour tout le monde ».
+
+En disposition empilée rien ne change : `.acts` y a déjà la hauteur `--h-acts-nat`, donc la
+barre la remplit par construction, et la poignée y donne sa place aux propositions.
+
+### Ce que la barre d'actions perd
+
+Elle sort de `ZCSS` / `ZV` et de la liste des zones de CTRL + molette : **sa taille ne se pose
+plus**, elle se déduit de la place qu'on lui donne. `--z-acts` n'est plus écrite que par
+`actsFit()`. Les quatre autres zones — ovale, timeline, carte du sprint, propositions — gardent
+CTRL + molette et leur étiquette.

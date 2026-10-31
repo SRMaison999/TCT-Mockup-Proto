@@ -2029,3 +2029,21 @@ Après avoir vu le registre sorti de la barre en build 150. Ses mots, entiers.
      le bouton s'allume maintenant dès qu'il y a une sélection, et un clic sur l'en-tête d'un
      bloc ouvre donc le registre du groupe entier. `Leader` reste à un seul coureur — il
      désigne le leader, et il n'y en a qu'un.
+
+131. **Le coin de la barre d'actions est déblayé.** Capture à l'appui : « regarde ici ce chaos
+     faut dans la barre de la fenêtre d'action !!! Il supprimer tout ce qui est superflu ! »
+     Son choix entre trois objets posés, le 31 octobre 2026 : « l'étiquette de taille et le
+     sélecteur de disposition s'en vont ». Le `Clear` reste — c'est le seul moyen visible de
+     tout désélectionner d'un coup. Les deux dispositions restent dans le code ; c'est la
+     commande qui a disparu, et il n'a pas dit où elle allait.
+
+132. **La ligne de sélection ne porte que les dossards.** Sa réponse, écrite de sa main plutôt
+     que choisie parmi celles posées, le 31 octobre 2026 : « il ne faut afficher que les BIB,
+     rien d'autre ». Le nom du groupe, l'effectif et la phrase d'invite s'en vont.
+
+133. **La fenêtre d'actions remplit la place qu'on lui donne.** « Et la position de la fenêtre
+     d'action quand on lui agrandi sa zone : elle laisse du vide en-dessous d'elle, et ce vide
+     est perdu pour tout le monde ! » Son choix entre deux réponses posées, le même jour :
+     « La barre grandit pour le remplir ». Agrandir la zone grossit donc les commandes, la
+     resserrer les resserre — le point 122 dans l'autre sens. Le réglage manuel de cette zone
+     disparaît : deux commandes pour la même grandeur étaient une de trop.

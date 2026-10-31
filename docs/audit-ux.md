@@ -44,6 +44,16 @@ Elle touche cette liste sur trois points, sans en résoudre aucun en entier :
 - **point 1** : la barre d'actions est toujours reconstruite une fois par seconde. Les deux
   boutons du coureur seul y sont maintenant en permanence, donc reconstruits eux aussi.
 
+La **build 154** répond elle aussi à une demande de l'opérateur, pas à cette liste — le coin de
+la barre d'actions déblayé, la ligne réduite aux dossards et la fenêtre d'actions qui remplit
+sa zone (`architecture.md` §27, `regles-operateur.md` §17 points 131 à 133). Elle **sort le
+point 3 de la liste** : il n'y a plus de texte à tronquer. Et elle résout la moitié restante
+du **point 17** côté ovale, la dernière infobulle française étant celle de Passings.
+
+**Attention pour la suite de cette liste** : les numéros de ligne donnés plus bas sont ceux de
+la build 149. Les builds 150 à 154 ont déplacé le fichier ; les repères nommés
+(`renderTimeline`, `counterValue`, `#tbar`) restent justes, les numéros non.
+
 ---
 
 # A. Les dix-sept points
@@ -89,23 +99,16 @@ ton doigt ».
 
 ---
 
-## 3. La ligne qui dit sur quoi on agit est coupée, juste au-dessus d'ABD / DNF / DSQ
+## 3. ~~La ligne qui dit sur quoi on agit est coupée~~ — **sorti de la liste, build 154**
 
-**Ce que c'est** — Le nom du groupe et l'effectif sont tronqués, alors que la liste des
-dossards s'étale sur trois lignes en dessous. À l'écran : **« 1-B… »**.
+Le point n'a plus d'objet : « il ne faut afficher que les BIB, rien d'autre » (l'opérateur,
+31 octobre 2026, `regles-operateur.md` §17 point 132). Le nom du groupe, l'effectif et la
+phrase d'invite ont quitté la ligne, et il ne reste donc rien à tronquer. Le nom et l'effectif
+se lisent sur l'en-tête du bloc, dans la timeline. Voir `architecture.md` §27.
 
-**Où** — `timeline-prototype_mixed.html:1514` (`.selinfo`), styles `styles.css:72-73`
-(`.gq span{overflow:hidden;text-overflow:ellipsis}`).
-
-**Mesuré** — fenêtre de 1900 px, peloton sélectionné : « 1-Bunch · 14 riders » demande 117 px
-et en reçoit 36. Sans sélection, « No selection · click riders or a group name » demande 301 px
-et en reçoit 144 — l'unique phrase qui explique comment sélectionner est coupée à
-« NO SELECTION · CLIC… ».
-
-**Angle** — 7, et 1 par ricochet : les trois boutons rouges sont à 90 px dessous.
-
-**Ce que cela changerait** — donner la place au nom et à l'effectif plutôt qu'à l'énumération
-des dossards, déjà lisible dans la timeline à gauche.
+Le numéro est **gardé vide** plutôt que réattribué : le reste de la liste, l'état plus haut et
+le point B plus bas y renvoient par leur numéro, et renuméroter quatorze points pour en retirer
+un casserait tous ces renvois pour rien.
 
 ---
 

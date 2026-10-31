@@ -691,3 +691,28 @@ sens refusé partait d'une taille égale à son plancher.
 **La leçon** : un plancher se relève sur ce que le contenu *demande*, jamais sur ce que la
 boîte *occupe*. Quand les deux risquent de se confondre, on mesure le contenu dans un état où
 la boîte ne le contraint pas — ici, la barre à son propre plancher de resserrement.
+
+### D29 · Poser un objet flottant sans regarder qui habite déjà l'adresse
+
+L'étiquette de taille de la build 150 a été posée sur la barre d'actions à
+`position:absolute; top:9px; right:10px`. C'est **exactement** l'adresse de `#layseg` dans
+`styles.css`, écrite le 29 octobre. Les deux objets se sont superposés au pixel près, et le
+`Clear`, dont le `margin-right` avait été réduit de 62 à 44 px pour faire de la place à
+l'étiquette, est passé sous les deux. Trois objets sur 77 px, et c'est l'opérateur qui l'a vu :
+« regarde ici ce chaos ».
+
+Ce qui l'a laissé passer : les cinq étiquettes ont été vérifiées **sur leur propre zone** —
+chacune apparaissait, affichait la bonne valeur, répondait au clic. Aucune n'a été vérifiée
+**contre ce qui occupait déjà le coin**. Un élément en `position:absolute` ne pousse rien et ne
+déclenche aucun chevauchement visible dans les mesures de taille : il faut comparer les
+rectangles deux à deux pour le voir, et c'est ce qui manquait.
+
+**La leçon** : avant de poser un élément flottant dans un coin, on relève ce que ce coin porte
+déjà — `getBoundingClientRect()` des voisins, pas seulement du nouveau — et on compare les
+rectangles. Un coin de panneau est une ressource partagée, et aucun des deux objets ne se
+plaindra.
+
+Corollaire, celui-là payé deux fois : un dégagement écrit en pixels (`margin-right:62px` pour
+un bouton de 52) est un lien invisible entre deux règles éloignées. Quand on retire ou déplace
+ce que le dégagement dégageait, il faut le suivre. Ici il en restait un vers un objet qui
+n'était plus là, et il en manquait un vers celui qui y était.

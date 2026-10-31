@@ -330,7 +330,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 153 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 154 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2038,12 +2038,45 @@ function onStripClick(e) {
   dirty = true; render();
 }
 tlbody.addEventListener('click', onStripClick);
-propcard.addEventListener('click', onStripClick);   // les propositions ont changé de conteneur, pas de comportement
-tbar.addEventListener('click', onStripClick);       // les compteurs, la couleur et le leader s'y trouvent aussi
-ledgerbox.addEventListener('click', onStripClick);  // le registre a changé de conteneur, pas de comportement
+
+/* ---- les boutons qui tranchent répondent au RELÂCHEMENT ------------------
+   Point 1 de `audit-ux.md`, et sa demande du 31 octobre 2026 : « corrige la
+   reconstruction du registre et de la barre d'actions ».
+
+   Le moteur réécrit #tbar, #propcard et #ledgerbox une fois par seconde —
+   MESURÉ : 6 reconstructions en 6 s de course, registre ouvert. Un `click`
+   n'existe que si l'appui ET le relâchement tombent sur LE MÊME élément ;
+   entre les deux, le bouton a été détruit et recréé, donc l'appui est perdu et
+   rien ne se passe. Sur le + d'un tour, cela vaut ±20 points.
+
+   La réponse est celle que l'ovale, la timeline et la carte du sprint
+   emploient déjà : on écoute le RELÂCHEMENT du pointeur, et la cible est
+   résolue à ce moment-là, sur le bouton qui est alors là.
+
+   Un relâchement nu ferait trop : un coureur lâché depuis la timeline, ou une
+   poignée relâchée au-dessus des propositions, presseraient un bouton que
+   personne n'a visé. On exige donc que l'appui ait commencé DANS LA MÊME ZONE.
+   La zone, elle, survit à la reconstruction — c'est son contenu qui est
+   refait, pas elle. C'est ce qui distingue cette garde d'un `click` : elle
+   compare des conteneurs, pas des boutons. */
+const PRESSZONES = '#propcard,#tbar,#ledgerbox';
+let pressZone = null;
+document.addEventListener('pointerdown', e => {
+  pressZone = e.button === 0 ? e.target.closest(PRESSZONES) : null;
+}, true);
+function pressed(e) {
+  if (e.button !== 0 || !pressZone) return false;
+  if (e.target.closest(PRESSZONES) !== pressZone) return false;
+  const b = e.target.closest('button');
+  return !(b && b.disabled);        // un bouton grisé ne répond pas, comme avec un clic
+}
+propcard.addEventListener('pointerup', e => { if (pressed(e)) onStripClick(e); });   // le ✓ d'une proposition
+tbar.addEventListener('pointerup', e => { if (pressed(e)) onStripClick(e); });       // le leader et le registre
+ledgerbox.addEventListener('pointerup', e => { if (pressed(e)) onStripClick(e); });  // les compteurs de tours
 tbar.addEventListener('input', e => { const i = e.target.closest('[data-colorpick]'); if (i) setColor(+i.dataset.colorpick, i.value); });
 ledgerbox.addEventListener('input', e => { const i = e.target.closest('[data-colorpick]'); if (i) setColor(+i.dataset.colorpick, i.value); });
-tbar.addEventListener('click', e => {
+tbar.addEventListener('pointerup', e => {
+  if (!pressed(e)) return;
   const b = e.target.closest('[data-act]'); if (!b) return;
   const bibs = [...S.selection].sort(byBib);
   if (b.dataset.act !== 'clear' && bibs.length) pushUndo(b.innerText.trim() + ' · ' + bibList(bibs));
@@ -2938,7 +2971,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 153 · mixed';
+  $('#buildno').textContent = 'build 154 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

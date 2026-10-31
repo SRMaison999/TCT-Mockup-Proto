@@ -2284,3 +2284,50 @@ cas : la fenêtre d'actions ne bouge pas plus qu'avant.
 
 Seize coureurs ouverts, appui sur le + de la **deuxième** ligne (BIB 3) : colonne `gained`
 `0 · 1 · 0 · 0`. Appui sur le − de la même ligne : `0 · 0 · 0 · 0`. Aucune autre ligne touchée.
+
+
+## 29. Le coin de la barre, et le vide sous la fenêtre d'actions (build 154, 31 octobre 2026)
+
+Fenêtre de 1900 × 1000, centre de 679 px, fenêtre d'actions de 290 px.
+
+### Trois objets sur 77 px
+
+| Objet | Occupe | |
+|---|---|---|
+| `Clear` | 421 → 462 px | passe sous les deux autres |
+| Sélecteur de disposition | 435 → 498 px | `#layseg`, `right:10px` |
+| Étiquette de taille | 458 → 498 px | **même adresse** que le sélecteur |
+
+Après : le `Clear` finit à 495 px, dans la ligne, et rien ne le recouvre. La ligne de sélection
+porte « BIB 15 » et n'est plus tronquée (`scrollWidth` = `clientWidth`).
+
+### Le vide sous la fenêtre, avant
+
+Poignée de l'ovale tirée vers le haut, taille de la barre figée à 80 % :
+
+| Zone du bas | Barre | **Vide** | Ovale |
+|---|---|---|---|
+| 255 px | 255 px | 0 | 610 px |
+| 455 px | 255 px | **200 px** | 410 px |
+| 605 px | 255 px | **350 px** | 260 px |
+
+### Après : la barre remplit, et la zone porte le panneau
+
+| Zone du bas | Fenêtre | Contenu | **Vide** | Ovale | Taille |
+|---|---|---|---|---|---|
+| 351 px (départ) | 351 | 349 | **1 px** | 514 px | 100 % |
+| 551 px | 551 | 551 | **0** | 314 px | 129 % |
+| 647 px | 647 | 608 | 38 px | 218 px | 144 % |
+| 397 px | 397 | 397 | **0** | 468 px | 116 % |
+| 165 px (plancher) | 165 | 164 | **0** | 700 px | 60 % |
+
+Les 38 px d'un cas tiennent à un saut de ligne de la barre : entre deux tailles consécutives
+elle se remet sur un rang de boutons de moins. Le pas de 1 % borne ce reste ; à 5 % le même
+geste laissait **68 px**. Aucun débordement horizontal à aucune taille : le `zoom` garde la
+barre à 290 px de large.
+
+### Sur la course rejouée
+
+Course de référence, ×16 jusqu'à 2:45.7, trois groupes formés : **une seule valeur relevée**
+sur 25, ovale 517 px / fenêtre 349 px, et un vide constant de 4 px. Avec le registre d'un
+coureur ouvert : fenêtre 349 px, ovale 516 px, registre 299 px de large à droite de la fenêtre.
