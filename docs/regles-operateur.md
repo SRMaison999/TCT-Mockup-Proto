@@ -2051,3 +2051,10 @@ Après avoir vu le registre sorti de la barre en build 150. Ses mots, entiers.
 134. **Les boutons qui tranchent répondent au relâchement.** « Oui, corrige la reconstruction
      du registre et de la barre d'actions (point 1 de l'audit) ». C'est le point 1 de
      `audit-ux.md`, qu'il a sorti de la liste ce jour-là.
+
+134. **Il n'y a plus qu'une disposition sous l'ovale, côte à côte.** Sa réponse à la question
+     de savoir où allait le sélecteur, le 31 octobre 2026 : « Le sélecteur de disposition part
+     pour de bon, retire les deux dispositions et garde seulement côte à côte ». Le choix
+     qu'il avait ouvert le 29 octobre (« On peut positionner les actions et propositions de
+     deux manières différentes. Je trouve qu'offrir cette flexibilité à l'utilisateur est très
+     intéressante ») est donc refermé par lui, et la disposition empilée sort du code.

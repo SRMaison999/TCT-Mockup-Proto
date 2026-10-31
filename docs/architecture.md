@@ -1113,6 +1113,9 @@ horizontale en « empilée »). Chacune n'écrit **qu'une variable CSS** — `--
 `--h-below`, `--w-acts`, `--h-props` — que la zone lit avec sa valeur d'origine en repli :
 sans variable, l'écran est au pixel près celui d'avant.
 
+> **Dépassé en build 155** (§29) : la disposition empilée est retirée. La poignée des actions
+> est toujours verticale, et `--h-props` n'existe plus.
+
 Le glissé passe par le pointeur, jamais par le drag natif (D3), et pose le fanion `drag` du
 moteur pendant toute sa durée, celui-là même qui garde le glisser-déposer des coureurs : la
 timeline n'est pas reconstruite tant qu'on glisse (D1). **Mesuré** : 2 reconstructions en 1,6 s
@@ -1237,6 +1240,9 @@ poignées, la bascule des deux dispositions et le réglage de zone. Le relevé s
 enveloppant `renderTimeline`, et par un `ResizeObserver` sur `.acts` (D15), plus un appel direct
 après la bascule de disposition — sinon la zone garde un instant la hauteur de l'autre
 disposition et la barre s'y fait rogner.
+
+> **Dépassé en build 155** (§29) : la clé n'est plus que la largeur de la zone. Il n'y a plus
+> de disposition à distinguer ni de taille posée, et le registre a sa propre colonne.
 
 ### Le registre à droite
 
@@ -1392,6 +1398,9 @@ où le mettre. Les deux dispositions restent entières dans la feuille de style 
 `setLayout()`, qui tolère maintenant l'absence de `#layseg` ; **la disposition empilée n'a donc
 plus de commande**, et `lay-side` est la seule atteignable.
 
+> **Suite en build 155** (§29) : il l'a dit le lendemain de la question — la disposition
+> empilée part pour de bon, et `setLayout()` avec elle.
+
 ### La ligne de sélection
 
 `tbar.innerHTML` ne compose plus que `bibList(bibs)` (§17 point 132). Sans sélection la ligne
@@ -1417,7 +1426,8 @@ La fenêtre d'actions fait ainsi exactement la taille qu'on lui donne à la poig
 il restait un bord de panneau avec du fond nu en dessous, « perdu pour tout le monde ».
 
 En disposition empilée rien ne change : `.acts` y a déjà la hauteur `--h-acts-nat`, donc la
-barre la remplit par construction, et la poignée y donne sa place aux propositions.
+barre la remplit par construction, et la poignée y donne sa place aux propositions. *(Cette
+disposition est retirée en build 155 — §29.)*
 
 ### Ce que la barre d'actions perd
 
@@ -1459,3 +1469,37 @@ désinscription à gérer, et aucune zone n'a besoin de connaître les autres.
 `tlbody` garde son `click` : il porte le glisser-déposer des coureurs, et rien ne l'a demandé.
 `#scard` aussi — le point 1 ne le nomme pas. Les écouteurs `input` de la pipette restent en
 l'état.
+
+
+## 29. Une seule disposition sous l'ovale (build 155)
+
+« Le sélecteur de disposition part pour de bon, retire les deux dispositions et garde seulement
+côte à côte » (l'opérateur, 31 octobre 2026, `regles-operateur.md` §17 point 134). Il avait
+offert le choix le 29 octobre ; il l'a repris deux jours plus tard, le lendemain du jour où la
+commande avait quitté la barre d'actions (§27).
+
+Ce qui disparaît :
+
+- **`setLayout()`** et son appel. À sa place, une ligne : `document.body.classList.add(
+  'lay-side')`. La classe reste **parce que `styles.css` s'en sert** — `.acts{flex-direction:
+  column}`, `.props{grid-column:2}` — et cette feuille sert aussi aux deux autres prototypes,
+  qui ne changent pas. Retirer la classe obligerait à la toucher.
+- **Les cinq règles `body:not(.lay-side)`** du bloc `<style>` de la version mixte, et la règle
+  de curseur `row-resize` de la poignée du bas.
+- **`rzKey()`**, qui ne servait qu'à envoyer la poignée des actions sur `--h-props` en
+  disposition empilée. Les deux appels prennent `h.dataset.rsz` directement.
+- **L'entrée `props` de `RZ`**, et **`--h-props`** de `LAY` / `CSSVAR`. Une disposition
+  enregistrée qui porterait encore cette clé est simplement ignorée au chargement.
+- **La disposition dans la clé de `actsFit()`** : il ne reste que la largeur de la zone.
+
+Ce qui ne change pas : le réglage de taille des propositions (`--z-props`) n'a rien à voir avec
+la poignée `props` qui disparaît — l'un règle la taille du contenu à CTRL + molette, l'autre
+réglait une hauteur en disposition empilée. Et les quatre poignées restent quatre : timeline,
+colonne du sprint, ovale et actions.
+
+**Mesuré après** (fenêtre 1900 × 1000, centre de 679 px) : fenêtre d'actions 349 px, ovale
+516 px, vide 0. Poignée de l'ovale, zone portée à 501 px : la barre suit à 481 px, soit 125 %,
+19 px de reste. Poignée des actions, colonne portée de 290 à 380 px : la barre perd un rang de
+boutons, tombe à 308 px, et l'ovale gagne 41 px. Registre ouvert : 299 × 104 à droite de la
+fenêtre, qui ne bouge pas. Course de référence à ×16 jusqu'à 2:31.9, trois groupes formés :
+**une seule taille relevée** sur 22, 516/349, et aucun vide.

@@ -96,7 +96,6 @@
 .main > .rsz{width:6px;cursor:col-resize}
 .mid > .rsz{height:6px;cursor:row-resize}
 body.lay-side .below > .rsz{cursor:col-resize}
-body:not(.lay-side) .below > .rsz{cursor:row-resize}
 .rsz::after{content:"";position:absolute;inset:2px;border-radius:2px;background:transparent}
 .main > .rsz::after,.below > .rsz::after{inset:2px 1px}
 .mid > .rsz::after{inset:1px 2px}
@@ -105,8 +104,8 @@ body.rszing{user-select:none}
 body.rszing.col{cursor:col-resize}
 body.rszing.row{cursor:row-resize}
 
-/* La poignée des actions prend sa place dans la grille de la zone du bas, dans
-   les deux dispositions. Les zones gardent l'ordre qu'elles avaient. */
+/* La poignée des actions prend sa place dans la grille de la zone du bas. Les
+   zones gardent l'ordre qu'elles avaient. */
 .mid > .rsz{order:2}
 .mid > .below{order:3}
 /* Le registre « Laps… » a sa colonne, immédiatement À DROITE de la fenêtre
@@ -136,12 +135,10 @@ body.lay-side .below > .acts{grid-column:1;grid-row:1}
 body.lay-side .below > .rsz{grid-column:2;grid-row:1}
 body.lay-side .below > .ledgerbox{grid-column:3;grid-row:1}
 body.lay-side .below > .props{grid-column:4;grid-row:1}
-body:not(.lay-side) .mid > .below{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:var(--h-props, auto) 6px auto}
-body:not(.lay-side) .below > .props{grid-row:1;grid-column:1 / -1}
-body:not(.lay-side) .below > .rsz{grid-row:2;grid-column:1 / -1}
-body:not(.lay-side) .below > .acts{grid-row:3;grid-column:1;min-height:0;overflow:hidden;
-  height:var(--h-acts-nat, auto)}
-body:not(.lay-side) .below > .ledgerbox{grid-row:3;grid-column:2}
+/* La disposition empilée est retirée : « Le sélecteur de disposition part pour de bon, retire
+   les deux dispositions et garde seulement côte à côte » (l'opérateur, 31 octobre 2026). La
+   classe `lay-side` reste posée sur le corps de page parce que styles.css s'en sert, et cette
+   feuille-là sert aussi aux deux autres prototypes : elle ne change pas. */
 
 /* ---- la timeline : son en-tête, ses bandes de dépôt, sa taille ----------
    « je pense que les titres des groupes devraient être réduits en hauteur »
@@ -330,7 +327,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <div class="app">
   <div class="bar">
     <h1>Lap timeline · prototype</h1>
-    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 154 · mixed</span>
+    <span class="sub" id="subtitle">Men's Points Race · simulated</span><span class="bld" id="buildno">build 155 · mixed</span>
     <div id="simtransport">
         <div class="sh" style="justify-content:center">
           <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -2288,20 +2285,12 @@ function syncSeg() {
   else if (playing && REC) { st.className = 'simstate recdot'; st.innerHTML = '<i></i>REC'; }
   else { st.className = 'simstate off'; st.textContent = ''; }
 }
-// Les deux dispositions de la zone sous l'ovale, au choix de l'utilisateur (l'opérateur, 29 octobre 2026 : « On
-// peut positionner les actions et propositions de deux manières différentes. Je trouve qu'offrir cette flexibilité
-// à l'utilisateur est très intéressante »).
-// Le sélecteur des deux dispositions a quitté la barre d'actions le 31 octobre 2026 : il tenait en permanence un
-// coin où trois objets se chevauchaient. Les deux dispositions restent entières dans le code et dans la feuille de
-// style ; ce qui a disparu, c'est la commande. Elle ne va PAS dans la barre du haut : « le sélecteur est DANS la
-// zone qu'il commande, pas dans la barre du haut » (l'opérateur, 29 octobre 2026), et il n'a pas dit où la mettre.
-function setLayout(v) {
-  document.body.classList.toggle('lay-side', v === 'side');
-  const seg = $('#layseg'); if (!seg) return;
-  seg.querySelectorAll('[data-lay]').forEach(b => {
-    const on = b.dataset.lay === v; b.classList.toggle('on', on); b.classList.toggle('quiet', !on); });
-}
-setLayout('side');   // la disposition par défaut, choisie par l'opérateur le 29 octobre 2026
+// Une seule disposition sous l'ovale : les actions en colonne à gauche, les propositions à droite. L'opérateur en
+// offrait deux au choix le 29 octobre 2026 (« On peut positionner les actions et propositions de deux manières
+// différentes »), et il les a ramenées à une le 31 octobre 2026 : « Le sélecteur de disposition part pour de bon,
+// retire les deux dispositions et garde seulement côte à côte ». Il ne reste donc ni sélecteur, ni bascule, ni
+// seconde règle — seulement la classe que styles.css attend, posée une fois pour toutes.
+document.body.classList.add('lay-side');
 
 // Le panneau des passages s'ouvre par-dessus l'écran de course, depuis la barre du haut, et se referme. Il n'est
 // plus affiché en permanence (l'opérateur, 29 octobre 2026).
@@ -2971,7 +2960,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#subtitle').textContent = "Men's Points Race · " + plural(LAPS, 'lap') + ' · ' + plural(NSPRINTS, 'sprint') + ' · ' + TRACK + ' m · simulated';
-  $('#buildno').textContent = 'build 154 · mixed';
+  $('#buildno').textContent = 'build 155 · mixed';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
@@ -3485,8 +3474,8 @@ addEventListener('wheel', e => {
    BOUTONS » (l'opérateur, 31 octobre 2026) : ce qui est posé est gardé sur le
    poste et relu au chargement, le réglage de l'ovale compris. */
 const LKEY = 'tct.layout';
-const LAY = { tl: null, right: null, below: null, acts: null, props: null };
-const CSSVAR = { tl: '--w-tl', right: '--w-right', below: '--h-below', acts: '--w-acts', props: '--h-props' };
+const LAY = { tl: null, right: null, below: null, acts: null };
+const CSSVAR = { tl: '--w-tl', right: '--w-right', below: '--h-below', acts: '--w-acts' };
 
 // Les planchers. Celui de la zone du bas n'est pas un chiffre : c'est la hauteur de la barre
 // d'actions, parce que « la barre d'actions ne doit jamais avoir à défiler pour être vue en
@@ -3498,16 +3487,10 @@ const RZ = {
   // resserrement, et non celle qu'elle occupe à cet instant : « il faut pouvoir récupérer avec double clic ET
   // avec la poignée ! » (l'opérateur, 31 octobre 2026). Avant cela le plancher valait la hauteur courante, donc
   // la poignée butait au premier pixel et l'ovale ne se récupérait qu'au double-clic.
-  below: { axis: 'y', sign: -1, el: '.below',
-           min: () => document.body.classList.contains('lay-side')
-             ? Math.max(40, actsMin)
-             : Math.ceil($('.acts').getBoundingClientRect().height),
+  below: { axis: 'y', sign: -1, el: '.below', min: () => Math.max(40, actsMin),
            max: () => Math.max(120, $('.mid').getBoundingClientRect().height - 240) },
   acts:  { axis: 'x', sign:  1, el: '.acts',  min: () => 200, max: () => 520 },
-  props: { axis: 'y', sign:  1, el: '.props', min: () => 60,
-           max: () => Math.max(60, $('.below').getBoundingClientRect().height - 120) },
 };
-function rzKey(k) { return k === 'acts' && !document.body.classList.contains('lay-side') ? 'props' : k; }
 function applyLayout() {
   for (const k in CSSVAR) LAY[k] == null
     ? document.documentElement.style.removeProperty(CSSVAR[k])
@@ -3535,7 +3518,7 @@ function belowDetent() {
 let rz = null;
 document.addEventListener('pointerdown', e => {
   const h = e.target.closest('.rsz'); if (!h || e.button !== 0) return;
-  const key = rzKey(h.dataset.rsz), spec = RZ[key];
+  const key = h.dataset.rsz, spec = RZ[key];
   rz = { h, key, spec, x: e.clientX, y: e.clientY, start: $(spec.el).getBoundingClientRect()[spec.axis === 'x' ? 'width' : 'height'] };
   h.classList.add('on');
   try { h.setPointerCapture(e.pointerId); } catch (err) {}   // la capture est un confort, pas une condition : le move et le up sont écoutés sur le document
@@ -3565,7 +3548,7 @@ document.addEventListener('pointerup', () => {
 // du milieu de l'ovale ramène à 100 %.
 document.addEventListener('dblclick', e => {
   const h = e.target.closest('.rsz'); if (!h) return;
-  LAY[rzKey(h.dataset.rsz)] = null;
+  LAY[h.dataset.rsz] = null;
   applyLayout(); setOvalZoom(ovZoom); saveLayout(); dirty = true; render();
 });
 /* La limite du « + » dépend de la place que la boîte de l'ovale a reçue, et cette place change
@@ -3674,11 +3657,10 @@ const tbarH = () => tbar.getBoundingClientRect().height;
 function actsFit() {
   const w = Math.round(actsEl.getBoundingClientRect().width);
   if (!w) return;                                 // zone pas rendue : on ne décide rien sur une mesure vide (D19)
-  // Les deux hauteurs se relèvent REGISTRE FERMÉ. En disposition empilée, le registre ouvert prend sa place à
-  // droite et rétrécit la barre, qui se remet alors sur plus de lignes : la relever là donnerait une hauteur
-  // posée plus grande, et l'ovale remonterait — exactement ce que l'opérateur a demandé de faire cesser. C'est
-  // le resserrement, en dessous, qui absorbe ce rétrécissement.
-  const key = w + '|' + (document.body.classList.contains('lay-side') ? 'side' : 'stack');
+  // Les deux hauteurs se relèvent REGISTRE FERMÉ, et la largeur de la zone suffit à les dater : le registre a
+  // sa propre colonne et ne touche plus à celle des actions. Les relever registre ouvert serait de toute façon
+  // une mesure prise sur un écran de passage, et c'est le resserrement, en dessous, qui absorbe les écarts.
+  const key = String(w);
   if (ledgerbox.innerHTML === '') {
     const fresh = key !== actsKey;
     if (fresh) { actsKey = key; actsNat = 0; actsMin = 0; }
