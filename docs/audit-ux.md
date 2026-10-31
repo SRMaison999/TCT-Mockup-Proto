@@ -32,6 +32,18 @@ calé, les poignées, la timeline élastique, les réglages de zone et le drapea
 - la poignée de la barre d'actions et son réglage de taille **atténuent** le point 3 sans le
   corriger : la ligne reste coupée à la largeur d'origine.
 
+La **build 150** répond à une demande de l'opérateur, pas à cette liste : la fenêtre d'actions
+de taille fixe, CTRL + molette à la place des cinq groupes de boutons, et la poignée de l'ovale
+qui va dans les deux sens (`architecture.md` §23, `regles-operateur.md` §17 points 121 à 125).
+Elle touche cette liste sur trois points, sans en résoudre aucun en entier :
+
+- **point 17** : les quatre infobulles françaises du réglage de l'ovale **ont disparu** avec les
+  boutons. Il en reste une, celle du filtre de Passings, et le point est réécrit plus bas ;
+- **point 3** : la ligne qui dit sur quoi on agit gagne 18 px — le `Clear` dégageait 62 px pour
+  le groupe de boutons retiré, il n'en dégage plus que 44 pour l'étiquette. Elle reste coupée ;
+- **point 1** : la barre d'actions est toujours reconstruite une fois par seconde. Les deux
+  boutons du coureur seul y sont maintenant en permanence, donc reconstruits eux aussi.
+
 ---
 
 # A. Les dix-sept points
@@ -327,21 +339,23 @@ retirer.
 
 ---
 
-## 17. Quatre infobulles en français dans une interface anglaise
+## 17. Une infobulle en français dans une interface anglaise
 
-**Ce que c'est** — Le réglage de taille de l'ovale et un filtre de Passings parlent français,
-et sans accents.
+**Ce que c'est** — Un filtre de Passings parle français, et sans accents.
 
-**Où** — `:302` — « La taille du dessin de l'ovale. Le reste de l'ecran ne bouge pas. »,
-« Reduire l'ovale », « Revenir a la taille d'origine », « Agrandir l'ovale » — et `:350` —
-« Les passages ou le ruban et la boucle ne sont pas tombes d'accord ».
+**Où** — « Les passages ou le ruban et la boucle ne sont pas tombes d'accord ».
+
+**Résolu en partie, build 150** — les quatre autres étaient portées par le réglage de taille de
+l'ovale (« La taille du dessin de l'ovale. Le reste de l'ecran ne bouge pas. », « Reduire
+l'ovale », « Revenir a la taille d'origine », « Agrandir l'ovale »), retiré avec les cinq
+groupes de boutons. Il n'en reste qu'une.
 
 **Angle** — 3. `concept.md` § Décisions prises, 21 octobre : « Langue de l'interface : Anglais ;
 […] Les documents de travail restent en français. » `timeline-prototype.html` n'en porte
-aucune : elles sont arrivées avec la version mixte. Les commandes ajoutées en build 149 sont
-en anglais.
+aucune : elles sont arrivées avec la version mixte. Les commandes ajoutées en build 149, et
+l'étiquette de taille de la build 150, sont en anglais.
 
-**Ce que cela changerait** — les cinq textes passent en anglais.
+**Ce que cela changerait** — le texte restant passe en anglais.
 
 ---
 

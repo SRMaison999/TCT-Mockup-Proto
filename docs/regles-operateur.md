@@ -1964,3 +1964,36 @@ Demandé après l'audit de la version mixte. Mot pour mot :
 120. **Il faut pouvoir régler la taille des éléments, zone par zone.** « Je ne sais pas, mais
      j'ai besoin de pouvoir ajuster la taille des éléments ! » — la forme était laissée
      ouverte, la capacité non.
+
+### Les poignées, le zoom et la fenêtre d'actions · 31 octobre 2026, deuxième tour
+
+Après avoir essayé la build 149, en réponse à l'audit `audit-ux.md`. Ses mots, entiers.
+
+121. **Les poignées vont dans les deux sens, l'ovale compris.** « Les poignées ont été créées
+     mais fonctionnent mal surtout celle de l'ovale qui ne va que dans un sens. » Et, sur la
+     seule façon de récupérer l'ovale qu'il avait alors : « il faut pouvoir récupérer avec
+     double clic ET avec la poignée ! ». Le double-clic ne remplace donc pas la poignée.
+
+122. **La barre d'actions se resserre seule quand on serre sa zone.** Son choix entre deux
+     réponses posées, le 31 octobre 2026 : « Elle se resserre seule ». Elle réduit la taille
+     de son contenu juste ce qu'il faut pour tenir dans la place qu'on lui laisse, et revient
+     à sa taille dès qu'il y a de nouveau la place — comme la timeline au point 116. C'est ce
+     resserrement qui donne à la poignée de l'ovale de quoi aller dans l'autre sens, et la
+     barre ne défile toujours jamais (sa règle du 29 octobre 2026).
+
+123. **Les boutons de zoom sont remplacés par CTRL + molette.** « Les boutons de zoom ont eux
+     aussi été créés mais ne fonctionnent pas tous. mais sont tous très mal placés, peut-être
+     faut-il les remplacer par une fonctionnalité CTRL+scroll ? » Son choix entre trois
+     réponses posées, le même jour : « Ils disparaissent ». CTRL + molette règle la zone sous
+     le pointeur ; rien ne paraît à l'écran tant que tout est à 100 % ; dès qu'une zone n'y
+     est plus, une étiquette paraît dans son coin, et un clic dessus la ramène à 100 %.
+
+124. **La fenêtre des actions est de taille fixe.** « La fenêtre des actions change de taille
+     selon qu'on sélectionne un coureur dans la timeline, et selon quelles actions on
+     sélectionne. Cela a pour effet de bouger la zone de l'ovale. Il faut que cette fenêtre
+     d'action soit de taille fixe. »
+
+125. **Le registre « Laps… » s'affiche à droite de la fenêtre d'actions.** Sa réponse, écrite
+     de sa main plutôt que choisie parmi celles posées, le 31 octobre 2026 : « le registre
+     s'affiche à droite de la fenêtre d'actions ». Il ne pousse donc rien, ni la barre ni
+     l'ovale.

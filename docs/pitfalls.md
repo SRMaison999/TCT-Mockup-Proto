@@ -665,3 +665,29 @@ Ce que D26 garde de valable : les trois fichiers partagent `styles.css` et une c
 moteur. Une correction utile aux trois se fait donc **trois fois**, ou dans `styles.css` quand
 elle est purement visuelle — et une modification propre à une version n'a rien à faire dans
 `styles.css`, qui les sert toutes.
+
+### D28 · Un plancher calculé sur la taille courante n'est pas un plancher
+
+La poignée de l'ovale (build 149) refusait un sens entier. Son plancher était
+`Math.ceil($('.acts').getBoundingClientRect().height)` — écrit pour tenir la règle de
+l'opérateur du 29 octobre 2026, « la barre d'actions ne doit jamais avoir à défiler pour être
+vue en entier ». La règle est juste ; la mesure ne l'était pas.
+
+La barre d'actions est un élément de grille **étiré à la hauteur de sa ligne**. Sa hauteur
+mesurée n'est donc pas celle dont elle a besoin : c'est celle de la zone, exactement la
+grandeur que la poignée essayait de changer. Plancher = taille courante, et le glissé est
+refusé dès le premier pixel, dans un seul sens — l'autre marchait, ce qui fait croire à une
+poignée « à moitié cassée » plutôt qu'à un plancher faux.
+
+La même forme de butée existait sur la colonne du sprint, pour une autre raison : sa largeur
+d'origine vaut déjà son plancher documenté. Là, le plancher est juste et rien n'était à
+corriger — ce qui montre que **le symptôme ne désigne pas la cause** : deux poignées à sens
+unique, deux histoires différentes.
+
+Ce qui l'a fait voir : avoir tiré les quatre poignées **dans les deux sens** et relevé les
+quatre tailles, plutôt que d'en essayer une. Le tableau rend la régularité évidente — chaque
+sens refusé partait d'une taille égale à son plancher.
+
+**La leçon** : un plancher se relève sur ce que le contenu *demande*, jamais sur ce que la
+boîte *occupe*. Quand les deux risquent de se confondre, on mesure le contenu dans un état où
+la boîte ne le contraint pas — ici, la barre à son propre plancher de resserrement.

@@ -2108,3 +2108,70 @@ Ligne de 227 px. Avant : `22 · 32 · 38 · 62 · 22 · 22` + 5 px de gouttière
 62 px pour **43,2 px** d'encre (« +0.147 », et « manual » vaut le même) et le NOC 38 px pour
 **23,4** (« GBR »). Après : `22 · 32 · 22 · 26 · 46,7 · 22 · 22`, la colonne inchangée, l'écart
 gardant 46,7 px pour 43,2 d'encre. Le drapeau mesure 22 × 15 px, comme dans la timeline.
+
+
+## 25. La fenêtre d'actions et les poignées (build 150, 31 octobre 2026)
+
+Fenêtre de 1900 × 1000, centre de 679 px, colonne d'actions de 290 px, course de référence
+chargée et rejouée à ×16 jusqu'à 3:37.5.
+
+### Les quatre poignées, tirées dans les deux sens — avant (build 149)
+
+| Poignée | Taille de départ | Tirée vers le + | Tirée vers le − |
+|---|---|---|---|
+| Timeline (largeur) | 175,6 px | 267,6 | 161,6 |
+| Actions (largeur) | 290 px | 380 | 200 |
+| Ovale (hauteur du bas) | 303,6 px | **304 — refusé** | 474 |
+| Colonne du sprint (largeur) | 500 px | **500 — refusé** | 680 |
+
+Deux poignées sur quatre butaient parce que leur plancher valait leur taille courante.
+
+### La poignée de l'ovale — après (build 150)
+
+| Geste | Zone du bas | Ovale | Taille appliquée de la barre |
+|---|---|---|---|
+| Départ | 351 px | 514 px | 100 % |
+| Tirée à fond vers le bas | **167 px** | **698 px** | 60 % |
+| Remontée de 100 px | 267 px | 598 px | 85 % |
+| Double-clic | 351 px | 514 px | 100 % |
+
+Jamais de rognage : la barre tient dans sa zone à chaque pas.
+
+### La fenêtre d'actions ne bouge plus
+
+Même écran, en « côte à côte ». Hauteur de la zone du bas / hauteur de l'ovale :
+
+| État | Avant (build 149) | Après (build 150) |
+|---|---|---|
+| Sans sélection | 303,6 / 562 | 351 / 514 |
+| Un coureur sélectionné | 303,6 / 562 | **351 / 514** |
+| Registre « Laps… » ouvert | +51 px pris sur l'ovale | **351 / 514** |
+| Registre refermé | 303,6 / 562 | **351 / 514** |
+
+Et sur la course rejouée à ×16 jusqu'à 3:37.5, deux groupes formés et une proposition
+« Lap gained? · BIB 12 » affichée : **une seule valeur relevée**, 514/351, sur 30 relevés
+espacés de 400 ms.
+
+Le coût de la taille fixe est la présence permanente des deux boutons du coureur seul :
+**303,6 px à 351 px**, soit 47 px pris à l'ovale une fois pour toutes plutôt qu'au gré de la
+sélection.
+
+### Le registre à droite
+
+Centre de 679 px, fenêtre d'actions de 290 px, 359 px restants. Sans borne le registre réclame
+**342,5 px** et laisse **16,5 px** aux propositions. Avec le partage à parts égales :
+**179,5 / 179,5**. En disposition empilée : barre de 671 px, puis **329 px** le registre ouvert,
+et le resserrement passe la barre à **70 %** sans rognage.
+
+### Les cinq réglages de taille, à la molette
+
+| Zone | CTRL + molette | Étiquette | Clic sur l'étiquette |
+|---|---|---|---|
+| Ovale | 100 % à 80 % | « 80 % » | retour à 100 %, étiquette retirée |
+| Timeline | 100 % à 110 % | « 110 % » | idem |
+| Carte du sprint | 100 % à 110 % | « 110 % » | idem |
+| Propositions | 100 % à 110 % | « 110 % » | idem |
+| Actions | 100 % à 110 % | « 110 % » | idem |
+
+Molette **sans** CTRL : aucun réglage ne bouge. Avec CTRL, l'événement est annulé, donc la page
+entière ne zoome pas. À 100 % aucune étiquette n'existe dans le DOM.

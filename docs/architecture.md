@@ -1177,3 +1177,94 @@ la timeline et les trois réglages de zone. Relue au chargement, réécrite à c
 « TOUT DOIT RESTER IDENTIQUE SI PERSONNE NE TOUCHE LES POIGNEES OU LES BOUTONS » (§17
 point 119). Une nouvelle course ne remet rien à zéro : la disposition est celle du poste, pas
 celle de la course, et rien de tout cela n'entre dans une course enregistrée.
+
+
+## 23. La fenêtre d'actions fixe, CTRL + molette, et la poignée qui va dans les deux sens (build 150)
+
+Demandés le 31 octobre 2026 après essai de la build 149, consignés mot pour mot dans
+`regles-operateur.md` §17, points 121 à 125. Tout vit dans `timeline-prototype_mixed.html`,
+comme le §22 : **rien n'entre dans `styles.css`**, et chaque surcharge porte son parent dans le
+sélecteur.
+
+### Pourquoi la poignée de l'ovale n'allait que dans un sens
+
+Son plancher était `Math.ceil($('.acts').getBoundingClientRect().height)` — la hauteur que la
+barre d'actions **occupe à cet instant**. En disposition « côte à côte » la barre est étirée à
+la hauteur de sa ligne de grille, donc cette hauteur vaut toujours celle de la zone : le
+plancher était égal à la taille courante, et le glissé était refusé au premier pixel. La
+poignée de la colonne du sprint a la même forme de butée pour une autre raison — sa largeur
+d'origine vaut déjà son plancher documenté de 500 px — mais là c'est le plancher qui est juste,
+et rien n'a été changé.
+
+Le plancher est maintenant `actsMin`, **la hauteur que la barre demande au plancher de son
+propre resserrement**, relevée de la barre elle-même. **Mesuré** sur l'écran de référence
+(centre de 679 px, colonne d'actions de 290 px) : 351 px à 100 %, **167 px à 60 %**. La poignée
+rend donc à l'ovale 184 px de plus que sa hauteur d'origine, et le double-clic reste là
+(§17 point 121).
+
+### Le resserrement de la barre d'actions
+
+Même mécanisme que `tlFit()` et même sens unique vers le bas : `actsFit()` baisse `--z-acts`
+par pas de 0,05 tant que la barre dépasse sa zone, jusqu'au plancher. **Le plancher n'est pas
+un chiffre neuf** : c'est `OVZ_MIN`, les 60 % que le réglage manuel de cette zone avait déjà.
+Mesuré en tirant la poignée : 100 % puis **85 %** à mi-course de la poignée, **60 %** au
+plancher, et jamais de rognage.
+
+Pour que le resserrement se déclenche, la ligne de la grille devait cesser d'être `auto` :
+`body.lay-side .mid > .below{grid-template-rows:minmax(0,1fr)}` et `.acts{min-height:0}`. Sans
+cela la barre gardait sa hauteur, débordait d'une zone resserrée et se faisait rogner par
+`.mid{overflow:hidden}` — le resserrement ne voyait jamais qu'il manquait de la place.
+
+### La hauteur posée de la fenêtre d'actions
+
+Trois choses, et aucune n'ajoute un objet à l'écran :
+
+- **les deux boutons du coureur seul sont toujours là**, désactivés quand la sélection n'est
+  pas un seul coureur — c'est déjà ce que font tous les autres boutons de cette barre ;
+- **le registre sort de la barre** : `ledgerbox.innerHTML` au lieu de la fin de
+  `tbar.innerHTML`, dans son propre conteneur placé à droite (§17 point 125) ;
+- **la hauteur de la zone est posée** : `--h-acts-nat`, relevée de la barre, et non plus celle
+  dont elle a besoin à cet instant.
+
+`--h-acts-nat` se relève **registre fermé** seulement. En disposition empilée le registre ouvert
+rétrécit la barre, qui se remet alors sur plus de lignes ; la relever là donnerait une hauteur
+posée plus grande et l'ovale remonterait, c'est-à-dire exactement ce qu'il faut faire cesser.
+C'est le resserrement qui absorbe ce rétrécissement — mesuré : 100 % puis **70 %**, sans
+rognage.
+
+La clé de relevé est `largeur | disposition | taille posée` : elle couvre la fenêtre, les
+poignées, la bascule des deux dispositions et le réglage de zone. Le relevé se fait en
+enveloppant `renderTimeline`, et par un `ResizeObserver` sur `.acts` (D15), plus un appel direct
+après la bascule de disposition — sinon la zone garde un instant la hauteur de l'autre
+disposition et la barre s'y fait rogner.
+
+### Le registre à droite
+
+Une colonne de plus dans la grille de la zone du bas, immédiatement à droite de la fenêtre
+d'actions dans les deux dispositions. Fermé, le conteneur est vide, `:empty{display:none}`, et
+la colonne vaut zéro : l'écran est au pixel près celui d'avant. Ouvert, la zone prend la classe
+`hasledger` et les deux colonnes restantes passent à `1fr 1fr` — **le registre partage à parts
+égales la place laissée par la fenêtre d'actions**. Sans cette borne il réclamait 343 px sur
+359 et les propositions tombaient à **16,5 px** (mesuré, centre de 679 px).
+
+Les écouteurs du registre suivent son conteneur : `onStripClick` et le `input` de la pipette
+sont posés sur `#ledgerbox` comme ils l'étaient sur `#tbar`.
+
+### CTRL + molette, et l'étiquette
+
+Les cinq groupes de boutons sont retirés du HTML (§17 point 123). Un seul écouteur `wheel`,
+**non passif** — sinon la page entière zoomerait par-dessus — sur le document : la touche tenue,
+puis `e.target.closest('.oval,.tl,.right,.acts,.props')` dit quelle zone. La molette seule garde
+son rôle, elle déroule la timeline et les propositions, et c'est pourquoi la touche est tenue.
+
+`zlab(zone, appliquée, posée)` **crée l'étiquette quand la zone quitte 100 % et la retire quand
+elle y revient** : rien dans le DOM le reste du temps. Elle affiche la taille **appliquée**, pas
+celle demandée. Elle est posée hors des conteneurs que le moteur réécrit (D2), et elle est son
+propre bouton : un clic ramène sa zone à 100 %.
+
+Ce qui disparaît avec les boutons : les quatre infobulles françaises du réglage de l'ovale,
+point 17 de `audit-ux.md`. Celle du filtre de Passings reste.
+
+**Ce qui n'a pas changé** : `tct.layout` garde les mêmes clés, et le `+` muet de l'ovale à
+100 % est devenu une molette muette — la limite de §22 tient, agrandir réellement l'ovale passe
+par sa poignée, qui marche maintenant.
