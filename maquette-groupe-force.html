@@ -1,0 +1,89 @@
+<title>Le groupe placé à la main</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* Planche de proposition, 1er novembre 2026. CE FICHIER NE TOUCHE PAS AU PROTOTYPE.
+   Elle dessine ce que l'opérateur a demandé le 1er novembre 2026 : « il faut une indication
+   pour informer que l'utilisateur a forcé. Et avoir la possibilité de laisser tel quel
+   (forcé) mais aussi de retourner au mode automatique (qui replacerait tous les groupes
+   dans l'ordre des transpondeurs) ». Rien n'entre dans le code avant son accord (§14).
+   Les textes d'interface sont en anglais, les explications en français. */
+body{overflow:auto}
+.pl{max-width:1100px;margin:0 auto;padding:18px 20px 60px}
+.pl h1{font:600 20px var(--sans);margin:0 0 4px}
+.pl .lead{color:var(--muted);font-size:13px;margin:0 0 22px;line-height:1.55;max-width:820px}
+.pt{border-top:1px solid var(--line);padding:20px 0 4px}
+.pt h2{font:600 15px var(--sans);margin:0 0 3px}
+.pt .why{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 14px;max-width:820px}
+.cols{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap}
+.cap{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+/* la colonne est montrée à sa largeur réelle, 174 px */
+.tlcol{width:174px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:4px;display:flex;flex-direction:column}
+.note{color:var(--muted);font-size:12.5px;line-height:1.55;max-width:330px}
+.note b{color:var(--fg);font-weight:600}
+/* LA SEULE CHOSE NOUVELLE DE CETTE PLANCHE : la bande du mode, en haut de la colonne.
+   Elle n'existe que tant qu'au moins un groupe est placé à la main. */
+.tmode{display:flex;flex-direction:column;gap:4px;margin:0 0 5px;padding:5px 6px 6px;border:1px solid var(--warn);border-radius:3px;background:#1d1a12}
+.tmode .k{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
+.tmode .btn{width:100%;justify-content:center}
+/* L'étiquette se pose sur l'en-tête du groupe, qui porte la couleur de ce groupe : elle doit donc
+   rester lisible sur n'importe laquelle. Elle prend le fond sombre de la colonne et garde l'ambre
+   du mot, la couleur qui dit déjà « regardez ça » ailleurs dans la page. */
+.gh .pill.hand{background:#17191c;border-color:#17191c;color:var(--warn)}
+</style>
+<div class="pl">
+<h1>Le groupe placé à la main</h1>
+<p class="lead">Aujourd'hui l'ordre des groupes dans la timeline vient d'une seule chose : la position mesurée
+de leurs coureurs. Un groupe ne s'attrape pas, et rien ne dit à l'écran que quelqu'un y a touché. Voici ce que
+donneraient les deux choses que vous avez demandées — <b>une indication que vous avez forcé</b>, et <b>le retour au
+mode automatique</b>.</p>
+
+<div class="pt">
+<h2>La colonne, avant et après</h2>
+<p class="why">À gauche, ce qu'on voit aujourd'hui quand les transpondeurs placent tout. À droite, la même course
+après que vous avez remonté le groupe des échappés devant le peloton : la bande du mode apparaît en haut de la
+colonne, et chaque groupe que vous avez posé porte son étiquette.</p>
+<div class="cols">
+  <div>
+    <p class="cap">Aujourd'hui</p>
+    <div class="tlcol" id="before"></div>
+  </div>
+  <div>
+    <p class="cap">Proposé</p>
+    <div class="tlcol" id="after"></div>
+  </div>
+  <div class="note">
+    <p><b>L'étiquette.</b> « BY HAND », dans l'en-tête du groupe, à l'endroit et dans la forme où « OUT OF SPRINT 1 »
+    s'affiche déjà. Elle reste tant que vous n'y retouchez pas.</p>
+    <p><b>L'écart reste vrai.</b> Le « +12 m » de l'en-tête continue de dire ce que les transpondeurs mesurent, même
+    quand c'est vous qui avez placé le groupe. Vous voyez donc d'un coup d'œil ce que la machine, elle, pense.</p>
+    <p><b>La bande du mode.</b> Elle n'existe que tant qu'au moins un groupe est à la main, et elle compte combien
+    il y en a. Un clic sur « Back to automatic » replace tous les groupes dans l'ordre des transpondeurs et la bande
+    disparaît.</p>
+    <p><b>Le geste.</b> On attrape le groupe par son en-tête — là où on clique déjà pour le sélectionner — et on le
+    lâche sur une des bandes « new group ». Les coureurs, eux, continuent de s'attraper un par un comme aujourd'hui.</p>
+  </div>
+</div>
+</div>
+</div>
+<script src="flags.js"></script>
+<script>
+const R = { 12:['SUI'], 7:['COL'], 15:['IRL'], 4:['GBR'], 11:['JPN'], 23:['DEN'], 46:['BEL'], 52:['ITA'] };
+const row = b => `<div class="trow"><span class="chip">${b}</span>${flag(R[b][0])}<span class="noc">${R[b][0]}</span></div>`;
+const gap = () => `<div class="tgap"><span><span class="nz">new group</span></span></div>`;
+function grp(o) {
+  return `<div class="tgrp hascol${o.lead?' lead':''}${o.hand?' pinned':''}" style="--gcol:${o.col}">
+    <div class="gh">
+      <span class="ghl"><span class="gn">${o.name}</span><button class="btn xs quiet gx">×</button></span>
+      <span class="ghl"><span class="gi">${o.bibs.length} riders</span><span class="ggap">${o.gap}</span></span>
+      ${o.hand?'<span class="pill warn hand">by hand</span>':''}</div>
+    ${o.bibs.map(row).join('')}</div>`;
+}
+const BUNCH = { name:'BUNCH', col:'#cfd3d8', gap:'leader', bibs:[15,4,11,23,46,52] };
+const BREAK = { name:'LEADERS', col:'#f0c674', gap:'+12 m', bibs:[12,7] };
+document.getElementById('before').innerHTML =
+  gap() + grp({...BUNCH, name:'1-BUNCH', lead:true}) + gap() + grp({...BREAK, name:'2-LEADERS', gap:'−12 m'}) + gap();
+document.getElementById('after').innerHTML =
+  `<div class="tmode"><span class="k">1 group by hand</span><button class="btn xs">Back to automatic</button></div>`
+  + gap() + grp({...BREAK, name:'1-LEADERS', hand:true}) + gap() + grp({...BUNCH, name:'2-BUNCH', lead:true, gap:'leader'}) + gap();
+</script>
