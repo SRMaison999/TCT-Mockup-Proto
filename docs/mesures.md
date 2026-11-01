@@ -3546,3 +3546,9 @@ coureurs sans vérifier qu'ils étaient sur le même tour. La seconde appelait �
 écart négatif au sens du §1 — or `z − (x + y)` sort négatif dès que deux coureurs sont plus proches
 qu'une longueur de vélo, ce qui est le cas permanent dans un peloton : elle annonçait 1 021 secondes
 d'ordre inversé là où il n'y en a aucune.
+
+**Ce que les 38,9 secondes sont, build 196.** 119 moments. **102 durent moins de trois dixièmes de
+seconde**, et **100 portent sur un écart de moins de deux secondes**. Le cas de 360,9 s, le plus
+gros écart de la course, dure **exactement trois dixièmes de seconde** : le 12 venait de remonter
+juste derrière le 7 dans la timeline, et le délai du §1 veut qu'une cassure tienne avant d'être
+déclarée. Les 38,9 secondes sont donc entièrement ce délai, qui est sa règle.

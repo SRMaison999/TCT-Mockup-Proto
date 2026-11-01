@@ -932,7 +932,7 @@ en regardant l'ovale. Les écarts négatifs tombent de 511 images à 161, et le 
 seconde avant d'être levée —, et cela vaut un dixième de seconde à l'écran. Détail dans
 `docs/mesures.md`, build 191.
 
-### 29. Une cassure de 14 s restée dans un groupe à 360,9 s · ouvert
+### 29. Une cassure de 14 s restée dans un groupe à 360,9 s · compris, build 196
 
 Mesuré au palier 2, build 196. Le 7 et le 12 sont affichés dans le même groupe alors que 13,99 s
 les séparent. Les autres moments du même genre portent sur des écarts qui viennent de franchir la
@@ -940,3 +940,20 @@ seconde, et s'expliquent par le délai de confirmation du §1 ; celui-là non.
 
 Au total : 38,9 secondes sur les 1 042 de la course, en 119 moments, le plus long de 5,5 s.
 L'ordre de la timeline, lui, est juste d'un bout à l'autre des deux courses.
+
+**Compris, build 196.** Le 7 et le 12 ne sont **pas ensemble** : 14 secondes les séparent, environ
+175 mètres de piste. L'écran les a montrés dans le même groupe pendant **trois dixièmes de
+seconde**, de 360,9 s à 361,2 s, puis les a séparés. C'est exactement le délai de confirmation du
+§1 : le 12 venait de remonter juste derrière le 7 dans la timeline, et une cassure doit tenir trois
+dixièmes de seconde avant d'être déclarée.
+
+Les 119 moments de la course sont tous de cette nature : **102 d'entre eux durent moins de trois
+dixièmes de seconde**, et **100 portent sur un écart de moins de deux secondes** — des écarts qui
+oscillent autour de la seconde, ce que le délai est fait pour absorber. Les trois plus longs : 5,5 s
+entre le 3 et le 12 à partir de 809,4 s, pour un écart qui ne dépasse jamais 1,6 s ; 4,1 s entre le
+52 et le 46 à partir de 820,1 s, écart 1,7 s ; 3,3 s entre le 12 et le 52 à partir de 825,9 s,
+écart 1,9 s.
+
+**Deux retouches essayées et retirées.** J'ai tenté de ne pas appliquer le délai à une paire qui
+vient de se former. Aucune des deux n'a changé la mesure — 38,9 secondes avant comme après — et je
+les ai retirées plutôt que de garder du code qui ne sert à rien.
