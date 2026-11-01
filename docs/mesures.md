@@ -2573,3 +2573,32 @@ Groupe des deux derniers coureurs (12, 52, **31 m** derrière le leader) posé s
 haut. Vérifié : il monte en tête de colonne, porte `by hand`, garde son écart mesuré `−31 m`,
 et **y est encore après 1 min 30 de course** jouée à ×16. `Back to automatic` le remet derrière
 le peloton et la bande du mode disparaît. Deux groupes posés font bien « 2 GROUPS BY HAND ».
+
+### Ce qu'un groupe forcé change, et ce qu'il ne change pas (build 161)
+
+Sa question du 1er novembre 2026 : un groupe posé en tête de la timeline alors qu'il est
+deuxième sur la piste est-il détecté le premier au sprint ?
+
+**Monté** : trois blocs sur la course de référence — `1-LEADER` (15, le vrai leader),
+`2-BUNCH` (13 coureurs), `3-LAST` (12 et 52, **31 m** derrière). Le bloc de queue a été posé à
+la main tout en haut, puis la course a été jouée à ×16 jusqu'au sprint final.
+
+**La timeline après la pose** : `1-LEADERS · −31 m · by hand` (12, 52), `2-CHASE · leader`
+(15), `3-BUNCH · −2 m`. Le vrai leader est passé au numéro **2**, le groupe posé au numéro **1**.
+
+**Les trois sprints joués avec ce forçage en place** — lus dans l'onglet Sprints :
+
+| | Ordre jugé |
+|---|---|
+| Sprint 1, tour 10 | 15, 4, 11, 23, 46 |
+| Sprint 2, tour 20 | 15, 4, 11, 23, 46 |
+| Sprint 3, tour 30 | 15, 4, 11, 23, 46 |
+
+Aucun des deux coureurs posés en tête (12, 52) n'apparaît. **L'ordre détecté vient des boucles**,
+et la place donnée à la main dans la timeline n'y touche pas.
+
+**Ce que le forçage change en revanche** : le **numéro** des groupes, qui se lit sur leur
+en-tête, suit l'ordre de la colonne. Et c'est sur ce numéro qu'est calculée l'éligibilité
+(`numbered` dans `computeGroups`, la règle du §6) : le groupe 1 est par construction « le plus
+proche de la ligne », et c'est contre le groupe n que se juge le groupe n+1. Un groupe posé en
+tête devient donc le groupe 1 pour les points, sans être le premier détecté.

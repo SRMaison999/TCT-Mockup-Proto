@@ -602,3 +602,11 @@ l'opérateur, qui n'absorbe plus les coureurs rattrapés tout seul (§3). Faut-i
 refuse le peloton ?
 
 **On saura que c'est fini quand** : il aura répondu à cette question.
+
+**Ajouté le 1er novembre 2026, deux questions ouvertes sur ce même poste** :
+
+1. Poser le **peloton** à la main le transforme en groupe de l'opérateur, qui n'absorbe plus les
+   coureurs rattrapés tout seul (§3). Le geste doit-il refuser le peloton ?
+2. Un groupe posé en tête devient le **groupe 1** pour l'éligibilité, sans être le premier
+   détecté au sprint (`mesures.md` §37). Est-ce bien ce qu'il veut, ou l'éligibilité doit-elle
+   rester sur les positions mesurées ?
