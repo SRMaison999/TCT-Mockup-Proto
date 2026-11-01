@@ -48,6 +48,14 @@
        → Le garde : un coureur sans détection n'existe pas pour cette pièce. Il n'est ni classé,
          ni groupé, ni proposé.
 
+   E8. Ne jamais attribuer un tour au coureur rejoint.
+       Sa règle du point 178 : « les tours se gagnent lorsqu'on rattrape le peloton, et se perdent
+       lorsqu'on se fait rattraper par le peloton ». La paire de coureurs qui se suivent donne le
+       NOMBRE de tours ; c'est le peloton qui dit à QUI ce nombre revient. Mesuré : la pièce
+       écrivait « 15 IRL : −1 tour » là où c'étaient le 7, le 18 et le 61 qui en prenaient un.
+       → Le garde : un tour n'est relevé que pour le coureur qui vient de REJOINDRE le peloton,
+         et seulement contre un coureur qui y était déjà.
+
    E7. Ne jamais nommer une règle avec mes mots plutôt qu'avec les siens.
        Il a dû corriger « les deux coureurs qui se font face », qui était de moi et voulait dire
        autre chose. Ici on dit : **les deux coureurs qui se suivent**.
@@ -65,6 +73,7 @@
     const R = Object.assign({
       piste: 250,            // la longueur d'un tour, en mètres
       boucles: [0],          // la position de chaque boucle sur la piste, en mètres, dans l'ordre
+      arrivee: 0,            // laquelle de ces boucles est la ligne d'arrivée : c'est elle qui compte les tours
       cassureS: 1.0,         // §1 : au-delà d'une seconde entre roue arrière et roue avant, c'est une cassure
       veloM: 1.65,           // §1 : la longueur d'un vélo
       confirmationS: 0.3,    // §1 : le temps qu'une cassure doit tenir avant de compter
@@ -81,11 +90,13 @@
     const neuf = bib => ({
       bib,
       n: 0,                 // combien de détections : rien d'autre ne dit qu'il est en course
+      tours0: 0,            // combien de fois il a franchi la ligne d'arrivée : son tour, en entier
       d: null,              // sa distance, comptée boucle après boucle (jamais devinée)
       t: null,              // l'heure de sa dernière détection
       dAvant: null, tAvant: null,
       parBoucle: new Map(), // position de boucle → heure de son dernier passage sur celle-ci
       rejoint: null,        // l'heure de la détection où le tour retranché a été relevé
+      dansPeloton: false,   // était-il dans le peloton à la détection précédente ? (point 178)
     });
 
     /* ------------------------------------------------------------------ 1. une détection */
@@ -105,7 +116,11 @@
       c.d = c.d == null ? boucle : c.d + avance;
       c.boucle = boucle; c.t = t; c.n++;
       c.parBoucle.set(boucle, t);
+      // LE TOUR, C'EST LA LIGNE D'ARRIVÉE. On compte ses passages dessus : un entier, exact, qui ne
+      // doit rien à un arrondi. C'est la seule façon de dire « il a un tour de plus » sans marge.
+      if (boucle === R.arrivee) c.tours0 = (c.tours0 || 0) + 1;
       if (t > maintenant) maintenant = t;
+      examiner();
       return { bib, distance: c.d, boucle, t, detections: c.n };
     }
 
@@ -173,25 +188,68 @@
     }
 
     /* ------------------------------------------------------------------ 6. le tour pris ou perdu */
-    // E2 : la mesure se prend entre les DEUX COUREURS QUI SE SUIVENT, et seulement si ce qui reste
-    // après les tours entiers est petit — sinon ils ne se suivent pas et on ne propose rien.
-    // E5 : une fois relevé, le tour retranché tient jusqu'à la prochaine détection du coureur.
-    function toursPris() {
-      const file = ordre(), vus = [];
-      for (let i = 1; i < file.length; i++) {
-        const c = file[i], devant = file[i - 1];
-        const ec = ecartS(devant, c);
-        if (ec == null || confirme(c.bib + '|' + devant.bib, ec > R.cassureS)) continue;   // pas dans le même groupe
-        const brut = c.d - devant.d;                 // leurs distances comptées, sans tour retranché
-        const n = Math.round(brut / R.piste);
-        const reste = brut - R.piste * n;
-        const v = vitesse(c) || 0;
-        const marge = R.cassureS * v + R.veloM;      // la distance que le seuil du §1 représente à sa vitesse
-        if (!n || Math.abs(reste) > marge) continue;
-        vus.push({ bib: c.bib, avec: devant.bib, tours: n, resteM: +reste.toFixed(1), margeM: +marge.toFixed(1) });
-      }
-      return vus;
+    // SA RÈGLE, POINT 178 : « les tours se gagnent lorsqu'on rattrape le peloton, et se perdent
+    // lorsqu'on se fait rattraper par le peloton ». Le peloton est la référence des deux côtés.
+    // L'ÉVÉNEMENT est donc : un coureur qui n'était pas dans le peloton à la détection précédente
+    // y est maintenant. LE NOMBRE de tours se lit sur la paire — lui et le coureur du peloton le
+    // plus proche de lui sur la piste parmi ceux qui y étaient déjà (E2) —, et LE SENS vient de
+    // lui seul : plus de distance comptée que le peloton, il l'a rattrapé et il prend un tour ;
+    // moins, le peloton l'a rattrapé et il en perd un.
+    const vus = [];                                  // les tours relevés, dans l'ordre où ils arrivent
+
+    // le peloton : le groupe le plus nombreux. L'article UCI 3.2.017 quater laisse le dernier mot
+    // au président du collège ; ici on rend ce que les boucles donnent, et il tranche.
+    function peloton(gs) {
+      return (gs || groupes()).reduce((a, g) => (!a || g.coureurs.length > a.coureurs.length ? g : a), null);
     }
+
+    // parmi les coureurs du peloton qui y étaient DÉJÀ, celui qui est le plus proche de lui sur la
+    // piste : on retire les tours entiers de l'écart, et le plus petit reste gagne (E2).
+    function duPelotonLePlusProche(c, dedansAvant) {
+      let meilleur = null;
+      for (const bib of dedansAvant) {
+        if (bib === c.bib) continue;
+        const o = coureurs.get(bib); if (!o || o.d == null) continue;
+        const brut = c.d - o.d, reste = brut - R.piste * Math.round(brut / R.piste);
+        if (!meilleur || Math.abs(reste) < Math.abs(meilleur.reste)) meilleur = { o, reste, brut };
+      }
+      return meilleur;
+    }
+
+    // le dernier nombre de tours annoncé pour un coureur : on ne redit pas la même chose.
+    const annonce = new Map();
+
+    function examiner() {
+      const pel = peloton();
+      if (!pel || pel.coureurs.length < 2) return;
+      const dedans = new Set(pel.coureurs);
+      const dedansAvant = [...coureurs.values()].filter(x => x.dansPeloton).map(x => x.bib);
+
+      for (const c of coureurs.values()) {
+        if (c.n === 0) continue;
+        const est = dedans.has(c.bib);
+        // L'ÉVÉNEMENT : il n'était pas dans le peloton, il y est. Son point 178 : « les tours se
+        // gagnent lorsqu'on rattrape le peloton, et se perdent lorsqu'on se fait rattraper par le
+        // peloton ». Le peloton est la référence des deux côtés.
+        if (est && !c.dansPeloton && dedansAvant.length) {
+          const m = duPelotonLePlusProche(c, dedansAvant);
+          if (m) {
+            const n = Math.round(m.brut / R.piste);
+            const v = vitesse(c) || 0, marge = R.cassureS * v + R.veloM;
+            // E2 : s'ils ne se suivent pas, on ne constate rien.
+            if (Math.abs(m.reste) <= marge && annonce.get(c.bib) !== n) {
+              annonce.set(c.bib, n);
+              if (n) vus.push({ t: maintenant, bib: c.bib, tours: n, avec: m.o.bib,
+                sens: n > 0 ? 'il a rattrapé le peloton' : 'le peloton l\u2019a rattrapé',
+                resteM: +m.reste.toFixed(1), margeM: +marge.toFixed(1) });
+            }
+          }
+        }
+        c.dansPeloton = est;
+      }
+    }
+
+    const toursPris = () => vus;
 
     // ce que l'opérateur valide ne change que les points ; le retour dans le tour du paquet, lui,
     // n'attend aucune validation (§2). C'est ici qu'on le relève, et une seule fois (E5).
@@ -216,6 +274,7 @@
     }
 
     return { detection, etat, groupes, ordre: () => ordre().map(c => c.bib), toursPris, rejoint,
+             peloton: () => { const g = peloton(); return g ? g.coureurs.slice() : []; },
              reglage: R, _coureurs: coureurs };
   }
 

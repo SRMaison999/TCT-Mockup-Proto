@@ -2507,3 +2507,10 @@ l'écran, une à la fois.
      L'ordre de la timeline ne se calcule donc pas entre deux passages : il est **relevé** aux
      passages, trois fois par tour, sur les trois boucles. Entre deux détections, l'ordre ne
      bouge pas.
+
+178. **Les tours se gagnent sur le peloton et se perdent sur le peloton.** Ses mots, le
+     1er novembre 2026 : « **les tours se gagnent lorsqu'on rattrape le peloton, et se perdent
+     lorsqu'on se fait rattraper par le peloton** ».
+     C'est le **peloton** qui est la référence des deux côtés, et non le coureur voisin : la paire
+     de coureurs qui se suivent donne le **nombre** de tours, le peloton dit **à qui** ce nombre
+     revient et dans quel sens.

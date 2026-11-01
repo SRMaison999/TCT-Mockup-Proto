@@ -2156,3 +2156,39 @@ veut qu'un tour se perde quand on est rejoint **par le plus gros peloton**, et s
 rattrape l'arrière de ce peloton. La pièce mesure la paire sans regarder quel groupe est le plus
 gros, et attribue donc un tour **perdu** à des coureurs du peloton là où ce sont les échappés qui
 en **gagnent** un. C'est le poste 26.
+
+### Le tour va à celui qui rejoint le peloton (build 183)
+
+**Sa règle, point 178** : « les tours se gagnent lorsqu'on rattrape le peloton, et se perdent
+lorsqu'on se fait rattraper par le peloton ».
+
+L'événement est donc : **un coureur qui n'était pas dans le peloton y est maintenant**. Le peloton
+est le groupe le plus nombreux. Le **nombre** de tours se lit sur la paire — lui et le coureur du
+peloton le plus proche de lui sur la piste, parmi ceux qui y étaient déjà — et le **sens** vient de
+lui seul : plus de distance, il a rattrapé ; moins, il a été rattrapé. Un même nombre ne se
+réannonce pas (`annonce`).
+
+**Ce que la pièce relève au palier 2**, chaque ligne une seule fois :
+
+| Coureurs | Ce qui est relevé |
+|---|---|
+| 18 POR, 61 COL, 7 NED | +1 à 296 s, +2 à 498 s, +4 à 833 s, +5 à 1 017 s |
+| 12 SUI, 52 ITA | +1 à 453 s, +2 à 498 s, +3 à 740 s, +4 à 998 s |
+| 46 BEL, 70 BRA | −1 à 362 s, −2 à 640 s, −3 à 918 s |
+
+Les ordres de grandeur sont ceux de la simulation : partis avec 1,4 m/s de plus, les trois premiers
+prennent environ 1 400 m sur la course, soit cinq tours et demi ; le 12 et le 52, avec 1 m/s de
+plus, quatre tours ; les deux lâchés, avec 0,9 m/s de moins, trois tours et demi. Au palier 1,
+**aucun tour n'est relevé**, et le groupe unique ne se coupe jamais.
+
+**Un trou mesuré** : le 18, le 61 et le 7 passent de +2 à +4 sans que le +3 soit annoncé. Le
+passage où il aurait dû l'être n'a pas satisfait la vérification du face-à-face.
+
+**Ce qui N'est PAS décidé, et qui ne doit pas l'être par moi.** La pièce **constate** le tour ; elle
+ne le **crédite** pas. J'ai essayé deux fois de créditer automatiquement, et les deux fois la
+mesure l'a démenti : en partant des distances, 198 constats pour 16 coureurs ; en comptant les
+passages sur la ligne d'arrivée et en prenant le tour du plus grand nombre, 960 constats au
+palier 1, où personne ne prend ni ne perd un tour — parce que les coureurs d'un même groupe ne
+franchissent pas la ligne au même instant, et que le premier à la franchir paraît avoir un tour de
+plus. Le moment où un tour compte pour de bon est une question à poser à l'opérateur, pas à
+deviner.
