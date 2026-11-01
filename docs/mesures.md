@@ -2690,3 +2690,41 @@ Course de référence, jouée jusqu'à 1:36.0, tour 6. Trois états successifs, 
 **La chaîne**, vérifiée en formant un troisième bloc avec le 61 COL, qui roule 26 m derrière le
 15 IRL : `1-LEADERS · leader` · `2-BUNCH · 219 m` · `3-LAST · 26 m`. Le troisième se compte bien
 depuis le deuxième, et non depuis le premier — sinon il aurait affiché 245 m.
+
+### Où est réellement chaque coureur, au mètre (build 164)
+
+Ses questions du 1er novembre 2026. Mesuré sur les **passages réels sur la ligne**, tour 6 de la
+course de référence (onglet Passings, source Finish), tous les coureurs à **15,0 m/s** — vérifié
+sur les six tours du 15, dont les temps au tour tombent à 16,666 s, soit 250 m à 15,0 m/s.
+
+| Coureur | Passage, tour 6 | Derrière le 15 |
+|---|---|---|
+| 15 IRL | 1:23.700 | **0 m** |
+| 4 GBR | 1:23.847 | 2,2 m |
+| 11 JPN | 1:23.993 | 4,4 m |
+| 23 DEN | 1:24.140 | 6,6 m |
+| 46 BEL | 1:24.287 | 8,8 m |
+| 70 BRA | 1:24.433 | 11,0 m |
+| 58 KAZ | 1:24.580 | 13,2 m |
+| 67 GER | 1:24.727 | 15,4 m |
+| 1 ESP | 1:24.873 | 17,6 m |
+| 9 SLO | 1:25.020 | 19,8 m |
+| 3 FRA | 1:25.167 | 22,0 m |
+| 18 POR | 1:25.313 | 24,2 m |
+| 61 COL | 1:25.460 | 26,4 m |
+| 7 NED | 1:25.607 | 28,6 m |
+| 12 SUI | 1:25.753 | 30,8 m |
+| 52 ITA | 1:25.900 | **33,0 m** |
+
+**Un seul peloton, en file**, 2,20 m entre deux coureurs consécutifs et **33,0 m** du premier au
+dernier. Personne n'est détaché, ni devant ni derrière.
+
+**Ce que les chiffres affichés mesuraient vraiment.** Le « 31 m » du bloc formé avec le 12 et le
+52 est la distance **du 15 au 12** — de tête à tête, depuis le premier coureur du bloc précédent.
+Le vrai écart entre le **dernier du peloton (7 NED)** et le **premier du bloc (12 SUI)** est de
+**2,2 m**. De même, le « 26 m » du bloc formé avec le 61 est la distance **du 15 au 61** ; le 61
+roule à **2,2 m** derrière le 18 POR, dans la file, treizième sur seize.
+
+**Ce que donne sa règle.** Mesuré entre le **dernier du groupe de tête (52 ITA)** et le
+**premier du groupe suivant (15 IRL)**, en faisant le tour de la piste : 250 − 33,0 =
+**217,0 m**, et non 219. Les 219 venaient de 250 − 31, c'est-à-dire d'une mesure de tête à tête.
