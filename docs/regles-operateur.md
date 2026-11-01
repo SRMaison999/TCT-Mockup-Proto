@@ -2615,3 +2615,18 @@ Troisième fois de la journée qu'un mot à moi s'installe et doit être retiré
 deux coureurs qui se font face » (point 176) et « la pièce » (point 179). Les 61 occurrences ont
 été remplacées dans les documents et dans le code, et la ligne de journal `FILE` s'appelle
 maintenant `TIMELINE`.
+
+### 187. Le délai du §1 ne vaut que pour déclarer une cassure (1er novembre 2026)
+
+Je lui expliquais qu'un écart négatif restait affiché parce que j'attendais avant de réunir deux
+groupes qui se rejoignent. Sa réponse :
+
+> règle du §1 dit qu'une cassure doit tenir avant d'être déclarée. J'applique la même attente dans
+> l'autre sens : quand deux groupes se rejoignent, j'attends aussi avant de les réunir
+> **> A QUOI CA SERT ?**
+
+À rien : il ne l'avait jamais demandée, je l'avais ajoutée moi-même. Son §1 ne parle que de
+**déclarer** une cassure. Deux coureurs qui se rejoignent sont donc réunis **tout de suite**.
+
+Il a aussi relevé un mot de plus à moi, dans la même réponse : « c'EST QUOI "L'ECRAN" ???? » — c'est
+**la timeline**.

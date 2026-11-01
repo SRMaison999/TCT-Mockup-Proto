@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '191';
+const BUILD = '192';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1002,9 +1002,16 @@ function measured() {
 // ---------- breaks: the threshold held CASS_DELAY_S before it counts ----------
 // A break, and the end of a break, count only once the state has held 0.3 s. The jump when a rider is read
 // at a loop (up to 394 ms measured over a whole race) must neither cut a group nor weld it back.
+// LE DÉLAI NE VAUT QUE POUR DÉCLARER UNE CASSURE, PAS POUR LA LEVER. Son §1 dit qu’une cassure
+// doit tenir avant d’être déclarée. J’avais appliqué la même attente au REGROUPEMENT, de ma propre
+// initiative et sans qu’il l’ait demandée — il l’a relevé le 1er novembre 2026 : « A QUOI CA SERT ? ».
+// Elle ne servait à rien, et elle faisait afficher un écart négatif en en-tête de groupe : à 492,0 s
+// du palier 2, le 70 au mètre 116 était encore montré sous le 3 au mètre 112, avec −0,12 s. Deux
+// coureurs qui se rejoignent sont donc réunis TOUT DE SUITE.
 function cassure(key, over) {
   const c = S.cass[key] || (S.cass[key] = { state: over, pending: over, since: S.t });
   if (over !== c.pending) { c.pending = over; c.since = S.t; }
+  if (!c.pending) { c.state = false; return false; }
   if (c.pending !== c.state && S.t - c.since >= CASS_DELAY_S) c.state = c.pending;
   return c.state;
 }

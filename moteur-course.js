@@ -129,6 +129,9 @@
       let e = cassures.get(cle);
       if (!e) { e = { etat: false, depuis: null }; cassures.set(cle, e); }
       if (depasse === e.etat) { e.depuis = null; return e.etat; }
+      // le délai ne vaut que pour DÉCLARER, pas pour lever : une cassure doit tenir avant d’être
+      // déclarée (§1), mais deux coureurs qui se rejoignent sont réunis tout de suite.
+      if (!depasse) { e.etat = false; e.depuis = null; return false; }
       if (e.depuis == null) e.depuis = maintenant;
       if (maintenant - e.depuis >= R.confirmationS) { e.etat = depasse; e.depuis = null; }
       return e.etat;

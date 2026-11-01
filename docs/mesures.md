@@ -3399,3 +3399,26 @@ négatif, au pire **−0,12 s**, soit un dixième de seconde. C'est le délai de
 une cassure doit tenir 0,3 s avant d'être déclarée, et elle doit tenir 0,3 s de plus avant d'être
 levée. Pendant ces trois dixièmes, deux groupes restent séparés à l'écran alors que les deux
 coureurs se sont déjà rejoints, et l'écart affiché passe légèrement sous zéro.
+
+### Build 192 · plus aucun écart négatif : l'attente au regroupement était la mienne
+
+Son point 187. Le délai de confirmation du §1 ne s'applique plus qu'à la **déclaration** d'une
+cassure. Deux coureurs qui se rejoignent sont réunis tout de suite.
+
+| palier 2, course entière (20 846 images) | build 191 | build 192 |
+|---|---|---|
+| écarts négatifs affichés en en-tête de groupe | 161 | **0** |
+| le pire d'entre eux | −0,12 s | **—** |
+| sauts d'écart de plus de 10 s | 0 | **0** |
+| changements de composition des groupes | 770 | **670** |
+
+Le cas qu'il avait sous les yeux, à **492,0 s** : le 70 au mètre 116 était affiché dans un groupe
+sous le 3 au mètre 112, avec −0,12 s en en-tête. Ils sont maintenant dans le même groupe.
+
+**Les 20 points sont toujours justes**, revalidés coureur par coureur contre la distance réellement
+parcourue : 12 et 52 à +943 m et +941 m, **60 points** chacun ; 7, 61 et 18 à +1 176 m, +1 178 m et
++1 179 m, **80 points** chacun ; 46 et 70 à −759 m et −760 m, **−60 points** chacun. Les neuf autres
+coureurs, rien. **Aucun écart.** Douze constats, aux mêmes instants qu'à la build 189.
+
+**Palier 1, course entière (20 053 images).** Un seul groupe de 16, zéro écart négatif, zéro
+proposition de points, et la composition des groupes change 6 fois sur toute la course.
