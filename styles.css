@@ -159,6 +159,15 @@ body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);ove
 body.dragging .tgap{border-color:var(--acc);background:#161c2a}
 body.dragging .tgap .nz{color:var(--acc)}
 body.dragging .tgap.last{flex:1 1 auto;min-height:70px}
+/* LE GROUPE POSÉ À LA MAIN (l'opérateur, 1er novembre 2026). Son en-tête porte la couleur du groupe, et cette
+   couleur change d'un groupe à l'autre : l'étiquette prend donc le fond sombre de la colonne et garde l'ambre du
+   mot, la couleur qui dit déjà « regardez ça » ailleurs dans la page. */
+.gh .pill.hand{background:#17191c;border-color:#17191c;color:var(--warn)}
+.tgrp.dragging{opacity:.45}
+/* La bande du mode, en haut de la colonne. Elle n'existe que tant qu'un groupe est posé à la main. */
+.tmode{display:flex;flex-direction:column;gap:4px;margin:0 0 5px;padding:5px 6px 6px;border:1px solid var(--warn);border-radius:3px;background:#1d1a12}
+.tmode .k{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
+.tmode .btn{width:100%;justify-content:center}
 .tier{font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 4px 3px}
 .tier:first-child{padding-top:2px}
 .wd{border:1px solid var(--line2);border-radius:4px;background:#141618;padding:3px 4px 4px;margin-top:6px;opacity:.85}

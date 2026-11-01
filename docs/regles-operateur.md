@@ -2176,3 +2176,26 @@ l'écran, une à la fois.
      **Rien n'est codé** : on lui a montré que la place donnée à la main est écrasée à la lecture
      suivante pour un coureur que les boucles voient, et sa réponse du même jour a été « **On
      remet à plus tard** ».
+
+152. **Ce qu'il a constaté le 1er novembre 2026.** Mot pour mot : « **J'ai essayé de créer des
+     nouveaux groupes en sélectionnant des coureurs et ensuite en cliquant sur "Group" de la
+     fenêtre d'actions. J'ai essayé avec des coureurs en tête du peloton et avec des coureurs en
+     queue de peloton. Dans les deux cas le groupe est créé derrière (en-dessous) le peloton dans
+     la timeline** » ; en glissement, « **les groupes ont été répartis correctement, un devant et
+     l'autre derrière le peloton** » et « **je peux créer plusieurs groupes sans problème des deux
+     côtés du peloton** ». Et le manque : « **En revanche je ne peux pas glisser/déplacer un
+     groupe créé. Ce qui est dommage car si un groupe en dépasse un autre, il faut que les
+     groupes soient placés correctement. ET pour cela il est nécessaire ça fonctionne de façon
+     automatique mais également manuelle** ». Ce qui a été mesuré sur ces trois constats est dans
+     `mesures.md` §35 : le dernier est confirmé, les deux premiers décrivent la même chose, le
+     rangement par la position mesurée.
+
+153. **Un groupe posé à la main le dit, et on peut tout rendre à la mesure.** Ses mots, le
+     1er novembre 2026, à la question de savoir jusqu'à quand un groupe reste où il a été posé :
+     « **je pense que si on force pour déplacer un groupe manuellement, il faut une indication
+     pour informer que l'utilisateur a forcé. Et avoir la possibilité de laisser te quel (forcé)
+     mais aussi de retourner au mode automatique (qui replacerait tous les groupes dans l'ordre
+     des transpondeurs)** ».
+
+154. **La planche du 1er novembre 2026 est approuvée.** Elle lui a été proposée avant tout code,
+     dans `maquette-groupe-force.html`, et sa réponse a été : « **La planche me va, code-la.** »

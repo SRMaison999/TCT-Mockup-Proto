@@ -577,4 +577,28 @@ course où **personne** ne porte de transpondeur, et où la timeline est entièr
 est une pièce à dessiner avant d'être codée. Il a répondu « On remet à plus tard » le
 31 octobre 2026.
 
-**On saura que c'est fini quand** : il aura tranché la forme, et pas avant.
+**On saura que c'est fini quand** : il aura tranché la forme, et pas avant. La partie « poser un
+groupe où on veut » est, elle, livrée au §15.
+
+---
+
+## 15. Le groupe posé à la main — **livré, build 161**
+
+Sa règle est au point 153 de `regles-operateur.md`, la planche qu'il a approuvée est
+`maquette-groupe-force.html`, le code est dans `architecture.md` §36 et les mesures dans
+`mesures.md` §35.
+
+**Livré** : un groupe s'attrape par son en-tête et se pose sur une bande « new group » ; il y
+reste ; il porte `by hand` ; la bande du mode compte les groupes posés et `Back to automatic`
+rend toutes les places à la mesure.
+
+**Ce que cela règle du §14** : sa demande du point 151 — créer un groupe **au-dessus** du
+peloton pour un échappé sans transpondeur — se fait maintenant en deux gestes, créer le groupe
+puis le poser. La bande visée, elle, **ne place toujours pas** le groupe à la création : c'est
+la position mesurée qui décide, et le §14 reste ouvert sur ce point précis.
+
+**Ce qui attend sa réponse** : poser le **peloton** à la main le transforme en groupe de
+l'opérateur, qui n'absorbe plus les coureurs rattrapés tout seul (§3). Faut-il que le geste
+refuse le peloton ?
+
+**On saura que c'est fini quand** : il aura répondu à cette question.

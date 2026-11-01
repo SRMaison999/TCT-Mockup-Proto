@@ -1742,3 +1742,34 @@ Sa maquette du 31 octobre 2026 (`regles-operateur.md` §17 points 148 et 149). *
 - L'horloge à **`00:00.0` en marche et `12:26.54` à l'arrêt** : `fmtT` donne aujourd'hui
   `0:00.0`, un seul chiffre de minutes et une décimale toujours.
 - Les boutons renommés **`SET LEADER`**, à la place exacte qu'ils occupent (point 149).
+
+## 36. Le groupe posé à la main (build 161)
+
+Sa règle est au point 153 de `regles-operateur.md`, ses mesures dans `mesures.md` §35.
+
+- **Le geste** — `tlbody` `pointerdown` : si l'appui ne tombe pas sur une `.trow`, il regarde
+  l'en-tête `.gh` et attrape le `.tgrp` entier (`pd.gi`). Un groupe d'incident ne se prend pas.
+  L'étiquette qui suit le curseur porte alors le nom du groupe. Au relâchement, un groupe ne
+  répond qu'à une bande `.tgap` : lâché sur un autre groupe, rien ne se passe.
+- **La pose** — `placeByHand(gi, band)`. Elle ne retient pas des mètres mais les **deux voisins**
+  du groupe au moment du dépôt, `{above, below}`, nommés par `handKey` : `'g' + id` pour un
+  groupe de l'opérateur, `'b' + dossard de tête` pour un bloc mesuré. Un bloc mesuré devient à
+  cette occasion un groupe de l'opérateur (`newGroup(bibs, 'manual')`) — c'est la seule manière
+  qu'il a de porter quoi que ce soit, un bloc mesuré se refaisant à chaque image.
+- **Le rangement** — dans `computeGroups`, juste après `groups.sort(...)` : chaque groupe qui
+  porte `op.hand` est retiré puis réinséré contre celui de ses deux voisins qui est encore là.
+  Si aucun des deux n'y est, la mesure reprend la place **pour cette image-là** et l'étiquette ne
+  tombe pas : le groupe retrouve sa place dès qu'un voisin revient.
+- **Ce qu'on voit** — `by hand`, une `.pill.warn.hand` dans l'en-tête, au fond sombre pour rester
+  lisible sur n'importe quelle couleur de groupe ; l'écart mesuré reste affiché à côté. En haut
+  de la colonne, `.tmode` compte les groupes posés et porte `Back to automatic`
+  (`backToAutomatic`, `data-autogroups`), qui efface les `hand` sans dissoudre les groupes.
+- **Undo** — `placeByHand` et `backToAutomatic` passent par `pushUndo` et par `groupRev`, comme
+  les autres actions de groupe. `hand` est toujours **remplacé**, jamais modifié en place, pour
+  que la copie de surface de `snapshot()` reste juste.
+
+**Ce que la pose coûte, et qu'il faut savoir** : poser un bloc mesuré le transforme en groupe de
+l'opérateur. Un groupe de l'opérateur n'absorbe plus les coureurs rattrapés tout seul — le merge
+automatique du §3 ne s'y applique pas. C'est déjà vrai de tout groupe créé à la main depuis le
+début du prototype ; le geste nouveau le rend seulement plus facile à déclencher, y compris sur
+le peloton. **Rien n'a été inventé pour l'empêcher** : la question lui est posée.

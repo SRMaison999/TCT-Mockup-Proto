@@ -2545,3 +2545,31 @@ la main serait écrasée à la lecture suivante, c'est-à-dire en une fraction d
 
 Vérifié après correction : un coureur lâché sur le **bord haut** de la bande et un coureur lâché
 sur son **bord bas** créent tous les deux le groupe. Les deux bandes restent atteignables.
+
+### Le bouton « Group » et le glissement, mesurés (1er novembre 2026)
+
+Sur ses trois constats du point 153. Mesuré sur la course de référence, course lancée, en
+dispatchant les événements sur les éléments réels de la page.
+
+| Geste | Coureurs pris | Résultat |
+|---|---|---|
+| Bouton `Group` | les deux **premiers** du peloton (15, 4) | groupe créé **devant** : `1-LEADERS`, le peloton passe `2-BUNCH, −4 m` |
+| Bouton `Group` | les deux **derniers** du peloton (12, 52) | groupe créé **derrière** : `2-LAST, −31 m` |
+| Glissement sur une bande | les mêmes | **identique**, dans les deux cas |
+
+**Les deux chemins appellent la même ligne** : `newGroup(bibs, 'manual')`, au bouton comme au
+dépôt. Ce qui décide de la place, dans les deux cas, est la **position mesurée** des coureurs
+pris, jamais la bande visée. Un groupe part donc derrière dès que les coureurs choisis ne sont
+pas les premiers du bloc : leur écart au leader reste plus grand que celui du bloc, qui garde
+son coureur de tête.
+
+**Le troisième constat est confirmé** : un groupe ne s'attrapait pas du tout. Le glissement ne
+démarrait que sur une ligne de coureur ; sur l'en-tête d'un groupe, pas même l'étiquette qui
+suit le curseur n'apparaissait.
+
+### Le groupe posé à la main tient (build 161)
+
+Groupe des deux derniers coureurs (12, 52, **31 m** derrière le leader) posé sur la bande du
+haut. Vérifié : il monte en tête de colonne, porte `by hand`, garde son écart mesuré `−31 m`,
+et **y est encore après 1 min 30 de course** jouée à ×16. `Back to automatic` le remet derrière
+le peloton et la bande du mode disparaît. Deux groupes posés font bien « 2 GROUPS BY HAND ».

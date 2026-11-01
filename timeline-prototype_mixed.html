@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">160</span>
+      <span class="bld" id="buildno">161</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -958,6 +958,10 @@ function cassure(key, over) {
 }
 
 // ---------- groups: measured clusters on the track, operator groups, incident groups ----------
+// Le nom d'un bloc, tel qu'un groupe posé à la main retient ses voisins. Un groupe de l'opérateur porte son
+// identifiant, qui ne change pas tant qu'il existe ; un bloc mesuré n'en a pas, il est donc nommé par le dossard
+// de son coureur de tête.
+const handKey = g => g.op ? 'g' + g.op.id : 'b' + g.bibs[0];
 function computeGroups(M) {
   // The timeline reads the live race from the leader down to the tail of the race, on a continuous distance counted by
   // the loops. A credited lap brings a rider back into the bunch's lap ONLY as far as the loops have measured that lap:
@@ -1064,6 +1068,22 @@ function computeGroups(M) {
     g.pending = g.rows.some(x => x.pending);
   }
   groups.sort((a, b) => (a.incident - b.incident) || (a.head - b.head));   // from the leader down to the tail of the race
+  // UN GROUPE POSÉ À LA MAIN GARDE SA PLACE. L'opérateur, 1er novembre 2026 : « si on force pour déplacer un
+  // groupe manuellement, il faut une indication pour informer que l'utilisateur a forcé. Et avoir la possibilité
+  // de laisser tel quel (forcé) mais aussi de retourner au mode automatique (qui replacerait tous les groupes
+  // dans l'ordre des transpondeurs) ». Le rangement à la main ne retient donc pas des mètres — ce sont justement
+  // eux qu'il corrige — mais les DEUX VOISINS qu'avait le groupe au moment du dépôt : celui de devant et celui
+  // de derrière. On en retient deux parce qu'un seul peut disparaître. Tant qu'aucun des deux n'est là, la main
+  // n'a plus rien à quoi se raccrocher et la mesure reprend la place pour cette image-là ; l'étiquette, elle,
+  // ne tombe pas, et le groupe retrouve sa place dès que l'un des voisins revient.
+  for (const g of groups.filter(x => x.op && x.op.hand)) {
+    const i = groups.indexOf(g); groups.splice(i, 1);
+    const h = g.op.hand;
+    let j = h.below ? groups.findIndex(x => handKey(x) === h.below) : -1;
+    if (j < 0 && !h.below) j = groups.length;                                        // posé tout en bas
+    if (j < 0 && h.above) { const k = groups.findIndex(x => handKey(x) === h.above); if (k >= 0) j = k + 1; }
+    groups.splice(j < 0 ? i : j, 0, g);
+  }
   const bunch = groups.filter(g => !g.incident && g.cluster === bunchCluster).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null)
     || groups.filter(g => !g.incident).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null);
   // --- not eligible, by groups (the operator rule of 25 October 2026) ---
@@ -1461,6 +1481,30 @@ function backInRace(bibs) {
   dropProposals(p => p.kind === 'back' && p.bibs.some(b => bibs.includes(b)));
   logEvent('INCIDENT', bibList(bibs) + ' back in the race · Lap ' + raceLap() + ' · operator', true, groupRev(before, bibList(bibs) + ' back in the incident'));
 }
+// On attrape un groupe par son en-tête et on le lâche sur une bande « new group » : il est rangé là, et il y
+// reste (l'opérateur, 1er novembre 2026). Un groupe mesuré devient à cette occasion un groupe de l'opérateur :
+// c'est la seule manière qu'il a de porter quoi que ce soit, puisqu'un bloc mesuré se refait à chaque image.
+function placeByHand(gi, band) {
+  const groups = groupsNow(), g = groups[gi];
+  if (!g || g.incident) return;
+  const arr = groups.slice(); arr.splice(gi, 1);
+  const i = gi < band ? band - 1 : band;
+  const above = arr[i - 1] || null, below = arr[i] || null;
+  const before = groupsCopy();
+  let op = g.op && g.op.type === 'manual' ? g.op : null;
+  if (!op) { newGroup(g.bibs, 'manual'); op = S.groups[S.groups.length - 1]; }
+  op.hand = { above: above && handKey(above), below: below && handKey(below) };
+  logEvent('GROUP', 'Placed by hand: ' + bibList(op.bibs), true, groupRev(before, 'Groups as before placing ' + bibList(op.bibs) + ' by hand'));
+  S.selection.clear();
+}
+// « Back to automatic » : tout le monde retourne dans l'ordre des transpondeurs. Les groupes restent des groupes,
+// c'est leur place qui est rendue à la mesure — il n'a pas demandé qu'on les dissolve.
+function backToAutomatic() {
+  const before = groupsCopy();
+  let n = 0; for (const g of S.groups) if (g.hand) { delete g.hand; n++; }
+  if (!n) return;
+  logEvent('GROUP', plural(n, 'group') + ' back to the transponder order', true, groupRev(before, 'Groups as placed by hand'));
+}
 function removeFromGroups(bibs) { for (const g of S.groups) g.bibs = g.bibs.filter(b => !bibs.includes(b)); S.groups = S.groups.filter(g => g.bibs.length); }
 function dissolve(g) { const before = groupsCopy(); S.groups = S.groups.filter(x => x !== g); logEvent(g.type === 'manual' ? 'GROUP' : 'INCIDENT', (g.type === 'manual' ? 'Group dissolved: ' : 'Incident closed: ') + bibList(g.bibs), true, groupRev(before, (g.type === 'manual' ? 'Group of ' : 'Incident of ') + bibList(g.bibs) + ' restored')); }
 function mergeUp(g, prev) { if (!prev || prev.incident) return; const before = groupsCopy(); const bibs = [...prev.bibs, ...g.bibs].sort(byBib); removeFromGroups(bibs); S.groups.push({ id: S.nextId++, bibs, type: 'manual', lap: raceLap(), t: S.t, open: false }); logEvent('GROUP', 'Merged: ' + bibList(bibs), true, groupRev(before, 'Groups as before merging ' + bibList(bibs))); }
@@ -1623,6 +1667,9 @@ function renderTimeline(G) {
   lastG = G; shownProps = new Set();
   const sel = S.selection, lap = dispLap(), sprintN = nextSprintNum(lap);
   let html = '', props = '';
+  // Elle n'existe que tant qu'au moins un groupe est posé à la main, et elle dit combien il y en a.
+  const nHand = S.groups.filter(g => g.hand).length;
+  if (nHand) html += `<div class="tmode"><span class="k">${plural(nHand, 'group')} by hand</span><button class="btn xs" data-autogroups="1" title="Put every group back in the transponder order">Back to automatic</button></div>`;
   G.groups.forEach((g, gi) => {
     const prev = G.groups[gi - 1];
     // La bande qui sépare deux blocs ne porte plus l'écart « 2 m · 0,1 s » : l'opérateur l'a marqué en rouge sur sa
@@ -1665,6 +1712,7 @@ function renderTimeline(G) {
       <div class="gh" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')} · click to select the whole group">
         <span class="ghl"><span class="gn">${name}</span>${g.op ? '<button class="btn xs quiet gx" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span>
         <span class="ghl"><span class="gi">${info}</span>${g.incident ? '' : '<span class="ggap">' + (isLead ? 'leader' : (g.head < 0 ? '+' + (-g.head).toFixed(0) : '−' + g.head.toFixed(0)) + ' m') + '</span>'}</span>
+        ${g.op && g.op.hand ? '<span class="pill warn hand">by hand</span>' : ''}
         ${allOut ? '<span class="pill warn">out of sprint ' + sprintN + '</span>' : someOut ? '<span class="pill warn">part out of sprint ' + sprintN + '</span>' : ''}</div>`;
     for (const x of g.rows) {
     // La ligne d'un coureur ne porte que son dossard, son drapeau et son code pays. L'opérateur, 29 octobre 2026,
@@ -2092,8 +2140,9 @@ function groupsNow() { const M = measured(); return computeGroups(M).groups; }
 
 // ---------- events ----------
 function onStripClick(e) {
-  const t = e.target.closest('[data-dissolve],[data-selgroup],[data-pact],[data-reinstate],[data-rlap],[data-lead],[data-ledger],[data-ladd],[data-lsub],[data-color],.trow'); if (!t) return;
+  const t = e.target.closest('[data-dissolve],[data-selgroup],[data-pact],[data-reinstate],[data-rlap],[data-lead],[data-ledger],[data-ladd],[data-lsub],[data-color],[data-autogroups],.trow'); if (!t) return;
   if (t.dataset.dissolve) { const g = S.groups.find(x => x.id === +t.dataset.dissolve); if (g) { pushUndo((g.type === 'manual' ? 'dissolve group ' : 'close incident ') + bibList(g.bibs)); dissolve(g); } }
+  else if (t.dataset.autogroups) { pushUndo('back to automatic'); backToAutomatic(); }
   else if (t.dataset.selgroup != null) selectGroup(+t.dataset.selgroup);
   else if (t.dataset.pact != null) { const p = S.proposals.find(x => x.id === +t.closest('[data-pid]').dataset.pid); if (p) { pushUndo((liveActions(p)[+t.dataset.pact].label || t.innerText) + ' · ' + bibList(p.bibs)); liveActions(p)[+t.dataset.pact].run(p); if (p.kind !== 'lap') dropProposals(x => x === p && !S.snoozed[x.key]); else if (S.dismissed[p.key]) dropProposals(x => x === p); } }
   else if (t.dataset.reinstate) { const bib = +t.dataset.reinstate; pushUndo('reinstate BIB ' + bib); const e = S.log.find(x => x.k === 'WITHDRAW' && !x.reversed && x.rev && x.m.startsWith('BIB ' + bib + ' ')); if (e) { e.reversed = true; e.rev(); } else reinstate(bib); }
@@ -2168,16 +2217,26 @@ tlbody.addEventListener('input', e => { const i = e.target.closest('[data-colorp
 tlbody.addEventListener('pointerdown', e => {
   if (e.button !== 0) return;
   suppressClick = false;
-  const row = e.target.closest('.trow'); if (!row || row.dataset.wd || e.target.closest('button')) return;
-  pd = { bib: +row.dataset.bib, x: e.clientX, y: e.clientY, active: false, row };
+  if (e.target.closest('button')) return;
+  const row = e.target.closest('.trow');
+  if (row) { if (row.dataset.wd) return; pd = { bib: +row.dataset.bib, x: e.clientX, y: e.clientY, active: false, row }; return; }
+  // On attrape AUSSI un groupe entier, par son en-tête — là où on clique déjà pour le sélectionner
+  // (l'opérateur, 1er novembre 2026). Un groupe d'incident ne se prend pas : sa place ne vient pas de la
+  // mesure, elle est au bas de la colonne, et il n'a rien demandé là-dessus.
+  const gh = e.target.closest('.gh'), box = gh && gh.closest('.tgrp');
+  if (box && !box.classList.contains('incident')) pd = { gi: +box.dataset.gi, x: e.clientX, y: e.clientY, active: false, row: box };
 });
 document.addEventListener('pointermove', e => {
   if (!pd) return;
   if (!pd.active) {
     if (Math.hypot(e.clientX - pd.x, e.clientY - pd.y) < 5) return;
-    pd.active = true; drag = S.selection.has(pd.bib) ? [...S.selection] : [pd.bib];
+    pd.active = true;
+    drag = pd.gi != null ? [...pd.row.querySelectorAll('.trow')].map(r => +r.dataset.bib)
+      : S.selection.has(pd.bib) ? [...S.selection] : [pd.bib];
     document.body.classList.add('dragging'); pd.row.classList.add('dragging');
-    pd.ghost = document.createElement('div'); pd.ghost.className = 'dragghost'; pd.ghost.textContent = bibList(drag.sort(byBib)); document.body.appendChild(pd.ghost);
+    pd.ghost = document.createElement('div'); pd.ghost.className = 'dragghost';
+    pd.ghost.textContent = pd.gi != null ? pd.row.querySelector('.gn').textContent : bibList(drag.sort(byBib));
+    document.body.appendChild(pd.ghost);
   }
   pd.ghost.style.left = (e.clientX + 14) + 'px'; pd.ghost.style.top = (e.clientY + 10) + 'px';
   const z = zoneAt(e.clientX, e.clientY);
@@ -2187,7 +2246,11 @@ document.addEventListener('pointerup', e => {
   if (!pd) return;
   if (pd.active) {
     const z = zoneAt(e.clientX, e.clientY);
-    if (z) {
+    if (z && pd.gi != null) {
+      // Un groupe ne se lâche que sur une bande : c'est elle qui dit où il va. Lâché sur un autre groupe, il ne
+      // se passe rien — il n'a pas demandé qu'on fusionne deux groupes au glissement.
+      if (z.dataset.newgroup != null) { pushUndo('place by hand'); placeByHand(pd.gi, +z.dataset.newgroup); }
+    } else if (z) {
       const groups = groupsNow();
       pushUndo('move ' + bibList(drag));
       if (z.dataset.newgroup != null) newGroup(drag, 'manual');
@@ -3039,7 +3102,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#ovtitle').textContent = "Men's Points Race - " + plural(LAPS, 'lap') + ' - ' + plural(NSPRINTS, 'sprint') + ' - ' + TRACK + 'm';
-  $('#buildno').textContent = '160';
+  $('#buildno').textContent = '161';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
