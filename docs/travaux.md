@@ -963,3 +963,9 @@ mesure chaque coureur contre celui qui est juste au-dessus de lui dans la timeli
 coureur du dessus change, il gardait l'état de l'ancienne paire. Le souvenir est maintenant jeté
 dès que le coureur du dessus change. 38,9 secondes tombent à 22,2, le plus gros écart concerné de
 13,99 s à 2,57 s.
+
+### Poste 30 · clos à la build 199 — l'éligibilité lisait la piste
+
+L'opérateur a vu le 15 et le 46 porter `NO PTS` alors qu'ils étaient dans le même groupe, et il a
+tranché (point 194) : l'éligibilité se juge sur les boucles, comme la timeline. Fait, mesuré sur
+les deux paliers, `docs/mesures.md` §54.

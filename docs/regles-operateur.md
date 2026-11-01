@@ -2700,3 +2700,25 @@ Trois builds passées à soigner les effets d'un délai que j'avais ajouté moi-
 suppression mettait toutes les mesures à zéro. Quand quelque chose cloche, la première question est
 donc : **ce mécanisme est-il de lui ou de moi ?** S'il n'est pas dans ce document, il est de moi —
 on essaie de le retirer, et on mesure, avant de le rafistoler.
+
+### 194 · L'éligibilité se juge sur les boucles, pas sur la piste · 1er novembre 2026
+
+> « mais bon sang arrête une fois pour toute de calculer des vérités sur la piste, ça fait combien
+> de fois que je te le demande ?? »
+
+Et à la question « l'éligibilité doit-elle se juger sur les boucles, comme la timeline — et non
+plus sur les positions de la piste ? » :
+
+> « OUI »
+
+Ce qui a déclenché la règle, dans ses mots, au tour précédent :
+
+> « si le 15 est au mètre 116, et le 46 est au mètre 116 lui aussi > du coup ils sont devraient
+> être dans le même groupe, non ? Pourquoi le 115 est dans le groupe 3 et le 46 dans le groupe 2 ?
+> Et comme ils devraient être dans le même groupe, la règle « Tout membre d'un groupe autre que le
+> groupe 2 se trouvant plus proche de la ligne d'arrivée du prochain sprint que les membres du
+> groupe 2 eux-mêmes est inéligible » ne s'applique pas !! »
+
+Et, dans le même message :
+
+> « t'as absolument aucune mémoire ?? Ne calcule pas en mètres !!!! »

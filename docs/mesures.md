@@ -3607,3 +3607,38 @@ secondes : c'est le prix de la justesse à chaque instant, et c'est ce que le d�
 position d'un coureur au moment où il franchit une boucle. Son point 191 — la timeline ne se
 recalcule qu'aux passages — l'avait déjà rendu inutile ; je ne l'avais pas vu, et j'ai passé trois
 corrections à soigner ses effets au lieu de le retirer.
+
+## §54 · Build 199 — l'éligibilité jugée sur les boucles
+
+Son point 194. L'éligibilité ne lit plus la position interpolée de l'ovale : elle lit la **place**
+de chaque coureur dans la timeline, celle qui vient des boucles, ramenée sur le premier de la
+timeline puis repliée sur un tour. La ligne du prochain sprint est sur la piste, donc la question
+reste modulo un tour ; la mesure, elle, est celle des boucles — la même qui range la timeline et
+qui coupe les groupes. Les deux ne peuvent plus se contredire.
+
+**Ce que la build 198 montrait**, palier 2 à 472,0 s : le 70, seul dans le groupe 2, était passé
+sur les boucles 1,1 s avant le 15 ; le 15 et le 46, tous deux dans le groupe 3, portaient
+`NO PTS`. Sa règle ne compare jamais un coureur à son propre groupe.
+
+**Un piège rencontré en route.** La place se compte sur l'ancre, et l'ancre n'est pas forcément le
+premier de la timeline : celui qui est devant elle a une place négative. Replier sans ramener
+d'abord sur le premier donnait l'inverse de la règle — au palier 2, les **onze coureurs du
+peloton** portaient `NO PTS` pendant 398 s à partir de 222,0 s, pendant que l'échappée du 12 et du
+52 roulait devant eux.
+
+**Palier 2** (1042,3 s), vérifié en cassures :
+
+| mesure | build 199 |
+|---|---|
+| ordre de la timeline inversé | 0 s |
+| cassure du §1 laissée dans un groupe | 0 s |
+| composition affichée ≠ composition du moteur | 2,9 s (avant la première détection) |
+| écarts négatifs affichés | 0 |
+| constats ±20 | 12, inchangés |
+| coureurs portant `NO PTS` | le **46** et le **70**, et eux seuls |
+
+Le 46 et le 70 sont les deux lâchés : ils portent `NO PTS` 197,3 s à partir de 284,3 s, puis
+140,0 s à partir de 326,1 s, à mesure que le peloton les reprend. Personne d'autre n'en porte.
+
+**Palier 1** (1002,6 s) : un seul groupe de seize du départ à l'arrivée, 0 de tout, **personne
+d'inéligible**.

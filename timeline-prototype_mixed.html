@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '198';
+const BUILD = '199';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1380,12 +1380,32 @@ function computeGroupsVraiment(M) {
   // "always take the front group as the closest one". After group n, only the members of group n+1 can be
   // eligible: any member of a group further down who is closer to the line than they are is not eligible.
   const numbered = groups.filter(g => !g.incident);
-  const pisteOf = b => { const m = M.get(b); return m && m.pos != null ? ((m.pos % TRACK) + TRACK) % TRACK : null; };
-  const pisteLead = pisteOf(leaderBib);
+  // JUGÉE SUR LES BOUCLES, JAMAIS SUR LA PISTE. L'opérateur, 1er novembre 2026 (point 194) : « mais bon
+  // sang arrête une fois pour toute de calculer des vérités sur la piste, ça fait combien de fois que je
+  // te le demande ?? » — et à la question « l'éligibilité doit-elle se juger sur les boucles, comme la
+  // timeline — et non plus sur les positions de la piste ? » : « OUI ».
+  //
+  // Ce qui reste à parcourir jusqu'à la ligne du prochain sprint, c'est la place du coureur dans la
+  // timeline repliée sur un tour. La ligne est sur la piste, donc la question est forcément modulo un
+  // tour ; mais la MESURE, elle, est celle des boucles, la même qui range la timeline et qui coupe les
+  // groupes. Les deux ne peuvent plus se contredire.
+  //
+  // Mesuré à la build 198, au palier 2 à 472,0 s : le 70, seul dans le groupe 2, était passé sur les
+  // boucles 1,1 s avant le 15 ; sur la piste le 15 était devant lui. Le 15 et le 46, tous deux dans le
+  // groupe 3, portaient « NO PTS » alors que sa règle ne compare jamais un coureur à son propre groupe.
+  // La place se compte sur L'ANCRE, qui n'est pas forcément le premier de la timeline : celui qui
+  // est devant elle a une place NÉGATIVE. On ramène donc tout sur le PREMIER de la timeline avant de
+  // replier, sans quoi l'échappée paraît la plus loin de la ligne et le peloton le plus proche.
+  // Mesuré à la build 199 sans ce report : au palier 2, les onze coureurs du peloton portaient
+  // « NO PTS » pendant 398 s à partir de 222,0 s, alors que l'échappée du 12 et du 52 était devant.
+  const tourTete = (MC && MC.tour()) || null;
+  const places = numbered.flatMap(g => g.rows.map(x => mcRetard.get(x.r.bib))).filter(v => v != null);
+  const placeTete = places.length ? Math.min(...places) : null;
   numbered.forEach((g, i) => {
     g.no = i + 1;
-    for (const x of g.rows) { const p = pisteOf(x.r.bib);
-      x.dS = (g.no === 1 || p == null || pisteLead == null) ? 0 : (((pisteLead - p) % TRACK) + TRACK) % TRACK; }
+    for (const x of g.rows) { const pl = mcRetard.get(x.r.bib);
+      x.dS = (g.no === 1 || pl == null || placeTete == null || !tourTete) ? 0
+        : (((pl - placeTete) % tourTete) + tourTete) % tourTete; }
   });
   S.inelig = new Set();                                  // group 1 and group 2 are always eligible
   for (let i = 2; i < numbered.length; i++) {

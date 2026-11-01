@@ -418,6 +418,9 @@
 
     return { detection, designer, tete: () => { const c = tete(); return c ? c.bib : null; },
              etat, groupes, chaine, ordre: () => chaine().map(x => x.c.bib),
+             // LA DURÉE D'UN TOUR DE LA TÊTE, en secondes. L'écran en a besoin pour juger
+             // l'éligibilité sur les boucles et non sur la piste — son point 194.
+             tour: () => { const c = tete(); return c ? tourS(c) : null; },
              peloton: () => { const g = peloton(); return g ? g.coureurs.slice() : []; },
              pointsVus: () => points, reglage: R, _coureurs: coureurs };
   }

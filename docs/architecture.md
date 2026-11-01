@@ -2260,3 +2260,16 @@ les **blocs** qu'il dessine sont ceux du moteur, puisqu'ils viennent de `G.group
 
 Les ±20 que le moteur constate ne sont **pas** branchés : les propositions de l'écran restent
 celles de l'ancien moteur. Ce n'est pas ce qui a été demandé.
+
+## §53 · L'éligibilité se lit dans la timeline
+
+`computeGroupsVraiment`, juste après le calcul des groupes. `x.dS` — ce qui reste à parcourir
+jusqu'à la ligne du prochain sprint — ne vient plus de `M.get(bib).pos`, la position interpolée que
+dessine l'ovale, mais de `mcRetard`, la **place** que le moteur de course tire des boucles. On
+ramène les places sur le premier de la timeline (`placeTete`, le minimum : l'ancre peut avoir
+quelqu'un devant elle, donc des places négatives), puis on replie sur `MC.tour()`, la durée d'un
+tour de la tête, que le moteur expose pour cela.
+
+La règle du §6 n'a pas changé : après les membres du groupe *n*, seuls ceux du groupe *n+1* peuvent
+être éligibles ; tout membre d'un groupe plus bas qui est plus proche de la ligne qu'eux est
+inéligible. Seule la mesure a changé. Son point 194.
