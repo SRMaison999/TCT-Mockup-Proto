@@ -646,3 +646,7 @@ leader qu'il désigne **monte son groupe en première position**, posé à la ma
 étiquette, et **poser un groupe en première position désigne son premier coureur** comme leader
 (point 158). La reprise automatique sur la piste, elle, ne pose aucun groupe : ce n'est pas sa
 décision.
+
+**Livré le 1er novembre 2026, build 162** : le poste §16 est clos. Le code est dans
+`architecture.md` §37, les mesures dans `mesures.md` §38. Reste noté, sans décision demandée :
+`Back to automatic` rend les places à la mesure et **ne reprend pas** le leader désigné.

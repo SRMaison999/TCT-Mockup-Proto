@@ -2602,3 +2602,28 @@ en-tête, suit l'ordre de la colonne. Et c'est sur ce numéro qu'est calculée l
 (`numbered` dans `computeGroups`, la règle du §6) : le groupe 1 est par construction « le plus
 proche de la ligne », et c'est contre le groupe n que se juge le groupe n+1. Un groupe posé en
 tête devient donc le groupe 1 pour les points, sans être le premier détecté.
+
+### Le leader désigné et la première position, les deux sens (build 162)
+
+Course de référence, départ propre, un bloc de queue formé avec 12 et 52, **31 m** derrière.
+
+| Geste | Ce qui se passe |
+|---|---|
+| `Leader` sur le 52, qui est dans le bloc de queue | son bloc monte en première position, porte `by hand`, et le peloton passe à `+31 m` |
+| Le bloc de queue glissé sur la bande du haut | le champ `LEADER` passe de `15` à `12`, le coureur de tête du bloc |
+
+**Et les tours à faire suivent.** Avec le 12 désigné de cette manière, joué à ×16 :
+
+| Temps de course | `LAP` | `TO GO` | Leader |
+|---|---|---|---|
+| 1:40 environ | 5 | 35 | 12 |
+| 3:40 environ | 13 | 27 | 12 |
+| 5:35 | 20 | 20 | 12 |
+
+**Quinze tours de course, et rien n'a bougé** : le groupe est resté premier avec son étiquette,
+le 12 est resté leader, et les tours restants se sont décrémentés sur lui. La reprise
+automatique ne s'est pas déclenchée — elle demande qu'un coureur **passe** le leader, et ceux
+qui sont devant le restent.
+
+**Ce que `Back to automatic` ne fait pas** : il rend les places à la mesure, il **ne reprend pas
+le leader désigné**. Rien n'a été inventé là-dessus, il ne l'a pas demandé.

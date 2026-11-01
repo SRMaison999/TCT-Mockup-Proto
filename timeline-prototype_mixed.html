@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">161</span>
+      <span class="bld" id="buildno">162</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -1434,6 +1434,7 @@ function designateLeader(bib, how) {
   const prev = S.leader && { ...S.leader }, byOperator = !/passed/.test(how);
   S.leader = { bib, how, lap: dispLap() };
   logEvent('LEADER', 'BIB ' + bib + ' is the race leader · ' + how, byOperator, byOperator ? () => { S.leader = prev; logEvent('LEADER', prev ? 'BIB ' + prev.bib + ' is the race leader again · reversal' : 'Race leader taken from the track · reversal', true); } : null);
+  if (byOperator && !leadLinking) leadFirst(bib);
 }
 function dispLap() {   // the lap counter is counted on the race leader
   const r = S.leader && S.riders.find(x => x.bib === S.leader.bib);
@@ -1485,7 +1486,7 @@ function backInRace(bibs) {
 // reste (l'opérateur, 1er novembre 2026). Un groupe mesuré devient à cette occasion un groupe de l'opérateur :
 // c'est la seule manière qu'il a de porter quoi que ce soit, puisqu'un bloc mesuré se refait à chaque image.
 function placeByHand(gi, band) {
-  const groups = groupsNow(), g = groups[gi];
+  const groups = lastG && lastG.groups, g = groups && groups[gi];
   if (!g || g.incident) return;
   const arr = groups.slice(); arr.splice(gi, 1);
   const i = gi < band ? band - 1 : band;
@@ -1495,7 +1496,27 @@ function placeByHand(gi, band) {
   if (!op) { newGroup(g.bibs, 'manual'); op = S.groups[S.groups.length - 1]; }
   op.hand = { above: above && handKey(above), below: below && handKey(below) };
   logEvent('GROUP', 'Placed by hand: ' + bibList(op.bibs), true, groupRev(before, 'Groups as before placing ' + bibList(op.bibs) + ' by hand'));
+  // Posé en PREMIÈRE position, son coureur de tête devient le leader de la course : c'est la même décision
+  // (l'opérateur, 1er novembre 2026, point 158 — « c'est exactement la même chose »).
+  if (!above && !leadLinking) { leadLinking = true; try { designateLeader(g.bibs[0], 'set by operator'); } finally { leadLinking = false; } }
   S.selection.clear();
+}
+/* DÉSIGNER UN LEADER, C'EST POSER SON GROUPE EN PREMIÈRE POSITION. L'opérateur, 1er novembre 2026 :
+   « si l'opérateur force un nouveau groupe en tête en utilisant un des boutons "SET LEADER", à mes yeux
+   c'est exactement la même chose que de forcer ce groupe en première position sur la timeline. C'est tout
+   l'intérêt de ces boutons "SET LEADERS" ». Les deux sens passent par le même mécanisme, celui qu'il a
+   approuvé sur planche : le groupe est posé à la main, il porte son étiquette, et « Back to automatic » le
+   rend à la mesure. Seule SA décision pose un groupe — la reprise du leader par un coureur qui le dépasse
+   sur la piste ne pose rien, « l'appli doit continuer à refléter ce qu'elle voit » (point 159).
+   Le drapeau empêche les deux sens de se rappeler l'un l'autre : le coureur qu'il désigne n'est pas
+   forcément le coureur de tête de son groupe, et le second appel lui prendrait son choix. */
+let leadLinking = false;
+function leadFirst(bib) {
+  const groups = lastG && lastG.groups; if (!groups) return;
+  const gi = groups.findIndex(g => !g.incident && g.bibs.includes(bib));
+  if (gi <= 0) return;                      // introuvable, ou déjà en première position : rien à forcer
+  leadLinking = true;
+  try { placeByHand(gi, 0); } finally { leadLinking = false; }
 }
 // « Back to automatic » : tout le monde retourne dans l'ordre des transpondeurs. Les groupes restent des groupes,
 // c'est leur place qui est rendue à la mesure — il n'a pas demandé qu'on les dissolve.
@@ -3102,7 +3123,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#ovtitle').textContent = "Men's Points Race - " + plural(LAPS, 'lap') + ' - ' + plural(NSPRINTS, 'sprint') + ' - ' + TRACK + 'm';
-  $('#buildno').textContent = '161';
+  $('#buildno').textContent = '162';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

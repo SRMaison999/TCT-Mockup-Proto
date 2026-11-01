@@ -1773,3 +1773,28 @@ l'opérateur. Un groupe de l'opérateur n'absorbe plus les coureurs rattrapés t
 automatique du §3 ne s'y applique pas. C'est déjà vrai de tout groupe créé à la main depuis le
 début du prototype ; le geste nouveau le rend seulement plus facile à déclencher, y compris sur
 le peloton. **Rien n'a été inventé pour l'empêcher** : la question lui est posée.
+
+## 37. Le leader et la première position, une seule décision (build 162)
+
+Sa règle est au point 158 de `regles-operateur.md`, son accord au point 160, les mesures dans
+`mesures.md` §38. Les deux sens passent par le mécanisme du §36, celui qu'il a approuvé : le
+groupe est **posé à la main**, il porte son étiquette, et `Back to automatic` le rend à la
+mesure.
+
+- **Du leader vers la timeline** — `designateLeader` appelle `leadFirst(bib)` quand, et
+  seulement quand, `byOperator` est vrai : les trois boutons de la piste et le bouton `Leader`
+  d'un coureur sélectionné. `leadFirst` cherche le bloc du coureur dans `lastG.groups` et, s'il
+  n'est pas déjà en tête, appelle `placeByHand(gi, 0)`.
+- **De la timeline vers le leader** — `placeByHand` désigne `g.bibs[0]`, le coureur de tête du
+  bloc, dès que le bloc est posé en **première** position (`above` nul).
+- **La reprise automatique ne pose rien** : `byOperator` vaut `!/passed/.test(how)`, et la
+  reprise s'annonce « passed BIB n on the track ». C'est sa règle du point 159 — « l'appli doit
+  continuer à refléter ce qu'elle voit ».
+- **Le drapeau `leadLinking`** empêche les deux sens de se rappeler l'un l'autre. Il est
+  nécessaire, pas défensif : le coureur qu'il désigne n'est pas forcément le coureur de tête de
+  son groupe, et le second appel lui reprendrait son choix pour le donner à un autre.
+- **`placeByHand` lit `lastG.groups`**, l'ordre **affiché**, celui auquel renvoient les
+  `data-gi` et `data-newgroup` des bandes — et non `groupsNow()`, qui recalculerait tout et
+  ferait avancer deux fois le détecteur de dépassement (H11).
+
+**Les tours à faire suivent sans rien ajouter** : `dispLap()` comptait déjà sur `S.leader`.

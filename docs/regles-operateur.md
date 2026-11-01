@@ -2249,3 +2249,7 @@ l'écran, une à la fois.
      continuer à refléter ce qu'elle voit** ».
      Une intervention de l'opérateur **remet de l'ordre à un instant donné** ; elle ne met pas
      la course en pause. Rien à coder : c'est le comportement en place.
+
+160. **Le lien est approuvé.** Sa réponse du 1er novembre 2026 à la forme proposée — le leader
+     qu'il désigne monte son groupe en première position, et poser un groupe en première
+     position désigne son premier coureur comme leader : « **Oui, code-le.** »
