@@ -2312,3 +2312,15 @@ l'écran, une à la fois.
      dire que le groupe 3 doit être pointé "à x mètres du groupe 2"** ». L'écart se mesure donc
      de proche en proche, chaque bloc depuis celui qui le précède, et non depuis le groupe 1
      pour tout le monde.
+
+166. **Les questions se posent avec les coureurs et les nombres, jamais en abstrait.** Ses mots,
+     le 1er novembre 2026, devant la question « L'écart affiché doit-il devenir celui des deux
+     coureurs qui se font face, même sans forçage ? » : « **mais j'ai l'impression que tu ne
+     comprends strictement rien !! Maintenant il va falloir que tu sois beaucoup plus précis,
+     dans tes explications et dans tes questions ! Ta question [...] posée comme ça elle n'a
+     AUCUN SENS, incompréhensible !** » Et sa demande de cadrage : « **dans ton idée qu'est-ce
+     que tu es en train de faire ? Tu confirme que tu forces les 12 et 52 comme étant les
+     leaders ? ou autre chose ?** »
+     Une question se pose donc sur **un nombre précis, à un endroit précis de l'écran, avec les
+     dossards concernés** — « le bloc du 12 et du 52, sous le peloton, doit-il afficher 2 m ou
+     31 m ? » — et jamais sur une règle énoncée en général.
