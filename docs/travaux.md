@@ -696,3 +696,8 @@ tranchera après l'écart.
 
 **On saura que c'est fini quand** : un groupe posé en tête n'affichera plus aucun `+`, et le
 groupe suivant portera sa distance en arrière, autour de la piste.
+
+**Livré le 1er novembre 2026, build 164** : le poste §18 est clos pour l'écart. Le code est au
+§39 de `architecture.md`, les mesures dans `mesures.md` §41. Reste ouvert, et à lui :
+l'éligibilité suit maintenant le groupe 1 forcé, mais l'ordre **jugé** d'un sprint vient
+toujours des boucles (point 157) — les deux peuvent donc se contredire.

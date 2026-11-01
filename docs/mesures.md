@@ -2674,3 +2674,19 @@ qu'un coureur dépasse réellement le leader désigné, et c'est ce qu'il a dema
 
 **Ce qui se voit alors, et qu'il n'a pas tranché** : le bloc posé en tête garde son nom
 `1-LEADERS` pendant que la pastille `leader` est descendue sur le peloton.
+
+### L'écart de proche en proche, et les 219 m (build 164)
+
+Course de référence, jouée jusqu'à 1:36.0, tour 6. Trois états successifs, lus sur les en-têtes.
+
+| | Blocs et écarts |
+|---|---|
+| Avant | `1-BUNCH · leader` (16 coureurs) |
+| Le 12 et le 52 groupés | `1-BUNCH · leader` · `2-LAST · 31 m` |
+| Ce bloc posé en tête | `1-LEADERS · leader · manual` · `2-BUNCH · **219 m**` |
+
+**219 m, à l'unité** — son chiffre, 250 − 31.
+
+**La chaîne**, vérifiée en formant un troisième bloc avec le 61 COL, qui roule 26 m derrière le
+15 IRL : `1-LEADERS · leader` · `2-BUNCH · 219 m` · `3-LAST · 26 m`. Le troisième se compte bien
+depuis le deuxième, et non depuis le premier — sinon il aurait affiché 245 m.

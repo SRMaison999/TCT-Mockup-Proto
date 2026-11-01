@@ -2307,3 +2307,8 @@ l'écran, une à la fois.
      12 et le 52 sont en tête, c'est dire que le peloton, qui est 31 m devant eux sur le
      revêtement, est 219 m **derrière** eux dans la course. Le signe `+` n'a donc pas sa place
      dans la timeline : aucun groupe n'est devant le groupe 1.
+
+165. **La phrase coupée, complétée par lui.** Ses mots, le 1er novembre 2026 : « **je voulais
+     dire que le groupe 3 doit être pointé "à x mètres du groupe 2"** ». L'écart se mesure donc
+     de proche en proche, chaque bloc depuis celui qui le précède, et non depuis le groupe 1
+     pour tout le monde.

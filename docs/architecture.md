@@ -1820,3 +1820,22 @@ Son croquis du 1er novembre 2026 et ses mots sont aux points 148, 149 et 161 de
 **Et le mot de l'étiquette change partout** : `by hand` devient `manual`, la bande du haut dit
 `1 manual group` / `2 manual groups`, et le journal écrit `Placed manually`. Les noms internes
 (`placeByHand`, `op.hand`, `.pill.hand`) ne changent pas : ils ne se lisent pas à l'écran.
+
+## 39. L'écart d'un groupe se mesure depuis le groupe précédent (build 164)
+
+Sa règle est aux points 164 et 165 de `regles-operateur.md`, les mesures dans `mesures.md` §41.
+
+- **Où** — dans `computeGroups`, juste après le rangement à la main, une passe sur les blocs non
+  incident dans l'ordre affiché. Le premier reçoit `g.gap = null`, les autres
+  `g.gap = g.head − précédent.head`, de tête à tête.
+- **Aucun écart n'est négatif.** Quand l'ordre forcé contredit la mesure, la soustraction sort
+  négative ; on lui ajoute alors autant de tours qu'il faut : `d += TRACK * Math.ceil(-d / TRACK)`.
+  31 m devant devient 219 m derrière, qui est son chiffre.
+- **L'addition se fait sur la distance de course**, pas sur la position sur la piste : un bloc
+  qui a réellement un tour de retard garde ses 250 m et quelques au lieu de retomber à zéro.
+- **L'en-tête** affiche `leader` pour le premier bloc et `219 m` pour les suivants. Le signe
+  `−`, qui disait « en arrière », est tombé avec le `+` : plus rien n'est devant, le signe ne
+  distinguait plus rien.
+
+**Ce que cela ne touche pas** : `x.dS`, qui sert à l'éligibilité, mesurait déjà en arrière du
+groupe de tête autour de la piste. Les deux calculs disent maintenant la même chose.
