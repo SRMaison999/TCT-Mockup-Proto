@@ -2951,3 +2951,56 @@ un dixième près** — et 250 m à 13,5 m/s font **18,52 s**. Exemples relevés
 
 Un écart **négatif** apparaît aussi, −0,1 s, que la règle de l'opérateur interdit : l'écart d'un
 bloc se mesure depuis le bloc qui le précède.
+
+### Ce que les logs du code disent du palier 2 (build 172)
+
+Trace exportée par l'opérateur depuis l'application, palier 2 joué en entier :
+**1296 lignes de trace** et **2560 lignes de logs du code**. La simulation étant déterminée par
+le dossard, les mêmes chiffres sortent à chaque rejeu.
+
+**1. La tête de la course est prise sur la mesure, et bascule sur un mètre.**
+
+| | |
+|---|---|
+| Changements de leader | **90** |
+| Dont la source est `mesure` | **90 sur 90** — jamais `désigné` |
+| Avance médiane du nouveau leader sur le second | **1,4 m** |
+| Changements avec 3 m ou moins d'avance | **88 sur 90** |
+
+Le plus net, à 31,0 s : le 4 GBR et le 15 IRL sont à **410,9 m tous les deux**, avance **0,0 m**,
+et la tête change. Puis 2,1 m à 36,75 s, 1,2 m à 46,1 s, 2,1 m à 46,25 s. Le peloton est alors
+un seul groupe de seize.
+
+**2. Le tour retranché s'allume et s'éteint, et c'est lui qui inverse la file.**
+
+Au tour 21, trois images consécutives, six dixièmes en tout :
+
+| Instant | Ligne `TOUR` | Position du 12 | Référence du paquet |
+|---|---|---|---|
+| 353,90 s | 12 et 52 : **plus de tour retranché** | 5021,9 m | 4769,6 m |
+| 354,20 s | 12 et 52 : **ramenés de 1 tour** | 5026,3 m | 4773,7 m |
+| 354,50 s | 12 et 52 : **plus de tour retranché** | 5030,6 m | 5030,6 m |
+
+À 353,90 s le 12 est 252 m devant la référence — un tour. Trois dixièmes plus tard il est jugé
+dans le paquet, **250 m lui sont retranchés**, et il tombe derrière. Trois dixièmes encore et le
+tour revient. Au passage, à 354,50 s, la référence du paquet devient **5030,6 m**, c'est-à-dire
+la position du 12 lui-même : neuf coureurs du peloton — 3, 9, 1, 67, 58, 23, 11, 4, 15 — sont
+alors **ramenés de −1 tour**.
+
+**Le 12 bascule 53 fois, le 52 également.** Un pas de 250 m appliqué puis retiré cinquante-trois
+fois : c'est l'inversion de la file que l'opérateur a vue sur ses captures.
+
+**3. Les ±20 arrivent tôt parce que le quotient est arrondi.**
+
+Le nombre de tours vient de `Math.round((pos − enFace) / 250)`.
+
+| Instant | Coureur | Écart mesuré | Quotient | Tours retenus |
+|---|---|---|---|---|
+| 209,85 s, tour 12 | 12 SUI | **126,6 m** | **0,506** | **+1** |
+| 333,25 s, tour 19 | 7 NED | 201,6 m | 0,806 | +1 |
+| 333,25 s, tour 19 | 61 COL | 203,8 m | 0,815 | +1 |
+| 351,20 s, tour 20 | 70 BRA | −390,0 m | **−1,56** | **−2** |
+
+**126,6 m, c'est la moitié d'un tour, et l'application en fait un tour pris.** Sur 192 calculs
+de ce genre, **8 portent un quotient inférieur à 0,75** en valeur absolue, le plus petit étant
+0,506. À l'autre bout, −1,56 devient −2 : un coureur à un tour et demi est pénalisé de 40 points.

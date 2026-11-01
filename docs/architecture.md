@@ -1973,3 +1973,28 @@ refont tout le calcul, et les appeler vingt fois par seconde ne dirait rien de p
 pour l'opérateur, 120 lignes au plus. La trace est pour le diagnostic : elle garde tout, jusqu'à
 40 000 lignes, et sort par le bouton **Export trace** de l'onglet Standings, à côté des deux
 autres exports. `window.__proto.trace()` la rend aussi lisible sans passer par le fichier.
+
+## 46. Les logs du code : pourquoi une décision a été prise (build 172)
+
+**Sa demande, le 1er novembre 2026** : « mais bon ta TRACE, ce ne sont pas des logs ? Il faut
+les logs du code pour comprendre ».
+
+La trace du §45 dit **ce qui** a changé à l'écran. Ces logs-ci disent **pourquoi** le code l'a
+décidé : chaque ligne porte les **valeurs d'entrée** de la décision, pas son résultat. Et chaque
+ligne n'est écrite que lorsque la décision **change** — `dbgChanged(clé, valeur)` garde la
+dernière valeur écrite par clé, sans quoi un log répété vingt fois par seconde ne se lit pas.
+
+Six points de décision sont instrumentés, là où ils sont pris :
+
+| Tag | Où | Ce que la ligne porte |
+|---|---|---|
+| `CASSURE` | `pairCass()`, dans la marche le long de la piste | les deux dossards, **z**, sa source (boucle ou positions), les mètres, la vitesse du suiveur, le temps d'une longueur de vélo, l'écart obtenu, le seuil, et la décision |
+| `TOUR` | `impliedOf()` | le dossard, le nombre de tours retranchés, sa position brute, celle du paquet, et s'il est dans le paquet |
+| `LEADER` | après le choix du leader | le dossard, **la source** — `désigné` ou `mesure` —, les trois meilleurs `np()` et l'avance du premier sur le second |
+| `ECART-TOUR` | la boucle des écarts | le bloc, l'écart brut négatif, le nombre de tours ajoutés, l'écart corrigé, et les deux coureurs qui se font face |
+| `PROPOSITION-CALCUL` | `detect()` | le dossard, sa distance de course, celle du coureur qu'il a en face, leur différence en mètres, **le quotient avant arrondi**, le delta retenu |
+| `PAQUET` | `detect()` | un coureur entre dans le paquet ou en sort |
+
+`DBG.on` est vrai par défaut, la liste est bornée à 200 000 lignes, et elle repart avec la
+course. Les logs sortent par le **même bouton Export trace** que la trace : le fichier porte
+`trace` et `logsDuCode` côte à côte. `window.__proto.dbg()` les rend lisibles sans le fichier.

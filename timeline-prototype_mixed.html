@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">171</span>
+      <span class="bld" id="buildno">172</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -601,7 +601,18 @@ const round1 = x => Math.round(x * 10) / 10;
 // setting, and Pursuit A, Pursuit B and the tape switches are all derived from it and from the lap length.
 // LE NUMÉRO DE BUILD, À UN SEUL ENDROIT. Il était écrit deux fois — dans la balise de l'en-tête et dans
 // syncSub(), qui l'écrasait — et l'écran a montré 166 pendant trois builds.
-const BUILD = '171';
+/* LES LOGS DU CODE. L'opérateur, 1er novembre 2026 : « il faut les logs du code pour comprendre ».
+   La trace dit CE QUI a changé à l'écran ; ces logs-ci disent POURQUOI le code l'a décidé — ils portent les
+   valeurs d'entrée de chaque décision, pas son résultat.
+   Chaque ligne n'est écrite que lorsque la décision CHANGE : un log qui répète la même chose vingt fois par
+   seconde ne se lit pas. Le cache DBG.was garde, par clé, la dernière valeur écrite. */
+const DBG = { on: true, lines: [], max: 200000, was: {} };
+function dbg(tag, msg, data) {
+  if (!DBG.on || DBG.lines.length >= DBG.max) return;
+  DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
+}
+function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
+const BUILD = '172';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1023,6 +1034,20 @@ function computeGroups(M) {
     const z = readGap(ahead, follower);
     return (z != null ? z : metres / spdOfRow(follower)) - BIKE_L / spdOfRow(follower);
   };
+  // La même mesure, mais qui DIT d'où elle sort : z lu sur une boucle, ou replié sur les positions.
+  const pairCass = (ahead, follower, metres) => {
+    const z = readGap(ahead, follower), spd = spdOfRow(follower), bike = BIKE_L / spd;
+    const zz = z != null ? z : metres / spd;
+    const gap = zz - bike, key = follower.r.bib + '|' + ahead.r.bib;
+    const over = gap > GROUP_GAP_S;
+    const avant = S.cass[key] && S.cass[key].state;
+    const res = cassure(key, over);
+    if (res !== avant && dbgChanged('cass:' + key, res))
+      dbg('CASSURE', (res ? 'cassure' : 'recollement') + ' entre ' + ahead.r.bib + ' et ' + follower.r.bib,
+        { devant: ahead.r.bib, suit: follower.r.bib, z: z == null ? null : +z.toFixed(3), source: z == null ? 'positions' : 'boucle',
+          metres: +metres.toFixed(2), vitesse: +spd.toFixed(2), velo: +bike.toFixed(3), ecart: +gap.toFixed(3), seuil: GROUP_GAP_S, cassure: res });
+    return res;
+  };
   // 1. physical clusters: riders close together ON THE TRACK, whatever their lap (what the loops measure)
   const rows = live.map(r => { const m = M.get(r.bib); return { r, m, track: ((m.pos % TRACK) + TRACK) % TRACK }; });
   const byTrack = [...rows].sort((a, b) => a.track - b.track);
@@ -1031,7 +1056,7 @@ function computeGroups(M) {
   // and his speed is the one that converts the gap.
   for (const x of byTrack) {
     const back = cur && cur.rows[cur.rows.length - 1];
-    if (!cur || cassure(back.r.bib + '|' + x.r.bib, pairGap(x, back, x.track - cur.last) > GROUP_GAP_S)) { cur = { rows: [], id: clusters.length }; clusters.push(cur); }
+    if (!cur || pairCass(x, back, x.track - cur.last)) { cur = { rows: [], id: clusters.length }; clusters.push(cur); }
     cur.rows.push(x); cur.last = x.track; x.cluster = cur;
   }
   if (clusters.length > 1) {   // the track is a circle: join the last cluster to the first across the finish line
@@ -1039,7 +1064,7 @@ function computeGroups(M) {
     // unshift, not push: the wrapped riders are BEHIND the ones just past the line, so a cluster's rows stay
     // ordered rear -> front in the direction of travel. The first and last rider of a group are read off that order.
     const back = last.rows[last.rows.length - 1];   // he has not crossed the line yet, so he is the follower here
-    if (!cassure(back.r.bib + '|' + first.rows[0].r.bib, pairGap(first.rows[0], back, TRACK - last.last + first.rows[0].track) > GROUP_GAP_S)) { for (const x of last.rows) x.cluster = first; first.rows.unshift(...last.rows); clusters.pop(); }
+    if (!pairCass(first.rows[0], back, TRACK - last.last + first.rows[0].track)) { for (const x of last.rows) x.cluster = first; first.rows.unshift(...last.rows); clusters.pop(); }
   }
   const bunchCluster = clusters.reduce((a, c) => (!a || c.rows.length > a.rows.length ? c : a), null);
   // §5 of docs/regles-operateur.md: "le tour du peloton, c'est celui des premiers !!", and the median of the
@@ -1064,7 +1089,16 @@ function computeGroups(M) {
   // and the bunch, wherever on the track that happens. Membership of the cluster IS that test (§3). And because the
   // cluster means they are at the same point on the track, the difference between their race distances is within a
   // few metres of a whole number of laps: the rounding below is exact, it decides nothing.
-  const impliedOf = r => bunchRaw != null && inBunchCluster.has(r.bib) ? Math.round((M.get(r.bib).pos - bunchRaw) / TRACK) : 0;
+  const impliedOf = r => {
+    const v = bunchRaw != null && inBunchCluster.has(r.bib) ? Math.round((M.get(r.bib).pos - bunchRaw) / TRACK) : 0;
+    // C'EST ICI QU'UN TOUR EST RETRANCHÉ. Tant qu'un coureur est dans le paquet, sa distance de course est ramenée
+    // au tour du paquet par un nombre ENTIER de tours. Le log porte les deux distances brutes qui ont donné ce nombre.
+    if (dbgChanged('impl:' + r.bib, v))
+      dbg('TOUR', v ? 'BIB ' + r.bib + ' ramené de ' + v + ' tour(s) sur le paquet' : 'BIB ' + r.bib + ' : plus de tour retranché',
+        { bib: r.bib, tours: v, pos: M.get(r.bib) && M.get(r.bib).pos == null ? null : +M.get(r.bib).pos.toFixed(1),
+          paquet: bunchRaw == null ? null : +bunchRaw.toFixed(1), dansLePaquet: inBunchCluster.has(r.bib) });
+    return v;
+  };
   // The merge, as the operator wrote it: as soon as there is no break left between him and the bunch, a rider
   // takes the bunch lap in the timeline, waiting for no validation at all. The operator validation now decides
   // the +/-20 points and nothing else. Laps gained and laps lost alike.
@@ -1084,8 +1118,17 @@ function computeGroups(M) {
       for (const r of readable) r.prevRel = np(r) - np(leaderR);
     }
   }
-  if (!leaderR) leaderR = readable.reduce((a, r) => (!a || np(r) > np(a) ? r : a), null);
+  let leaderSrc = leaderR ? 'désigné' : null;
+  if (!leaderR) { leaderR = readable.reduce((a, r) => (!a || np(r) > np(a) ? r : a), null); leaderSrc = 'mesure'; }
   const leaderBib = leaderR.bib, leader = M.get(leaderBib), leaderNp = np(leaderR);
+  // POURQUOI CE COUREUR EST EN TÊTE. Trois chemins possibles : il a été désigné, il a été repris sur la piste par
+  // la boucle ci-dessus, ou il est simplement celui dont np() est le plus grand. Le log porte les trois meilleurs
+  // np, pour qu'on voie de combien il devance le suivant.
+  if (dbgChanged('leader', leaderBib + '|' + leaderSrc)) {
+    const top = readable.map(r => ({ bib: r.bib, np: +np(r).toFixed(1) })).sort((a, b) => b.np - a.np).slice(0, 3);
+    dbg('LEADER', 'BIB ' + leaderBib + ' en tête · ' + leaderSrc, { bib: leaderBib, source: leaderSrc, troisPremiers: top,
+      avance: top.length > 1 ? +(top[0].np - top[1].np).toFixed(2) : null });
+  }
   S.tlOf = {};
   for (const x of rows) { x.behind = leaderNp - np(x.r); S.tlOf[x.r.bib] = x.behind; }   // the delay in the timeline, in metres
   rows.sort((a, b) => a.behind - b.behind);
@@ -1155,8 +1198,15 @@ function computeGroups(M) {
     if (g.incident) continue;
     if (!prevG) { g.gap = null; g.gapM = null; prevG = g; continue; }
     let d = g.head - prevG.tail;
+    const dBrut = d;
     if (d < 0) d += TRACK * Math.ceil(-d / TRACK);
     const ahead = prevG.rows[prevG.rows.length - 1], follower = g.rows[0];
+    // C'EST ICI QU'UN TOUR EST AJOUTÉ À UN ÉCART. Quand la mesure sort négative, on ajoute autant de tours qu'il
+    // faut pour que le bloc repasse derrière. Le log porte la valeur avant et après, et de combien de tours.
+    if (d !== dBrut && dbgChanged('gapfix:' + g.bibs[0], Math.round(d - dBrut)))
+      dbg('ECART-TOUR', 'Bloc ' + g.bibs[0] + ' : écart négatif ' + dBrut.toFixed(1) + ' m, ' + Math.round((d - dBrut) / TRACK) + ' tour(s) ajouté(s) → ' + d.toFixed(1) + ' m',
+        { bloc: g.bibs[0], brut: +dBrut.toFixed(1), corrige: +d.toFixed(1), tours: Math.round((d - dBrut) / TRACK),
+          queueDessus: ahead ? ahead.r.bib : null, teteDessous: follower ? follower.r.bib : null });
     g.gapM = d;
     g.gap = ahead && follower ? pairGap(ahead, follower, d) : d / CFG.pace;
     prevG = g;
@@ -1412,8 +1462,16 @@ function detect(G, M) {
       if (face != null) {
         const delta = Math.round((m.pos - face) / TRACK);
         const open = S.proposals.some(p => p.kind === 'lap' && p.bibs.includes(r.bib));
+        // POURQUOI UN ±20 EST PROPOSÉ. Le déclencheur est l'ENTRÉE dans le paquet : il n'y était pas à l'image
+        // précédente, il y est maintenant. Le nombre de tours vient de la différence de distance de course avec le
+        // coureur qu'il a en face. Le log porte les deux distances, leur différence en mètres, et le quotient.
+        dbg('PROPOSITION-CALCUL', 'BIB ' + r.bib + ' entre dans le paquet · delta ' + delta + (open ? ' · déjà ouverte' : (delta ? ' · proposée' : ' · rien')),
+          { bib: r.bib, pos: +m.pos.toFixed(1), enFace: +face.toFixed(1), ecartM: +(m.pos - face).toFixed(1),
+            quotient: +((m.pos - face) / TRACK).toFixed(3), delta, dejaOuverte: open, tour: lap });
         if (delta && !open) cands.push({ bib: r.bib, delta });
       }
+      if (inNow !== r.inBunchPrev && dbgChanged('paquet:' + r.bib, inNow))
+        dbg('PAQUET', 'BIB ' + r.bib + (inNow ? ' entre dans le paquet' : ' sort du paquet'), { bib: r.bib, dedans: inNow, tour: lap });
       r.inBunchPrev = inNow;
     }
     const byDelta = {}; for (const c of cands) (byDelta[c.delta] = byDelta[c.delta] || []).push(c.bib);
@@ -3584,7 +3642,7 @@ function loadRace(r) {
 }
 
 // ---------- loop ----------
-window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
+window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
 loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();
@@ -3618,7 +3676,7 @@ function traceSign(G) { return G.groups.map(g => groupName(g) + '[' + g.bibs.joi
 function tracePoints() { const o = {}; for (const x of standings()) o[x.r.bib] = { spr: x.spr, gained: x.gained, lost: x.lost, total: x.total }; return o; }
 function traceTick(G) {
   // Une course rejouée, reculée ou rechargée repart à zéro : la trace aussi.
-  if (S.t < TRACE.lastT) { TRACE.lines.length = 0; TRACE.last = {}; traceAdd('RESET', 'La course est repartie : la trace recommence'); }
+  if (S.t < TRACE.lastT) { TRACE.lines.length = 0; TRACE.last = {}; DBG.lines.length = 0; DBG.was = {}; traceAdd('RESET', 'La course est repartie : la trace recommence'); }
   TRACE.lastT = S.t;
   const L = TRACE.last;
 
@@ -3688,8 +3746,9 @@ function traceTick(G) {
 }
 function exportTrace() {
   const head = 'La trace de la course · ' + (LOADED ? LOADED.name : 'course en cours') + ' · build ' + BUILD + ' · ' + TRACE.lines.length + ' lignes';
-  download('trace.json', JSON.stringify({ course: LOADED ? LOADED.name : null, build: BUILD, lignes: TRACE.lines }, null, 1), 'application/json');
-  logEvent('EXPORT', 'Trace exported · ' + TRACE.lines.length + ' lines', true);
+  download('trace.json', JSON.stringify({ course: LOADED ? LOADED.name : null, build: BUILD,
+    trace: TRACE.lines, logsDuCode: DBG.lines }, null, 1), 'application/json');
+  logEvent('EXPORT', 'Trace exported · ' + TRACE.lines.length + ' lines · ' + DBG.lines.length + ' code logs', true);
 }
 function detectNow() { const M = measured(); const G = computeGroups(M); detect(G, M); traceTick(G); lastDetect = S.t; }
 function frame() {
