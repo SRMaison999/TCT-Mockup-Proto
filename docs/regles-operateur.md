@@ -2332,3 +2332,30 @@ l'écran, une à la fois.
      l'écart qu'il faut afficher est celui entre le 7 et le 12, soit 2m.** »
      C'est donc, pour tout bloc, la distance de la **queue du bloc au-dessus** à la **tête du
      bloc en dessous**, et non de tête à tête.
+
+168. **Au sprint, c'est celui qui est en tête dans la timeline.** Ses mots, le 1er novembre
+     2026, à la question « au sprint du tour 30, qui doit être jugé premier, le 12 ou le 15 ? » :
+     « **Je ne sais pas ! C'est celui qui est en tête dans la timeline !** »
+
+169. **Un changement de leader doit se raconter dans la timeline.** Ses mots, le 1er novembre
+     2026, devant une course où le 7 NED devient leader alors que le bloc de tête est à 217 m :
+
+     > Mais alors explique-moi, par où est-il passé ? Car pour devenir leader, il a fallu qu'il
+     > s'échappe par l'avant de son groupe qui est le peloton, et ensuite qu'il fasse un gros
+     > effort seul pour rattraper les plus de 200m d'avance qu'avaient les leaders, à savoir les
+     > n°12 et 52.
+     >
+     > Alors pendant cet effort, lorsqu'il n'est plus dans le peloton, il est devenu un groupe,
+     > et ce groupe devait être le groupe n°2, positionnée dans la timeline entre le groupe 1,
+     > les leaders, et le groupe 3, le peloton.
+     >
+     > Ensuite il a forcément rejoint les leaders, et donc son propre groupe 2 s'est fondu dans
+     > le groupe 1 des leaders. La situation au moment où 7 a rattrapé 12 et 52, est donc
+     > devenue : Groupe 1 - leaders / 7, 12, 52 — Groupe 2 - bunch / 15 et puis tous les autres
+     > coureurs du peloton....
+     >
+     > Et apparemment ensuite le 7 a poursuivi son effort et s'est échappé seul en tête.
+     > Nouvelle situation : Groupe 1 - leader / 7 — Groupe 2 - chase / 2, 52 — Groupe 3 - bunch
+     > / 15 et puis tous les autres coureurs du peloton ....
+
+     **Aucune de ces étapes n'a eu lieu** : ce qui a été mesuré est au §45 de `mesures.md`.

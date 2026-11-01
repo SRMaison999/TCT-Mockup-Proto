@@ -709,3 +709,26 @@ dessous (point 167). Ses deux chiffres sortent justes, 2 m et 217 m (`mesures.md
 ont été jugés `15, 4, 11, 23, 46` — l'ordre des boucles. Le 12 et le 52 n'ont rien marqué. Et
 depuis que le leader a été repris par le 7, le bloc du haut porte `leader` pendant que le
 panneau affiche `7 NED`.
+
+---
+
+## 19. La reprise du leader ignore l'ordre forcé — **à trancher**
+
+Sa question et sa description de ce qu'une prise de tête doit montrer sont au point 169 de
+`regles-operateur.md` ; la mesure est au §45 de `mesures.md`.
+
+**Le défaut.** `computeGroups` reprend le leader dès qu'un coureur en dépasse un autre **sur la
+piste** (`np(r) - L0`), sans regarder la timeline. Quand l'opérateur a forcé un ordre, les
+positions mesurées sont justement celles qu'il a déclarées fausses : un échange de 2,20 m entre
+deux coureurs du peloton suffit alors à donner la tête d'une course où le bloc de tête est à
+217 m.
+
+**Ce qui est en tension.** Son point 159 — « l'appli doit continuer à refléter ce qu'elle voit »
+— et son point 169, qui veut qu'une prise de tête se raconte dans la timeline. Les deux ne se
+contredisent que lorsqu'un bloc est posé à la main.
+
+**On saura que c'est fini quand** : il aura dit si l'application cesse de changer le leader
+toute seule tant qu'un bloc est posé à la main.
+
+**Et il reste le point 168** : au sprint, c'est le coureur en tête de la timeline qui est jugé
+premier. Aujourd'hui l'ordre jugé vient des boucles. À faire après le leader, dont il dépend.

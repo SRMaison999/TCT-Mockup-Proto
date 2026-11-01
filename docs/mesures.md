@@ -2766,3 +2766,24 @@ côté-là.
 **Ce qui se contredit à l'écran** : depuis le tour 21, le bloc du haut porte `leader` et
 s'appelle `1-LEADERS`, pendant que le champ `LEADER` du panneau dit `7 NED`, qui est dans le
 peloton.
+
+### Par où le 7 est-il passé ? Par nulle part (build 165)
+
+Sa question du 1er novembre 2026. Ordre de passage sur la ligne, course avec le 12 et le 52
+posés en tête :
+
+| Tour | Les quatre derniers de la file |
+|---|---|
+| 17 | … 61, **7**, **12**, 52 |
+| 18 | … 61, **12**, **7**, 52 |
+| 21 | … 61, **7**, **12**, 52 |
+
+**Le 7 n'a jamais quitté le peloton.** Il est quatorzième sur seize au tour 17, quinzième au
+tour 18, quatorzième de nouveau au tour 21. Lui et le 12 ont simplement **échangé leurs places**
+à l'intérieur de la file, et deux coureurs consécutifs sont séparés de **2,20 m** (§42).
+
+**C'est cet échange de deux mètres qui lui a donné la tête de la course.** La reprise
+automatique du leader compare les positions **sur la piste** ; elle ne regarde pas la timeline.
+Elle a donc vu le 7 repasser devant le 12 et lui a donné la tête, pendant que la timeline
+affichait un bloc de tête à **217 m** devant le peloton. Les deux vérités tournent côte à côte,
+et rien ne les relie.
