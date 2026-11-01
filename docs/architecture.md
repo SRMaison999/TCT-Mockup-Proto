@@ -2192,3 +2192,47 @@ palier 1, où personne ne prend ni ne perd un tour — parce que les coureurs d'
 franchissent pas la ligne au même instant, et que le premier à la franchir paraît avoir un tour de
 plus. Le moment où un tour compte pour de bon est une question à poser à l'opérateur, pas à
 deviner.
+
+## 51. La tête de la timeline est désignée, pas calculée (build 188)
+
+Son point 183. `moteur-course.js` porte une seule variable de tête, `ancre`, et une seule façon de
+la poser :
+
+```js
+let ancre = null;
+function designer(bib) { ... ancre = bib; }
+function tete() {
+  if (ancre != null) { const c = coureurs.get(ancre); if (c && c.n) return c; }
+  for (const c of coureurs.values()) if (c.n) { ancre = c.bib; return c; }  // au départ
+  return null;
+}
+```
+
+Tout le reste en découle, et plus rien ne bascule :
+
+| quantité | ce qu'elle est | d'où elle vient |
+|---|---|---|
+| `retard` | le décalage d'un coureur sur l'ancre, en secondes | la dernière boucle que les deux ont franchie |
+| l'ordre de la file | les `retard` triés | — |
+| l'écart d'un bloc | la différence de deux `retard`, moins une longueur de vélo | son §1 |
+| `derive` | la somme des déplacements relatifs d'un coureur sur l'ancre | elle ne nomme que le **côté** (E8) |
+
+**Pourquoi le décalage se replie sur un demi-tour.** Son point 182 : « chacun est toujours dans le
+même tour que les autres du point de vue de la timeline ». Sur un anneau, un coureur à 18 s
+derrière, sur un tour de 19 s, **est** une seconde devant — et aucune détection ne distingue les
+deux. Le décalage est donc ramené dans le demi-tour autour de zéro. C'est ce que les boucles
+donnent, et c'est tout ce qu'on en sait.
+
+**Pourquoi la dérive existe quand même.** Parce que « échappé d'une seconde à l'avant » et « lâché
+d'un tour moins une seconde » sont la même lecture, et que son point 174 les paie à l'envers l'un
+de l'autre. La dérive retient le chemin qu'on l'a vu prendre, elle ne sert qu'à nommer le côté, et
+elle retombe à zéro dès qu'un ±20 est constaté.
+
+**Le constat du ±20.** Ni une appartenance à un groupe, ni une distance : **une paire nommée qui se
+referme**, ses mots du point 180. Sorti par l'avant, la paire est (le dernier du peloton, lui) ;
+lâché par l'arrière, elle est (lui, le premier du peloton). L'écart doit être positif — il est bien
+derrière celui qu'il rattrape — et passer sous le seuil du §1, confirmé 0,3 s. Le « dernier du
+peloton » exclut les coureurs qui ont eux aussi fait le tour : sinon, quand le 12 et le 52
+reviennent ensemble, le dernier du groupe devient le 12.
+
+Le moteur de course tourne toujours **à côté** de l'ancien moteur : aucun écran ne le lit.

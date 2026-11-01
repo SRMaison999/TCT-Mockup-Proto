@@ -891,3 +891,16 @@ le 12 et le 52 **+1 à 453 s**, et les deux lâchés 46 et 70 **−1 à 362 s** 
 fois, aucun coureur du peloton pénalisé, et aucun tour relevé au palier 1. Reste un trou : le 18,
 le 61 et le 7 passent de +2 à +4 sans que le +3 soit annoncé. Le moteur actuel, lui, n’est pas
 corrigé — c’est le moteur de course qui porte ce comportement.
+
+### 27. Le 61 et le 70 ne sont pas nommés avec leurs compagnons · ouvert
+
+Mesuré au palier 2, build 188. Le 7, le 18 et le 61 partent ensemble et reviennent ensemble ; le
+moteur de course propose **le 7 et le 18**, jamais le 61. Pareil pour le 46 et le 70 : seul le 46
+perd ses 20 points. Son point 180 veut les coureurs d'un même constat proposés **ensemble** quand
+ils sont à moins d'une seconde l'un de l'autre, et ils y sont (0,08 s à 0,91 s).
+
+Trois constats sortent par ailleurs avec un écart **négatif** — −2,53 s, −2,04 s, −0,14 s — alors
+que le garde E10 l'interdit : ils passent par la fenêtre d'attente d'une seconde, qui joint un
+coureur sans revérifier son écart au moment de l'annonce.
+
+Onze constats au palier 2 ; la course en contient dix.

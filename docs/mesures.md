@@ -3253,3 +3253,40 @@ Cent bascules, mille cinq cents retournements.
 **Or son point 174 dit qui désigne ce coureur, et ce n'est pas le logiciel** : « Le groupe 1 de la
 timeline, est toujours celui observé par le **juge starter** qui à chaque passage sur la ligne de
 sprint **montre du doigt** le coureur de ce groupe 1 se trouvant en première position du groupe. »
+
+### Build 188 · la tête désignée : le palier 2 tombe de 246 constats à 11
+
+Son point 183 codé : la tête de la timeline est `ancre`, elle est posée par `designer(bib)` et par
+rien d'autre. Tant que personne n'est désigné, c'est le premier coureur détecté, et il le reste.
+Tout le reste se mesure par rapport à lui — les décalages, les groupes, les ±20.
+
+| | build 187 (le logiciel cherchait la tête) | build 188 (la tête est désignée) |
+|---|---|---|
+| palier 1, propositions de points | 0 | **0** |
+| palier 1, changements de tête | 0 | **0** |
+| palier 2, changements de tête | 100 | **0** |
+| palier 2, retournements de la file | 1 509 | **0** |
+| palier 2, propositions de points | 246 | **11** |
+| palier 2, premier constat | +20 au 4 à 56 s (faux) | **+20 au 12 et au 52 à 333 s** |
+| palier 2, peloton final | 12, 52, 18, 61, 7 (les échappés) | **15, 4, 11, 23, 46, 70, 58, 67, 1, 9, 3** |
+
+**Ce que le palier 2 relève, et ce que la course fait.** Le 12 et le 52 partent au 5e tour à
++1 m/s : ils reprennent 250 m toutes les 250 s, donc vers 340 s, 590 s et 840 s. Relevé : **333 s,
+571 s, 819/833 s**. Le 7, le 18 et le 61 partent au 11e tour à +1,4 m/s, soit toutes les 179 s :
+**369 s, 566 s, 898/899 s**. Le 46 et le 70 sont lâchés au 12e tour à −0,9 m/s et se font reprendre
+toutes les 278 s : **464 s et 751 s**. Les écarts annoncés valent 0,04 s à 1,13 s — des contacts,
+non plus des mesures prises à 126 m.
+
+**Ce qui n'est pas bon.** Le 61 et le 70 ne sont jamais nommés avec leurs compagnons, et trois
+constats sortent avec un écart négatif (−2,53 s, −2,04 s, −0,14 s), c'est-à-dire mesurés sur un
+coureur encore devant celui qu'il rattrape. Onze constats au lieu des dix que la course contient.
+
+**Les trois erreurs ajoutées à l'en-tête du moteur de course.**
+
+- **E9** — ne jamais laisser le logiciel chercher la tête (point 183).
+- **E10** — ne jamais constater un ±20 sur l'appartenance à un groupe : un échappé entre et sort du
+  groupe du peloton des dizaines de fois quand l'écart oscille autour de la seconde. C'est **une
+  paire nommée qui se referme** qu'on guette, et son écart doit être positif.
+- **le tour entier** — un coureur ne peut pas rattraper deux fois le dernier du peloton sans avoir
+  repris un tour entre les deux. Sans cette condition, le 46 et le 70 reperdaient 20 points toutes
+  les vingt secondes.

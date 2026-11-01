@@ -65,7 +65,8 @@
        coureur « se faisant lâcher à l'arrière » et repris en perd 20. Et son point 181 : « Rien :
        ils sont lâchés d'un tour, revenir au contact de la queue du peloton ne leur fait rien
        gagner. » Sur un anneau, les deux gestes se ressemblent ; ce qui les distingue est le CÔTÉ.
-       → Le garde : `sorti` retient, pour chaque coureur hors du peloton, par où il est sorti.
+       → Le garde : `derive` retient le chemin qu’on l’a vu prendre. Sur un anneau, « échappé
+         d’une seconde » et « lâché d’un tour moins une seconde » sont la même lecture.
    =========================================================================== */
 (function () {
   'use strict';
@@ -94,11 +95,11 @@
       n: 0,                   // combien de détections : rien d'autre ne dit qu'il est en course
       boucle: null, t: null,  // sa dernière détection
       pas: null, dt: null,    // de combien de mètres et en combien de temps il est venu : sa vitesse
-      passages: 0,            // ses passages sur la ligne d'arrivée, moins ce qu'on a aligné. Ce
-      aligne: 0,              //   n'est pas un tour (E3) : c'est le repère de l'anneau.
+      passages: 0,            // ses passages sur la ligne d'arrivée : un compte, pas une distance
       parBoucle: new Map(),   // position de boucle → heure de son dernier passage dessus
-      sorti: null,            // 'avant' ou 'arriere' : par où il a quitté le peloton (E8)
-      dansPeloton: false,
+      derive: 0,              // sa dérive sur la tête du peloton, en secondes : elle nomme le CÔTÉ
+      rPrec: null,            //   par lequel il est parti (E8), et rien d'autre.
+      colle: false,           // était-il, à l'image d'avant, au contact du coureur qu'il rejoint ?
     });
 
     /* ------------------------------------------------------------------ 1. une détection */
@@ -120,25 +121,9 @@
     }
 
     const vitesse = c => (c.pas == null || !c.dt) ? null : c.pas / c.dt;
-    const anneau = c => c.passages - c.aligne;      // où il en est sur l'anneau, pas sa distance
+    const tourS = c => { const v = vitesse(c); return v ? R.piste / v : null; };  // sa duree de tour
 
-    /* ------------------------------------------------------------------ 2. l'écart entre deux coureurs */
-    // §1 : « le temps entre la roue arrière du coureur 1 et la roue avant du coureur 2 ». z est lu
-    // sur la dernière boucle que les DEUX ont franchie, le suiveur après celui de devant ; on en
-    // retire le temps qu'il faut au suiveur pour couvrir une longueur de vélo, à sa vitesse.
-    function ecartS(devant, suiveur) {
-      let z = null, dernier = -Infinity;
-      for (const b of BOUCLES) {
-        const ta = devant.parBoucle.get(b), tb = suiveur.parBoucle.get(b);
-        if (ta == null || tb == null || tb < ta || tb <= dernier) continue;
-        dernier = tb; z = tb - ta;
-      }
-      if (z == null) return null;                   // aucune boucle commune : on ne sait pas
-      const v = vitesse(suiveur);
-      return v ? z - R.veloM / v : z;
-    }
-
-    /* ------------------------------------------------------------------ 3. confirmer une cassure */
+    /* ------------------------------------------------------------------ 2. confirmer une cassure */
     function confirme(cle, depasse) {
       let e = cassures.get(cle);
       if (!e) { e = { etat: false, depuis: null }; cassures.set(cle, e); }
@@ -148,39 +133,77 @@
       return e.etat;
     }
 
-    /* ------------------------------------------------------------------ 4. la chaîne */
-    // LA TÊTE. Sur un anneau, « devant » n'a de sens qu'à partir d'un coureur. C'est celui qui a
-    // franchi la ligne le plus de fois ; à égalité, celui qui est le plus loin dans le tour — la
-    // boucle la plus avancée —, et à boucle égale celui qui l'a franchie le premier : « le premier
-    // qui passe est le premier » (point 174).
+    /* ------------------------------------------------------------------ 3. la tête et la chaîne */
+    // LA TÊTE, SON POINT 183. Sur un anneau, « devant » n'a de sens qu'à partir d'un coureur, et ce
+    // coureur, ce n'est pas le logiciel qui le trouve : c'est l'opérateur qui le désigne, comme le
+    // juge starter le montre du doigt à chaque passage sur la ligne de sprint (point 174). Elle ne
+    // change que s'il la change.
+    //
+    // E9. NE JAMAIS LAISSER LE LOGICIEL CHERCHER LA TÊTE. Mesure de la build 187 : la tête choisie
+    //     sur le nombre de franchissements de la ligne basculait 100 fois au palier 2 — dans un
+    //     peloton de 16, le premier à franchir la ligne a un franchissement d'avance sur le dernier
+    //     pendant les deux secondes que met le groupe à passer. À chaque bascule, les écarts de
+    //     tout le monde se recalculaient sur un autre coureur : la file se retournait 1 509 fois et
+    //     246 ±20 sortaient de nulle part.
+    //     → Le garde : `ancre` est posée par `designer(bib)` et par rien d'autre. Tant que
+    //       personne n'est désigné, c'est le premier coureur détecté de la course, et il le reste.
+    let ancre = null;
+    function designer(bib) {
+      if (!coureurs.has(bib)) return { refus: 'coureur jamais détecté', bib };
+      ancre = bib;
+      return { tete: ancre };
+    }
     function tete() {
-      let t = null;
-      for (const c of coureurs.values()) {
-        if (c.n === 0) continue;
-        if (!t) { t = c; continue; }
-        const a = anneau(c) - anneau(t);
-        if (a > 0 || (a === 0 && (RANG.get(c.boucle) > RANG.get(t.boucle)
-          || (c.boucle === t.boucle && c.t < t.t)))) t = c;
-      }
-      return t;
+      if (ancre != null) { const c = coureurs.get(ancre); if (c && c.n) return c; }
+      for (const c of coureurs.values()) if (c.n) { ancre = c.bib; return c; }
+      return null;
     }
 
-    // LA CHAÎNE. Chaque coureur porte son retard sur la tête, en secondes lues. Un coureur dont on
-    // ne peut pas lire l'écart n'entre pas dans la chaîne (E5).
+    // LE DÉCALAGE SUR LA TÊTE, en secondes lues. Son point 182 : « chacun est toujours dans le même
+    // tour que les autres du point de vue de la timeline ». Un coureur devant la tête porte donc un
+    // décalage négatif, et le tour d'avance n'existe pas : on ramène le décalage dans le demi-tour
+    // autour de zéro, parce que sur un anneau un coureur à 18 s derrière, sur un tour de 19 s, EST
+    // une seconde devant. C'est ce que les boucles donnent, et c'est tout ce qu'on en sait (E1).
+    function decalageS(ref, c) {
+      let tref = -Infinity, tc = null;
+      for (const b of BOUCLES) {
+        const a = ref.parBoucle.get(b), x = c.parBoucle.get(b);
+        if (a == null || x == null) continue;
+        if (a > tref) { tref = a; tc = x; }   // la boucle où la tête est passée le plus récemment
+      }
+      if (tc == null) return null;
+      let d = tc - tref;
+      const T = tourS(ref) || tourS(c);
+      if (T) { while (d > T / 2) d -= T; while (d <= -T / 2) d += T; }
+      return d;
+    }
+
+    // LA CHAÎNE. Les coureurs rangés par leur décalage sur la tête. Un coureur dont on ne peut pas
+    // lire le décalage n'entre pas dans la chaîne (E5).
     function chaine() {
       const t0 = tete();
       if (!t0) return [];
       const liste = [{ c: t0, retard: 0 }];
       for (const c of coureurs.values()) {
         if (c === t0 || c.n === 0) continue;
-        const e = ecartS(t0, c);
-        if (e != null) liste.push({ c, retard: e });
+        const d = decalageS(t0, c);
+        if (d != null) liste.push({ c, retard: d });
       }
       liste.sort((a, b) => (a.retard - b.retard) || (a.c.bib - b.c.bib));
       return liste;
     }
 
-    /* ------------------------------------------------------------------ 5. les groupes */
+    // L'ÉCART ENTRE DEUX COUREURS QUI SE SUIVENT, son §1 : « le temps entre la roue arrière du
+    // coureur 1 et la roue avant du coureur 2 ». La différence de leurs décalages, moins le temps
+    // qu'il faut au suiveur pour couvrir une longueur de vélo, à sa vitesse.
+    function ecartEntre(devant, suiveur) {
+      if (devant == null || suiveur == null) return null;
+      const z = suiveur.retard - devant.retard;
+      const v = vitesse(suiveur.c);
+      return v ? z - R.veloM / v : z;
+    }
+
+    /* ------------------------------------------------------------------ 4. les groupes */
     // On descend la chaîne : entre deux coureurs qui se suivent, une cassure confirmée ouvre un
     // groupe. C'est le §3, et la règle qu'il a instaurée au point 174.
     function groupes() {
@@ -190,7 +213,7 @@
         const x = ch[i], devant = i ? ch[i - 1] : null;
         let coupe = !g, ec = null;
         if (devant) {
-          ec = ecartS(devant.c, x.c);
+          ec = ecartEntre(devant, x);
           coupe = ec == null ? false : confirme(x.c.bib + '|' + devant.c.bib, ec > R.cassureS);
         }
         if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null }; gs.push(g); }
@@ -220,81 +243,137 @@
       return g;
     }
 
-    /* ------------------------------------------------------------------ 6. les 20 points */
+    /* ------------------------------------------------------------------ 5. les 20 points */
+    // PAR OÙ IL EST PARTI (E8). Sur un anneau, « échappé d'une seconde à l'avant » et « lâché d'un
+    // tour moins une seconde » sont la MÊME lecture : aucune détection ne les distingue. Ce qui les
+    // distingue est le chemin qu'on l'a vu prendre. On suit donc, pour chaque coureur, sa dérive
+    // sur la tête du peloton : la somme des petits déplacements relatifs, image après image. Elle
+    // ne sert QU'À nommer le côté — elle n'est jamais une distance, jamais un tour, et elle
+    // retombe à zéro dès qu'un ±20 est constaté (son point 174 : « ils sont considérés avoir
+    // parcouru la même distance que leurs adversaires »).
+    function deriver(c, r, T) {
+      if (c.rPrec != null) {
+        let d = r - c.rPrec;
+        if (T) { while (d > T / 2) d -= T; while (d <= -T / 2) d += T; }
+        c.derive += d;
+      }
+      c.rPrec = r;
+    }
+
+    // CE QUI EST EN ATTENTE D'ÊTRE ANNONCÉ. Point 180 : deux coureurs sont proposés ENSEMBLE s'ils
+    // ne sont pas éloignés de plus d'une seconde. Or ils ne referment pas la paire sur la même
+    // détection — le 18, le 61 et le 7 l'ont fermée à trois détections d'intervalle à la build 189,
+    // et sortaient en trois propositions séparées. On garde donc le constat ouvert le temps de sa
+    // seconde, et on annonce ce qui s'y est joint.
+    let attente = null;
+
     function examiner() {
       const gs = groupes(), pel = peloton(gs);
       if (!pel || pel.coureurs.length < 2) return;
-      const dedans = new Set(pel.coureurs);
-      const tetePel = coureurs.get(pel.coureurs[0]);
-      const queuePel = coureurs.get(pel.coureurs[pel.coureurs.length - 1]);
-      const retardDe = new Map(chaine().map(x => [x.c.bib, x.retard]));
-      const retardTete = retardDe.get(tetePel.bib);
-
-      const gagnent = [], perdent = [];
+      const ch = chaine();
+      const entree = new Map(ch.map(x => [x.c.bib, x]));
+      const T = tourS(coureurs.get(pel.coureurs[0]));   // la durée d’un tour du peloton
 
       for (const c of coureurs.values()) {
         if (c.n === 0) continue;
-        const est = dedans.has(c.bib);
+        const x = entree.get(c.bib);
+        // la dérive se mesure sur L’ANCRE, jamais sur la tête du peloton : celle-ci change de
+        // coureur à chaque remous du peloton, et chaque changement déplaçait la référence de toute
+        // la longueur du groupe. Mesuré à la build 190 : le 46 et le 70, lâchés, ont reçu un +20.
+        if (!x) continue;
+        deriver(c, x.retard, T);
 
-        // IL SORT DU PELOTON : on retient par où (E8). Devant la tête du peloton, c'est par
-        // l'avant ; sinon, c'est par l'arrière.
-        if (!est && c.dansPeloton) {
-          const r = retardDe.get(c.bib);
-          c.sorti = (r != null && retardTete != null && r < retardTete) ? 'avant' : 'arriere';
-        }
-
-        // IL REVIENT DANS LE PELOTON. Point 180 : le gain se constate « au moment un coureur
-        // rattrape le dernier coureur du peloton », la perte « au moment un coureur se fait
-        // rattraper par le premier coureur du peloton ». Le côté par lequel il est sorti dit
-        // lequel des deux c'est — et un coureur qu'on n'a jamais vu sortir ne constate rien.
-        if (est && !c.dansPeloton && c.sorti) {
-          const avant = c.sorti === 'avant';
-          const e = avant ? ecartS(queuePel, c) : ecartS(c, tetePel);
-          (avant ? gagnent : perdent).push({ c, avec: avant ? queuePel.bib : tetePel.bib, ecart: e });
-          c.sorti = null;
-        }
-
-        c.dansPeloton = est;
+        // IL RATTRAPE, OU IL EST RATTRAPÉ. Ses mots exacts, point 180 : le gain se constate « au
+        // moment un coureur rattrape le DERNIER coureur du peloton », la perte « au moment un
+        // coureur se fait rattraper par le PREMIER coureur du peloton ». Ce n'est donc pas son
+        // retour dans un groupe qu'on guette, c'est UNE paire nommée qui se referme, et c'est sa
+        // dérive qui dit laquelle des deux :
+        //   parti par l'avant (dérive négative) → (le dernier du peloton, lui)
+        //   lâché par l'arrière (dérive positive) → (lui, le premier du peloton)
+        // L'écart de cette paire doit être POSITIF — il est bien derrière celui qu'il rattrape —
+        // et passer sous le seuil du §1. C'est le PASSAGE qui est l'événement, pas l'état.
+        //
+        // SON POINT 181, « Rien : ils sont lâchés d'un tour, revenir au contact de la queue du
+        // peloton ne leur fait rien gagner » : un coureur dont la dérive est positive ne regarde
+        // QUE la paire de l'arrière. Revenir sur la queue ne lui ouvre rien.
+        //
+        // E10. NE JAMAIS CONSTATER SUR L'APPARTENANCE AU GROUPE. Mesure de la build 188 : un
+        //      échappé entre et sort du groupe du peloton des dizaines de fois tant que l'écart
+        //      oscille autour de la seconde, et chaque retour rejouait un ±20 — 89 constats au
+        //      palier 2, tous avec un écart NÉGATIF, c'est-à-dire mesurés sur un coureur encore
+        //      devant celui qu'il était censé rattraper.
+        //      → Le garde : l'écart de la paire doit être > 0, et `colle` retient l'image d'avant.
+        // IL A FAIT LE TOUR. Un coureur ne peut pas rattraper deux fois le dernier du peloton
+        // sans avoir repris un tour entre les deux : le constat n’est ouvert que lorsque sa dérive
+        // atteint la durée d’un tour. Ce n’est pas un seuil réglé, c’est son arithmétique — « on ne
+        // gagne pas un tour, on gagne 20 points » (point 182). Mesuré à la build 191 : sans cette
+        // condition, le 46 et le 70 reperdaient 20 points toutes les vingt secondes.
+        if (!T || Math.abs(c.derive) < T) { c.colle = false; continue; }
+        const avant = c.derive < 0;
+        // le dernier, ou le premier, du peloton SANS LUI : quand il arrive sur la queue, les deux
+        // groupes se referment et c’est lui que la chaîne range en dernier.
+        // ni lui, ni les autres qui ont fait le tour : quand le 12 et le 52 reviennent sur la
+        // queue, la chaîne les range AVEC le peloton, et le dernier du groupe devient le 12. Le
+        // coureur qu’on rattrape est le dernier de ceux qui, eux, n’ont pas bougé de leur tour.
+        const sansLui = pel.coureurs.filter(b => {
+          if (b === c.bib) return false;
+          const o = coureurs.get(b);
+          return !(T && o && Math.abs(o.derive) >= T);
+        });
+        if (!sansLui.length) continue;
+        const avec = coureurs.get(avant ? sansLui[sansLui.length - 1] : sansLui[0]);
+        const e = avant ? ecartEntre(entree.get(avec.bib), x) : ecartEntre(x, entree.get(avec.bib));
+        if (e == null) continue;
+        const colle = confirme('R' + c.bib + (avant ? '+' : '-'), e > 0 && e <= R.cassureS);
+        if (colle && !c.colle) {
+          const delta = avant ? 20 : -20;
+          if (attente && attente.delta === delta && maintenant - attente.ouvertA <= R.cassureS) {
+            attente.membres.push({ c, ecart: e, r: x.retard });
+          } else {
+            annoncer();
+            attente = { delta, avec: avec.bib, ouvertA: maintenant, membres: [{ c, ecart: e, r: x.retard }] };
+          }
+          c.derive = 0; c.rPrec = x.retard; c.colle = true;
+        } else c.colle = colle;
       }
 
-      // Point 180, ses deux dernières phrases : les coureurs d'un même constat sont annoncés
-      // ENSEMBLE s'ils sont à moins d'une seconde l'un de l'autre, SÉPARÉMENT au-delà.
-      const annoncer = (liste, delta) => {
-        const restants = [...liste].sort((a, b) => (retardDe.get(a.c.bib) || 0) - (retardDe.get(b.c.bib) || 0));
-        while (restants.length) {
-          const chef = restants.shift(), ensemble = [chef];
-          for (let i = restants.length - 1; i >= 0; i--) {
-            const e = ecartS(chef.c, restants[i].c), f = ecartS(restants[i].c, chef.c);
-            const ec = e != null ? e : f;
-            if (ec != null && Math.abs(ec) <= R.cassureS) ensemble.push(...restants.splice(i, 1));
-          }
-          ensemble.sort((a, b) => a.c.bib - b.c.bib);
-          points.push({ t: maintenant, points: delta, bibs: ensemble.map(x => x.c.bib), avec: chef.avec,
-            sens: delta > 0 ? 'il a rattrapé le dernier du peloton' : 'le premier du peloton l’a rattrapé',
-            ecarts: ensemble.map(x => x.ecart == null ? null : +x.ecart.toFixed(2)) });
-          // « ils sont considérés avoir parcouru la même distance que leurs adversaires » (point
-          // 174) : on remet son repère d'anneau sur celui du peloton, pour que la chaîne le range
-          // avec lui. Ce n'est pas un tour retranché, c'est un repère qui redevient commun.
-          for (const x of ensemble) x.c.aligne += anneau(x.c) - anneau(tetePel);
-        }
-      };
-      if (gagnent.length) annoncer(gagnent, 20);
-      if (perdent.length) annoncer(perdent, -20);
+      if (attente && maintenant - attente.ouvertA > R.cassureS) annoncer();
     }
 
-    /* ------------------------------------------------------------------ 7. l'état */
+    // Point 180, ses deux dernières phrases : les coureurs d'un même constat sont annoncés ENSEMBLE
+    // s'ils sont à moins d'une seconde l'un de l'autre, SÉPARÉMENT au-delà.
+    function annoncer() {
+      if (!attente) return;
+      const { delta, avec } = attente;
+      const restants = attente.membres.slice().sort((a, b) => a.r - b.r);
+      attente = null;
+      while (restants.length) {
+        const chef = restants.shift(), ensemble = [chef];
+        for (let i = restants.length - 1; i >= 0; i--)
+          if (Math.abs(restants[i].r - chef.r) <= R.cassureS) ensemble.push(...restants.splice(i, 1));
+        ensemble.sort((a, b) => a.c.bib - b.c.bib);
+        points.push({ t: maintenant, points: delta, bibs: ensemble.map(x => x.c.bib), avec,
+          sens: delta > 0 ? 'il a rattrapé le dernier du peloton' : 'le premier du peloton l’a rattrapé',
+          ecarts: ensemble.map(x => +x.ecart.toFixed(2)) });
+        // Rien à réaligner : son point 182, « chacun est toujours dans le même tour que les autres
+        // du point de vue de la timeline ». Le décalage lu LE range déjà avec le peloton.
+      }
+    }
+
+    /* ------------------------------------------------------------------ 6. l'état */
     function etat() {
       const gs = groupes();
       return {
         t: maintenant,
         coureurs: chaine().map(x => ({ bib: x.c.bib, retard: +x.retard.toFixed(2), boucle: x.c.boucle, a: x.c.t, detections: x.c.n })),
         groupes: gs,
-        tete: gs.length && gs[0].coureurs.length ? gs[0].coureurs[0] : null,
+        tete: ancre,
         points: points.slice(),
       };
     }
 
-    return { detection, etat, groupes, chaine, ordre: () => chaine().map(x => x.c.bib),
+    return { detection, designer, tete: () => { const c = tete(); return c ? c.bib : null; },
+             etat, groupes, chaine, ordre: () => chaine().map(x => x.c.bib),
              peloton: () => { const g = peloton(); return g ? g.coureurs.slice() : []; },
              pointsVus: () => points, reglage: R, _coureurs: coureurs };
   }

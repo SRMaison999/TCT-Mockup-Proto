@@ -2556,3 +2556,15 @@ l'écran, une à la fois.
      **points**. L'appli ne retient d'un coureur sorti du peloton qu'une chose : **par où il est
      sorti** — par l'avant il ne peut que gagner 20 points en revenant, par l'arrière il ne peut
      qu'en perdre 20 quand le peloton le reprend.
+
+### 183. La tête de la timeline est le coureur qu'il désigne (1er novembre 2026)
+
+Je lui ai soumis la cause du palier 2 : sur un anneau, « qui est devant » n'a de sens qu'à partir
+d'un coureur, j'avais laissé le logiciel choisir ce coureur tout seul, et son point 174 dit déjà
+qui le désigne. Sa réponse :
+
+> MAIS EVIDEMMENT !!!
+
+La tête de la timeline est donc **celle qu'il désigne**, comme le juge starter la montre du doigt
+(son point 174), et elle ne change que s'il la change. Le logiciel ne la cherche pas. Il tient la
+file derrière elle.
