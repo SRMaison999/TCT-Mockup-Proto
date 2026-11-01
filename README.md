@@ -66,6 +66,7 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 | `.claude/handoff/` | Passations entre sessions d'assistance : `active.md` quand une attend, `archive/` ensuite |
 | `docs/` | Les sept documents du projet, décrits ci-dessus |
 | `docs/audit-ux.md` | **Pas un des sept.** L'audit de l'écran mené le 31 octobre 2026 sur `timeline-prototype_mixed.html` et l'avis sur le design : une **liste de propositions en attente de l'accord de l'opérateur**, rien de plus. Un point qui obtient son accord part dans `docs/travaux.md` ou dans le code, et disparaît de ce fichier. Ne possède aucun fait |
+| `UCI-Rules_PointsRace.pdf` | **Le règlement officiel de l'UCI** pour la course aux points, à la racine du dossier. C'est la référence réglementaire du sport ; les règles auxquelles le code se conforme restent celles de `docs/regles-operateur.md`, qui y renvoie |
 | `CLAUDE.md` | Ce que lit automatiquement une session d’assistance : l’ordre de lecture et la manière de travailler. **Aucun fait, aucune règle, aucune mesure** — il ne fait que renvoyer aux documents qui les possèdent |
 
 ---

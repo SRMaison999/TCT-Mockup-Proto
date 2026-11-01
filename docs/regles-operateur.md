@@ -10,6 +10,10 @@ codée où, quel statut » est dans `cas-de-course.md`. Les erreurs de lecture d
 sont dans `pitfalls.md`. **Ne recopiez une règle d'ici dans aucun autre fichier** : c'est
 exactement ce qui a produit onze contradictions entre les documents.
 
+**Le règlement officiel de l'UCI** pour la course aux points est dans le dépôt :
+`UCI-Rules_PointsRace.pdf`, à la racine. C'est la référence réglementaire du sport, et ce
+n'est pas un énoncé de l'opérateur : ce fichier-ci reste ce qui fait foi pour le code.
+
 ## Sommaire
 
 1. [La cassure : ce qui définit un groupe](#1-la-cassure--ce-qui-définit-un-groupe)
