@@ -144,7 +144,7 @@
     //     sur le nombre de franchissements de la ligne basculait 100 fois au palier 2 — dans un
     //     peloton de 16, le premier à franchir la ligne a un franchissement d'avance sur le dernier
     //     pendant les deux secondes que met le groupe à passer. À chaque bascule, les écarts de
-    //     tout le monde se recalculaient sur un autre coureur : la file se retournait 1 509 fois et
+    //     tout le monde se recalculaient sur un autre coureur : la timeline se retournait 1 509 fois et
     //     246 ±20 sortaient de nulle part.
     //     → Le garde : `ancre` est posée par `designer(bib)` et par rien d'autre. Tant que
     //       personne n'est désigné, c'est le premier coureur détecté de la course, et il le reste.

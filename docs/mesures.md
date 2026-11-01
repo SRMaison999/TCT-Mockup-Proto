@@ -1791,7 +1791,7 @@ d'être sorti de l'écran, et il porte toujours son nom, son nombre de coureurs 
 
 ## 42. Les dossards sur la piste — build 131
 
-La piste fait `HW = 30` de demi-largeur dans le dessin. Un dossard posé sur la file extérieure
+La piste fait `HW = 30` de demi-largeur dans le dessin. Un dossard posé sur la timeline extérieure
 atteint `LANE + DOT_R` depuis l'axe.
 
 | | Avant | Après |
@@ -1812,8 +1812,8 @@ La bulle se mesurait sur ses coureurs (`LANE + DOT_R + BUB_M`), soit 43 avant la
 33 après : elle dépassait encore. Ses deux bords sont maintenant **ramenés dans la piste**, et
 son milieu s'en déduit.
 
-Borner la seule demi-largeur ne suffit pas : une bulle décentrée -- un groupe sur la file du
-milieu et la file extérieure -- dépasse encore du côté large. Et borner les bords à `HW` tout
+Borner la seule demi-largeur ne suffit pas : une bulle décentrée -- un groupe sur la timeline du
+milieu et la timeline extérieure -- dépasse encore du côté large. Et borner les bords à `HW` tout
 rond laisse encore **31,2**, parce que le trait de 1,5 qui dessine le bord est centré dessus et
 que la bande suit la courbe par segments. La borne est donc `HW − 2`.
 
@@ -2440,7 +2440,7 @@ Les treize : SUI sur 7, COL sur 18, FRA sur 18 et sur 9, ESP sur 9 et sur 67, KA
 
 **Pourquoi.** Les coureurs sont rangés en **trois files** espacées de `LANE = 19` unités, et un
 dossard a `DOT_R = 10` de rayon, donc 20 de diamètre. Entre le bas d'un dossard et le haut de
-celui de la file voisine il reste **9 unités** ; l'étiquette en fait 10,4. Dans un peloton
+celui de la timeline voisine il reste **9 unités** ; l'étiquette en fait 10,4. Dans un peloton
 compact il n'y a pas la place d'une deuxième ligne de texte sous chaque dossard, quelle que
 soit sa taille de police.
 
@@ -2723,7 +2723,7 @@ dernier. Personne n'est détaché, ni devant ni derrière.
 52 est la distance **du 15 au 12** — de tête à tête, depuis le premier coureur du bloc précédent.
 Le vrai écart entre le **dernier du peloton (7 NED)** et le **premier du bloc (12 SUI)** est de
 **2,2 m**. De même, le « 26 m » du bloc formé avec le 61 est la distance **du 15 au 61** ; le 61
-roule à **2,2 m** derrière le 18 POR, dans la file, treizième sur seize.
+roule à **2,2 m** derrière le 18 POR, dans la timeline, treizième sur seize.
 
 **Ce que donne sa règle.** Mesuré entre le **dernier du groupe de tête (52 ITA)** et le
 **premier du groupe suivant (15 IRL)**, en faisant le tour de la piste : 250 − 33,0 =
@@ -2772,7 +2772,7 @@ peloton.
 Sa question du 1er novembre 2026. Ordre de passage sur la ligne, course avec le 12 et le 52
 posés en tête :
 
-| Tour | Les quatre derniers de la file |
+| Tour | Les quatre derniers de la timeline |
 |---|---|
 | 17 | … 61, **7**, **12**, 52 |
 | 18 | … 61, **12**, **7**, 52 |
@@ -2780,7 +2780,7 @@ posés en tête :
 
 **Le 7 n'a jamais quitté le peloton.** Il est quatorzième sur seize au tour 17, quinzième au
 tour 18, quatorzième de nouveau au tour 21. Lui et le 12 ont simplement **échangé leurs places**
-à l'intérieur de la file, et deux coureurs consécutifs sont séparés de **2,20 m** (§42).
+à l'intérieur de la timeline, et deux coureurs consécutifs sont séparés de **2,20 m** (§42).
 
 **C'est cet échange de deux mètres qui lui a donné la tête de la course.** La reprise
 automatique du leader compare les positions **sur la piste** ; elle ne regarde pas la timeline.
@@ -2822,7 +2822,7 @@ coureurs sont dans le même groupe.
 | Tours où elle diffère | **2** — les tours 7 et 14 |
 
 Aux tours 7 et 14, la cassure mesurée sur les boucles apparaît une fraction de seconde plus tard
-que celle calculée sur les positions interpolées : au tour 7 le 12 SUI est encore dans la file
+que celle calculée sur les positions interpolées : au tour 7 le 12 SUI est encore dans la timeline
 au lieu d'être déjà seul devant, au tour 14 le 11 JPN et le 4 GBR sont encore accrochés au lieu
 d'être déjà décrochés. Le leader est le même à chacun des 40 tours.
 
@@ -2842,7 +2842,7 @@ autres. Les 35 points du 15 sont cinq sprints à 5 points plus le sprint final d
 gagné les six sprints**, et les quatre premières places de chaque sprint sont à chaque fois les
 quatre mêmes coureurs, dans le même ordre.
 
-C'est la limite de ce palier : la file ne se mélange jamais, donc le même coureur passe la ligne
+C'est la limite de ce palier : la timeline ne se mélange jamais, donc le même coureur passe la ligne
 en tête aux six sprints. La course tourne juste, elle n'est pas encore vraisemblable.
 
 ### L'écart affiché en temps (build 168)
@@ -2864,8 +2864,8 @@ Ancienne simulation, tour 9, trois blocs. Les mêmes écarts, avant et après :
 
 | Tours | Ce que la timeline montre |
 |---|---|
-| 1 à 8 | **un seul groupe de seize.** L'ordre dans la file change dès le tour 3 : les fluctuations déplacent les coureurs de quelques mètres sans casser le groupe |
-| 5 à 8 | le 12 SUI et le 52 ITA, partis du fond, remontent la file et sont en tête au tour 7 |
+| 1 à 8 | **un seul groupe de seize.** L'ordre dans la timeline change dès le tour 3 : les fluctuations déplacent les coureurs de quelques mètres sans casser le groupe |
+| 5 à 8 | le 12 SUI et le 52 ITA, partis du fond, remontent la timeline et sont en tête au tour 7 |
 | **9** | **première cassure** : le 12 et le 52 passent devant, le peloton à **2,0 s** |
 | 10 à 13 | leur avance passe à 3,3 s, 4,7 s, 5,8 s, 6,4 s |
 | 13 | le 18 POR, le 61 COL et le 7 NED, partis au tour 11, sont en tête du peloton |
@@ -2914,7 +2914,7 @@ Le palier 2 joué en entier, 60 tours, sans aucune intervention : **1296 lignes*
 
 | Sorte | Lignes |
 |---|---|
-| `FILE` — la file change | **873** |
+| `TIMELINE` — la timeline change | **873** |
 | `ECART` — un écart bouge d'au moins 1 s | **289** |
 | `LEADER` — le coureur de tête change | **90** |
 | `POINTS` | 20 |
@@ -2927,7 +2927,7 @@ tours 4, 5 et 6 encore. Le peloton est alors **un seul groupe de seize** : ce so
 fluctuations de vitesse, de 0,1 à 0,3 m/s, qui font permuter deux coureurs de quelques mètres,
 et la tête de la course suit ces mètres.
 
-**L'inversion de la file, prise sur le fait**, trois lignes `FILE` en six dixièmes de seconde
+**L'inversion de la timeline, prise sur le fait**, trois lignes `TIMELINE` en six dixièmes de seconde
 au tour 21 :
 
 ```
@@ -2971,7 +2971,7 @@ Le plus net, à 31,0 s : le 4 GBR et le 15 IRL sont à **410,9 m tous les deux**
 et la tête change. Puis 2,1 m à 36,75 s, 1,2 m à 46,1 s, 2,1 m à 46,25 s. Le peloton est alors
 un seul groupe de seize.
 
-**2. Le tour retranché s'allume et s'éteint, et c'est lui qui inverse la file.**
+**2. Le tour retranché s'allume et s'éteint, et c'est lui qui inverse la timeline.**
 
 Au tour 21, trois images consécutives, six dixièmes en tout :
 
@@ -2988,7 +2988,7 @@ la position du 12 lui-même : neuf coureurs du peloton — 3, 9, 1, 67, 58, 23, 
 alors **ramenés de −1 tour**.
 
 **Le 12 bascule 53 fois, le 52 également.** Un pas de 250 m appliqué puis retiré cinquante-trois
-fois : c'est l'inversion de la file que l'opérateur a vue sur ses captures.
+fois : c'est l'inversion de la timeline que l'opérateur a vue sur ses captures.
 
 **3. Les ±20 arrivent tôt parce que le quotient est arrondi.**
 
@@ -3034,7 +3034,7 @@ contre l'article UCI 3.2.017 quater.
 **2. Le tour retranché : pas corrigé.** 494 bascules de `TOUR` sur la course, dont **52 pour le 12,
 52 pour le 52, 61 pour le 18, 60 pour le 7**. Geler la valeur dans `S.took` n'a rien changé, et la
 mesure dit pourquoi : ce n'est pas le **repère** qui oscille, c'est l'**appartenance au paquet**.
-Elle oscille parce que l'ordre de la file se calcule sur les mètres interpolés, cet ordre décide
+Elle oscille parce que l’ordre de la timeline se calcule sur les mètres interpolés, cet ordre décide
 quelles **paires** de coureurs se suivent, et c'est sur ces paires que la cassure est confirmée. La
 boucle se referme : tour retranché → `np()` → ordre → paires → cassure → paquet → tour retranché.
 
@@ -3057,7 +3057,7 @@ rejouée du départ à l'arrivée (1 042,3 s), puis « Palier 1 — peloton grou
 | dont le 12 SUI | 52 | **15** |
 | Coureurs à qui un tour est retranché un jour | les **16** | **8** |
 | Changements de tête | **67** | **32** |
-| Changements de composition de la file | 858 | **397** |
+| Changements de composition de la timeline | 858 | **397** |
 | Propositions ouvertes pour les cinq coureurs qui prennent un tour | 2 puis 3, séparées | **une seule**, qui les rassemble |
 | Points qui reculent | 0 | 0 |
 | Sauts d'écart de plus de 10 s | 141 | **164** |
@@ -3070,7 +3070,7 @@ passages. Sur 67 changements de tête, **9 seulement** tombaient dans les trois 
 détection du nouveau leader. D'où la build 177 : le tour retranché ne se décide, lui aussi, qu'à
 une détection.
 
-**Le contrôle, palier 1** : un seul bloc, **un seul** coureur en tête, la composition de la file
+**Le contrôle, palier 1** : un seul bloc, **un seul** coureur en tête, la composition de la timeline
 change **3 fois** sur toute la course (contre des centaines), zéro proposition, zéro tour
 retranché, zéro saut d'écart, zéro point qui recule.
 
@@ -3092,7 +3092,7 @@ C'est le poste 18 et le poste 20 de `travaux.md`.
 | Écarts lus légèrement négatifs, notés sans correction | — | **9**, de −115 m et −125 m |
 | Tours retranchés, bascules | 104 | **104** |
 | Changements de tête | 32 | **32** |
-| Changements de composition de la file | 397 | **397** |
+| Changements de composition de la timeline | 397 | **397** |
 | Propositions | une par nombre de tours | une par nombre de tours |
 | Points qui reculent | 0 | **0** |
 | Sauts d'écart de plus de 10 s | 164 | **167** |
@@ -3102,7 +3102,7 @@ C'est le poste 18 et le poste 20 de `travaux.md`.
 **−125 m**, jamais autre chose. C'est la queue du bloc du dessus et la tête du bloc du dessous lues
 sur deux boucles différentes, et rien d'autre.
 
-**Le contrôle, palier 1** : un seul bloc, un seul leader, la file change **3 fois** sur toute la
+**Le contrôle, palier 1** : un seul bloc, un seul leader, la timeline change **3 fois** sur toute la
 course, zéro proposition, zéro tour retranché, zéro écart négatif, zéro saut d'écart, zéro point
 qui recule.
 
@@ -3241,13 +3241,13 @@ l'arrivée, **zéro** changement de tête, **zéro** événement de points sur 2
 17 changements d'ordre relevés sont tous à l'intérieur du groupe unique.
 
 **Palier 2 — inutilisable.** **246** événements de points, **100** changements de tête, et la
-composition de la file change **1 509** fois. Les relevés sont incohérents dès la première minute :
+composition de la timeline change **1 509** fois. Les relevés sont incohérents dès la première minute :
 « +20 au 4 à 56 s », alors que personne n'a encore attaqué.
 
 **La cause, et elle est de conception.** Sur un anneau, « qui est devant » n'a de sens qu'à partir
 d'un coureur. J'ai fait choisir ce coureur par le moteur lui-même — celui qui a franchi la ligne le
 plus de fois —, et toute la chaîne se mesure par rapport à lui. Chaque fois que ce choix bascule,
-les retards de tous les coureurs se recalculent sur une autre référence et la file se retourne.
+les retards de tous les coureurs se recalculent sur une autre référence et la timeline se retourne.
 Cent bascules, mille cinq cents retournements.
 
 **Or son point 174 dit qui désigne ce coureur, et ce n'est pas le logiciel** : « Le groupe 1 de la
@@ -3265,7 +3265,7 @@ Tout le reste se mesure par rapport à lui — les décalages, les groupes, les 
 | palier 1, propositions de points | 0 | **0** |
 | palier 1, changements de tête | 0 | **0** |
 | palier 2, changements de tête | 100 | **0** |
-| palier 2, retournements de la file | 1 509 | **0** |
+| palier 2, retournements de la timeline | 1 509 | **0** |
 | palier 2, propositions de points | 246 | **11** |
 | palier 2, premier constat | +20 au 4 à 56 s (faux) | **+20 au 12 et au 52 à 333 s** |
 | palier 2, peloton final | 12, 52, 18, 61, 7 (les échappés) | **15, 4, 11, 23, 46, 70, 58, 67, 1, 9, 3** |
@@ -3340,7 +3340,7 @@ et zéro point dû à quiconque : le coureur le plus écarté du peloton a fini 
 ### Build 190 · le moteur de course branché sur la timeline et sur l'ovale
 
 Sa demande du 1er novembre 2026 : « branche le moteur de course sur la timeline et l'ovale ».
-L'écran lui prend **trois choses**, et rien d'autre : l'**ordre** de la file, la **composition** des
+L'écran lui prend **trois choses**, et rien d'autre : l'**ordre** de la timeline, la **composition** des
 blocs, et l'**écart en temps** entre deux blocs. Les positions sur la piste restent à la simulation,
 parce que le moteur de course ne connaît pas les mètres et que l'ovale en a besoin pour dessiner —
 l'ovale suit donc les blocs du moteur en les plaçant à leur endroit sur la piste.
@@ -3349,11 +3349,11 @@ l'ovale suit donc les blocs du moteur en les plaçant à leur endroit sur la pis
 |---|---|---|
 | sauts d'écart de plus de 10 s | 167 | **2** |
 | bascules de tour | 104 | 147 |
-| changements de composition de la file | — | 770 |
+| changements de composition de la timeline | — | 770 |
 | écarts affichés négatifs | 164 (inventés en tour) | 511, le pire à −1,9 s |
 
 **Palier 1, course entière (20 053 images).** Un seul bloc de 16 du départ à l'arrivée, **zéro**
-saut d'écart, **zéro** écart négatif, **zéro** bascule de tour, et la composition de la file change
+saut d'écart, **zéro** écart négatif, **zéro** bascule de tour, et la composition de la timeline change
 6 fois sur toute la course.
 
 **Ce que l'écran montre au palier 2 à 600 s** — trois blocs, et ils sont justes : `1-LEADERS` le 18,
@@ -3365,3 +3365,37 @@ onze, puis le 12 et le 52 à **2,84 s**, puis le 18, le 61 et le 7 à **2,37 s**
 l'autre **sur la piste**, alors que le moteur de course, lui, n'y voit aucune cassure : il les range
 dans le même groupe, et leur écart est donc plus petit que le seuil du §1. Ce ne sont plus les
 sauts de 18 s qu'il avait vus, mais ça reste un nombre négatif à l'écran.
+
+### Build 191 · les groupes se créent sur la timeline, plus sur l'ovale
+
+Son point 185. Les groupes ne se constituent plus en regardant qui est proche de qui sur la piste.
+On descend la timeline, du premier coureur au dernier, et on ouvre un nouveau groupe à chaque écart
+de plus d'une seconde entre deux coureurs qui se suivent (§1).
+
+| palier 2, course entière (20 846 images) | build 190 | build 191 |
+|---|---|---|
+| écarts négatifs affichés en en-tête de groupe | 511 | **161** |
+| le pire d'entre eux | −1,90 s | **−0,12 s** |
+| sauts d'écart de plus de 10 s | 2 | **0** |
+
+**Les deux cas qu'il avait relevés, après correction.**
+
+À **449,7 s**, le 67 et le 58 sont tous les deux au mètre 51. Ils sont maintenant **dans le même
+groupe** : groupe 3, neuf coureurs — 15 au m64, 4 au m64, 11 au m60, 23 au m58, 58 au m51, 67 au
+m51, 9 au m47, 1 au m48, 3 au m42. Il n'y a plus que trois groupes au lieu de quatre, et plus aucun
+écart négatif à cet instant.
+
+À **744,5 s**, le 18 (m53), le 61 (m52) et le 7 (m50) ne sont plus affichés **sous** un groupe dont
+le dernier coureur est au mètre 24 : ils sont **dans ce groupe**, qui compte quatorze coureurs — 46
+au m50, 70 au m49, 18 au m53, 61 au m52, 15 au m45, 7 au m50, 4 au m45, 11 au m41, 23 au m39, 67 au
+m31, 58 au m31, 1 au m29, 9 au m26, 3 au m24. Le −1,90 s a disparu.
+
+**Palier 1, course entière (20 053 images).** Un seul groupe de 16 du départ à l'arrivée, **zéro**
+écart négatif, **zéro** saut d'écart, **zéro** bascule de tour, et la composition des groupes change
+6 fois sur toute la course.
+
+**Ce qui reste.** 161 images sur 20 846 — environ une sur cent trente — affichent encore un écart
+négatif, au pire **−0,12 s**, soit un dixième de seconde. C'est le délai de confirmation du §1 :
+une cassure doit tenir 0,3 s avant d'être déclarée, et elle doit tenir 0,3 s de plus avant d'être
+levée. Pendant ces trois dixièmes, deux groupes restent séparés à l'écran alors que les deux
+coureurs se sont déjà rejoints, et l'écart affiché passe légèrement sous zéro.

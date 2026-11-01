@@ -762,13 +762,13 @@ build précédent et on discute d'un écran qui n'existe plus.
 **À vérifier avant de conclure qu'un écran est cassé** : le type servi pour `styles.css`, et le
 numéro de build affiché comparé à celui du dépôt.
 
-## A14. Le voisin dans la file n'est pas le coureur qui vous suit sur la piste
+## A14. Le voisin dans la timeline n'est pas le coureur qui vous suit sur la piste
 
 Un groupe, c'est une **chaîne** : chaque coureur est à moins d'une seconde de celui qui le suit.
 Rien n'oblige les deux **bouts** de la chaîne à être proches. Au palier 2, le peloton de seize
 mesurait jusqu'à **218,9 m** de long sur une piste de 250 m.
 
-Prendre « le voisin dans la file » pour « le coureur qui le suit sur la piste » a donc fait compter un tour
+Prendre « le voisin dans la timeline » pour « le coureur qui le suit sur la piste » a donc fait compter un tour
 pris contre un coureur à **126,6 m**, soit un demi-tour : l'arrondi a transformé 0,506 en 1, et un
 +20 a été proposé au tour 12 à un coureur qui venait de s'échapper.
 

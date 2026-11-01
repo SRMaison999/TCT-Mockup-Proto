@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '190';
+const BUILD = '191';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -699,7 +699,7 @@ let simCols = { bib: true, nat: true, name: true };   // the dossard is never hi
 let S; // simulation + operator state
 // LE MOTEUR DE COURSE EST BRANCHÉ. L'opérateur, 1er novembre 2026 : « branche le moteur de course
 // sur la timeline et l'ovale ». Il naît avec la course, il ne reçoit que les détections des boucles,
-// et l'écran lui prend trois choses : l'ORDRE de la file, la COMPOSITION des blocs, et l'ÉCART entre
+// et l'écran lui prend trois choses : l'ORDRE de la timeline, la COMPOSITION des blocs, et l'ÉCART entre
 // deux blocs. Les positions sur la piste restent à la simulation : le moteur de course ne connaît
 // pas les mètres, et l'ovale en a besoin pour dessiner.
 let MC = null;
@@ -1112,12 +1112,12 @@ function computeGroups(M) {
   // coureur prend le tour du paquet « au moment où » il n'y a plus de cassure entre lui et le paquet. Le nombre de
   // tours se mesure donc UNE FOIS, à cette image-là, et il tient tant qu'il est dans le paquet ; il ne se refait
   // pas vingt fois par seconde contre un repère qui, lui, bouge. Mesuré le 1er novembre 2026 : le 12 et le 52
-  // basculaient 53 fois chacun, et chaque bascule retournait la file et faisait sauter l'écart d'un tour entier.
+  // basculaient 53 fois chacun, et chaque bascule retournait la timeline et faisait sauter l'écart d'un tour entier.
   // ET LE TOUR PRIS SUR LE PAQUET NE SE DÉCIDE QU'À UNE DÉTECTION. C'est son point 177 appliqué au merge du §2 : si
   // l'ordre ne peut se savoir qu'aux passages, le tour qu'on retranche à un coureur non plus. Entre deux détections,
   // la valeur relevée au dernier passage TIENT, quoi que fasse l'amas calculé entre-temps.
   // Mesuré le 1er novembre 2026, build 176 : recalculé à chaque image, ce terme basculait 494 fois sur la course —
-  // 52 fois pour le seul 12 — et chaque bascule déplaçait le coureur d'un tour entier dans la file.
+  // 52 fois pour le seul 12 — et chaque bascule déplaçait le coureur d'un tour entier dans la timeline.
   const impliedOf = r => {
     const at = r.rec ? r.rec.t : null, st = S.took[r.bib];
     if (st && st.at === at) return st.v;              // rien de neuf n'a été lu : rien ne change
@@ -1180,7 +1180,7 @@ function computeGroups(M) {
   }
   // SON POINT 183 : la tête de la timeline est celle qu'il désigne, et le moteur de course la tient.
   // Tant qu'il n'a désigné personne, le moteur garde la sienne — le premier coureur détecté — et
-  // c'est elle qui mène la file.
+  // c'est elle qui mène la timeline.
   if (MC && S.leader) MC.designer(S.leader.bib);
   let leaderSrc = leaderR ? 'désigné' : null;
   // LA TÊTE EST LE PREMIER DE L'ORDRE RELEVÉ AUX BOUCLES. Plus de seuil, plus de retenue : l'ordre ne bouge
@@ -1208,26 +1208,35 @@ function computeGroups(M) {
   //    each at its own distance from the leader; the block then says who it rides with on the track.
   const opOf = new Map(); for (const g of S.groups) for (const b of g.bibs) opOf.set(b, g);
   const pendingOf = b => { const p = S.proposals.find(p => p.kind === 'lap' && p.bibs.includes(b) && !(S.snoozed[p.key] && S.t < S.snoozed[p.key])); return p ? p.delta : 0; };
+  // LES GROUPES SE CRÉENT SUR LA TIMELINE. Son point 185, le 1er novembre 2026 : « MAIS EVIDEMMENT QUE
+  // C'EST COMME CA QUE SE CREENT LES GROUPES !! CE N'EST PAS L'OVALE ! FORCEMENT ! L'OVALE C'EST UNE
+  // AIDE VISUELLE A L'UTILISATEUR ! » On descend donc la timeline, du premier coureur au dernier, et on
+  // ouvre un nouveau groupe à chaque écart de plus d'une seconde entre deux coureurs qui se suivent
+  // (§1). C'est le moteur de course qui porte cette découpe ; quand il ne connaît pas encore l'un
+  // des deux coureurs, la même mesure est refaite ici sur les mètres lus.
+  //
+  // E11. NE JAMAIS CONSTITUER UN GROUPE SUR LES POSITIONS DE L'OVALE. Elles ne sont pas précises, et
+  //      elles ne disent pas l'ordre de la course. Mesuré à la build 190 : les groupes étaient
+  //      constitués par proximité sur la piste puis rangés par l’ordre de la timeline, et les deux ne
+  //      concordaient pas. À 449,8 s du palier 2, le 67 et le 58 étaient tous deux au mètre 52,
+  //      roue contre roue, dans deux groupes différents ; à 744,6 s, le groupe 3 — le 18 au m55, le
+  //      61 au m54, le 7 au m52 — était affiché SOUS un groupe dont le premier coureur, le 46,
+  //      était au m52 et le dernier, le 3, au m26. 511 images sur 20 846 affichaient alors un écart
+  //      négatif en en-tête de groupe.
   const groups = [];
-  for (const c of clusters) {
-    const free = c.rows.filter(x => !opOf.has(x.r.bib)).sort(cmpRead);
+  {
+    const suite = rows.filter(x => !opOf.has(x.r.bib));   // `rows` est déjà rangé dans l’ordre de la timeline
     let g = null;
-    for (const x of free) {
+    for (const x of suite) {
       x.pending = pendingOf(x.r.bib);
-      // La DÉCOUPE, elle, reste sur les mètres interpolés : elle pose une question physique — ces deux coureurs
-      // sont-ils à un tour l'un de l'autre ? —, à laquelle la mesure interpolée répond sans ambiguïté, 0 m ou 250 m.
-      // Mesuré à la build 179 : posée sur les mètres LUS, dont le pas entre deux boucles atteint 125 m, elle coupait
-      // un amas en deux blocs fantômes et les bascules de tour remontaient de 104 à 142.
-      // LA DÉCOUPE EST CELLE DU MOTEUR DE COURSE : deux coureurs que sa chaîne sépare par une
-      // cassure confirmée sont deux blocs. Quand il ne connaît pas l'un des deux, on retombe sur la
-      // question physique — sont-ils à un tour l'un de l'autre ? —, à laquelle les mètres
-      // interpolés répondent sans ambiguïté, 0 m ou 250 m (build 179).
       const prec = g && g.rows[g.rows.length - 1];
-      const ba = prec && mcBloc.get(prec.r.bib), bb = mcBloc.get(x.r.bib);
-      const coupe = !g ? true
-        : (ba != null && bb != null) ? ba !== bb
-        : x.behind - prec.behind > TRACK / 2;
-      if (coupe) { g = { rows: [], op: null, cluster: c }; groups.push(g); }
+      let coupe = !g;
+      if (prec) {
+        const ba = mcBloc.get(prec.r.bib), bb = mcBloc.get(x.r.bib);
+        coupe = (ba != null && bb != null) ? ba !== bb
+              : pairCass(prec, x, Math.max(0, x.behindRead - prec.behindRead));
+      }
+      if (coupe) { g = { rows: [], op: null, cluster: x.cluster || null }; groups.push(g); }
       g.rows.push(x);
     }
   }
@@ -1291,6 +1300,10 @@ function computeGroups(M) {
     // c'est la différence de leurs décalages, moins le temps qu'il faut au suiveur pour couvrir une
     // longueur de vélo (§1). Sinon, la même formule écrite sur les mètres lus.
     const rA = ahead && mcRetard.get(ahead.r.bib), rB = follower && mcRetard.get(follower.r.bib);
+    // LE DERNIER D'UN GROUPE EST TOUJOURS DEVANT LE PREMIER DU SUIVANT, depuis que les groupes se
+    // créent en descendant la timeline (point 185) : un écart négatif n'est plus possible par
+    // construction. Ce qui suit ne couvre donc plus que les coureurs qu'aucune boucle n'a encore
+    // situés l'un par rapport à l'autre.
     // PLUS AUCUN TOUR N'EST AJOUTÉ ICI. Tant que l'ordre venait des mètres interpolés et l'écart des mêmes mètres,
     // un écart pouvait sortir négatif et on y ajoutait autant de tours qu'il fallait pour que le bloc repasse
     // derrière — 164 fois sur le palier 2, et c'est ce saut de 18,3 s que l'opérateur a vu. Les deux viennent
@@ -1308,7 +1321,7 @@ function computeGroups(M) {
     prevG = g;
   }
   // LE RANG DE CHAQUE COUREUR DANS LA TIMELINE. L'opérateur, 1er novembre 2026 (point 170) : « Puisque tu as
-  // déclaré que les n° 12 et 52 étaient les leaders, alors 12 et 52 doivent [être] les premiers de la file ».
+  // déclaré que les n° 12 et 52 étaient les leaders, alors 12 et 52 doivent [être] les premiers de la timeline ».
   // La timeline EST l'ordre de la course ; toute vue qui prétend montrer cet ordre le lit ici, et non dans les
   // heures de passage. Sans forçage les deux coïncident, puisque les blocs sont alors rangés par la mesure.
   S.tlRank = {}; { let n = 0; for (const g of groups) for (const b of g.bibs) S.tlRank[b] = n++; }
@@ -1832,7 +1845,7 @@ const ridersG = $('#riders'), labelsG = $('#ovlabels'), path = $('#trackpath');
 // labels keep from its inner edge. Written into the decor itself so there is one number, not two that drift apart.
 const OVAL_W = 60, HW = OVAL_W / 2;
 // Les dossards sur la piste ne doivent pas en déborder (l'opérateur, 29 octobre 2026). La piste fait HW = 30 de
-// demi-largeur : un dossard de rayon DOT_R posé sur la file extérieure atteint LANE + DOT_R, qui doit rester sous
+// demi-largeur : un dossard de rayon DOT_R posé sur la timeline extérieure atteint LANE + DOT_R, qui doit rester sous
 // HW. Avec 10 et 19 il atteint 29 ; avec les 15 et 24 d'avant il atteignait 39, soit 9 au-delà du bord.
 const DOT_R = 10, LANE = 19, DOT_GAP = 24;
 $('#trackband').setAttribute('stroke-width', OVAL_W);
@@ -3786,7 +3799,7 @@ function advance(dt) {
    l'appli et crée des logs. Suite à quoi on pourra mettre le doigt sur le problème plus
    facilement ».
    Elle ne juge rien et ne corrige rien : elle note les CHANGEMENTS, parce que les défauts
-   qu'il a relevés sont des basculements — une file qui s'inverse, un écart qui saute, des
+   qu'il a relevés sont des basculements — une timeline qui s'inverse, un écart qui saute, des
    points qui reculent. Un instantané ne les montre pas ; deux instantanés consécutifs, si.
    Le journal (S.log) reste ce qu'il est : les faits et les décisions, pour l'opérateur, 120
    lignes au plus. La trace est pour le diagnostic : elle garde tout, et s'exporte.
@@ -3812,10 +3825,10 @@ function traceTick(G) {
     L.leader = G.leaderBib;
   }
 
-  // 2. LA FILE : composition et ordre des blocs
+  // 2. LA TIMELINE : composition et ordre des blocs
   const sign = traceSign(G);
   if (sign !== L.sign) {
-    traceAdd('FILE', sign, { avant: L.sign || null, blocs: G.groups.map(g => ({ nom: groupName(g), bibs: [...g.bibs], ecart: traceGap(g) })) });
+    traceAdd('TIMELINE', sign, { avant: L.sign || null, blocs: G.groups.map(g => ({ nom: groupName(g), bibs: [...g.bibs], ecart: traceGap(g) })) });
     L.sign = sign;
   }
 

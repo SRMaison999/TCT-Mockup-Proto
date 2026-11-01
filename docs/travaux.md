@@ -744,7 +744,7 @@ elle le sprint du point 168.
 l'écran, et relevé sur ses captures.
 
 **Le défaut.** Quand un groupe rejoint par l'arrière le groupe qui le précède, il est posé
-**derrière** lui au lieu de se fondre dedans, et toute la file bascule.
+**derrière** lui au lieu de se fondre dedans, et toute la timeline bascule.
 
 | Instant | Ce que montre la timeline |
 |---|---|
@@ -785,7 +785,7 @@ moment où les coureurs concernés auront réellement rejoint ou été rejoints,
 sera proposée qu'**une fois**, avec tous ses coureurs ensemble, et aucun coureur du plus gros
 peloton ne se verra proposer un tour perdu.
 
-**Ce que la build 174 a corrigé.** On mesurait les tours contre le voisin dans la file du paquet,
+**Ce que la build 174 a corrigé.** On mesurait les tours contre le voisin dans la timeline du paquet,
 qui pouvait être à 126,6 m ; on les mesure contre le coureur le plus proche **sur la piste**, et
 rien n'est proposé s'ils ne se suivent pas. La première proposition pour le 12 et le 52 passe
 du **tour 12** au **tour 19**, elle les porte **tous les deux** au lieu du 12 seul, les deux lâchés
@@ -911,7 +911,7 @@ dérive, trop tard. L'épreuve valide désormais les points **coureur par coureu
 réellement parcourue : au palier 2, les sept coureurs concernés reçoivent exactement ce qui leur est
 dû, et les neuf autres rien. Détail dans `docs/mesures.md`, build 189.
 
-### 28. Un écart négatif entre deux blocs que le moteur de course ne sépare pas · ouvert
+### 28. Un écart négatif entre deux blocs que le moteur de course ne sépare pas · fermé build 191
 
 Mesuré au palier 2, build 190 : 511 images sur 20 846 affichent un écart négatif dans l'en-tête
 d'un bloc, en moyenne −0,38 s, au pire −1,9 s à 745 s sur le bloc du 18.
@@ -925,3 +925,9 @@ qui se touchent, moins une longueur de vélo : il sort négatif.
 Deux sorties possibles, et **elles se proposent avant d'être codées** (§14.1) : ne pas afficher
 d'écart entre deux blocs que le moteur de course ne sépare pas, ou ne plus couper le bloc du tout
 et laisser l'ovale seul marquer les deux endroits.
+
+**Fermé build 191.** Son point 185 a tranché : les groupes se créent en descendant la timeline, pas
+en regardant l'ovale. Les écarts négatifs tombent de 511 images à 161, et le pire de −1,90 s à
+−0,12 s. Ce qui reste est le délai de confirmation du §1 — une cassure doit tenir trois dixièmes de
+seconde avant d'être levée —, et cela vaut un dixième de seconde à l'écran. Détail dans
+`docs/mesures.md`, build 191.

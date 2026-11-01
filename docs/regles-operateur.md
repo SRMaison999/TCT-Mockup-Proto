@@ -1789,7 +1789,7 @@ mesures, son choix : **en-têtes collants, et réduire la hauteur de tous les é
 89. **Un dossard sur la piste ne doit pas en déborder.** Mot pour mot : « il faudrait réduire
     la taille des badges des coureurs sur la piste. De façon à ce qu'ils ne débordent pas de la
     piste ». Le rayon d'un dossard passe de 15 à 10 et l'écart des files de 24 à 19, si bien
-    qu'un coureur de la file extérieure atteint 29 pour une demi-piste de 30. Il en atteignait
+    qu'un coureur de la timeline extérieure atteint 29 pour une demi-piste de 30. Il en atteignait
     **39** auparavant, soit 9 au-delà du bord.
 
 90. **La bulle d'un groupe ne déborde pas non plus.** « oui rentre la bulle aussi ». Ses deux
@@ -2367,12 +2367,12 @@ l'écran, une à la fois.
 170. **La timeline est l'ordre de la course, et toutes les vues la suivent.** Ses mots, le
      1er novembre 2026, devant la liste des passages sur la ligne qui commençait encore par le
      15 : « **Cela est faux !! Puisque tu as déclaré que les n° 12 et 52 étaient els leaders,
-     alors 12 et 52 doivent les premiers de la file : 17 | 12, 52 … 61, 7** ».
+     alors 12 et 52 doivent les premiers de la timeline : 17 | 12, 52 … 61, 7** ».
      Ce qu'il écrit vaut pour l'onglet Crossings, mais l'énoncé est général : une vue qui montre
      l'ordre de la course le prend dans la timeline, et non dans les heures de passage.
 
 171. **Un bloc posé à la main gèle le leader.** Sa réponse du 1er novembre 2026, au cas du 7 et
-     du 12 qui échangent 2,20 m dans la file alors que le bloc de tête affiche 217 m :
+     du 12 qui échangent 2,20 m dans la timeline alors que le bloc de tête affiche 217 m :
      « **Non : quand j'ai posé un bloc à la main, le leader ne change que si je le change
      moi-même.** »
      Cela ne retire rien au point 159 : hors forçage, l'application continue de donner la tête à
@@ -2568,3 +2568,50 @@ qui le désigne. Sa réponse :
 La tête de la timeline est donc **celle qu'il désigne**, comme le juge starter la montre du doigt
 (son point 174), et elle ne change que s'il la change. Le logiciel ne la cherche pas. Il tient la
 file derrière elle.
+
+### 184. Parler clairement, tout le temps (1er novembre 2026)
+
+Après la quatrième reprise de la journée sur la même chose, il l'a posé en règle :
+
+> Voilà cette explication est compréhensible. Ca fait plusieurs que je dois te reprendre car ce que
+> tu dis est incompréhensible.
+> Maintenant je veux dorénavant que tu parles clairement, TOUT LE TEMPS !
+
+Et sur l'explication d'un défaut :
+
+> Mais ce problème, sois plus précis quand tu l'expliques. « Ça se produit quand deux groupes sont
+> affichés séparément à l'écran alors qu'en réalité, sur la piste, les coureurs roulent collés les
+> uns aux autres », tu vois on peut interpréter ce que tu dis de beaucoup de façons…
+> Sois clair, explique mieux !
+
+Clair ne veut donc pas dire court : une phrase qu'on peut interpréter de plusieurs façons n'est pas
+claire, même courte. Un défaut s'explique avec **les dossards, la seconde et l'endroit de l'écran**
+où il se voit — jamais avec les mots du code ni une tournure générale.
+
+### 185. Les groupes se créent sur la timeline, jamais sur l'ovale (1er novembre 2026)
+
+Je lui ai montré deux coureurs au même mètre affichés dans deux groupes différents, et deux sorties
+possibles. Sa réponse sur le premier point :
+
+> ILS DOIVENT ETRE DANS LE MEME GROUPE !!!
+
+Et sur la façon de créer les groupes :
+
+> MAIS EVIDEMMENT QUE C'EST COMME CA QUE SE CREENT LES GROUPES !! CE N'EST PAS L'OVALE ! FORCEMENT !
+> L'OVALE C'EST UNE AIDE VISUELLE A L'UTILISATEUR ! MAIS J'Y CROIS PAS QUE TU ESSAYAIS DE FAIRE
+> FONCTIONNER LA TIMELINE EN TE BASANT SUR LES POSITIONS DE L'OVALE QU'ON SAIT NE PAS ETRE
+> PRECISES !?
+
+Les groupes se créent donc en descendant **la timeline**, du premier au dernier coureur, et en ouvrant
+un nouveau groupe à chaque écart de plus d'une seconde entre deux coureurs qui se suivent (§1).
+**L'ovale est une aide visuelle**, ses positions ne sont pas précises, et rien de ce que la timeline
+décide ne s'appuie dessus.
+
+### 186. « La file » est mon mot ; le sien est « la timeline » (1er novembre 2026)
+
+> ET ARRETE AVEC TON VOCABULAIRE PERSONNEL !! IL N'Y A PAS DE « FILE » !!! C'EST LA TIMELINE !!
+
+Troisième fois de la journée qu'un mot à moi s'installe et doit être retiré partout : après « les
+deux coureurs qui se font face » (point 176) et « la pièce » (point 179). Les 61 occurrences ont
+été remplacées dans les documents et dans le code, et la ligne de journal `FILE` s'appelle
+maintenant `TIMELINE`.

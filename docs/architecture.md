@@ -267,7 +267,7 @@ coureurs consécutifs à la frontière des deux groupes. Les attardés et les é
 entre les deux sont sautés, parce qu'ils ne sont pas le peloton. Si aucun coureur du peloton
 n'est lu, **rien n'est proposé** : on ne mesure pas contre quelqu'un qui n'est pas là.
 
-Jusqu'à la build 173 ce coureur était pris comme **voisin dans la file** du peloton, et non le
+Jusqu'à la build 173 ce coureur était pris comme **voisin dans la timeline** du peloton, et non le
 plus proche sur la piste — ce qui a fait compter un tour contre un coureur à 126,6 m. Le §47
 raconte la correction et ce qu'elle a changé.
 
@@ -1941,7 +1941,7 @@ tranche** : la même simulation rejoue toujours la même course, ce qui permet d
 builds. La tranche de 5 s est un choix, pas une mesure.
 
 Le correcteur qui tient un coureur à sa place dans le peloton rattrape cette différence, donc
-une fluctuation de 0,3 m/s déplace le coureur de quelques mètres dans la file sans casser le
+une fluctuation de 0,3 m/s déplace le coureur de quelques mètres dans la timeline sans casser le
 groupe : il faut plus d'une seconde, soit une quinzaine de mètres, pour une cassure.
 
 ## 45. La trace : ce que l'application a vu, et à quel instant (build 171)
@@ -1951,7 +1951,7 @@ surveille l'appli et crée des logs. Suite à quoi on pourra mettre le doigt sur
 facilement ».
 
 **Elle note les changements, pas les états.** Les défauts qu'il a relevés sont des
-basculements — une file qui s'inverse, un écart qui saute, des points qui reculent. Un
+basculements — une timeline qui s'inverse, un écart qui saute, des points qui reculent. Un
 instantané ne les montre pas, deux instantanés consécutifs si. `traceTick(G)` est appelée par
 `detectNow()`, donc à chaque pas fixe de la course, et compare l'image à la précédente.
 
@@ -1960,7 +1960,7 @@ Sept sortes de lignes :
 | Sorte | Écrite quand |
 |---|---|
 | `LEADER` | le coureur de tête change — `avant`, `apres` |
-| `FILE` | la composition ou l'ordre des blocs change ; la ligne porte les blocs, leurs coureurs et leurs écarts |
+| `TIMELINE` | la composition ou l'ordre des blocs change ; la ligne porte les blocs, leurs coureurs et leurs écarts |
 | `ECART` | l'écart d'un bloc bouge d'au moins **1 s** depuis la dernière valeur notée — `avant`, `apres`, `saut` |
 | `PROPOSITION` | une proposition apparaît ou disparaît — sa clé, son genre, ses coureurs, son delta |
 | `SPRINT` | un sprint s'ouvre ou se ferme |
@@ -2014,11 +2014,11 @@ l'autre sur la piste, à quelques mètres.
 code, n'était pas de lui : je l'avais écrite moi-même. Il l'a relevée le 1er novembre 2026 :
 « **se faire face ça signifie une chose différente** ». Elle est retirée partout.)
 
-Jusqu'à la build 173, `facingPos()` prenait le **voisin dans la file du paquet** : on partait de
+Jusqu'à la build 173, `facingPos()` prenait le **voisin dans la timeline du paquet** : on partait de
 l'index du coureur dans `S.bunchSeq` et on s'écartait d'un cran à gauche, d'un cran à droite,
-jusqu'à tomber sur un coureur déjà dans le paquet à l'image précédente. Or la file du paquet n'est
-pas une file serrée : au palier 2, les seize coureurs s'étirent jusqu'à **218,9 m** de long. Le
-voisin de file pouvait donc être à un demi-tour de distance, et c'est contre lui qu'on comptait les
+jusqu'à tomber sur un coureur déjà dans le paquet à l'image précédente. Or la timeline du paquet n'est
+pas une timeline serrée : au palier 2, les seize coureurs s'étirent jusqu'à **218,9 m** de long. Le
+voisin dans la timeline pouvait donc être à un demi-tour de distance, et c'est contre lui qu'on comptait les
 tours.
 
 `pairOf()` le remplace et choisit le coureur du paquet **le plus proche sur la piste** : pour
@@ -2059,7 +2059,7 @@ dont 65 pour 3 m ou moins.
 | | d'où elle vient | à quoi elle sert |
 |---|---|---|
 | `np(r)` | la position interpolée, moins les tours retranchés | les **distances** : la découpe des blocs, les mètres d'un écart |
-| `ndOf(r)` | `r.rec.d`, la distance que la **dernière détection** a donnée, moins les tours retranchés | l'**ordre** : la file, l'intérieur d'un bloc, le rang des blocs, la tête |
+| `ndOf(r)` | `r.rec.d`, la distance que la **dernière détection** a donnée, moins les tours retranchés | l'**ordre** : la timeline, l'intérieur d'un bloc, le rang des blocs, la tête |
 
 `r.rec.d` vaut `ka × 250 + la boucle franchie`. Elle ne change qu'au passage, donc l'ordre ne
 change qu'au passage. Deux coureurs lus sur la **même boucle au même tour** portent la **même**
@@ -2108,7 +2108,7 @@ s'invente plus en tour : `ECART-NEGATIF` le **note**, et c'est tout.
 |---|---|---|
 | `behind` | la position interpolée | **où est-il sur la piste ?** — l'ovale, qui doit avancer en continu ; et **est-il à un tour de son voisin ?** — la découpe d'un amas en blocs |
 | `behindRead` | la distance lue à la dernière détection | **de combien est-il en retard dans la course ?** — la tête et la queue d'un bloc, l'écart entre deux blocs |
-| `cmpRead` | distance lue, puis heure du passage | **qui est devant qui ?** — la file, les blocs, la tête |
+| `cmpRead` | distance lue, puis heure du passage | **qui est devant qui ?** — la timeline, les blocs, la tête |
 
 La découpe est restée sur les mètres interpolés **à dessein** : elle pose une question physique —
 ces deux coureurs sont-ils à un tour l'un de l'autre ? —, à laquelle l'interpolation répond sans
@@ -2143,7 +2143,7 @@ accident.
   premier » (point 174) ;
 - l'écart entre deux coureurs qui se suivent : le temps lu sur la dernière boucle que les **deux**
   ont franchie, moins le temps d'une longueur de vélo à la vitesse du suiveur (§1) ;
-- les groupes : on descend la file, et une cassure confirmée sur 0,3 s ouvre un groupe (§3) ;
+- les groupes : on descend la timeline, et une cassure confirmée sur 0,3 s ouvre un groupe (§3) ;
 - les tours pris ou perdus : la différence des distances comptées entre deux coureurs du même
   groupe, acceptée seulement si ce qui reste après les tours entiers tient dans la distance que la
   seconde du §1 représente à sa vitesse.
@@ -2213,7 +2213,7 @@ Tout le reste en découle, et plus rien ne bascule :
 | quantité | ce qu'elle est | d'où elle vient |
 |---|---|---|
 | `retard` | le décalage d'un coureur sur l'ancre, en secondes | la dernière boucle que les deux ont franchie |
-| l'ordre de la file | les `retard` triés | — |
+| l’ordre de la timeline | les `retard` triés | — |
 | l'écart d'un bloc | la différence de deux `retard`, moins une longueur de vélo | son §1 |
 | `derive` | la somme des déplacements relatifs d'un coureur sur l'ancre | elle ne nomme que le **côté** (E8) |
 
@@ -2247,12 +2247,12 @@ Le moteur de course tourne toujours **à côté** de l'ancien moteur : aucun éc
 
 | ce que l'écran prend | ce que le moteur donne | le repli quand il ne connaît pas le coureur |
 |---|---|---|
-| `cmpRead`, l'ordre de la file et des blocs | le rang dans `chaine()` | les mètres lus, `ndOf` puis l'heure de passage |
+| `cmpRead`, l’ordre de la timeline et des blocs | le rang dans `chaine()` | les mètres lus, `ndOf` puis l'heure de passage |
 | la découpe des blocs | deux `groupes()` différents = deux blocs | « sont-ils à un tour l'un de l'autre ? », sur `behind` |
 | `g.gap`, l'écart en temps d'un bloc | la différence des décalages, moins une longueur de vélo | `pairGap`, la même formule sur les mètres lus |
 
 Et son point 183 : `if (MC && S.leader) MC.designer(S.leader.bib)`. Tant qu'il n'a désigné personne,
-le moteur garde sa propre ancre — le premier coureur détecté — et c'est elle qui mène la file.
+le moteur garde sa propre ancre — le premier coureur détecté — et c'est elle qui mène la timeline.
 
 **Ce que l'écran ne lui prend pas.** Les positions sur la piste : le moteur de course ne connaît
 pas les mètres. L'ovale lit donc toujours `x.behind`, la mesure interpolée, pour dessiner — mais
