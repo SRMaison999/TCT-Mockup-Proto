@@ -2825,3 +2825,32 @@ Aux tours 7 et 14, la cassure mesurée sur les boucles apparaît une fraction de
 que celle calculée sur les positions interpolées : au tour 7 le 12 SUI est encore dans la file
 au lieu d'être déjà seul devant, au tour 14 le 11 JPN et le 4 GBR sont encore accrochés au lieu
 d'être déjà décrochés. Le leader est le même à chacun des 40 tours.
+
+### Le palier 1 joué en entier (build 168)
+
+Première course de test : 250 m, 60 tours, 6 sprints, seize coureurs, aucun ordre rejoué.
+
+| | |
+|---|---|
+| Course menée à son terme | **oui**, 60 tours, 1003 s |
+| Composition relevée à chacun des 60 passages de tour | **un seul groupe de 16**, aux 60 tours |
+| Tours pris ou perdus | **aucun** |
+| Nombre maximal de blocs dans la timeline | **1** |
+
+**Le classement obtenu.** 15 IRL 35 points, 4 GBR 21, 11 JPN 14, 23 DEN 7 — et rien aux douze
+autres. Les 35 points du 15 sont cinq sprints à 5 points plus le sprint final doublé : **il a
+gagné les six sprints**, et les quatre premières places de chaque sprint sont à chaque fois les
+quatre mêmes coureurs, dans le même ordre.
+
+C'est la limite de ce palier : la file ne se mélange jamais, donc le même coureur passe la ligne
+en tête aux six sprints. La course tourne juste, elle n'est pas encore vraisemblable.
+
+### L'écart affiché en temps (build 168)
+
+Ancienne course de référence, tour 9, trois blocs. Les mêmes écarts, avant et après :
+
+| Bloc | Affiché avant | Affiché après |
+|---|---|---|
+| 12 SUI, seul en tête | `leader` | `leader` |
+| Le peloton, treize coureurs | `74 m` | **`3.9 s`** |
+| 4 GBR et 11 JPN | `48 m` | **`2.6 s`** |

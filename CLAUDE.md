@@ -61,6 +61,6 @@ node serve.js
 ```
 
 Puis `http://localhost:8765/timeline-prototype.html` — la racine `/` sert une autre maquette,
-pas le prototype. Un prototype qui démarre tourne sur une course **vide** : le scénario de
-référence se charge depuis l'onglet Files, sans quoi aucun des événements décrits dans la
-documentation ne se produit. Détails dans le `README.md`.
+pas le prototype. Un prototype qui démarre tourne sur une course **vide** : une course de test se
+charge depuis l'onglet Files, sans quoi il ne se passe rien. Les courses de test montent par
+paliers, du plus calme au plus animé. Détails dans le `README.md`.

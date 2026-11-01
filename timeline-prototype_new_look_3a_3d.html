@@ -2725,14 +2725,17 @@ function sortedRoster() {
   return rows.sort(simCmp(o => simSort.key === 'bib' ? o.e[0] : (simSort.key === 'nat' ? o.e[2] : o.e[1])));
 }
 const curActs = () => LOADED ? LOADED.acts : (REC ? REC.acts : []);
-// The reference race is a SAVED RACE like any other: a configuration and a list of orders, replayed on the clock.
-// It was a scenario wired into the simulator until the build 74; nothing in the code knows it any more, beyond the
-// Files tab always offering it. The two times below are the ones the wired scenario fired at, read off the race
-// itself, so what is replayed is the race every measurement was taken on (mesures.md §15).
-const REF_RACE = { name: 'Reference — 4 and 11 lose a lap, 12 takes a lap', cfg: { ...DEF }, laps: DEF.laps, dur: 674.2, acts: [
-  { t: 50.49, lap: 4, kind: 'lose', bibs: [4, 11], v: { wheel: 12, wheelLaps: 3 } },
-  { t: 67.39, lap: 5, kind: 'gain', bibs: [12] },
-] };
+// LES COURSES DE TEST. L'opérateur, 1er novembre 2026, sur l'ancienne course de référence — 40 tours où le 4 et le
+// 11 perdaient un tour au tour 4 et le 12 en prenait un au tour 5 : « Ce scénario est le scénario le plus ridicule
+// qui soit ! Il n'a aucun sens sportif, technologique, ou conceptuel. » Elle est sortie du dépôt.
+//   « Il faut créer des scénarios de test plausibles. Et il faut commencer par des scénarios, plutôt simples, pour
+// simuler des courses peu animées. Notre mission est de consolider l'algorithme lors de ces courses calmes, et puis
+// petit à petit nous testerons des simulations de courses un peu plus animées avec comme objectif de valider
+// l'efficacité de notre système à chaque pallier de difficulté affronté. »
+//   Premier palier : une course où rien ne se passe. La distance est celle du règlement UCI (3.2.117) pour une
+// qualification Hommes Élite sur 250 m — 15 km, 60 tours — et les sprints tombent tous les 10 tours (3.2.116).
+// Aucun ordre n'est rejoué : le peloton part groupé et le reste.
+const CALM_RACE = { name: 'Palier 1 — peloton groupé, aucun tour pris ni perdu', cfg: { ...DEF, track: 250, laps: 60, sprints: 6 }, laps: 60, dur: null, acts: [] };
 // The saved list is read once. **Never seen before** and the reference race is put in it, as an ordinary row;
 // seen before — even if it is now empty — and what is there is what the operator left, reference race included or
 // deleted. He asked for it on 28 October 2026: « il faut pouvoir la supprimer et également pouvoir la renommer
@@ -2740,7 +2743,7 @@ const REF_RACE = { name: 'Reference — 4 and 11 lose a lap, 12 takes a lap', cf
 // list and then forgets it: nothing downstream knows that one of these rows came from there.
 try {
   const raw = localStorage.getItem(RKEY);
-  if (raw == null) { RACES = [JSON.parse(JSON.stringify(REF_RACE))]; numberRaces(); saveRaces(); }
+  if (raw == null) { RACES = [JSON.parse(JSON.stringify(CALM_RACE))]; numberRaces(); saveRaces(); }
   else { RACES = JSON.parse(raw) || []; numberRaces(); }
 } catch (e) { RACES = []; }
 const VERB = { gain: ['takes a lap', 'take a lap'], lose: ['loses a lap', 'lose a lap'], up: ['joins the group ahead', 'join the group ahead'],
@@ -2765,7 +2768,7 @@ function numberRaces() { for (const r of RACES) if (!r.no) r.no = raceNo(); }
 
 // The name says what the race looks like: the orders given, in the order they were given, in the words of the buttons.
 function raceName(rec) {
-  if (rec.ref) return REF_RACE.name;
+  if (rec.ref) return CALM_RACE.name;
   const pre = [];
   if (rec.cfg.track !== DEF.track) pre.push(rec.cfg.track + ' m');
   if (rec.cfg.laps !== DEF.laps || rec.cfg.sprints !== DEF.sprints) pre.push(rec.cfg.laps + ' laps, ' + plural(rec.cfg.sprints, 'sprint'));

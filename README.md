@@ -93,18 +93,21 @@ Aucune installation, aucune dépendance : `serve.js` n'utilise que les modules d
 système de fichiers. Le serveur n'existe que pour l'aperçu intégré et pour servir les autres
 fichiers du dossier.
 
-### Charger la course de référence
+### Charger une course de test
 
-Un prototype qui vient de démarrer tourne sur une course **vide**. La course de référence —
-celle que décrit `docs/mesures.md` — est une course enregistrée ordinaire depuis la build 74,
-et doit être **chargée depuis l'onglet Files**. Sans ce
-chargement, aucun des événements décrits dans la documentation ne se produit. C'est une erreur
-classique, consignée dans `docs/pitfalls.md`.
+Un prototype qui vient de démarrer tourne sur une course **vide** : une course de test doit être
+**chargée depuis l'onglet Files**, sans quoi il ne se passe rien.
 
-Depuis la build 75 elle est **déposée dans la liste à la première ouverture seulement**, et
-elle s'y renomme et s'y efface comme n'importe quelle autre. Si elle n'apparaît plus, c'est
-qu'elle a été effacée : vider la clé `tct.sim.races` du stockage du navigateur, puis
-recharger la page, la redépose.
+Les courses de test montent par paliers de difficulté, du plus calme au plus animé. L'opérateur
+l'a posé le 1er novembre 2026 : « il faut commencer par des scénarios, plutôt simples, pour
+simuler des courses peu animées [...] et puis petit à petit nous testerons des simulations de
+courses un peu plus animées avec comme objectif de valider l'efficacité de notre système à
+chaque pallier de difficulté affronté ». Le **palier 1** — le peloton groupé, aucun tour pris ni
+perdu, 60 tours sur 250 m — est déposé dans la liste à la première ouverture.
+
+Une course de test est une course enregistrée ordinaire : elle se renomme et s'efface comme
+n'importe quelle autre. Si la liste est vide, vider la clé `tct.sim.races` du stockage du
+navigateur et recharger la page redépose le palier 1.
 
 ---
 

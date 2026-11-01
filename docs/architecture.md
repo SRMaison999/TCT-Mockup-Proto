@@ -1887,3 +1887,33 @@ coureur qui vient d'entrer en course — la même formule se calcule sur les pos
 dit : « ce n'est pas une seconde méthode indépendante : c'est le même calcul écrit autrement ».
 
 Les mesures sont au `mesures.md`, « La cassure lue sur les boucles ».
+
+## 42. L'écart d'un groupe s'affiche en temps (build 168)
+
+**Sa demande, le 1er novembre 2026** : « oui il faut remplacer l'écart en mètres par l'écart en
+temps dans les en-tête des groupes ».
+
+C'est la **même mesure que la cassure**, sur la **même paire** : la queue du bloc du dessus et
+la tête du bloc du dessous — les deux coureurs qui se font face, son point 167 — passées à
+`pairGap`, donc z − (x + y) lu sur les boucles. L'en-tête affiche une seconde avec une décimale,
+`3.9 s`, là où il affichait `74 m`. Le premier bloc affiche toujours `leader`.
+
+Les mètres restent calculés dans `g.gapM` : ils portent la correction du tour quand l'opérateur
+a forcé un bloc en tête — un bloc qui paraît 31 m devant est 219 m derrière — et ils servent de
+repli tant qu'aucune boucle n'a vu les deux coureurs.
+
+## 43. Les courses de test montent par paliers (build 168)
+
+L'ancienne course de référence — 40 tours, le 4 et le 11 perdant un tour au tour 4, le 12 en
+prenant un au tour 5 — est **sortie du dépôt**. L'opérateur, le 1er novembre 2026 : « Ce
+scénario est le scénario le plus ridicule qui soit ! Il n'a aucun sens sportif, technologique,
+ou conceptuel. »
+
+À sa place, `CALM_RACE`, déposée dans la liste à la première ouverture comme l'était l'autre :
+
+- **Palier 1 — peloton groupé, aucun tour pris ni perdu.** 250 m, **60 tours**, **6 sprints**,
+  seize coureurs, aucun ordre rejoué. La distance est celle du règlement UCI 3.2.117 pour une
+  qualification Hommes Élite sur 250 m, et les sprints tombent tous les 10 tours (3.2.116).
+
+Les paliers suivants s'ajouteront à cette liste, du plus calme au plus animé, « avec comme
+objectif de valider l'efficacité de notre système à chaque pallier de difficulté affronté ».
