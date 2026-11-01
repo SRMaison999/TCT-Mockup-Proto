@@ -2691,3 +2691,12 @@ boucles** : ce saut n'existe plus, et le délai n'a plus de raison d'être.
 
 Une cassure est donc déclarée **sur la mesure du moment**, et sur rien d'autre : plus d'état gardé
 par paire de coureurs, plus de délai.
+
+### 193. Aller au but : d'abord retirer ce qui est à moi (1er novembre 2026)
+
+> ohlala c'est compliqué pour aller au but avec toi !
+
+Trois builds passées à soigner les effets d'un délai que j'avais ajouté moi-même, là où une seule
+suppression mettait toutes les mesures à zéro. Quand quelque chose cloche, la première question est
+donc : **ce mécanisme est-il de lui ou de moi ?** S'il n'est pas dans ce document, il est de moi —
+on essaie de le retirer, et on mesure, avant de le rafistoler.
