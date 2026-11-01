@@ -610,3 +610,25 @@ refuse le peloton ?
 2. Un groupe posé en tête devient le **groupe 1** pour l'éligibilité, sans être le premier
    détecté au sprint (`mesures.md` §37). Est-ce bien ce qu'il veut, ou l'éligibilité doit-elle
    rester sur les positions mesurées ?
+
+**Le 1er novembre 2026, la première de ces deux questions est tranchée** : le geste ne refuse
+pas le peloton (point 155). Rien à coder, le comportement livré est celui qu'il veut. La
+seconde devient le poste §16.
+
+---
+
+## 16. Les tours à faire sur le groupe forcé — **à trancher**
+
+Sa pensée et ses mots sont au point 156 de `regles-operateur.md`, la mesure qui l'a amenée dans
+`mesures.md` §37.
+
+**L'état du code** : les tours à faire se comptent sur le **leader désigné** — `dispLap()` lit
+`S.leader`, et retombe sur la position mesurée s'il n'y en a pas. Ils ne se comptent pas sur le
+groupe 1 de la timeline. Et le leader désigné est **repris automatiquement** par tout coureur
+qui le dépasse sur la piste (`computeGroups`), ce qui défait un forçage en quelques secondes.
+
+**Ce qui lui a été répondu** : sa logique tient, mais l'application a déjà le levier qu'il
+décrit — le leader — et deux leviers qui peuvent se contredire valent moins qu'un seul.
+
+**On saura que c'est fini quand** : il aura dit si poser un groupe en tête doit aussi désigner
+son premier coureur comme leader de la course.

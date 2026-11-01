@@ -2199,3 +2199,20 @@ l'écran, une à la fois.
 
 154. **La planche du 1er novembre 2026 est approuvée.** Elle lui a été proposée avant tout code,
      dans `maquette-groupe-force.html`, et sa réponse a été : « **La planche me va, code-la.** »
+
+155. **Le geste ne refuse pas le peloton.** À la question « faut-il que le geste refuse le
+     peloton, pour vous éviter ce piège ? », sa réponse du 1er novembre 2026 : « **NON** ». Le
+     peloton se pose donc à la main comme n'importe quel autre groupe, et ce qu'il en coûte —
+     un groupe de l'opérateur n'absorbe plus tout seul les coureurs rattrapés (§3) — est accepté.
+
+156. **Ce qu'il pense du groupe forcé et des tours à faire.** Ses mots, le 1er novembre 2026,
+     après la mesure de `mesures.md` §37 : « **je pense qu'au moment où on force une groupe à
+     une position, en l'occurrence un groupe dernier placé premier, l'appli doit savoir que les
+     laps to go se décrémentent sur le nouveau groupe N°1. De ce fait lorsque ce nouveau groupe
+     N°1 "artificiel" sera le premier à se retrouver sur la ligne des sprints.** » Et la raison
+     qu'il a donnée au forçage lui-même : « **par expérience je sais qu'il arrive parfois que
+     les transpondeurs fonctionnent mal pour différentes raisons, et que dans ce genre de
+     situations l'opérateur ne peut plus vraiment se fier aux infos indiquées à l'écran et,
+     parfois, doit forcer les choses** ».
+     **Ce point n'est pas tranché** : il l'a soumis par « Qu'en penses-tu ? », et rien n'est
+     codé tant qu'il n'a pas arrêté la forme.
