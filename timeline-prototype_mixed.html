@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '192';
+const BUILD = '193';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1160,7 +1160,7 @@ function computeGroups(M) {
   // retombe sur les mètres lus, qui sont le même calcul écrit autrement (§1).
   const mcRang = new Map(), mcRetard = new Map(), mcBloc = new Map();
   if (MC) {
-    MC.chaine().forEach((x, i) => { mcRang.set(x.c.bib, i); mcRetard.set(x.c.bib, x.retard); });
+    MC.chaine().forEach((x, i) => { mcRang.set(x.c.bib, i); mcRetard.set(x.c.bib, x.place); });   // la place, pas la lecture repliée
     MC.groupes().forEach((g, i) => g.coureurs.forEach(b => mcBloc.set(b, i)));
   }
   const cmpRead = (a, b) => {

@@ -182,27 +182,57 @@
       return d;
     }
 
-    // LA CHAÎNE. Les coureurs rangés par leur décalage sur la tête. Un coureur dont on ne peut pas
-    // lire le décalage n'entre pas dans la chaîne (E5).
+    // OÙ IL EST PAR RAPPORT À LA TÊTE, en secondes, sans repli. Le décalage lu est replié sur un
+    // demi-tour : il ne peut pas dire si un coureur est 2 s derrière ou tout un tour moins 2 s
+    // devant. La dérive, elle, sait lequel des deux — on l'a vu prendre ce chemin. On s'en sert donc
+    // pour compter les tours entiers qui séparent les deux coureurs, et on garde la LECTURE des
+    // boucles pour la précision.
+    //
+    // E12. NE JAMAIS RANGER LA TIMELINE SUR LE DÉCALAGE REPLIÉ. Mesuré à la build 192, au palier 2
+    //      à 312,4 s : le 12 et le 52 étaient 208 m DEVANT le peloton, et la timeline les montrait
+    //      DERRIÈRE lui ; le 46 et le 70, 106 m derrière, étaient montrés en tête avec l'étiquette
+    //      « 1-LEADERS ». L'opérateur : « non mais ça ne fonctionne absolument pas c'est n'importe
+    //      quoi !! »
+    const placeS = (c, retard, T) => {
+      if (!T || c.derive == null) return retard;
+      return Math.round((c.derive - retard) / T) * T + retard;
+    };
+
+    // LA CHAÎNE. Les coureurs rangés par leur place sur la tête. Un coureur dont on ne peut pas lire
+    // le décalage n'entre pas dans la chaîne (E5).
     function chaine() {
       const t0 = tete();
       if (!t0) return [];
-      const liste = [{ c: t0, retard: 0 }];
+      const T = tourS(t0);
+      // DEUX QUANTITÉS, DEUX USAGES. `retard` est la lecture des boucles, repliée sur un demi-tour :
+      // c’est elle qui dit si deux coureurs se touchent SUR LA PISTE, donc elle qui sert le constat
+      // des ±20. `place` est la même lecture déroulée par la dérive : c’est elle qui dit où chacun
+      // est dans la course, donc elle qui range la timeline et qui mesure l’écart de deux groupes.
+      const liste = [{ c: t0, retard: 0, place: 0 }];
       for (const c of coureurs.values()) {
         if (c === t0 || c.n === 0) continue;
         const d = decalageS(t0, c);
-        if (d != null) liste.push({ c, retard: d });
+        if (d != null) liste.push({ c, retard: d, place: placeS(c, d, T || tourS(c)) });
       }
-      liste.sort((a, b) => (a.retard - b.retard) || (a.c.bib - b.c.bib));
+      liste.sort((a, b) => (a.place - b.place) || (a.c.bib - b.c.bib));
       return liste;
     }
 
     // L'ÉCART ENTRE DEUX COUREURS QUI SE SUIVENT, son §1 : « le temps entre la roue arrière du
     // coureur 1 et la roue avant du coureur 2 ». La différence de leurs décalages, moins le temps
     // qu'il faut au suiveur pour couvrir une longueur de vélo, à sa vitesse.
-    function ecartEntre(devant, suiveur) {
+    // LE MÊME ÉCART, MAIS SUR LA PISTE : la lecture repliée, pour le constat des ±20. Un coureur qui
+    // revient sur la queue du peloton la touche SUR LA PISTE, et c’est cela qu’on guette.
+    function ecartPiste(devant, suiveur) {
       if (devant == null || suiveur == null) return null;
       const z = suiveur.retard - devant.retard;
+      const v = vitesse(suiveur.c);
+      return v ? z - R.veloM / v : z;
+    }
+
+    function ecartEntre(devant, suiveur) {
+      if (devant == null || suiveur == null) return null;
+      const z = suiveur.place - devant.place;
       const v = vitesse(suiveur.c);
       return v ? z - R.veloM / v : z;
     }
@@ -284,8 +314,11 @@
         // la dérive se mesure sur L’ANCRE, jamais sur la tête du peloton : celle-ci change de
         // coureur à chaque remous du peloton, et chaque changement déplaçait la référence de toute
         // la longueur du groupe. Mesuré à la build 190 : le 46 et le 70, lâchés, ont reçu un +20.
+        // Elle se nourrit du décalage LU, replié, et pas de la place déroulée : sans quoi elle se
+        // nourrirait d'elle-même.
         if (!x) continue;
-        deriver(c, x.retard, T);
+        const lu = decalageS(coureurs.get(ancre) || c, c);
+        if (lu != null) deriver(c, lu, T);
 
         // IL RATTRAPE, OU IL EST RATTRAPÉ. Ses mots exacts, point 180 : le gain se constate « au
         // moment un coureur rattrape le DERNIER coureur du peloton », la perte « au moment un
@@ -334,7 +367,7 @@
         });
         if (!sansLui.length) continue;
         const avec = coureurs.get(avant ? sansLui[sansLui.length - 1] : sansLui[0]);
-        const e = avant ? ecartEntre(entree.get(avec.bib), x) : ecartEntre(x, entree.get(avec.bib));
+        const e = avant ? ecartPiste(entree.get(avec.bib), x) : ecartPiste(x, entree.get(avec.bib));
         if (e == null) continue;
         // le contact, confirmé 0,3 s comme toute cassure du §1 — mais l'écart doit être positif À
         // L'INSTANT du constat, et pas seulement l'avoir été : sans cela, trois constats du palier
@@ -348,7 +381,7 @@
             annoncer();
             attente = { delta, avec: avec.bib, ouvertA: maintenant, membres: [{ c, ecart: e, r: x.retard }] };
           }
-          c.derive = 0; c.rPrec = x.retard; c.colle = true; c.credite = maintenant;
+          c.derive = 0; c.rPrec = x.retard; c.colle = true; c.credite = maintenant;   // rPrec : la lecture repliée
         } else c.colle = colle;
       }
 

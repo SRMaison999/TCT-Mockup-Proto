@@ -3422,3 +3422,40 @@ coureurs, rien. **Aucun écart.** Douze constats, aux mêmes instants qu'à la b
 
 **Palier 1, course entière (20 053 images).** Un seul groupe de 16, zéro écart négatif, zéro
 proposition de points, et la composition des groupes change 6 fois sur toute la course.
+
+### Build 193 · la timeline rangeait les échappés derrière le peloton
+
+Il a fait tourner la build 192 et envoyé sa capture. À **5:21.9, tour 19** :
+
+- `1-BUNCH`, 11 coureurs : 15, 4, 11, 23, 58, 67, 1, 9, 3, **12, 52**
+- `2-LAST`, 5 coureurs, à 3,2 s : **18, 61, 7**, 46, 70
+
+Or à cet instant le 12 et le 52 sont **218 m devant** le peloton, le 18, le 61 et le 7 **165 m
+devant**, et le 46 et le 70 **115 m derrière**. La timeline mettait donc les cinq échappés derrière
+le peloton, et dans le même groupe que les deux lâchés.
+
+**La cause.** Le décalage lu aux boucles est replié sur un demi-tour : il ne peut pas distinguer
+« 2 s derrière » de « tout un tour moins 2 s devant ». Un coureur 218 m devant, sur un tour de
+250 m, se lisait donc comme 2,5 s **derrière**. Je rangeais la timeline là-dessus.
+
+**La correction.** Deux quantités, deux usages, et c'est la dérive qui les relie :
+
+| quantité | ce qu'elle est | à quoi elle sert |
+|---|---|---|
+| `retard` | la lecture des boucles, repliée sur un demi-tour | dire si deux coureurs **se touchent sur la piste** : le constat des ±20 |
+| `place` | la même lecture, déroulée par la dérive | dire **où chacun est dans la course** : le rangement de la timeline et l'écart de deux groupes |
+
+**Le même instant, après correction** — quatre groupes, dans le bon ordre : 12 et 52 · 18, 61 et 7
+à 3,3 s · le peloton de neuf à 12,2 s · 46 et 70 à 5,9 s.
+
+**Sur toute la course du palier 2.** Avant que le premier tour ne soit repris — les 330 premières
+secondes, 6 600 images —, la timeline est mal rangée sur **23 images**, toutes au moment où une
+échappée démarre et où les boucles ne l'ont pas encore vue. **Zéro** écart négatif. Les **12**
+constats de ±20 sont intacts et les points restent justes coureur par coureur.
+
+**Palier 1.** Un seul groupe de 16, zéro image mal rangée, zéro écart négatif, zéro proposition.
+
+**Une correction qui ne marchait pas, et qui n'a pas été livrée.** Le premier essai rangeait bien la
+timeline mais mesurait AUSSI les ±20 sur la place déroulée : les écarts devenaient des dizaines de
+secondes, plus aucun constat ne se déclenchait, et les sept coureurs concernés finissaient à zéro
+point. Le test l'a dit avant le commit.
