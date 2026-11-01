@@ -2366,3 +2366,11 @@ l'écran, une à la fois.
      alors 12 et 52 doivent les premiers de la file : 17 | 12, 52 … 61, 7** ».
      Ce qu'il écrit vaut pour l'onglet Crossings, mais l'énoncé est général : une vue qui montre
      l'ordre de la course le prend dans la timeline, et non dans les heures de passage.
+
+171. **Un bloc posé à la main gèle le leader.** Sa réponse du 1er novembre 2026, au cas du 7 et
+     du 12 qui échangent 2,20 m dans la file alors que le bloc de tête affiche 217 m :
+     « **Non : quand j'ai posé un bloc à la main, le leader ne change que si je le change
+     moi-même.** »
+     Cela ne retire rien au point 159 : hors forçage, l'application continue de donner la tête à
+     un coureur qui en dépasse un autre sur la piste. **Rien n'est codé** : c'est le premier
+     travail de la session suivante.
