@@ -2639,3 +2639,38 @@ le leader désigné**. Rien n'a été inventé là-dessus, il ne l'a pas demand�
 | 746,54 s | `12:26.5` | `12:26.54` |
 
 Ses deux exemples — « `00:00.0` » en marche et « `12:26.54` » à l'arrêt — sortent tels quels.
+
+### Le même test rejoué en détail, avec l'ordre sur la piste (build 163)
+
+Il a demandé, le 1er novembre 2026, de dire **qui est devant et qui est derrière, avant et après
+l'intervention** (point 163). Course de référence, jouée jusqu'à **1:36.8**, tour 6.
+
+**Avant.** Un seul bloc, `1-BUNCH`, 16 coureurs. Du premier au dernier :
+15 IRL, 4 GBR, 11 JPN, 23 DEN, 46 BEL, 70 BRA, 58 KAZ, 67 GER, 1 ESP, 9 SLO, 3 FRA, 18 POR,
+61 COL, 7 NED, 12 SUI, 52 ITA. L'ordre de passage sur la ligne au tour 5 est le même, coureur
+pour coureur. **Devant : 15 IRL. Derrière : 52 ITA.** Leader `15`, `LAP 6 / 40`, `TO GO 34`.
+
+**L'intervention, en deux gestes.** Le 12 et le 52 sélectionnés, bouton `Group` : un bloc
+`2-LAST · −31 m` se forme **sous** le peloton. Puis ce bloc attrapé par son en-tête et lâché sur
+la bande du haut.
+
+**Après.** `1-LEADERS · 2 riders · leader · manual` (12 SUI, 52 ITA), puis
+`2-BUNCH · 14 riders · +31 m` (15 IRL … 7 NED). La bande dit `1 MANUAL GROUP`. Le champ
+`LEADER` passe de `15 IRL` à `12 SUI`.
+
+**Sur la piste, rien n'a bougé.** L'ordre de passage sur la ligne au **tour 21**, après
+l'intervention, est identique à celui du tour 5 : 15, 4, 11, 23, 46, 70, 58, 67, 1, 9, 3, 18,
+61, 7, 12, 52. **Devant : toujours 15 IRL. Derrière : toujours 52 ITA.** Le `+31 m` de
+l'en-tête du peloton le dit aussi : il est devant, et la timeline le montre dessous.
+
+**Et la reprise du leader s'est produite.** Au bout de seize tours, à 5:53.4, le champ `LEADER`
+dit `7 NED` : un coureur a dépassé le 12 sur la piste et lui a pris la tête, comme sa règle du
+point 159 le veut. **Le groupe, lui, est resté premier avec son étiquette `manual`.** Les tours
+restants ont continué de se décrémenter, `TO GO 18` au tour 22.
+
+**Ce que cela corrige du §38** : il y était écrit que la reprise ne s'était pas déclenchée. Elle
+ne s'était pas déclenchée **dans cette course-là, sur cette durée-là**. Elle se déclenche dès
+qu'un coureur dépasse réellement le leader désigné, et c'est ce qu'il a demandé.
+
+**Ce qui se voit alors, et qu'il n'a pas tranché** : le bloc posé en tête garde son nom
+`1-LEADERS` pendant que la pastille `leader` est descendue sur le peloton.
