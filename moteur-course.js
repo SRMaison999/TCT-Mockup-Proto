@@ -100,6 +100,7 @@
       derive: 0,              // sa dérive sur la tête du peloton, en secondes : elle nomme le CÔTÉ
       rPrec: null,            //   par lequel il est parti (E8), et rien d'autre.
       colle: false,           // était-il, à l'image d'avant, au contact du coureur qu'il rejoint ?
+      credite: null,          // quand son dernier ±20 a été constaté
     });
 
     /* ------------------------------------------------------------------ 1. une détection */
@@ -303,29 +304,40 @@
         //      palier 2, tous avec un écart NÉGATIF, c'est-à-dire mesurés sur un coureur encore
         //      devant celui qu'il était censé rattraper.
         //      → Le garde : l'écart de la paire doit être > 0, et `colle` retient l'image d'avant.
-        // IL A FAIT LE TOUR. Un coureur ne peut pas rattraper deux fois le dernier du peloton
-        // sans avoir repris un tour entre les deux : le constat n’est ouvert que lorsque sa dérive
-        // atteint la durée d’un tour. Ce n’est pas un seuil réglé, c’est son arithmétique — « on ne
-        // gagne pas un tour, on gagne 20 points » (point 182). Mesuré à la build 191 : sans cette
-        // condition, le 46 et le 70 reperdaient 20 points toutes les vingt secondes.
-        if (!T || Math.abs(c.derive) < T) { c.colle = false; continue; }
+        // IL EST PASSÉ PAR L'AUTRE CÔTÉ DE L'ANNEAU. Un coureur ne peut pas rattraper deux fois
+        // le dernier du peloton sans avoir refait le tour entre les deux : le constat ne s'ouvre
+        // que lorsque sa dérive a dépassé le demi-tour. Ce n'est pas un seuil réglé, c'est la piste
+        // — il faut bien passer en face avant de revenir. Mesuré à la build 188 : sans cette
+        // condition, le 46 et le 70 reperdaient 20 points toutes les vingt secondes ; et au tour
+        // ENTIER, le 61 arrivait sur la queue avant que sa dérive n'y soit, et ne constatait rien.
+        if (!T || Math.abs(c.derive) < T / 2) { c.colle = false; continue; }
         const avant = c.derive < 0;
-        // le dernier, ou le premier, du peloton SANS LUI : quand il arrive sur la queue, les deux
-        // groupes se referment et c’est lui que la chaîne range en dernier.
-        // ni lui, ni les autres qui ont fait le tour : quand le 12 et le 52 reviennent sur la
-        // queue, la chaîne les range AVEC le peloton, et le dernier du groupe devient le 12. Le
-        // coureur qu’on rattrape est le dernier de ceux qui, eux, n’ont pas bougé de leur tour.
+        // LE DERNIER, OU LE PREMIER, DU PELOTON : ni lui, ni les autres qui ont fait le tour avec
+        // lui. Quand le 12 et le 52 reviennent ensemble, la chaîne les range AVEC le peloton et le
+        // dernier du groupe devient le 12. Le coureur qu'il rattrape est le dernier de ceux qui,
+        // eux, n'ont pas bougé de leur tour.
         const sansLui = pel.coureurs.filter(b => {
           if (b === c.bib) return false;
           const o = coureurs.get(b);
-          return !(T && o && Math.abs(o.derive) >= T);
+          if (!o) return false;
+          if (Math.abs(o.derive) >= T / 2) return false;
+          // NI SES COMPAGNONS QU’ON VIENT DE CRÉDITER. Point 180 : deux coureurs à moins d’une
+          // seconde l’un de l’autre sont UN SEUL constat. Mesuré à la build 188 : à 368,9 s le 7 et
+          // le 18 sont crédités, leur dérive retombe à zéro, et ils deviennent la queue du peloton
+          // — le 61, qui arrive deux dixièmes plus tard, se mesurait alors sur son propre compagnon,
+          // en sortait un écart négatif, et ne gagnait jamais rien. Il a fini la course à 1 178 m
+          // devant le peloton avec zéro point.
+          return !(o.credite != null && maintenant - o.credite <= R.cassureS);
         });
         if (!sansLui.length) continue;
         const avec = coureurs.get(avant ? sansLui[sansLui.length - 1] : sansLui[0]);
         const e = avant ? ecartEntre(entree.get(avec.bib), x) : ecartEntre(x, entree.get(avec.bib));
         if (e == null) continue;
+        // le contact, confirmé 0,3 s comme toute cassure du §1 — mais l'écart doit être positif À
+        // L'INSTANT du constat, et pas seulement l'avoir été : sans cela, trois constats du palier
+        // 2 sortaient avec un écart négatif, mesurés sur un coureur déjà repassé devant.
         const colle = confirme('R' + c.bib + (avant ? '+' : '-'), e > 0 && e <= R.cassureS);
-        if (colle && !c.colle) {
+        if (colle && e > 0 && !c.colle) {
           const delta = avant ? 20 : -20;
           if (attente && attente.delta === delta && maintenant - attente.ouvertA <= R.cassureS) {
             attente.membres.push({ c, ecart: e, r: x.retard });
@@ -333,7 +345,7 @@
             annoncer();
             attente = { delta, avec: avec.bib, ouvertA: maintenant, membres: [{ c, ecart: e, r: x.retard }] };
           }
-          c.derive = 0; c.rPrec = x.retard; c.colle = true;
+          c.derive = 0; c.rPrec = x.retard; c.colle = true; c.credite = maintenant;
         } else c.colle = colle;
       }
 

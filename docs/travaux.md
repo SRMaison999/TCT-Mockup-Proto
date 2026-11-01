@@ -892,7 +892,7 @@ fois, aucun coureur du peloton pénalisé, et aucun tour relevé au palier 1. Re
 le 61 et le 7 passent de +2 à +4 sans que le +3 soit annoncé. Le moteur actuel, lui, n’est pas
 corrigé — c’est le moteur de course qui porte ce comportement.
 
-### 27. Le 61 et le 70 ne sont pas nommés avec leurs compagnons · ouvert
+### 27. Le 61 et le 70 ne sont pas nommés avec leurs compagnons · fermé build 189
 
 Mesuré au palier 2, build 188. Le 7, le 18 et le 61 partent ensemble et reviennent ensemble ; le
 moteur de course propose **le 7 et le 18**, jamais le 61. Pareil pour le 46 et le 70 : seul le 46
@@ -904,3 +904,9 @@ que le garde E10 l'interdit : ils passent par la fenêtre d'attente d'une second
 coureur sans revérifier son écart au moment de l'annonce.
 
 Onze constats au palier 2 ; la course en contient dix.
+
+**Fermé build 189.** Deux causes, les deux mesurées : le compagnon qu'on venait de créditer servait
+de queue du peloton à celui qui arrivait derrière lui, et le constat n'ouvrait qu'au tour entier de
+dérive, trop tard. L'épreuve valide désormais les points **coureur par coureur** contre la distance
+réellement parcourue : au palier 2, les sept coureurs concernés reçoivent exactement ce qui leur est
+dû, et les neuf autres rien. Détail dans `docs/mesures.md`, build 189.

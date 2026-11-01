@@ -3290,3 +3290,49 @@ coureur encore devant celui qu'il rattrape. Onze constats au lieu des dix que la
 - **le tour entier** — un coureur ne peut pas rattraper deux fois le dernier du peloton sans avoir
   repris un tour entre les deux. Sans cette condition, le 46 et le 70 reperdaient 20 points toutes
   les vingt secondes.
+
+### Build 189 · les 20 points validés coureur par coureur contre la distance réellement parcourue
+
+Sa demande du 1er novembre 2026 : « quand tu feras ton prochain test, il faut que tu valides les
+20 points accordés ou enlevés aux coureurs qui ont rattrapé le peloton ou se font rattraper par le
+peloton. » L'épreuve ne compte donc plus les propositions : elle **additionne les points** que le
+moteur de course accorde à chaque coureur, et les compare aux tours que ce coureur a réellement
+pris ou perdus sur le peloton — mesurés sur la distance de la simulation, pas sur une lecture.
+
+**Palier 2, les sept coureurs concernés.**
+
+| dossard | sa distance sur le peloton | tours | points dus | points accordés |
+|---|---|---|---|---|
+| 18 | +1 179 m | 4 | +80 | **+80** |
+| 61 | +1 178 m | 4 | +80 | **+80** |
+| 7 | +1 176 m | 4 | +80 | **+80** |
+| 12 | +943 m | 3 | +60 | **+60** |
+| 52 | +941 m | 3 | +60 | **+60** |
+| 46 | −759 m | −3 | −60 | **−60** |
+| 70 | −760 m | −3 | −60 | **−60** |
+
+Les neuf autres coureurs : 0 dû, 0 accordé. **Aucun écart, sur aucun coureur.**
+
+Les douze constats, avec l'écart au contact : +20 au 12 et au 52 à 333 s · +20 au 7, au 18 et au 61
+à 369 s · −20 au 46 et au 70 à 464 s · +20 au 7, au 18 et au 61 à 533 s · +20 au 12 à 573 s · +20
+au 52 à 574 s · +20 au 7, au 18 et au 61 à 722 s · −20 au 46 et au 70 à 742 s · +20 au 12 et au 52
+à 814 s · +20 au 18 et au 61 à 898 s · +20 au 7 à 907 s · −20 au 46 et au 70 à 1 020 s. Tous les
+écarts annoncés sont positifs, de **0,03 s à 0,97 s**.
+
+**Palier 1.** 2 896 détections, un seul groupe de 16, zéro changement de tête, **zéro** proposition,
+et zéro point dû à quiconque : le coureur le plus écarté du peloton a fini à **18 m**.
+
+**Les deux corrections qui ont tout débloqué (poste 27 fermé).**
+
+1. **Le compagnon qu'on vient de créditer ne peut pas servir de queue du peloton.** À 368,9 s, le 7
+   et le 18 sont crédités, leur dérive retombe à zéro, et ils redeviennent aussitôt des coureurs du
+   peloton — donc sa queue. Le 61, arrivé deux dixièmes plus tard, se mesurait alors **sur son
+   propre compagnon**, en sortait un écart négatif, et ne gagnait jamais rien : il a fini la course
+   à 1 178 m devant le peloton avec **zéro point**. Un coureur crédité depuis moins d'une seconde
+   est maintenant écarté de la référence, ce qui est exactement son point 180 — des coureurs à
+   moins d'une seconde l'un de l'autre sont **un seul constat**.
+2. **Le demi-tour, et non le tour entier, ouvre le constat.** Il faut bien passer en face avant de
+   revenir ; exiger un tour complet de dérive arrivait trop tard, et le 61 touchait la queue du
+   peloton avant que sa dérive n'y soit. L'écart doit par ailleurs être positif **à l'instant** du
+   constat, et pas seulement l'avoir été : c'est ce qui faisait sortir trois constats à écart
+   négatif.
