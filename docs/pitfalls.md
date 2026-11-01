@@ -734,3 +734,30 @@ la garde compare le CONTENEUR de l'appui à celui du relâchement — le contene
 reconstruction, le bouton non. Un relâchement nu ne suffit pas : sans cette garde, un coureur
 lâché depuis la timeline ou une poignée relâchée au-dessus de la zone presse un bouton que
 personne n'a visé.
+
+## A13. L'écran qu'on regarde n'est pas celui du dépôt
+
+**Constaté le 1er novembre 2026**, l'opérateur devant une page « bizarre » : la mise en page
+effondrée, les listes empilées sans style, et le numéro de build affichant **166** alors que le
+dépôt était au **169**. Deux causes, indépendantes.
+
+**1. La feuille de style n'est pas appliquée.** `serve.js` répond `styles.css` avec le bon type
+`text/css`, mais le serveur qui tenait le port **servait `application/octet-stream`** : c'était
+un processus lancé depuis un ancien état du dépôt, resté en vie. Un navigateur **refuse** une
+feuille de style servie avec ce type, et la page s'affiche sans style. Elle n'est pas cassée :
+elle est nue.
+
+Le signe qui ne trompe pas : l'ovale reste dessiné correctement — c'est du SVG, qui porte ses
+attributs — pendant que tout le HTML autour perd sa mise en page.
+
+**2. Le numéro de build était écrit à deux endroits.** La balise de l'en-tête portait `169`, et
+`syncSub()` l'écrasait avec un `'166'` littéral à chaque rendu. L'écran a donc annoncé 166
+pendant trois builds. Il n'y a plus qu'une source, la constante `BUILD`, et la balise ne sert
+plus que de valeur de départ.
+
+**Ce qui a été ajouté pour que ça ne se reproduise pas** : `serve.js` répond désormais
+`Cache-Control: no-store, must-revalidate`. Sans cet en-tête, le navigateur garde la page d'un
+build précédent et on discute d'un écran qui n'existe plus.
+
+**À vérifier avant de conclure qu'un écran est cassé** : le type servi pour `styles.css`, et le
+numéro de build affiché comparé à celui du dépôt.

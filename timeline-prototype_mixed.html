@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">169</span>
+      <span class="bld" id="buildno">170</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -599,6 +599,9 @@ const round1 = x => Math.round(x * 10) / 10;
 // two pursuit loops are exactly face to face, each in the middle of its own straight, therefore exactly half a lap
 // apart: 125 m on a 250 m track, 100 m on a 200, 83 m on a 166, 166,5 m on a 333. So `gap` is the only free
 // setting, and Pursuit A, Pursuit B and the tape switches are all derived from it and from the lap length.
+// LE NUMÉRO DE BUILD, À UN SEUL ENDROIT. Il était écrit deux fois — dans la balise de l'en-tête et dans
+// syncSub(), qui l'écrasait — et l'écran a montré 166 pendant trois builds.
+const BUILD = '170';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -3224,7 +3227,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#ovtitle').textContent = "Men's Points Race - " + plural(LAPS, 'lap') + ' - ' + plural(NSPRINTS, 'sprint') + ' - ' + TRACK + 'm';
-  $('#buildno').textContent = '166';
+  $('#buildno').textContent = BUILD;
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

@@ -9,7 +9,9 @@ http.createServer((req, res) => {
     if (err) { res.writeHead(404); res.end('not found'); return; }
     const ext = path.extname(file);
     const type = ext === '.html' ? 'text/html; charset=utf-8' : ext === '.js' ? 'text/javascript' : ext === '.css' ? 'text/css' : 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': type });
+    // Pas de cache : sans cet en-tête le navigateur garde la page d'un build précédent et on regarde un
+    // écran qui n'est plus celui du dépôt. L'opérateur a regardé le build 166 alors que le dépôt était au 169.
+    res.writeHead(200, { 'Content-Type': type, 'Cache-Control': 'no-store, must-revalidate' });
     if (ext === '.html') {
       res.end('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>' + data.toString() + '</body></html>');
     } else res.end(data);
