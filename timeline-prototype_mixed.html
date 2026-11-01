@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '194';
+const BUILD = '195';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -706,6 +706,7 @@ let MC = null;
 let mcPointsVus = 0;      // combien de constats du moteur de course ont déjà été proposés
 function reset() {
   mcPointsVus = 0;
+  tlGarde = null; tlSignature = '';
   MC = (window.MoteurCourse && LOOPS && LOOPS.length) ? window.MoteurCourse.creer({
     piste: TRACK, boucles: LOOPS, arrivee: 0,
     cassureS: GROUP_GAP_S, veloM: BIKE_L, confirmationS: CASS_DELAY_S }) : null;
@@ -1023,7 +1024,44 @@ function cassure(key, over) {
 // identifiant, qui ne change pas tant qu'il existe ; un bloc mesuré n'en a pas, il est donc nommé par le dossard
 // de son coureur de tête.
 const handKey = g => g.op ? 'g' + g.op.id : 'b' + g.bibs[0];
+
+// LA TIMELINE NE SE RECALCULE QU'AUX PASSAGES SUR LES BOUCLES. Son point 191, qui est son point 177
+// appliqué jusqu'au bout : « La seule façon certaine de savoir l'ordre de passage des coureurs,
+// c'est les détections des boucles. » Entre deux passages, la timeline ne peut rien apprendre.
+// L'opérateur, 1er novembre 2026 : « mais l'écran recalcule 20x par secondes dans quel but ? pour
+// quel service ? [...] ca fait déjà longtemps que je te le dis ! »
+//
+// Ce qui change entre deux passages, et qui doit rester vivant : la position de chaque coureur sur
+// la piste, parce que l'OVALE la dessine. On rafraîchit donc `behind` sur le résultat gardé, et
+// rien d'autre.
+//
+// Le calcul est refait aussi quand l'opérateur touche à quelque chose — il désigne un leader, pose
+// un groupe, valide un ±20 : ce n'est pas une détection, mais cela change la timeline.
+let tlGarde = null, tlSignature = '';
+const npGarde = (bib, M) => { const m = M.get(bib); return m && m.pos != null
+  ? m.pos - TRACK * ((S.took[bib] && S.took[bib].v) || 0) : null; };
+function tlSign() {
+  let n = 0; for (const l of S.reads) n += l.length;
+  return n + '|' + (S.leader ? S.leader.bib : '-') + '|' + S.groups.length + '|' + S.proposals.length
+    + '|' + S.riders.map(r => S.lapStatus[r.bib] | 0).join(',') + '|' + S.withdrawn.size
+    + '|' + S.riders.filter(r => r.mode === 'out').length;
+}
 function computeGroups(M) {
+  const sign = tlSign();
+  if (tlGarde && sign === tlSignature) {
+    // rien de neuf aux boucles : la timeline ne bouge pas. On ne rafraîchit que ce que l'ovale dessine.
+    tlGarde.leader = M.get(tlGarde.leaderBib) || tlGarde.leader;   // l’ovale dessine à partir de sa position
+    const lnp = npGarde(tlGarde.leaderBib, M);
+    if (lnp != null) for (const g of tlGarde.groups) for (const x of g.rows) {
+      const np = npGarde(x.r.bib, M);
+      if (np != null) { x.behind = lnp - np; S.tlOf[x.r.bib] = x.behind; }
+    }
+    return tlGarde;
+  }
+  tlSignature = sign;
+  return (tlGarde = computeGroupsVraiment(M));
+}
+function computeGroupsVraiment(M) {
   // The timeline reads the live race from the leader down to the tail of the race, on a continuous distance counted by
   // the loops. A credited lap brings a rider back into the bunch's lap ONLY as far as the loops have measured that lap:
   // a lap gained or lost that the crossings do not show yet (or a counter set by hand) does not move him on the timeline.

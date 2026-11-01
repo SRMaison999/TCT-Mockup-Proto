@@ -2664,3 +2664,16 @@ Deux contrôles, et pas d'autres :
 Encore un mot à moi. L'écran recalcule vingt fois par seconde ; j'appelais « image » un de ces
 calculs. Un défaut se compte donc en **secondes de course** : « 926 images » se dit **« 46 secondes
 sur les 1 042 de la course »**.
+
+### 191. La timeline ne se recalcule qu'aux passages sur les boucles (1er novembre 2026)
+
+Je lui expliquais que l'écran recalcule tout vingt fois par seconde, et que seul l'ovale en a besoin.
+
+> mais l'écran recalcule 20x par secondes dans quel but ? pour quel service ?
+> [...] Oui : ne recalcule la timeline qu'aux passages sur les boucles.
+> **ca fait déjà longtemps que je te le dis !**
+
+C'est son point 177, qu'il avait posé le matin même et que je n'avais appliqué qu'à l'ORDRE des
+coureurs : « La seule façon certaine de savoir l'ordre de passage des coureurs, c'est les détections
+des boucles. » Entre deux passages, la timeline ne peut rien apprendre : elle ne se recalcule donc
+pas. Seul l'ovale continue d'avancer, parce que lui dessine la piste.

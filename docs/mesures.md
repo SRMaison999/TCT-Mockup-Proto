@@ -3492,3 +3492,27 @@ délai, les deux coureurs restent dans le même groupe. C'est sa règle qui prod
 de deux coureurs sans vérifier qu'ils étaient sur le même tour : à 36,8 s, le 4 au mètre 239 et le
 15 au mètre 241 — deux mètres l'un de l'autre — sortaient avec un écart de 18,2 s. Le contrôle
 compare maintenant les places déroulées, comme le moteur de course le fait.
+
+### Build 195 · la timeline ne se recalcule plus qu'aux passages sur les boucles
+
+Son point 191. Sur les 400 premières secondes de la course 2, la timeline était recalculée
+**8 000 fois** ; elle l'est maintenant **962 fois**, soit **12 fois sur 100**. Les dix-sept
+dix-huitièmes qui ne servaient à rien ont disparu.
+
+L'ovale, lui, continue d'avancer vingt fois par seconde : entre deux passages, seule la position de
+chaque coureur sur la piste est rafraîchie. Vérifié — en trois vingtièmes de seconde sans aucune
+détection, le coureur de tête passe du mètre 5 690,36 au mètre 5 692,54 et les autres le suivent.
+
+**Rien d'autre n'a bougé**, vérifié en cassures sur les deux courses :
+
+| | course 1 | course 2 |
+|---|---|---|
+| plantages | 0 | 0 |
+| coupure de groupe sans cassure | **0 s** | **0 s** |
+| cassure restée dans un groupe | **0 s** | 40,1 s sur 1 042 |
+| écarts négatifs | 0 | 0 |
+| constats de ±20 | 0 | **12** |
+| points faux | aucun | **aucun** |
+| propositions ouvertes à l'écran | 0 | **12** |
+
+Groupes à l'arrivée de la course 2 : 12 et 52 · 18, 61 et 7 à 2,37 s · le peloton de onze à 10,84 s.
