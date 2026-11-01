@@ -2237,3 +2237,15 @@ l'écran, une à la fois.
      « quand vous avez désigné un leader, l'application peut-elle le remplacer toute seule ? »,
      sa réponse du 1er novembre 2026 : « **Oui, laisse comme aujourd'hui : un coureur qui le
      dépasse sur la piste lui prend la tête.** » Rien à coder : c'est le comportement en place.
+
+159. **Le leader désigné se fait reprendre sur la piste, et c'est voulu.** À la question
+     « quand vous avez désigné un leader, l'application peut-elle le remplacer toute seule ? »,
+     sa réponse du 1er novembre 2026 : « **Oui, laisse comme aujourd'hui : un coureur qui le
+     dépasse sur la piste lui prend la tête.** » Et sa raison, le même jour, mot pour mot :
+     « **il faut comprendre que si l'opérateur intervient pour corriger l'ordre des groupes de
+     la timeline c'est parce qu'il constate que quelque chose ne fonctionne pas très bien. Il
+     remet donc de l'ordre, et après évidemment les coureurs, eux, continuent leur compétition
+     et à se dépasser les uns les autres, très très très souvent ! Donc oui, l'appli doit
+     continuer à refléter ce qu'elle voit** ».
+     Une intervention de l'opérateur **remet de l'ordre à un instant donné** ; elle ne met pas
+     la course en pause. Rien à coder : c'est le comportement en place.
