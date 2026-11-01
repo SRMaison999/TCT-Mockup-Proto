@@ -867,3 +867,21 @@ boucles depuis la build 178 ; les mètres `g.gapM`, qui ne servent plus que de r
 **On saura que c'est fini quand** : au palier 2, l'écart d'un bloc ne sautera plus d'un tour
 entier, et un changement d'écart de plus de 10 s correspondra à un fait de course qu'on peut
 nommer — une échappée qui part, un bloc qui se fait rejoindre — et pas à un changement de paire.
+
+## 26. Le tour est attribué au coureur rejoint, pas à celui qui rattrape — **à corriger**
+
+**La règle.** L'article UCI 3.2.017 quater : un tour se **gagne** quand on rattrape l'arrière du
+**plus gros peloton en course**, et se **perd** quand on est rejoint par lui. C'est le président
+du collège des commissaires qui dit quel peloton est le plus gros.
+
+**Ce qu'on mesure.** La pièce reconstruite relève 8 événements de tour au palier 2, tous du côté
+du coureur rejoint : « 15 IRL : −1 tour, avec le 7 NED », « 46 BEL : −1 tour, avec le 9 ». Or le
+15 et le 46 sont dans le groupe de treize, et le 7 dans celui de trois : ce sont les trois
+échappés qui prennent un tour, pas les treize qui en perdent un. Le moteur actuel fait la même
+faute autrement — il propose un tour perdu à quatre coureurs du plus gros peloton.
+
+**Pourquoi.** La mesure se prend sur la paire de coureurs qui se suivent, ce qui donne le bon
+**nombre** de tours, mais personne ne regarde ensuite **quel groupe est le plus gros**.
+
+**On saura que c'est fini quand** : au palier 2, le 7, le 18 et le 61 se verront proposer **+1
+tour**, et aucun coureur du groupe le plus nombreux ne se verra proposer un tour perdu.

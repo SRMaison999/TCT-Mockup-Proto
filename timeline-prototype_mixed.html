@@ -1,6 +1,9 @@
 <title>Lap Timeline Prototype · mixed</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="styles.css">
+<!-- La pièce qui décide la course, reconstruite le 1er novembre 2026. Elle tourne À CÔTÉ de l'actuelle
+     le temps qu'on compare les deux : aucun écran ne la lit encore. -->
+<script src="moteur-course.js"></script>
 
 <style>
 /* ============================================================================
@@ -612,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '180';
+const BUILD = '181';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -3721,7 +3724,7 @@ function loadRace(r) {
 }
 
 // ---------- loop ----------
-window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
+window.__proto = { state: () => S, LOOPS: () => LOOPS, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
 loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();

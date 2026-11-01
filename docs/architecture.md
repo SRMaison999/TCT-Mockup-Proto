@@ -2116,3 +2116,43 @@ ambiguïté, 0 m ou 250 m. Mesuré à la build 179 : posée sur les mètres lus,
 125 m, elle coupait un amas en deux blocs fantômes et les bascules de tour remontaient de 104 à
 142. C'est le seul endroit où la mesure interpolée est meilleure, et c'est parce qu'on ne lui
 demande pas un ordre.
+
+## 50. La pièce qui décide la course, reconstruite (build 181)
+
+**Sa demande, le 1er novembre 2026** : « Ce serait pas plus simple de reconstruire cet algorithme
+depuis le début, avec les erreurs que nous savons qu'il ne faut pas commettre....? »
+
+**Pourquoi.** Le moteur portait deux idées de « où est un coureur » qui se contredisent : ce que
+les boucles ont **mesuré**, et ce que le logiciel **devine** entre deux détections. Chaque
+correction déplaçait le défaut de l'une vers l'autre. L'opérateur a lui-même redressé la
+description : les boucles et l'ordre de passage ne sont pas deux choses, c'est la même — une
+détection porte une boucle **et** une heure.
+
+**Le fichier** : `moteur-course.js`, chargé avant le prototype. Il tourne **à côté** du moteur
+actuel : aucun écran ne le lit encore, le temps qu'on compare les deux sur les deux paliers.
+
+**Son unique entrée** : `detection({ bib, boucle, t })`. Il n'existe aucune entrée pour une
+position. C'est le garde de l'erreur E1 — on ne peut pas lui donner une position devinée, même par
+accident.
+
+**Ce qu'il calcule, et rien d'autre** :
+
+- la distance d'un coureur, **comptée** boucle après boucle depuis son premier passage, jamais
+  devinée (deux passages sur la même boucle font un tour entier) ;
+- l'ordre : distance décroissante, puis l'heure du passage — « le premier qui passe est le
+  premier » (point 174) ;
+- l'écart entre deux coureurs qui se suivent : le temps lu sur la dernière boucle que les **deux**
+  ont franchie, moins le temps d'une longueur de vélo à la vitesse du suiveur (§1) ;
+- les groupes : on descend la file, et une cassure confirmée sur 0,3 s ouvre un groupe (§3) ;
+- les tours pris ou perdus : la différence des distances comptées entre deux coureurs du même
+  groupe, acceptée seulement si ce qui reste après les tours entiers tient dans la distance que la
+  seconde du §1 représente à sa vitesse.
+
+Les sept erreurs à ne pas refaire sont écrites en tête du fichier, chacune avec le garde qui
+l'empêche. Elles viennent de `pitfalls.md` et des mesures des builds 166 à 180.
+
+**Ce qui n'y est pas encore** : l'attribution du tour au bon coureur. L'article UCI 3.2.017 quater
+veut qu'un tour se perde quand on est rejoint **par le plus gros peloton**, et se gagne quand on
+rattrape l'arrière de ce peloton. La pièce mesure la paire sans regarder quel groupe est le plus
+gros, et attribue donc un tour **perdu** à des coureurs du peloton là où ce sont les échappés qui
+en **gagnent** un. C'est le poste 26.

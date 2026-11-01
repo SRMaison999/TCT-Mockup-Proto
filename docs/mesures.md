@@ -3113,3 +3113,37 @@ course — ou quand les deux coureurs de la paire ont franchi leur dernière bou
 d'intervalle, ce qui donne un z de 18,3 s. Les mètres `g.gapM`, eux, ne servent plus que de repli
 et sont grossiers par construction : au tour 6, trois blocs distincts portent `head` 0, 135 et
 250 m, parce que ce sont les seules distances que les trois boucles donnent.
+
+## Build 181 · la pièce reconstruite, comparée à l'actuelle
+
+Les deux paliers rejoués du départ à l'arrivée. Le moteur actuel pilote la course ; la pièce
+reconstruite reçoit ensuite **exactement les mêmes détections** — 2 896 au palier 1, 2 749 au
+palier 2 — et on regarde ce qu'elle en fait.
+
+**Palier 1 — le peloton groupé.**
+
+| | moteur actuel | pièce reconstruite |
+|---|---|---|
+| Groupes | toujours **un** | toujours **un** |
+| Changements de tête | 1 | **0** |
+| Tours pris ou perdus | aucun | aucun |
+
+Les 17 changements d'ordre qu'elle relève sont tous **à l'intérieur** du groupe unique : des
+coureurs qui se doublent, ce que les boucles voient réellement.
+
+**Palier 2 — deux échappées, deux lâchés.**
+
+| | moteur actuel | pièce reconstruite |
+|---|---|---|
+| Changements de tête | 32 | **4** |
+| L'échappée du 12 et du 52 | apparaît comme bloc, écart qui saute | bloc séparé dès **129,6 s**, écart **1,4 → 2,7 → 3,3 → 5,8 s** |
+| Écarts qui sautent d'un tour entier | 167 | **aucun relevé** |
+| À l'arrivée | un bloc de 16 | **18-61-7**, puis les 13 autres à **15,51 s** |
+
+L'écart de l'échappée monte régulièrement, sans saut : c'est la première fois qu'une échappée se
+lit comme une échappée.
+
+**Le défaut qu'elle porte aussi** : elle relève 8 événements de tour au palier 2, tous du côté du
+coureur **rejoint** — « 15 : −1 tour avec le 7 », « 46 : −1 avec le 9 » — alors que ce sont les
+échappés qui prennent le tour. Elle mesure la paire sans regarder quel groupe est le plus gros.
+C'est le poste 26.

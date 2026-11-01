@@ -1,0 +1,225 @@
+/* ===========================================================================
+   LA PIÈCE QUI DÉCIDE LA COURSE — reconstruite le 1er novembre 2026.
+
+   L'opérateur, ce jour-là : « Ce serait pas plus simple de reconstruire cet algorithme depuis
+   le début, avec les erreurs que nous savons qu'il ne faut pas commettre....? »
+
+   Elle répond à trois questions, et à rien d'autre :
+     1. qui est devant qui ;
+     2. qui roule avec qui — les groupes, et la cassure d'une seconde ;
+     3. qui a pris ou perdu un tour.
+
+   ELLE NE LIT QUE LES DÉTECTIONS DES BOUCLES. Un dossard, une boucle, une heure. Rien d'autre
+   n'entre. Sa règle, le 1er novembre 2026 : « La seule façon certaine de savoir l'ordre de
+   passage des coureurs, c'est les détections des boucles. A chaque tour. 3 boucle par tour. »
+
+   ---------------------------------------------------------------------------
+   LES ERREURS À NE PAS REFAIRE. Chacune a été mesurée, et chacune a son garde ici.
+
+   E1. Ne jamais tirer un ordre d'une position calculée entre deux détections.
+       Entre deux boucles personne ne mesure rien. Mesuré : la tête changeait 67 fois sur une
+       course, 65 fois pour 3 m ou moins, et à 539,4 s elle passait du 12 au 15 alors qu'aucune
+       boucle n'avait rien détecté entre les deux instants.
+       → Le garde : cette pièce n'a pas d'entrée pour une position. `detection()` est la seule.
+
+   E2. Ne jamais mesurer entre deux coureurs qui ne se suivent pas.
+       Un groupe est une chaîne : ses deux bouts peuvent être à 218 m l'un de l'autre. Mesuré :
+       un tour pris proposé contre un coureur à 126,6 m, soit un demi-tour, arrondi en un tour.
+       → Le garde : `voisinDevant()` ne rend que le coureur immédiatement devant dans l'ordre, et
+         toute mesure de tours vérifie que ce qui reste après les tours entiers est petit.
+
+   E3. Ne jamais ajouter ni retirer un tour pour faire tenir un affichage.
+       Mesuré : 164 fois sur une course, un écart négatif se voyait ajouter un tour entier, d'où
+       le saut de 18,3 s à l'écran.
+       → Le garde : aucun tour n'est ajouté nulle part ici. Un écart qui sort négatif est rendu
+         tel quel, avec les deux dossards, pour qu'on voie d'où il vient.
+
+   E4. Ne jamais décider sur un instantané.
+       Sa règle du §1 : une cassure se confirme sur 0,3 s avant de compter.
+       → Le garde : `confirme()`, et rien ne change de statut sans passer par elle.
+
+   E5. Un tour pris se paie en points, il ne se compte pas en distance.
+       Son point 174 : « Chacun est toujours dans le même tour que les autres du point de vue de
+       la timeline. » Un tour pris vaut 20 points, pas 250 m d'avance.
+       → Le garde : `tours[bib]` est retranché de la distance dès que le coureur a rejoint, et
+         cette valeur n'est relue qu'à une nouvelle détection du coureur.
+
+   E6. Ne rien proposer que les boucles ne montrent pas.
+       → Le garde : un coureur sans détection n'existe pas pour cette pièce. Il n'est ni classé,
+         ni groupé, ni proposé.
+
+   E7. Ne jamais nommer une règle avec mes mots plutôt qu'avec les siens.
+       Il a dû corriger « les deux coureurs qui se font face », qui était de moi et voulait dire
+       autre chose. Ici on dit : **les deux coureurs qui se suivent**.
+
+   ---------------------------------------------------------------------------
+   CE QU'ELLE REND. `etat()` donne la liste des groupes dans l'ordre, et pour chacun l'écart en
+   secondes au groupe au-dessus — mesuré entre la queue de celui du dessus et la tête de celui-ci
+   (son point 167 : « l'écart se mesure entre le dernier du groupe des leaders et le premier du
+   groupe du peloton »).
+   =========================================================================== */
+(function () {
+  'use strict';
+
+  function creer(reglage) {
+    const R = Object.assign({
+      piste: 250,            // la longueur d'un tour, en mètres
+      boucles: [0],          // la position de chaque boucle sur la piste, en mètres, dans l'ordre
+      cassureS: 1.0,         // §1 : au-delà d'une seconde entre roue arrière et roue avant, c'est une cassure
+      veloM: 1.65,           // §1 : la longueur d'un vélo
+      confirmationS: 0.3,    // §1 : le temps qu'une cassure doit tenir avant de compter
+    }, reglage || {});
+
+    const BOUCLES = [...R.boucles].sort((a, b) => a - b);
+    const NB = BOUCLES.length;
+
+    const coureurs = new Map();   // dossard → ce que les détections ont appris de lui
+    const cassures = new Map();   // "suiveur|devant" → { etat, depuis }
+    const tours = new Map();      // dossard → tours retranchés, relevés quand il a rejoint (E5)
+    let maintenant = 0;
+
+    const neuf = bib => ({
+      bib,
+      n: 0,                 // combien de détections : rien d'autre ne dit qu'il est en course
+      d: null,              // sa distance, comptée boucle après boucle (jamais devinée)
+      t: null,              // l'heure de sa dernière détection
+      dAvant: null, tAvant: null,
+      parBoucle: new Map(), // position de boucle → heure de son dernier passage sur celle-ci
+      rejoint: null,        // l'heure de la détection où le tour retranché a été relevé
+    });
+
+    /* ------------------------------------------------------------------ 1. une détection */
+    // C'EST LA SEULE ENTRÉE DE CETTE PIÈCE (E1). boucle est une position en mètres sur la piste,
+    // prise dans `reglage.boucles` ; t est l'heure de course du passage.
+    function detection(d) {
+      const boucle = d.boucle, t = d.t, bib = d.bib;
+      if (BOUCLES.indexOf(boucle) < 0) return { refus: 'boucle inconnue', boucle };
+      let c = coureurs.get(bib);
+      if (!c) { c = neuf(bib); coureurs.set(bib, c); }
+      // sa distance se COMPTE : du dernier point lu au point lu maintenant, en avançant sur la
+      // piste. Deux passages sur la même boucle font un tour entier, jamais zéro.
+      let avance;
+      if (c.d == null) avance = 0;
+      else { avance = ((boucle - c.boucle) + R.piste) % R.piste; if (avance === 0) avance = R.piste; }
+      c.dAvant = c.d; c.tAvant = c.t;
+      c.d = c.d == null ? boucle : c.d + avance;
+      c.boucle = boucle; c.t = t; c.n++;
+      c.parBoucle.set(boucle, t);
+      if (t > maintenant) maintenant = t;
+      return { bib, distance: c.d, boucle, t, detections: c.n };
+    }
+
+    /* ------------------------------------------------------------------ 2. ce qu'on sait d'un coureur */
+    // sa vitesse, telle que ses deux dernières détections la donnent. Sans deux détections, on ne
+    // sait pas, et on le dit (null) : rien ici ne remplace une mesure manquante par une moyenne.
+    const vitesse = c => (c.dAvant == null || c.t === c.tAvant) ? null : (c.d - c.dAvant) / (c.t - c.tAvant);
+
+    // sa distance de course, le tour retranché compris (E5)
+    const distance = c => c.d - R.piste * (tours.get(c.bib) || 0);
+
+    // les coureurs que les boucles ont vus, dans l'ordre : distance décroissante, puis l'heure du
+    // passage — le premier passé est le premier (son point 174).
+    function ordre() {
+      return [...coureurs.values()].filter(c => c.n > 0)
+        .sort((a, b) => (distance(b) - distance(a)) || (a.t - b.t) || (a.bib - b.bib));
+    }
+
+    /* ------------------------------------------------------------------ 3. l'écart entre deux coureurs */
+    // §1, dans ses mots : « le temps entre la roue arrière du coureur 1 et la roue avant du
+    // coureur 2 ». z est lu sur la dernière boucle que les DEUX ont franchie, le suiveur après
+    // celui de devant ; on en retire le temps qu'il faut au suiveur pour couvrir une longueur de
+    // vélo, à sa vitesse. Jamais de mètres, jamais de repli sur une position calculée (E1).
+    function ecartS(devant, suiveur) {
+      let z = null, dernier = -Infinity;
+      for (const b of BOUCLES) {
+        const ta = devant.parBoucle.get(b), tb = suiveur.parBoucle.get(b);
+        if (ta == null || tb == null || tb < ta || tb <= dernier) continue;
+        dernier = tb; z = tb - ta;
+      }
+      if (z == null) return null;                       // aucune boucle commune : on ne sait pas
+      const v = vitesse(suiveur);
+      return v ? z - R.veloM / v : z;
+    }
+
+    /* ------------------------------------------------------------------ 4. la cassure, confirmée */
+    // E4 : un dépassement du seuil ne compte qu'une fois qu'il a tenu `confirmationS`.
+    function confirme(cle, depasse) {
+      let e = cassures.get(cle);
+      if (!e) { e = { etat: false, depuis: null }; cassures.set(cle, e); }
+      if (depasse === e.etat) { e.depuis = null; return e.etat; }
+      if (e.depuis == null) e.depuis = maintenant;
+      if (maintenant - e.depuis >= R.confirmationS) { e.etat = depasse; e.depuis = null; }
+      return e.etat;
+    }
+
+    /* ------------------------------------------------------------------ 5. les groupes */
+    // On descend la file. Entre deux coureurs qui se suivent, s'il y a cassure, le second ouvre un
+    // nouveau groupe. C'est tout le §3.
+    function groupes() {
+      const file = ordre(), gs = [];
+      let g = null;
+      for (let i = 0; i < file.length; i++) {
+        const c = file[i], devant = i ? file[i - 1] : null;
+        let coupe = !g, ec = null;
+        if (devant) {
+          ec = ecartS(devant, c);
+          // sans boucle commune on ne coupe pas : on ne sait pas, et on n'invente pas (E1, E6)
+          coupe = ec == null ? false : confirme(c.bib + '|' + devant.bib, ec > R.cassureS);
+        }
+        if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null, devant: devant ? devant.bib : null }; gs.push(g); }
+        g.coureurs.push(c.bib);
+      }
+      return gs;
+    }
+
+    /* ------------------------------------------------------------------ 6. le tour pris ou perdu */
+    // E2 : la mesure se prend entre les DEUX COUREURS QUI SE SUIVENT, et seulement si ce qui reste
+    // après les tours entiers est petit — sinon ils ne se suivent pas et on ne propose rien.
+    // E5 : une fois relevé, le tour retranché tient jusqu'à la prochaine détection du coureur.
+    function toursPris() {
+      const file = ordre(), vus = [];
+      for (let i = 1; i < file.length; i++) {
+        const c = file[i], devant = file[i - 1];
+        const ec = ecartS(devant, c);
+        if (ec == null || confirme(c.bib + '|' + devant.bib, ec > R.cassureS)) continue;   // pas dans le même groupe
+        const brut = c.d - devant.d;                 // leurs distances comptées, sans tour retranché
+        const n = Math.round(brut / R.piste);
+        const reste = brut - R.piste * n;
+        const v = vitesse(c) || 0;
+        const marge = R.cassureS * v + R.veloM;      // la distance que le seuil du §1 représente à sa vitesse
+        if (!n || Math.abs(reste) > marge) continue;
+        vus.push({ bib: c.bib, avec: devant.bib, tours: n, resteM: +reste.toFixed(1), margeM: +marge.toFixed(1) });
+      }
+      return vus;
+    }
+
+    // ce que l'opérateur valide ne change que les points ; le retour dans le tour du paquet, lui,
+    // n'attend aucune validation (§2). C'est ici qu'on le relève, et une seule fois (E5).
+    function rejoint(bib, nbTours) {
+      const c = coureurs.get(bib); if (!c) return false;
+      if (c.rejoint === c.t) return false;           // déjà relevé à cette détection-là
+      c.rejoint = c.t;
+      tours.set(bib, (tours.get(bib) || 0) + nbTours);
+      return true;
+    }
+
+    /* ------------------------------------------------------------------ 7. l'état */
+    function etat() {
+      const gs = groupes();
+      return {
+        t: maintenant,
+        coureurs: ordre().map(c => ({ bib: c.bib, distance: distance(c), compte: c.d, boucle: c.boucle, a: c.t, detections: c.n, toursRetranches: tours.get(c.bib) || 0 })),
+        groupes: gs,
+        tete: gs.length && gs[0].coureurs.length ? gs[0].coureurs[0] : null,
+        toursPris: toursPris(),
+      };
+    }
+
+    return { detection, etat, groupes, ordre: () => ordre().map(c => c.bib), toursPris, rejoint,
+             reglage: R, _coureurs: coureurs };
+  }
+
+  const API = { creer };
+  if (typeof window !== 'undefined') window.MoteurCourse = API;
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+})();
