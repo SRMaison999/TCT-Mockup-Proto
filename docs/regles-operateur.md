@@ -2216,3 +2216,19 @@ l'écran, une à la fois.
      parfois, doit forcer les choses** ».
      **Ce point n'est pas tranché** : il l'a soumis par « Qu'en penses-tu ? », et rien n'est
      codé tant qu'il n'a pas arrêté la forme.
+
+157. **Ce que « les transpondeurs fonctionnent mal » veut dire, et ce que ça n'atteint pas.**
+     Ses mots, le 1er novembre 2026 : « **il faut comprendre que lorsque "les transpondeurs
+     fonctionnent mal" cela signifie qu'ils gèrent mal des dépassements de groupes, des tours
+     gagnés ou perdus, ce genre de chose. Mais sur un passage de sprint, il n'y aura pas de
+     problème, en tout cas pas sur 4 coureurs d'un coup ! Et si il manquerait un des 4 coureurs
+     marquant les points dans un résultat de sprint, l'opérateur ajuste manuellement.** »
+     C'est un **fait sur le matériel**, pas une demande : l'ordre jugé d'un sprint reste celui
+     que les boucles ont vu, et la reprise à la main reste ce qu'elle est.
+
+158. **Désigner un leader, c'est forcer son groupe en première position.** Ses mots, le
+     1er novembre 2026 : « **si l'opérateur force un nouveau groupe en tête en utilisant un des
+     boutons "SET LEADER", à mes yeux c'est exactement la même chose que de forcer ce groupe en
+     première position sur la timeline. C'est tout l'intérêt de ces boutons "SET LEADERS"** ».
+     Les trois boutons dont il parle sont ceux posés sur la piste, à leurs boucles (§17,
+     « Les trois boutons de désignation du leader »).
