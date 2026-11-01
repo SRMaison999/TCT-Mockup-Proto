@@ -76,7 +76,7 @@ proposition d'écrans, pas un commit.
 ## 2. Le scénario de test qui exerce la conséquence sur le rang
 
 La conséquence sur le rang (`regles-operateur.md` §7) et les lignes grisées (§8) **ne sont
-vérifiées que sur cas forcé** : la course de référence ne les exerce jamais, parce qu'aucune
+vérifiées que sur cas forcé** : la simulation ne les exerce jamais, parce qu'aucune
 de ses fenêtres d'inéligibilité ne tombe sur l'ouverture d'un sprint. Les chiffres sont dans
 `mesures.md` §6 et §7.
 
@@ -84,7 +84,7 @@ de ses fenêtres d'inéligibilité ne tombe sur l'ouverture d'un sprint. Les chi
 se trouver entre le peloton et la ligne à l'ouverture d'un sprint. Il exercerait les deux
 règles d'un coup.
 
-**Fini quand** le scénario se charge depuis l'onglet Files comme la course de référence, et
+**Fini quand** le scénario se charge depuis l'onglet Files comme la simulation, et
 que `mesures.md` porte ce qu'il donne.
 
 ---
@@ -176,7 +176,7 @@ que les deux survivent à un rechargement de la page.
 fait **sur place** — le nom devient un champ, *Save* et *Cancel* prennent la place des trois
 boutons, Entrée valide, Échap annule, un nom vide est refusé sans rien dire. La suppression
 **demande deux clics** : le bouton devient *Delete?* en rouge, le second clic efface. Aucune
-fenêtre de dialogue. La course de référence est une ligne comme les autres (§16 des règles) :
+fenêtre de dialogue. La simulation est une ligne comme les autres (§16 des règles) :
 elle se renomme, elle s'efface, et l'un comme l'autre tiennent au rechargement — vérifié.
 
 ### b. Trier la liste des coureurs
@@ -209,7 +209,7 @@ correctement — timeline, ovale et carte de sprint.
 
 ## 7. À déboguer
 
-### a. Le scénario de la course de référence repart sur une course neuve
+### a. Le scénario de la simulation repart sur une course neuve
 
 Signalé par l'opérateur le 28 octobre 2026, mot pour mot :
 
@@ -221,7 +221,7 @@ Signalé par l'opérateur le 28 octobre 2026, mot pour mot :
 > comme les autres. »
 
 **Corrigé à la build 74**, non pas en colmatant le drapeau mais en supprimant la chose :
-`SCRIPT`, `useScript` et le mode `away` n'existent plus. La course de référence est une
+`SCRIPT`, `useScript` et le mode `away` n'existent plus. La simulation est une
 course enregistrée ordinaire — une configuration et **deux ordres sur l'horloge** —, et plus
 rien dans le code ne la connaît au-delà du fait que l'onglet Files l'offre toujours. Le détail
 est dans `architecture.md` §15, les mesures dans `mesures.md` §15.
@@ -233,7 +233,7 @@ du 12 sont **une règle**, et le moyen est le sien : leur vitesse s'ajuste sur c
 rouge REC** s'allume en lecture et s'éteint en pause.
 
 ✅ **Les trois critères sont remplis à la build 75.** Une course neuve ne bouge plus toute
-seule, quelle que soit la course chargée avant ; la course de référence est une ligne comme
+seule, quelle que soit la course chargée avant ; la simulation est une ligne comme
 les autres dans l'onglet Files, avec sa durée ; et « le poste 6a s'applique à elle aussi » —
 elle se renomme et s'efface comme les autres, et l'un comme l'autre survivent au
 rechargement. **Ce poste est clos.**
@@ -254,11 +254,11 @@ deux textes sont posés à x = −24 et x = −48.
 **Ce n'est pas nouveau.** La build 68 les posait déjà à x = −20 et x = −44 au même instant
 de course : la largeur de piste de la build 69 ajoute 4 unités, elle n'a pas créé le défaut.
 
-**Pour le reproduire** : charger la course de référence, la jouer jusqu'au **tour 11** — BIB
+**Pour le reproduire** : charger la simulation, la jouer jusqu'au **tour 11** — BIB
 12 est alors seul en échappée dans le virage de gauche.
 
 **Fini quand** aucune étiquette de l'ovale n'est tracée hors du cadre, à aucun moment de la
-course de référence.
+simulation.
 
 ### Le reste
 
@@ -272,7 +272,7 @@ que la forme de l'ovale et sa largeur, que l'opérateur a tranchées le même jo
 (`regles-operateur.md` §9). La cause était ailleurs que là où ce fichier la cherchait :
 c'est `pitfalls.md` A14, et les chiffres sont dans `mesures.md` §14.
 
-Aucun autre bug connu au 28 octobre 2026. La course de référence tourne de bout en bout sans
+Aucun autre bug connu au 28 octobre 2026. La simulation tourne de bout en bout sans
 erreur de console, les deux propositions de tour tombent aux instants attendus, les quatre
 sprints sont jugés et le classement sort (`mesures.md` §12, §13 et §14).
 
@@ -506,7 +506,7 @@ Une carte de proposition en attente prend l'orange du champ du prochain sprint, 
 du sprint redevient bleu pendant ce temps**. Le traitement existe déjà — c'est `.ifb.hot`,
 posé par `syncInfield` à deux tours du sprint.
 
-**On saura que c'est fini quand** : sur la course de référence, à l'apparition de la
+**On saura que c'est fini quand** : sur la simulation, à l'apparition de la
 proposition « Lap gained? · BIB 12 », la carte est orange et le champ `SPRINT` est bleu ; dès
 qu'elle est validée ou rejetée, la carte disparaît et le champ reprend son orange s'il est
 encore à deux tours ou moins.
@@ -534,7 +534,7 @@ le `LAP 21 / 40` restent dans l'ovale, il l'a dit deux fois ; et la double confi
 départ doit survivre au déménagement de `ARM START`.
 
 **On saura que c'est fini quand** : le panneau ne porte plus que cinq champs, la barre du haut
-porte les commandes sorties sans rien perdre d'autre, et la course de référence se lance et
+porte les commandes sorties sans rien perdre d'autre, et la simulation se lance et
 s'arrête depuis la barre comme elle le faisait depuis l'ovale.
 
 ---

@@ -84,12 +84,12 @@ que l'éligibilité est passée à `S.inelig` (build 53, voir H6). Il a quand m�
 caution à un seuil inventé (A9). À retirer, ou à rebrancher sciemment — **mais ne pas s'en
 servir pour justifier une règle.**
 
-**A11. Le scénario de la course de référence tournait sur toute course neuve.**
+**A11. Le scénario de la simulation tournait sur toute course neuve.**
 `S.useScript` valait `true` dans `reset()`, donc trois coureurs du scénario bougeaient
 **pendant que l'opérateur pilotait les siens** — trois vitesses qui changent pour une raison
 qu'il n'a pas demandée. Retenu : une course neuve est un peloton nu, et le scénario arrive
-avec la course de référence, qui se charge depuis l'onglet Files. **Conséquence pour les
-tests : la course de référence ne se mesure plus sur un `reset()`, il faut la charger
+avec la simulation, qui se charge depuis l'onglet Files. **Conséquence pour les
+tests : la simulation ne se mesure plus sur un `reset()`, il faut la charger
 d'abord.**
 
 ⚠️ **Le correctif n'a pas tenu**, et le 28 octobre 2026 l'opérateur a signalé que le scénario
@@ -97,10 +97,10 @@ tournait encore sur une course neuve. `reset()` mettait bien `useScript: false`,
 bouton Restart et `rewind30()` le remettaient après coup, chacun par un `const keep`.
 
 ✅ **Résolu à la build 74, en supprimant la chose plutôt que le symptôme.** Il n'y a plus de
-`SCRIPT`, plus de `useScript`, plus de mode `away` : la course de référence est une course
+`SCRIPT`, plus de `useScript`, plus de mode `away` : la simulation est une course
 enregistrée comme les autres, deux ordres sur l'horloge. Aucun drapeau ne peut donc survivre à
 un `reset()`, parce qu'il n'y a plus de drapeau. **La conséquence pour les tests ne change
-pas** : la course de référence se charge depuis l'onglet Files avant d'être mesurée, et c'est
+pas** : la simulation se charge depuis l'onglet Files avant d'être mesurée, et c'est
 désormais vrai pour la même raison que pour n'importe quelle autre course enregistrée.
 
 **A12. Les précisions de l'opérateur ne sont pas des demandes.** Il a donné les longueurs
@@ -571,7 +571,7 @@ Tous se jouent avec le harnais (`window.__proto`, voir `architecture.md`) ou à 
 chiffres attendus sont dans `mesures.md` — ils ne sont **pas** recopiés ici, pour qu'une
 valeur périmée ne survive pas dans deux fichiers.
 
-**Avant toute mesure de la course de référence : la charger depuis l'onglet Files** (A11).
+**Avant toute mesure de la simulation : la charger depuis l'onglet Files** (A11).
 
 | # | Scénario | Ce qu'on vérifie |
 |---|---|---|
@@ -596,8 +596,7 @@ valeur périmée ne survive pas dans deux fichiers.
 
 ### Les deux scénarios qui manquent encore
 
-**La conséquence de rang et les lignes grisées ne sont jamais exercées par la course de
-référence** : aucune fenêtre d'inéligibilité ne tombe sur une ouverture de sprint. Les deux
+**La conséquence de rang et les lignes grisées n'ont jamais été exercées au cours des tests** : aucune fenêtre d'inéligibilité ne tombe sur une ouverture de sprint. Les deux
 n'ont été vérifiées que sur cas forcé (`mesures.md` §6 et §7).
 
 **À construire** : décaler le décrochage des deux coureurs lâchés pour qu'ils se trouvent

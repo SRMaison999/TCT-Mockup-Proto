@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">168</span>
+      <span class="bld" id="buildno">169</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -734,6 +734,7 @@ function reset() {
     // start, so BIB 12 attacked and BIB 4 and 11 were dropped while the operator was driving his OWN riders — three
     // speeds moving for a reason he had not asked for. It is loaded with the race, from Files.
     replay: null,           // a saved race being replayed: the piloting acts left to apply, by race time
+    wobble: null,           // les fluctuations de vitesse que la course chargée demande, ou rien
   };
   for (const r of S.riders) { S.lapStatus[r.bib] = 0; S.laps[r.bib] = { gained: 0, lost: 0 }; }
   // L'appairage que l'opérateur a posé lui revient ; un coureur qu'il vient d'ajouter prend le premier numéro libre.
@@ -787,6 +788,19 @@ function progress(po, now, goal) {
   const gap = goal - now;
   if (po.gap0 == null) po.gap0 = gap;
   po.prog = Math.abs(po.gap0) < 0.01 ? 1 : Math.max(0, Math.min(1, 1 - gap / po.gap0));
+}
+// LES FLUCTUATIONS DE VITESSE D'UNE SIMULATION. Elles appartiennent à la course chargée, jamais au moteur : une
+// course sans `wobble` roule exactement comme avant, « no invented wobble ». Le tirage est déterminé par le dossard
+// et par le numéro de tranche de temps, donc la même simulation rejoue toujours la même course.
+function wobbleOf(r, W) {
+  const k = Math.floor(S.t / W.every);
+  if (r.wobK !== k) {
+    r.wobK = k;
+    const h = x => { const y = Math.sin(x) * 43758.5453; return y - Math.floor(y); };
+    const a = h(r.bib * 127.1 + k * 311.7), b = h(r.bib * 269.5 + k * 183.3);
+    r.wob = (W.min + a * (W.max - W.min)) * (b < 0.5 ? -1 : 1);
+  }
+  return r.wob;
 }
 function pilotStep(r, po, base, ref, lap) {
   const rel = r.dist - ref;
@@ -852,6 +866,7 @@ function step(dt) {
       if (TIGHT.bibs.includes(r.bib) && lap >= TIGHT.lap - 2 && lap <= TIGHT.lap) off = S.riders.find(x => x.bib === TIGHT.bibs[0]).offset + 0.15 * TIGHT.bibs.indexOf(r.bib);   // a tight sprint
       const target = ref + TRACK * r.lapTrue + off;
       r.spd = base + Math.max(-1.6, Math.min(1.6, 0.12 * (target - r.dist)));
+      if (S.wobble && lap >= S.wobble.fromLap) r.spd += wobbleOf(r, S.wobble);
     }
     const before = r.dist; r.dist += r.spd * dt;
     // Tape switches: a strip under the tyres. It counts every bike that rolls over it, transponder or not, silent or
@@ -3004,6 +3019,22 @@ const curActs = () => LOADED ? LOADED.acts : (REC ? REC.acts : []);
 // qualification Hommes Élite sur 250 m — 15 km, 60 tours — et les sprints tombent tous les 10 tours (3.2.116).
 // Aucun ordre n'est rejoué : le peloton part groupé et le reste.
 const CALM_RACE = { name: 'Palier 1 — peloton groupé, aucun tour pris ni perdu', cfg: { ...DEF, track: 250, laps: 60, sprints: 6 }, laps: 60, dur: null, acts: [] };
+const PALIER_2 = { name: 'Palier 2 — deux échappées, deux lâchés', cfg: { ...DEF, track: 250, laps: 60, sprints: 6, pace: 13.5 }, laps: 60, dur: null,
+  // Sa description, le 1er novembre 2026, point par point :
+  //   « Départ > RAS, tous à la même vitesse 13,5m/s »
+  //   « de lap 2 jusqu'à l'arrivée > introduire des fluctuations de vitesses aléatoires pour chaque coureur, avec des
+  //     différences de vitesse de l'ordre de 0,1m/s à 0,3m/s par rapport à la vitesse de départ »
+  //   « lap 5 > 2 coureurs tentent de s'échapper à l'avant - vitesse de 1m/s plus élevée que la vitesse du peloton au départ »
+  //   « lap 11 > 3 coureurs tentent de s'échapper à l'avant - vitesse de 1,4m/s plus élevée que la vitesse du peloton au départ »
+  //   « lap 12 > 2 coureurs sont lâchés à l'arrière - vitesse de 0,9m/s plus lente que la vitesse du peloton au départ »
+  //   « Pas d'autres inputs. »
+  // Les dossards ne sont pas de lui : il a dit combien de coureurs, pas lesquels.
+  wobble: { fromLap: 2, min: 0.1, max: 0.3, every: 5 },
+  acts: [
+    { t: 74.07, lap: 5, kind: 'spd', bibs: [12, 52], v: 14.5 },
+    { t: 185.19, lap: 11, kind: 'spd', bibs: [7, 61, 18], v: 14.9 },
+    { t: 203.7, lap: 12, kind: 'spd', bibs: [70, 46], v: 12.6 },
+  ] };
 // The saved list is read once. **Never seen before** and the reference race is put in it, as an ordinary row;
 // seen before — even if it is now empty — and what is there is what the operator left, reference race included or
 // deleted. He asked for it on 28 October 2026: « il faut pouvoir la supprimer et également pouvoir la renommer
@@ -3011,7 +3042,7 @@ const CALM_RACE = { name: 'Palier 1 — peloton groupé, aucun tour pris ni perd
 // list and then forgets it: nothing downstream knows that one of these rows came from there.
 try {
   const raw = localStorage.getItem(RKEY);
-  if (raw == null) { RACES = [JSON.parse(JSON.stringify(CALM_RACE))]; numberRaces(); saveRaces(); }
+  if (raw == null) { RACES = [CALM_RACE, PALIER_2].map(x => JSON.parse(JSON.stringify(x))); numberRaces(); saveRaces(); }
   else { RACES = JSON.parse(raw) || []; numberRaces(); }
 } catch (e) { RACES = []; }
 const VERB = { gain: ['takes a lap', 'take a lap'], lose: ['loses a lap', 'lose a lap'], up: ['joins the group ahead', 'join the group ahead'],
@@ -3543,6 +3574,7 @@ function loadRace(r) {
   delete c.tape; CFG = c; applyCfg();
   reset();
   S.replay = (r.acts || []).map(a => ({ ...a })).sort((a, b) => a.t - b.t);
+  S.wobble = r.wobble ? { ...r.wobble } : null;
   LOADED = r; REC = null;
   S.hideOnStart = true;   // the rail stays until the operator starts the race, then steps out of the way
   railHide(false); syncSeg(); railDirty = true; dirty = true; render();

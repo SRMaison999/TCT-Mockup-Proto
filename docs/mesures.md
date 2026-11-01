@@ -11,9 +11,9 @@ nouvelle en dessous.
 
 ---
 
-## 1. La course de référence
+## 1. La simulation
 
-Le scénario de référence, tel qu'il se charge depuis l'onglet **Files** du simulateur
+La simulation, telle qu'elle se charge depuis l'onglet **Files** du simulateur
 (bouton `Load` de la ligne « 250 m · 40 laps »). 16 coureurs, 40 tours sur 250 m, sprint
 tous les 10 tours, dernier sprint doublé.
 
@@ -65,7 +65,7 @@ tourner la boucle d'affichage — ce qui a été fait à la build 67, voir §12.
 | 67 | 674,2 s | les deux mêmes, aux mêmes instants | médiane supprimée ; tour du peloton = son premier coureur, delta contre le coureur d'en face (§12) |
 | 68 | 674,2 s | les deux mêmes, aux mêmes instants | seuil de cassure paire par paire, vitesse du coureur qui suit (§13) |
 | 74 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` **458,1 s** | le scénario câblé devient une course enregistrée ; la perte de tour se propose **un dixième plus tard** (§15) |
-| 75 | 674,2 s | les deux mêmes, aux mêmes instants | la course de référence quitte le code et devient une ligne de la liste enregistrée ; renommer et effacer (§16) |
+| 75 | 674,2 s | les deux mêmes, aux mêmes instants | la simulation quitte le code et devient une ligne de la liste enregistrée ; renommer et effacer (§16) |
 | 76 | **669,3 s** | `lap:12:1` **165,2 s** · `lap:4,11:-1` **405,7 s** | le peloton cesse de ralentir quand un coureur le quitte : il roule l'allure affichée, donc la course est plus courte et la reprise plus précoce (§17) |
 
 Les durées bougent avec la **pace par défaut** et avec le modèle de vitesse du simulateur,
@@ -168,7 +168,7 @@ proche » : un coureur qui dépasse le leader de quelques mètres bascule de 0 �
 
 ## 6. La conséquence sur le rang, vérifiée sur cas forcé
 
-La course de référence ne fait jamais tomber une fenêtre d'inéligibilité sur l'ouverture
+La simulation ne fait jamais tomber une fenêtre d'inéligibilité sur l'ouverture
 d'un sprint, donc elle n'exerce **jamais** cette règle. Vérifiée en forçant le cas, à la
 build 53 :
 
@@ -202,7 +202,7 @@ normales, puis les grisés lus après la dernière place.
 
 ## 8. Les tape switches
 
-**Comptage par passage de groupe** — course de référence complète à la build 57, 40 tours,
+**Comptage par passage de groupe** — simulation complète à la build 57, 40 tours,
 BIB 15 passé sans transpondeur par l'opérateur au bout de 30 s : 172 passages de groupe
 jugés. Sur les 118 passages du peloton, 80 comptent bien un vélo de plus que de
 transpondeurs lus, 35 n'en comptent pas un de plus parce qu'une fusion le masque, et 3 sont
@@ -216,7 +216,7 @@ transpondeurs, rien à signaler » à chaque tour. Les heures disent `lone: 1, s
 **chaque passage** : le contact de BIB 12 arrive 570 ms après les deux autres, donc il n'est
 ni l'un ni l'autre.
 
-**Contacts perdus par fusion** : sur la course de référence à la build 60, 45 passages sur
+**Contacts perdus par fusion** : sur la simulation à la build 60, 45 passages sur
 173 perdent au moins un contact parce que deux roues sont trop proches (règle des 5 cm). Un
 contact manquant n'est donc pas un incident rare mais l'ordinaire d'un peloton groupé, et il
 peut **masquer** un vélo sans transpondeur sur un passage donné. C'est pourquoi il y a trois
@@ -231,7 +231,7 @@ seconde près**, donc `Rewind 30s` et `Load` sont intacts.
 
 ## 9. Un coureur sans transpondeur qui roule seul
 
-Build 59, scénario de référence, BIB 12 déclaré sans transpondeur pendant son attaque.
+Build 59, simulation, BIB 12 déclaré sans transpondeur pendant son attaque.
 
 **Position mesurée contre la vérité du simulateur**, un relevé toutes les 10 s :
 1506/1506, 1665/1664, 1821/1820, 1976/1976, 2133/2132, 2289/2286 — **moins de 3 m sur cinq
@@ -245,7 +245,7 @@ s'ouvre, aucune erreur, 13 lignes de journal, une seule carte « vélo seul ».
 
 ## 10. Deux transpondeurs inversés
 
-Build 60, course de référence, BIB 12 (échappé) et BIB 52 (peloton), à 20 s d'intervalle,
+Build 60, simulation, BIB 12 (échappé) et BIB 52 (peloton), à 20 s d'intervalle,
 tout par clic réel dans le DOM.
 
 - **La panne se voit.** Après `Swap`, BIB 12 est affiché à 1973 m alors qu'il roule à 2084,
@@ -269,7 +269,7 @@ Build 64, largeurs mesurées sans débordement d'aucune ligne : Dossard + Nation
 
 ## 12. La correction de la médiane, build 67
 
-Mesuré le 28 octobre 2026, course de référence chargée depuis Files, dans les deux
+Mesuré le 28 octobre 2026, simulation chargée depuis Files, dans les deux
 régimes : le pas-à-pas (`factor = 0`) et la boucle d'affichage réelle à ×16.
 
 **La course ne bouge pas.** Durée **674,2 s**, 16 coureurs, 185 passages de bande — les
@@ -323,7 +323,7 @@ Les dix autres finissent à 0 point, classés de la 6e à la 16e place au sprint
 
 ## 13. La vitesse de conversion de la cassure, build 68
 
-Mesuré le 28 octobre 2026, course de référence chargée depuis Files, pas-à-pas
+Mesuré le 28 octobre 2026, simulation chargée depuis Files, pas-à-pas
 (`factor = 0`), 14 001 pas de 0,05 s. Les deux règles ont été appliquées **sur les mêmes
 données mesurées**, image par image : celle du code (vitesse du coureur qui suit, paire par
 paire) et l'ancienne (vitesse médiane du plateau, un seul seuil).
@@ -512,7 +512,7 @@ d'être comptés dans l'onglet Track, où ils gardent leur nom.
 
 **Aucun repère n'est nommé sur l'ovale**, build 91 (`regles-operateur.md` §9, 29 octobre
 2026). Compté dans le DOM après le tracé, piste 250 m, les deux fois sur une course vide
-**et** sur la course de référence chargée depuis l'onglet Files :
+**et** sur la simulation chargée depuis l'onglet Files :
 
 | Build | `<text>` dans `#marks` | Lesquels |
 |---|---|---|
@@ -525,8 +525,8 @@ bande blanche de l'arrivée, les deux lignes blanches des poursuites, et les lig
 et 100 m.
 
 **Le reste de la course ne bouge pas.** `pt()` et `normalAt()` ne sont lus que par
-`renderMarks()` et `renderOval()` : aucune mesure ne les traverse. Vérifié sur la course de
-référence chargée depuis Files, dans les deux régimes :
+`renderMarks()` et `renderOval()` : aucune mesure ne les traverse. Vérifié sur la simulation
+chargée depuis Files, dans les deux régimes :
 
 - **Pas-à-pas** (`factor = 0`) : **13 485 pas**, durée **674,2 s**, deux propositions et
   deux seulement — `lap:12:1` à **165,5 s** et `lap:4,11:-1` à **458,1 s**. Exactement les
@@ -538,16 +538,16 @@ référence chargée depuis Files, dans les deux régimes :
 
 ---
 
-## 15. La course de référence devenue une course enregistrée, build 74
+## 15. La simulation devenue une course enregistrée, build 74
 
-Mesuré le 28 octobre 2026 en pilotant le prototype pas à pas, course de référence chargée
+Mesuré le 28 octobre 2026 en pilotant le prototype pas à pas, simulation chargée
 depuis l'onglet Files.
 
 **Ce qui a disparu du code** : la table `SCRIPT`, le drapeau `S.useScript`, le mode `away`
 et les deux `const keep` qui ressuscitaient le drapeau après un `reset()`. Un `grep` des
 trois noms dans le fichier ne rend **plus rien**.
 
-**Ce qui les remplace** : deux ordres dans `REF_RACE.acts`, rejoués sur l'horloge comme ceux
+**Ce qui les remplace** : deux ordres dans les `acts` de la simulation, rejoués sur l'horloge comme ceux
 de n'importe quelle course enregistrée.
 
 | Ordre | Instant | Ce qu'il fait |
@@ -590,7 +590,7 @@ récupérer ce dixième, et de l'écrire ici.
 | Action | Horloge | Ordres à rejouer | Courses enregistrées |
 |---|---|---|---|
 | Au chargement | 0,0 s | — | **0** |
-| Course de référence chargée, jouée 150 s | 150,0 s | 0 restant | 0 |
+| Simulation chargée, jouée 150 s | 150,0 s | 0 restant | 0 |
 | `↺` **Restart** | **0,0 s** | **2, de nouveau** | **0** — rien n'a été enregistré |
 | rejouée 150 s, puis `+` **Nouvelle course** | **0,0 s** | **0** | **1** — la course est enregistrée |
 
@@ -603,7 +603,7 @@ quelle que soit la course chargée avant — ce qui est le premier critère du p
 lecture, **éteint** en pause, éteint tant qu'aucune course n'est partie. C'est la lecture que
 l'opérateur a tranchée le 28 octobre 2026 : « Le point REC s'éteint dès qu'on met en pause. »
 
-**Dans l'onglet Files**, la course de référence est désormais une ligne comme les autres :
+**Dans l'onglet Files**, la simulation est désormais une ligne comme les autres :
 « Reference — 4 and 11 lose a lap, 12 takes a lap · 250 m · 40 laps · **11:14.2** ». Elle
 n'avait pas de durée tant qu'elle était un scénario. Et une course enregistrée depuis le
 prototype après avoir rejoué la référence se nomme toute seule d'après ses ordres — « 4 and 11
@@ -632,9 +632,9 @@ ligne porte *Load*, *Rename* et *Delete*.
 | *Delete*, deuxième clic | la ligne disparaît ; « No saved race. Play one and press New. » | **0 course** | **toujours 0** |
 
 La dernière ligne est celle qui compte : la clé existe et vaut `[]`, donc le modèle n'est pas
-redéposé. **Une course de référence effacée reste effacée.**
+redéposé. **Une simulation effacée reste effacée.**
 
-**La course de référence rejouée après tout cela n'a pas bougé.** Liste reconstituée,
+**La simulation rejouée après tout cela n'a pas bougé.** Liste reconstituée,
 course chargée depuis Files, course menée jusqu'au bout pas à pas :
 
 | | Build 74 | Build 75 |
@@ -651,7 +651,7 @@ course chargée depuis Files, course menée jusqu'au bout pas à pas :
 
 ## 17. Le peloton qui ralentissait tout seul, build 76
 
-Mesuré le 28 octobre 2026 sur la course de référence, menée pas à pas. L'opérateur avait
+Mesuré le 28 octobre 2026 sur la simulation, menée pas à pas. L'opérateur avait
 signalé que « les vitesses se modifient toutes seules » dès qu'il se servait de *Sync all to
 bunch pace* et des flèches ↑ ↓.
 
@@ -686,7 +686,7 @@ départ. Même course, mêmes instants : le BIB 15 roule **15,000 m/s** à 50,0 
 | *Sync all to bunch pace* annulait les ordres en cours | à 168 s, trois ordres tournaient (12 prenait un tour, 4 et 11 en perdaient un) : un clic, les trois ont disparu ; une vitesse posée à la main sur le 46 (15,1) retombait à 15,0 | le bouton met tout le monde à la vitesse du peloton **sans déplacer personne** ; trente secondes plus tard les seize coureurs sont toujours à 15,00 |
 | La flèche ↓ ne faisait rien | BIB 52 à 30 s, un seul peloton : clic, aucun ordre créé, aucune réponse | les deux flèches sont **éteintes** quand il n'y a nulle part où aller, allumées dès qu'un deuxième groupe existe (vérifié à 100 s) |
 
-**Ce que la correction change dans la course de référence.** Elle la raccourcit, puisque le
+**Ce que la correction change dans la simulation.** Elle la raccourcit, puisque le
 peloton ne roule plus 0,75 % trop lentement :
 
 | | Build 75 | Build 76 |
@@ -707,7 +707,7 @@ des builds antérieures ne sont pas réécrits.
 
 ## 18. La progression des ordres, build 77
 
-Mesuré le 28 octobre 2026 sur la course de référence, rail ouvert, course menée pas à pas.
+Mesuré le 28 octobre 2026 sur la simulation, rail ouvert, course menée pas à pas.
 
 **Un tour à prendre, BIB 12.** Le bouton `+lap` s'allume à 67,45 s et se remplit :
 
@@ -743,7 +743,7 @@ sur les mètres parcourus : pour un ordre de rejoindre un groupe qui vient de de
 vite que lui, la jauge affichait **100 % alors que le coureur était encore à 69 m**, parce que
 le but avançait plus vite que lui. Sur l'écart restant, elle suit l'approche réelle.
 
-**Ce que la course de référence donne à la build 77 :** 669,3 s · 13 386 pas, `lap:12:1` à
+**Ce que la simulation donne à la build 77 :** 669,3 s · 13 386 pas, `lap:12:1` à
 165,2 s tour 11, `lap:4,11:-1` à 405,7 s tour 25, classement 15(19) · 12(15) · 23(8) · 4(6) ·
 11(4) · 46(3), 4 sprints, aucune erreur console — **inchangé depuis la build 76**.
 
@@ -817,7 +817,7 @@ Play et Pause sont maintenant **dessinés** et non écrits : un carré de dessin
 bouton, avec une correction optique de 0,4 unité sur 12 pour le triangle. Les autres sont du
 texte, dont le décalage reste sous le pixel.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, `lap:12:1` à 165,2 s tour 11,
+**La simulation est inchangée :** 669,3 s · 13 386 pas, `lap:12:1` à 165,2 s tour 11,
 `lap:4,11:-1` à 405,7 s tour 25, classement 15(19) · 12(15) · 23(8) · 4(6) · 11(4) · 46(3),
 4 sprints, aucune erreur console. Et une relecture complète n'ajoute **aucune** copie à la
 liste.
@@ -892,7 +892,7 @@ La seconde est celle que l'opérateur voyait : au lieu de corriger, elle décala
 deux (le numéro était à 14 px), `text-transform: uppercase`, couleur calculée
 **rgb(28, 198, 52)**.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
 
 ---
 
@@ -928,7 +928,7 @@ celle qu'on ne voit pas : elles étaient justes et ne répondaient pas à la que
 Mesuré dans le cas le plus large, course chargée et « PLAYING RACE *x* » affiché (102,3 px).
 *Replay* relance bien la course chargée et *New* ouvre bien une course vide.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
 
 **Le champ unique.** Mesuré dans la foulée, même jour. Les deux champs se suivaient sur la
 ligne de l'horloge, et `.recdot.off` posait `visibility:hidden` : caché, le point REC gardait
@@ -944,7 +944,7 @@ Les deux lignes font maintenant la même largeur. Le champ dit **REC**, ou
 chevauchement dans aucun des quatre états mesurés : au démarrage, course chargée, en
 relecture, course menée.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
 
 **La grandeur fixe, build 82.** Mesuré le 28 octobre 2026. Le champ unique changeait encore de
 taille avec ce qu'il disait : **39,3 px** pour « REC », **102,3 px** pour « PLAYING RACE 1 »,
@@ -970,7 +970,7 @@ avec les deux champs. Aucun élément comprimé, aucun chevauchement.
 
 ## 23. Le tri de la liste des coureurs, build 83
 
-Mesuré le 28 octobre 2026, course de référence chargée, quatre premières lignes à chaque fois.
+Mesuré le 28 octobre 2026, simulation chargée, quatre premières lignes à chaque fois.
 
 | Ce qui est cliqué | Les quatre premières lignes |
 |---|---|
@@ -991,7 +991,7 @@ la **troisième ligne**, celle du BIB 70 :
 | Ordre reçu | **70 → gain** |
 | Jauge allumée | sur la ligne du **70** |
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
 
 **La ligne Pace sous la liste, build 84.** Mesuré le 28 octobre 2026 : le bas du dernier
 coureur de la liste — BIB 15 O'NEILL — est à **562,4 px**, le haut de la ligne Pace à
@@ -1001,7 +1001,7 @@ Les deux commandes répondent toujours : *Pace* va de 15,0 à 15,1, puis à 14,9
 15,0 par pas de 0,1 m/s ; *Sync all to bunch pace* fait tomber le nombre d'ordres en cours de
 **1 à 0**, comme le veut le §16 des règles.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
 
 **Le tri reporté sur la vue Start list, build 85.** Mesuré le 28 octobre 2026, quatre
 premières lignes de chaque vue, à chaque ordre.
@@ -1018,7 +1018,7 @@ ligne affichée est le BIB 4, **rang 14** dans la liste de départ. Son nom chan
 c'est bien le BIB 4 qui porte le nouveau nom, et la ligne descend d'elle-même à sa place
 alphabétique. Remis à WALSH ensuite.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur console.
 
 ---
 
@@ -1048,7 +1048,7 @@ atteignable, puisqu'un dossard peut changer entre deux courses. La carte passe m
 dossard-là. **Le chemin exact qui y mène n'a pas été reproduit à la demande** : la correction
 supprime la chute, elle n'a pas été vérifiée sur le cas qui l'a provoquée.
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
 
 ---
 
@@ -1074,7 +1074,7 @@ pas avant — NOR, MAR, RSA, VIE, CAN — et sur un code inventé :
 | NOR · MAR · RSA · VIE · CAN | **le drapeau de la nation** |
 | XXX | le rectangle gris, comme avant |
 
-**La course de référence est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
+**La simulation est inchangée :** 669,3 s · 13 386 pas, aucune erreur nouvelle.
 
 ---
 
@@ -1992,7 +1992,7 @@ sprint, au lieu d'amener le sprint sur la fenêtre.
 
 ## §51 · La carte de sprint en trois colonnes (build 148)
 
-Mesuré dans le prototype, rail du simulateur replié, course de référence.
+Mesuré dans le prototype, rail du simulateur replié, simulation.
 
 | | 1440 × 1080 | 1920 × 1080 |
 |---|---|---|
@@ -2057,7 +2057,7 @@ la liste.
 
 ## 24. La timeline, l'ovale et l'ordre du sprint (build 149, 31 octobre 2026)
 
-Relevé dans la page, écran de 1800 × 1000, simulateur caché, course de référence.
+Relevé dans la page, écran de 1800 × 1000, simulateur caché, simulation.
 
 ### Ce que coûte la timeline
 
@@ -2112,7 +2112,7 @@ gardant 46,7 px pour 43,2 d'encre. Le drapeau mesure 22 × 15 px, comme dans la 
 
 ## 25. La fenêtre d'actions et les poignées (build 150, 31 octobre 2026)
 
-Fenêtre de 1900 × 1000, centre de 679 px, colonne d'actions de 290 px, course de référence
+Fenêtre de 1900 × 1000, centre de 679 px, colonne d'actions de 290 px, simulation
 chargée et rejouée à ×16 jusqu'à 3:37.5.
 
 ### Les quatre poignées, tirées dans les deux sens — avant (build 149)
@@ -2179,7 +2179,7 @@ entière ne zoome pas. À 100 % aucune étiquette n'existe dans le DOM.
 ## 26. Le registre debout (build 151, 31 octobre 2026)
 
 Fenêtre de 1900 × 1000, simulateur masqué, centre de 1098 px, fenêtre d'actions de 290 px,
-course de référence chargée, un coureur sélectionné et le registre ouvert.
+simulation chargée, un coureur sélectionné et le registre ouvert.
 
 ### Les trois étapes, mesurées l'une après l'autre
 
@@ -2261,7 +2261,7 @@ des deux n'a bougé.
 
 ## 28. Le registre à plusieurs coureurs (build 153, 31 octobre 2026)
 
-Fenêtre de 1900 × 1000, simulateur masqué, course de référence chargée.
+Fenêtre de 1900 × 1000, simulateur masqué, simulation chargée.
 
 | Coureurs sélectionnés | Carte | Boîte | Défile ? | Propositions | Ovale |
 |---|---|---|---|---|---|
@@ -2328,13 +2328,13 @@ barre à 290 px de large.
 
 ### Sur la course rejouée
 
-Course de référence, ×16 jusqu'à 2:45.7, trois groupes formés : **une seule valeur relevée**
+Simulation, ×16 jusqu'à 2:45.7, trois groupes formés : **une seule valeur relevée**
 sur 25, ovale 517 px / fenêtre 349 px, et un vide constant de 4 px. Avec le registre d'un
 coureur ouvert : fenêtre 349 px, ovale 516 px, registre 299 px de large à droite de la fenêtre.
 
 ## 30. L'appui à cheval sur la reconstruction (build 154, 31 octobre 2026)
 
-Fenêtre de 1900 × 1000, course de référence rejouée, registre ouvert sur un coureur.
+Fenêtre de 1900 × 1000, simulation rejouée, registre ouvert sur un coureur.
 
 ### La reconstruction, avant correction
 
@@ -2424,7 +2424,7 @@ l'écran** sur l'écran de référence. Le cercle porte bien le numéro, en `fon
 
 ## 32. Le NOC attaché au dossard sur l'ovale (build 156, 31 octobre 2026)
 
-Mesuré dans la page, course de référence chargée et mise en pause au tour 1, les seize coureurs
+Mesuré dans la page, simulation chargée et mise en pause au tour 1, les seize coureurs
 dans le peloton. Les boîtes sont celles que le navigateur rend, pas un calcul.
 
 | | |
@@ -2452,7 +2452,7 @@ peloton groupé est l'état normal de la course.
 
 ## 33. Les trois points de design tranchés (build 159, 31 octobre 2026)
 
-Mesuré dans la page, course de référence chargée et rejouée.
+Mesuré dans la page, simulation chargée et rejouée.
 
 ### Un seul foyer à la fois
 
@@ -2498,7 +2498,7 @@ même geste depuis leur nouvelle place.
 ## 34. Les deux bandes « new group » font la même chose (31 octobre 2026)
 
 Vérifié sur sa remarque : « jusqu'à présent cela fonctionnait pour créer un groupe au-dessous de
-la timeline mais au-dessus ça ne fonctionnait pas ». Mesuré dans la page, course de référence
+la timeline mais au-dessus ça ne fonctionnait pas ». Mesuré dans la page, simulation
 chargée, peloton de seize, gestes envoyés comme de vrais appuis-glissés.
 
 | Ce qu'on fait | Ce qui arrive |
@@ -2548,7 +2548,7 @@ sur son **bord bas** créent tous les deux le groupe. Les deux bandes restent at
 
 ### Le bouton « Group » et le glissement, mesurés (1er novembre 2026)
 
-Sur ses trois constats du point 153. Mesuré sur la course de référence, course lancée, en
+Sur ses trois constats du point 153. Mesuré sur la simulation, course lancée, en
 dispatchant les événements sur les éléments réels de la page.
 
 | Geste | Coureurs pris | Résultat |
@@ -2579,7 +2579,7 @@ le peloton et la bande du mode disparaît. Deux groupes posés font bien « 2 GR
 Sa question du 1er novembre 2026 : un groupe posé en tête de la timeline alors qu'il est
 deuxième sur la piste est-il détecté le premier au sprint ?
 
-**Monté** : trois blocs sur la course de référence — `1-LEADER` (15, le vrai leader),
+**Monté** : trois blocs sur la simulation — `1-LEADER` (15, le vrai leader),
 `2-BUNCH` (13 coureurs), `3-LAST` (12 et 52, **31 m** derrière). Le bloc de queue a été posé à
 la main tout en haut, puis la course a été jouée à ×16 jusqu'au sprint final.
 
@@ -2605,7 +2605,7 @@ tête devient donc le groupe 1 pour les points, sans être le premier détecté.
 
 ### Le leader désigné et la première position, les deux sens (build 162)
 
-Course de référence, départ propre, un bloc de queue formé avec 12 et 52, **31 m** derrière.
+Simulation, départ propre, un bloc de queue formé avec 12 et 52, **31 m** derrière.
 
 | Geste | Ce qui se passe |
 |---|---|
@@ -2643,7 +2643,7 @@ Ses deux exemples — « `00:00.0` » en marche et « `12:26.54` » à l'arrêt 
 ### Le même test rejoué en détail, avec l'ordre sur la piste (build 163)
 
 Il a demandé, le 1er novembre 2026, de dire **qui est devant et qui est derrière, avant et après
-l'intervention** (point 163). Course de référence, jouée jusqu'à **1:36.8**, tour 6.
+l'intervention** (point 163). Simulation, jouée jusqu'à **1:36.8**, tour 6.
 
 **Avant.** Un seul bloc, `1-BUNCH`, 16 coureurs. Du premier au dernier :
 15 IRL, 4 GBR, 11 JPN, 23 DEN, 46 BEL, 70 BRA, 58 KAZ, 67 GER, 1 ESP, 9 SLO, 3 FRA, 18 POR,
@@ -2677,7 +2677,7 @@ qu'un coureur dépasse réellement le leader désigné, et c'est ce qu'il a dema
 
 ### L'écart de proche en proche, et les 219 m (build 164)
 
-Course de référence, jouée jusqu'à 1:36.0, tour 6. Trois états successifs, lus sur les en-têtes.
+Simulation, jouée jusqu'à 1:36.0, tour 6. Trois états successifs, lus sur les en-têtes.
 
 | | Blocs et écarts |
 |---|---|
@@ -2694,7 +2694,7 @@ depuis le deuxième, et non depuis le premier — sinon il aurait affiché 245 m
 ### Où est réellement chaque coureur, au mètre (build 164)
 
 Ses questions du 1er novembre 2026. Mesuré sur les **passages réels sur la ligne**, tour 6 de la
-course de référence (onglet Passings, source Finish), tous les coureurs à **15,0 m/s** — vérifié
+simulation (onglet Passings, source Finish), tous les coureurs à **15,0 m/s** — vérifié
 sur les six tours du 15, dont les temps au tour tombent à 16,666 s, soit 250 m à 15,0 m/s.
 
 | Coureur | Passage, tour 6 | Derrière le 15 |
@@ -2790,7 +2790,7 @@ et rien ne les relie.
 
 ### La liste des passages suit la timeline (build 166)
 
-Course de référence, le 12 et le 52 posés en tête au tour 6. Onglet Crossings, tours 4 et 5 :
+Simulation, le 12 et le 52 posés en tête au tour 6. Onglet Crossings, tours 4 et 5 :
 
 > 12, 52, 15, 4, 11, 23, 46, 70, 58, 67, 1, 9, 3, 18, 61, 7
 
@@ -2799,7 +2799,7 @@ par 12, 52.
 
 ### La cassure lue sur les boucles (build 167)
 
-Scénario de référence, course de 40 tours, piste de 250 m, seize coureurs.
+Simulation, course de 40 tours, piste de 250 m, seize coureurs.
 
 **Ce que les boucles donnent pour une paire.** Au tour 40, le 12 SUI devant le 52 ITA :
 
@@ -2847,10 +2847,63 @@ en tête aux six sprints. La course tourne juste, elle n'est pas encore vraisemb
 
 ### L'écart affiché en temps (build 168)
 
-Ancienne course de référence, tour 9, trois blocs. Les mêmes écarts, avant et après :
+Ancienne simulation, tour 9, trois blocs. Les mêmes écarts, avant et après :
 
 | Bloc | Affiché avant | Affiché après |
 |---|---|---|
 | 12 SUI, seul en tête | `leader` | `leader` |
 | Le peloton, treize coureurs | `74 m` | **`3.9 s`** |
 | 4 GBR et 11 JPN | `48 m` | **`2.6 s`** |
+
+### Le palier 2 joué en entier (build 169)
+
+250 m, 60 tours, 6 sprints, seize coureurs, départ à 13,5 m/s. Course menée à son terme en
+1043 s. Aucune intervention de l'opérateur : « pas d'autres inputs ».
+
+**La course, tour par tour.**
+
+| Tours | Ce que la timeline montre |
+|---|---|
+| 1 à 8 | **un seul groupe de seize.** L'ordre dans la file change dès le tour 3 : les fluctuations déplacent les coureurs de quelques mètres sans casser le groupe |
+| 5 à 8 | le 12 SUI et le 52 ITA, partis du fond, remontent la file et sont en tête au tour 7 |
+| **9** | **première cassure** : le 12 et le 52 passent devant, le peloton à **2,0 s** |
+| 10 à 13 | leur avance passe à 3,3 s, 4,7 s, 5,8 s, 6,4 s |
+| 13 | le 18 POR, le 61 COL et le 7 NED, partis au tour 11, sont en tête du peloton |
+| **14** | **deuxième cassure** : ils sortent à leur tour, à 5,9 s du 12 et du 52, le peloton à 2,3 s d'eux |
+| **15** | **troisième cassure** : le 46 BEL et le 70 BRA, lâchés au tour 12, décrochent à 1,6 s. **Quatre blocs** |
+| 20 | le 18, le 61 et le 7, plus rapides, ont repris puis dépassé le 12 et le 52 ; ceux-ci ont rejoint le peloton par l'arrière et figurent dedans |
+| 30 | les cinq échappés roulent ensemble en tête, le peloton à 9,8 s |
+| 40 à 60 | quatre blocs : 18-61-7, puis 12-52, puis le peloton de neuf, puis 46-70 |
+
+**Les six sprints**, quatre premiers de chaque :
+
+| Sprint | Tour | Ordre |
+|---|---|---|
+| 1 | 10 | 12, 52, 15, 4 |
+| 2 | 20 | 12, 52, 18, 61 |
+| 3 | 30 | 18, 61, 7, 12 |
+| 4 | 40 | 18, 61, 7, 12 |
+| 5 | 50 | 18, 61, 7, 12 |
+| 6 | 60 | 18, 61, 7, 12 |
+
+Les quatre premiers ne sont plus les mêmes qu'au palier 1 : l'ordre suit la course.
+
+**Ce que l'application a détecté toute seule**, et qui attend l'opérateur — aucune de ces
+propositions n'a été validée, donc **aucun ±20 n'est au classement** :
+
+| Proposition | Coureurs |
+|---|---|
+| **+1 tour** | 12 SUI |
+| **+1 tour** | 52 ITA |
+| **+1 tour** | 7 NED, 18 POR, 61 COL |
+| **−2 tours** | 46 BEL, 70 BRA |
+| **−2 tours** | 4 GBR, 11 JPN, 15 IRL, 23 DEN, 58 KAZ, 67 GER |
+
+**La dernière ligne est à regarder.** Le 4, le 11, le 15, le 23, le 58 et le 67 sont **dans le
+peloton**, le plus gros groupe de la course avec neuf coureurs — avec le 1 ESP, le 9 SLO et le
+3 FRA, que la même proposition ne nomme pas. Un coureur du peloton ne perd pas un tour sur le
+peloton, et l'article UCI 3.2.017 quater le dit : un tour est perdu quand on est rejoint **par
+le plus gros peloton en course**.
+
+**Le classement final, sans les ±20 :** 18 POR 27 points, 61 COL 16, 12 SUI 15, 7 NED 10,
+52 ITA 6, 15 IRL 2, 4 GBR 1.

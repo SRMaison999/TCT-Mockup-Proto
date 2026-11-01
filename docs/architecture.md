@@ -490,7 +490,7 @@ est celle d'un vélo (`TAPE_MIN_SPD` à `TAPE_MAX_SPD`).
 
 ## 11. Ce qui est en dur
 
-`RIDERS` (dossard, nom, NOC, couleur), `REF_RACE` (la course de référence : une configuration
+`RIDERS` (dossard, nom, NOC, couleur), `CALM_RACE` (la simulation : une configuration
 et deux ordres, §15), `FLAGS` (drapeaux SVG simplifiés), `PALETTE`, `NOTP = []` (tous les coureurs ont un
 transpondeur au départ ; le statut se pose à la main), `TIGHT` (deux coureurs à 11 ms au
 sprint 2).
@@ -569,7 +569,7 @@ sur sa propre ligne sous l'en-tête.
   empêche de réassigner le tableau, pas de modifier ses éléments). `Add` ajoute un coureur ;
   `Edit` fait apparaître par coureur une pastille de couleur et des champs dossard / nom /
   NOC, plus une croix. Toute modification déclenche `reset()`.
-- **Files** : la course en cours d'enregistrement, la course de référence qui reste intacte,
+- **Files** : la course en cours d'enregistrement, la simulation qui reste intacte,
   puis les courses enregistrées, chacune avec un bouton `Load`. Chaque course s'auto-nomme
   d'après ce qu'on y a fait (`raceName`) et s'enregistre **automatiquement** dans
   `localStorage` (`tct.sim.races`) quand on ouvre une course neuve avec `+` (`commitRec()`).
@@ -735,20 +735,20 @@ peut donc rien déplacer dans les groupes, les tours, les sprints ou les bandes.
 
 ---
 
-## 15. La course de référence, et les trois boutons de la barre
+## 15. La simulation, et les trois boutons de la barre
 
 **Il n'y a plus de scénario dans le simulateur (build 74).** La table `SCRIPT`, le drapeau
-`S.useScript` et le mode `away` ont été supprimés ; ils ne sont pas remplacés. La course de
-référence est une **course enregistrée** comme les autres : `REF_RACE` porte une `cfg` et une
+`S.useScript` et le mode `away` ont été supprimés ; ils ne sont pas remplacés. Une
+simulation est une **course enregistrée** comme les autres : `CALM_RACE` porte une `cfg` et une
 liste d'`acts`, que `loadRace()` met dans `S.replay` et que `replayTick()` applique sur
 l'horloge, exactement comme pour une course que l'opérateur a jouée lui-même.
 
-**Et à la build 75 elle quitte le code.** `REF_RACE` n'est plus une ligne que l'onglet Files
+**Et à la build 75 elle quitte le code.** `CALM_RACE` n'est plus une ligne que l'onglet Files
 ajoute à la liste : c'est un **modèle de départ**. Au chargement de la page, `localStorage`
 est lu ; si la clé `tct.sim.races` est **absente** — le prototype n'a jamais tourné sur ce
-poste — une copie de `REF_RACE` est déposée dans `RACES` et la liste est écrite. Si la clé
+poste — une copie de `CALM_RACE` est déposée dans `RACES` et la liste est écrite. Si la clé
 existe, même vide, elle fait foi : c'est la liste que l'opérateur a laissée. La distinction
-compte, parce que c'est elle qui fait qu'**une course de référence effacée reste effacée**.
+compte, parce que c'est elle qui fait qu'**une simulation effacée reste effacée**.
 Rien en aval ne sait d'où vient cette ligne : plus d'indice `-1`, plus de drapeau `ref`, plus
 de bordure verte sur sa ligne.
 
@@ -1012,7 +1012,7 @@ n'est pas retouché : tout l'ajout tient à la fin de l'IIFE et n'enveloppe que 
 ### La taille de l'ovale
 
 L'ovale est dessiné dans un `viewBox` fixe (`63 49 854 492`) ; le réglage ouvre ou resserre ce
-viewBox **autour de son centre**, et rien d'autre. Mesuré sur la course de référence à 60 %,
+viewBox **autour de son centre**, et rien d'autre. Mesuré sur la simulation à 60 %,
 140 % et retour : la timeline, `.mid`, la boîte de l'ovale, la zone du bas, la colonne de
 droite et la carte du sprint rendent **exactement les mêmes rectangles**, au pixel près. C'est
 le dessin qui grandit ou rapetisse, pas sa place.
@@ -1501,7 +1501,7 @@ colonne du sprint, ovale et actions.
 516 px, vide 0. Poignée de l'ovale, zone portée à 501 px : la barre suit à 481 px, soit 125 %,
 19 px de reste. Poignée des actions, colonne portée de 290 à 380 px : la barre perd un rang de
 boutons, tombe à 308 px, et l'ovale gagne 41 px. Registre ouvert : 299 × 104 à droite de la
-fenêtre, qui ne bouge pas. Course de référence à ×16 jusqu'à 2:31.9, trois groupes formés :
+fenêtre, qui ne bouge pas. Simulation à ×16 jusqu'à 2:31.9, trois groupes formés :
 **une seule taille relevée** sur 22, 516/349, et aucun vide.
 
 ---
@@ -1648,7 +1648,7 @@ l'ordre vient de rendre. La carte reste à 500 px, vérifié : elle ne déborde 
 34 px, donc elles s'étiraient pour remplir la colonne et se tassaient quand la liste
 s'allongeait. Elles sont maintenant `flex:0 0 28px` avec `box-sizing:border-box`, pour que le
 filet du haut tienne **dans** les 28 px : sans cela le pas aurait fait 29, et le pas est ce
-qu'il a demandé d'aligner. Mesuré dans la page sur la course de référence menée à l'arrivée :
+qu'il a demandé d'aligner. Mesuré dans la page sur la simulation menée à l'arrivée :
 **pas de 28 px dans la start list, pas de 28 px dans la timeline.**
 
 **Ce que cela coûte, et qu'il verra** : la start list ne remplit plus sa colonne. À seize
@@ -1904,7 +1904,7 @@ repli tant qu'aucune boucle n'a vu les deux coureurs.
 
 ## 43. Les courses de test montent par paliers (build 168)
 
-L'ancienne course de référence — 40 tours, le 4 et le 11 perdant un tour au tour 4, le 12 en
+L'ancienne simulation — 40 tours, le 4 et le 11 perdant un tour au tour 4, le 12 en
 prenant un au tour 5 — est **sortie du dépôt**. L'opérateur, le 1er novembre 2026 : « Ce
 scénario est le scénario le plus ridicule qui soit ! Il n'a aucun sens sportif, technologique,
 ou conceptuel. »
@@ -1917,3 +1917,27 @@ ou conceptuel. »
 
 Les paliers suivants s'ajouteront à cette liste, du plus calme au plus animé, « avec comme
 objectif de valider l'efficacité de notre système à chaque pallier de difficulté affronté ».
+
+## 44. Le palier 2, et les fluctuations de vitesse (build 169)
+
+**Sa description, le 1er novembre 2026**, reprise mot pour mot dans le code à côté de la course :
+départ à 13,5 m/s pour tous, fluctuations aléatoires de 0,1 à 0,3 m/s par coureur à partir du
+tour 2, deux coureurs à +1,0 m/s au tour 5, trois à +1,4 m/s au tour 11, deux à −0,9 m/s au
+tour 12, « pas d'autres inputs ».
+
+**Les attaques et les lâchés sont des `acts` ordinaires**, du genre `spd` qui existait déjà :
+`{ t, lap, kind: 'spd', bibs, v }`, rejoués sur l'horloge par `replayTick`. Les dossards ne sont
+pas de lui : il a dit combien de coureurs, pas lesquels. Ce sont le 12 et le 52 au tour 5, le 7,
+le 18 et le 61 au tour 11, le 46 et le 70 au tour 12.
+
+**Les fluctuations appartiennent à la course, pas au moteur.** La course chargée porte un champ
+`wobble: { fromLap, min, max, every }` que `loadRace` met dans `S.wobble` ; `step()` ne l'ajoute
+que s'il est là, donc une course sans `wobble` roule exactement comme avant — « no invented
+wobble », la règle posée au build 74 tient. `wobbleOf()` tire la différence de vitesse d'un
+coureur par tranche de `every` secondes, **de façon déterminée par le dossard et le numéro de
+tranche** : la même simulation rejoue toujours la même course, ce qui permet de comparer deux
+builds. La tranche de 5 s est un choix, pas une mesure.
+
+Le correcteur qui tient un coureur à sa place dans le peloton rattrape cette différence, donc
+une fluctuation de 0,3 m/s déplace le coureur de quelques mètres dans la file sans casser le
+groupe : il faut plus d'une seconde, soit une quinzaine de mètres, pour une cassure.

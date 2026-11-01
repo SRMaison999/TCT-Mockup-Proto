@@ -806,8 +806,8 @@ Cette section vient après le §15 pour ne renuméroter aucune autre : les six s
 précèdent sont citées par leur numéro dans tous les autres documents. Elle porte sur le
 **prototype lui-même**, pas sur la course.
 
-**28 octobre 2026 — la course de référence doit devenir une course ordinaire.** Le poste
-`travaux.md` §7a demande que le scénario de référence cesse d'être un cas particulier câblé
+**28 octobre 2026 — la simulation doit devenir une course ordinaire.** Le poste
+`travaux.md` §7a demande que la simulation cesse d'être un cas particulier câblé
 dans le code et devienne une course enregistrée comme les autres, qu'on charge, rejoue,
 renomme et efface. Deux questions lui ont été posées avant d'y toucher. Ses réponses, mot
 pour mot :
@@ -855,8 +855,8 @@ Mesuré sur la barre : les six faisaient 22,8 · 25,2 · 24,4 · 24,4 · 22,4 ·
 haut. Ils font maintenant la même hauteur, donnée une fois pour la barre du haut et une fois
 pour le rail.
 
-**28 octobre 2026 — la course de référence s'efface et se renomme comme une autre.** La
-maquette du poste 6a lui demandait ce que devient la course de référence, puisqu'elle était
+**28 octobre 2026 — la simulation s'efface et se renomme comme une autre.** La
+maquette du poste 6a lui demandait ce que devient la simulation, puisqu'elle était
 écrite dans le code et non dans la liste enregistrée. Sa réponse, mot pour mot :
 
 > il faut pouvoir la supprimer et également pouvoir la renommer comme on le désire. Le fait
@@ -880,7 +880,7 @@ et signalé, mot pour mot :
 > modifient toutes seules à partir du moment où commence à utiliser les boutons "Sync all to
 > bunch pace" et les flèches en haut et en bas
 
-Trois choses distinctes ont été mesurées sur la course de référence, et lui ont été
+Trois choses distinctes ont été mesurées sur la simulation, et lui ont été
 présentées (`mesures.md` §17). Ses décisions, mot pour mot :
 
 > 1. ok
@@ -895,7 +895,7 @@ présentées (`mesures.md` §17). Ses décisions, mot pour mot :
 > et une fois la mission accomplie ils s'éteignent et la vitesses de leurs coureurs se
 > synchronise sur le groupe qu'ils cherchait à atteindre (et qu'ils ont atteint)
 
-Et sur les chiffres de la course de référence, qui changent forcément quand le peloton cesse
+Et sur les chiffres de la simulation, qui changent forcément quand le peloton cesse
 de ralentir :
 
 > je me fous de la course de référence !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

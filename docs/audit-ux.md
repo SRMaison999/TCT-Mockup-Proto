@@ -1,7 +1,7 @@
 # L'audit de l'écran, et ce qu'il propose
 
-Mené le **31 octobre 2026** sur `timeline-prototype_mixed.html`, les six onglets, course de
-référence chargée et rejouée en entier. Les numéros de ligne sont ceux de la **build 149**.
+Mené le **31 octobre 2026** sur `timeline-prototype_mixed.html`, les six onglets, simulation
+chargée et rejouée en entier. Les numéros de ligne sont ceux de la **build 149**.
 
 **Rien de ce qui suit n'est codé, et rien ne le sera sans l'accord de l'opérateur.** C'est sa
 règle du 31 octobre 2026, dans `regles-operateur.md` §14 : « Quand je demande un audit ou un
@@ -341,7 +341,7 @@ d'explication des *Unmatched* disparaît avant lui.
 
 ## 16. Standings : quatre colonnes vides sur onze
 
-**Ce que c'est** — Sur la course de référence menée jusqu'au bout, `GAIN`, `LOST`, `LAPS` et
+**Ce que c'est** — Sur la simulation menée jusqu'au bout, `GAIN`, `LOST`, `LAPS` et
 `STATUS` sont vides pour les seize coureurs. Elles ne portent quelque chose que si un tour a
 été validé ou un coureur retiré.
 

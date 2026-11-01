@@ -21,7 +21,7 @@ silencieusement optimiste.
 | 6 | **Tour gagné** | `regles-operateur.md` §4 | `detect()`, via `r.inBunchPrev` pour le *quand*, `facingPos()` pour le *combien* | `pitfalls.md` A9, H13 · `mesures.md` §1 et §12 | **Conforme**. *Quand* : build 66. *Combien*, contre le coureur d'en face : build 67 |
 | 7 | **Tour perdu** | `regles-operateur.md` §4 | la même chose, lue de l'autre côté | `pitfalls.md` A9, H13 · `mesures.md` §1 et §12 | idem cas 6 |
 | 8 | **Éligibilité aux sprints** | `regles-operateur.md` §6 | `S.inelig`, calculé avant le `return` de `computeGroups()` | `pitfalls.md` H4, H5, H7, H8 · `mesures.md` §3 et §5 | **Conforme**, figé build 53. Un cas reste à trancher (§15 des règles) |
-| 9 | **Conséquence sur le rang** | `regles-operateur.md` §7 | `spOrder`, après la construction de `seq` | `mesures.md` §6 | **Vérifié sur cas forcé seulement** — la course de référence ne l'exerce jamais |
+| 9 | **Conséquence sur le rang** | `regles-operateur.md` §7 | `spOrder`, après la construction de `seq` | `mesures.md` §6 | **Vérifié sur cas forcé seulement** — la simulation ne l'exerce jamais |
 | 10 | **Affichage d'un passage inéligible** | `regles-operateur.md` §8 | `spTick` (`judged`, `greyed`), `renderCard` (`.srow.grey`) | `pitfalls.md` F10, F11 · `mesures.md` §7 | **Conforme**, codé build 54. Vu sur cas forcé seulement |
 | 11 | **Tape switches** — comptage par passage de groupe | `regles-operateur.md` §9 et §10 | `TAPES`, `buildTapes()`, `tapeCount()`, `TAPE_SYNC_S` | `mesures.md` §8 | **Codé build 57**, appariement des heures build 60. La largeur des bandes n'est **pas modélisée**, volontairement (voir ci-dessous) |
 | 12 | **Qui est le vélo en trop** | `regles-operateur.md` §11 | `tapeAttribute()` | `mesures.md` §8 | **Codé build 58** |
@@ -30,7 +30,7 @@ silencieusement optimiste.
 | 15 | **Mise en place et tour de lancement** | `regles-operateur.md` §12 | — | — | **Pas codé.** Ni la phase dans le simulateur, ni la vérification des transpondeurs, ni les propositions. Le travail à faire est détaillé dans `travaux.md` §1 |
 | 16 | **Les deux Pursuits face à face sur l'ovale** | `regles-operateur.md` §9 | `#trackpath` ancré au milieu de la ligne droite d'arrivée, `pt()` décalé de `CFG.gap` | `pitfalls.md` A14 · `mesures.md` §14 | **Conforme**, corrigé build 69. Les deux repères tombent au milieu de leur ligne droite pour les quatre longueurs de piste et tout `gap` |
 | 17 | **Les marquages de la piste** | `regles-operateur.md` §9, tableau de la norme UCI | les quatre rectangles longitudinaux du décor, et `renderMarks()` pour les traits en travers | `mesures.md` §14 | **Conforme**, codé build 69, couleurs, épaisseurs et étendue des traits revues builds 70 à 73 sur ses quatre relectures du 28 octobre 2026. Côte d'azur, lignes noire, rouge et bleue à leur cote ; arrivée en trait noir sur bande blanche, ni l'un ni l'autre à sa cote réelle ; 200 m et 100 m en blanc ; tape switches **pas dessinés**. **Build 91** : plus aucun repère n'est nommé — les cinq étiquettes de l'ovale sont retirées sur sa demande du 29 octobre 2026, les traits restent |
-| 18 | **La course de référence est une course enregistrée** | `regles-operateur.md` §16 | `REF_RACE.acts`, `replayTick()`, `pilotStep()` pour la roue | `pitfalls.md` A11 · `mesures.md` §15 | **Conforme**, codé build 74. Plus de `SCRIPT`, plus de `useScript`, plus de mode `away`. **Build 75** : elle quitte le code, déposée dans la liste enregistrée à la première ouverture, puis renommable et effaçable comme les autres |
+| 18 | **La simulation est une course enregistrée** | `regles-operateur.md` §16 | `CALM_RACE.acts`, `replayTick()`, `pilotStep()` pour la roue | `pitfalls.md` A11 · `mesures.md` §15 | **Conforme**, codé build 74. Plus de `SCRIPT`, plus de `useScript`, plus de mode `away`. **Build 75** : elle quitte le code, déposée dans la liste enregistrée à la première ouverture, puis renommable et effaçable comme les autres |
 | 20 | **Le peloton tient l'allure affichée** | `regles-operateur.md` §16 | `S.anchor`, `step()`, `syncAllToBunchPace()` | `mesures.md` §17 · `architecture.md` §16 | **Conforme**, corrigé build 76. Un coureur qui quitte le peloton ne change plus l'allure de ceux qui restent |
 | 21 | **La progression d'un ordre, et la vitesse d'arrivée** | `regles-operateur.md` §16 | `progress()`, `po.prog`, `--prog`, `endPilot(r, mates)`, mode `follow` | `mesures.md` §18 · `architecture.md` §16 | **Conforme**, codé build 77 pour ↑ et ↓. Pour `+lap` et `−lap` le retour au peloton prend une trentaine de secondes : point ouvert au §15 des règles |
 | 22 | **Rejouer une course sans l'enregistrer** | `regles-operateur.md` §16 | `LOADED`, `REC`, `curActs()`, `saveRec()`, `#simplaying` | `mesures.md` §19 · `architecture.md` §17 | **Conforme**, corrigé build 78. Une relecture n'ajoute plus de copie à la liste ; une course menée à la main s'enregistre toute seule |
@@ -124,10 +124,10 @@ quelle, produisait des fausses alertes — mais ils ne viennent pas de lui.
     plutôt que dans une fenêtre ; l'effacement **demande deux clics** plutôt qu'une
     confirmation ; et l'ordre des boutons est *Load*, *Rename*, *Delete*, le destructif en
     dernier.
-11. **Le modèle de départ n'est déposé qu'une fois.** Il a demandé que la course de
-    référence s'efface « comme on le désire » ; pour qu'un effacement tienne, il fallait
+11. **Le modèle de départ n'est déposé qu'une fois.** Il a demandé que la course déposée
+    s'efface « comme on le désire » ; pour qu'un effacement tienne, il fallait
     décider que la liste enregistrée fait foi dès qu'elle existe, même vide. Ce choix est
-    de nous, et c'est lui qui fait qu'une course de référence effacée ne revient pas.
+    de nous, et c'est lui qui fait qu'une simulation effacée ne revient pas.
 
 ---
 
