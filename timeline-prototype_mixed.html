@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '193';
+const BUILD = '194';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -703,7 +703,9 @@ let S; // simulation + operator state
 // deux blocs. Les positions sur la piste restent à la simulation : le moteur de course ne connaît
 // pas les mètres, et l'ovale en a besoin pour dessiner.
 let MC = null;
+let mcPointsVus = 0;      // combien de constats du moteur de course ont déjà été proposés
 function reset() {
+  mcPointsVus = 0;
   MC = (window.MoteurCourse && LOOPS && LOOPS.length) ? window.MoteurCourse.creer({
     piste: TRACK, boucles: LOOPS, arrivee: 0,
     cassureS: GROUP_GAP_S, veloM: BIKE_L, confirmationS: CASS_DELAY_S }) : null;
@@ -1557,77 +1559,36 @@ function detect(G, M) {
   //    one, one lap fewer and he lost one, zero and he simply closed an ordinary gap.
   //    Both numbers are raw measurements: `m.pos` is the loops' own distance, never the folded display position.
   //    What the loops do not show is never proposed: a counter set by hand is the operator's business.
+  // LES ±20 VIENNENT DU MOTEUR DE COURSE. L'opérateur, 1er novembre 2026 : « oui tu rebranches
+  // tout, évidemment ! » C'est lui qui constate, et ses mots du point 180 : le gain « au moment un
+  // coureur rattrape le dernier coureur du peloton », la perte « au moment un coureur se fait
+  // rattraper par le premier coureur du peloton ». L'écran ne fait plus que proposer ce qu'il a
+  // constaté ; il ne mesure plus rien lui-même.
   if (G.bunch) {
     const inBunchNow = new Set(G.bunch.bibs);
-    // taken before the loop below, which overwrites r.inBunchPrev as it goes
-    const prevIn = new Set(S.riders.filter(r => r.inBunchPrev).map(r => r.bib));
-    const seq = S.bunchSeq || [];                     // the bunch's cluster, rear -> front in travel order
-    // ce qui reste de l'écart une fois les tours entiers retirés : c'est leur distance sur la piste, l'un de l'autre
-    const resteDe = (a, b) => (a - b) - TRACK * Math.round((a - b) / TRACK);
-    const pairOf = bib => {
-      const mm = M.get(bib); if (!mm || !mm.read || mm.pos == null) return null;
-      let best = null;
-      for (const ob of seq) {
-        if (ob === bib || !prevIn.has(ob)) continue;
-        const om = M.get(ob); if (!om || !om.read || om.pos == null) continue;
-        const reste = resteDe(mm.pos, om.pos);
-        if (!best || Math.abs(reste) < Math.abs(best.reste)) best = { bib: ob, pos: om.pos, reste };
-      }
-      return best;   // rien : aucun coureur du paquet n'est lu, on ne mesure contre personne et on ne propose rien
-    };
-    const cands = [];
     for (const r of S.riders) {
       if (r.mode === 'out') continue;
-      const inNow = inBunchNow.has(r.bib), m = M.get(r.bib);
-      const f = inNow && !r.inBunchPrev && m && m.read ? pairOf(r.bib) : null;
-      if (f != null) {
-        const face = f.pos, reste = f.reste;
-        const delta = Math.round((m.pos - face) / TRACK);
-        const open = S.proposals.some(p => p.kind === 'lap' && p.bibs.includes(r.bib));
-        // ET IL DOIT VRAIMENT ÊTRE EN FACE. Il entre dans le paquet parce que l'écart de temps au coureur devant lui
-        // est tombé sous la seconde du §1 : à sa vitesse, cela fait la distance ci-dessous, plus la longueur d'un
-        // vélo. Au-delà, les deux coureurs ne sont pas au même point de la piste, et l'arrondi INVENTERAIT le tour
-        // au lieu de le constater. Mesuré le 1er novembre 2026 : 126,6 m, quotient 0,506, un tour pris proposé.
-        const marge = GROUP_GAP_S * (m.spd || CFG.pace) + BIKE_L;
-        const seSuivent = Math.abs(reste) <= marge;
-        // POURQUOI UN ±20 EST PROPOSÉ. Le déclencheur est l'ENTRÉE dans le paquet : il n'y était pas à l'image
-        // précédente, il y est maintenant. Le nombre de tours vient de la différence de distance de course avec le
-        // coureur de sa paire. Le log porte les deux distances, leur différence en mètres, et le quotient.
-        dbg('PROPOSITION-CALCUL', 'BIB ' + r.bib + ' entre dans le paquet · delta ' + delta + (open ? ' · déjà ouverte' : (delta ? ' · proposée' : ' · rien')),
-          { bib: r.bib, pos: +m.pos.toFixed(1), voisinPos: +face.toFixed(1), ecartM: +(m.pos - face).toFixed(1),
-            quotient: +((m.pos - face) / TRACK).toFixed(3), delta, dejaOuverte: open, tour: lap,
-            voisinBib: f.bib, reste: +reste.toFixed(1), marge: +marge.toFixed(1), seSuivent });
-        if (delta && !seSuivent)
-          dbg('PROPOSITION-REFUS', 'BIB ' + r.bib + ' : rien proposé · le plus proche du paquet est BIB ' + f.bib + ', à ' + Math.abs(reste).toFixed(1) + ' m de lui sur la piste, pour une marge de ' + marge.toFixed(1) + ' m',
-            { bib: r.bib, voisinBib: f.bib, delta, reste: +reste.toFixed(1), marge: +marge.toFixed(1), tour: lap });
-        if (delta && !open && seSuivent) cands.push({ bib: r.bib, delta });
-      }
+      const inNow = inBunchNow.has(r.bib);
       if (inNow !== r.inBunchPrev && dbgChanged('paquet:' + r.bib, inNow))
         dbg('PAQUET', 'BIB ' + r.bib + (inNow ? ' entre dans le paquet' : ' sort du paquet'), { bib: r.bib, dedans: inNow, tour: lap });
       r.inBunchPrev = inNow;
     }
-    const byDelta = {}; for (const c of cands) (byDelta[c.delta] = byDelta[c.delta] || []).push(c.bib);
-    for (const d in byDelta) {
-      const delta = +d, gaining = delta > 0;
-      // UNE ÉCHAPPÉE NE SE PROPOSE QU'UNE FOIS, AVEC TOUS SES COUREURS. Ses coureurs ne franchissent pas la boucle
-      // au même dixième : depuis que l'ordre est relevé aux passages (point 177), le 12 et le 52 entrent dans le
-      // paquet à deux détections différentes, et deux propositions séparées s'ouvraient pour le même fait de course.
-      // Si une proposition du même nombre de tours est déjà ouverte, le coureur la REJOINT.
-      let bibs = byDelta[d];
-      const deja = S.proposals.find(q => q.kind === 'lap' && q.delta === delta);
-      if (deja) {
-        bibs = [...new Set([...deja.bibs, ...bibs])];
-        S.proposals.splice(S.proposals.indexOf(deja), 1);
-        dbg('PROPOSITION-JOINT', 'BIB ' + byDelta[d].join(', ') + ' rejoint la proposition de ' + deja.bibs.join(', ') + ' · ' + delta + ' tour(s)',
-          { arrivent: byDelta[d], deja: deja.bibs, delta, tour: lap });
-      }
-      bibs = bibs.sort(byBib);
-      addProposal({ key: 'lap:' + bibs.join(',') + ':' + delta, kind: 'lap', bibs, delta,
-        text: '<b>' + bibList(bibs) + (gaining ? ' gaining a lap</b>' : ' losing a lap</b>') + ' · ' + (gaining ? 'caught the bunch from behind' : 'caught by the bunch') + ' at Lap ' + lap + ' · ' + (gaining ? 'one crossing more' : 'one crossing fewer') + ' than the bunch · validate per rider or all',
+  }
+  if (MC) {
+    const vus = MC.pointsVus();
+    for (; mcPointsVus < vus.length; mcPointsVus++) {
+      const c = vus[mcPointsVus], gaining = c.points > 0, delta = gaining ? 1 : -1;
+      const bibs = c.bibs.slice().sort(byBib);
+      dbg('PROPOSITION-MOTEUR', 'BIB ' + bibs.join(', ') + ' · ' + (gaining ? '+20' : '−20') + ' · ' + c.sens,
+        { bibs, points: c.points, avec: c.avec, ecarts: c.ecarts, a: +c.t.toFixed(1), tour: lap });
+      addProposal({ key: 'lap:' + bibs.join(',') + ':' + delta + ':' + Math.round(c.t), kind: 'lap', bibs, delta,
+        text: '<b>' + bibList(bibs) + (gaining ? ' gaining 20 points</b>' : ' losing 20 points</b>') + ' · '
+          + (gaining ? 'caught BIB ' + c.avec + ', the last rider of the bunch' : 'caught by BIB ' + c.avec + ', the first rider of the bunch')
+          + ' at Lap ' + lap + ' · ' + c.ecarts.map(e => e.toFixed(2) + ' s').join(', ') + ' · validate per rider or all',
         actions: [
-          ...bibs.map(b => ({ label: (gaining ? '+' : '−') + Math.abs(delta) + ' lap · BIB ' + b, primary: true, bib: b, run: p => applyLap([b], p.delta, 'validated proposal', p.t) })),
-          ...(bibs.length > 1 ? [{ label: (gaining ? '+' : '−') + Math.abs(delta) + ' lap · all ' + bibs.length, primary: true, run: p => applyLap([...p.bibs], p.delta, 'validated proposal', p.t) }] : []),
-          { label: 'Dismiss', run: p => { const key = p.key; S.dismissed[key] = true; logEvent('OP', 'Dismissed: ' + bibList(p.bibs) + (gaining ? ' gaining' : ' losing') + ' a lap', true, () => { delete S.dismissed[key]; logEvent('OP', 'Dismissal withdrawn · the proposal may come back · reversal', true); }); } },
+          ...bibs.map(b => ({ label: (gaining ? '+' : '−') + '20 pts · BIB ' + b, primary: true, bib: b, run: p => applyLap([b], p.delta, 'validated proposal', p.t) })),
+          ...(bibs.length > 1 ? [{ label: (gaining ? '+' : '−') + '20 pts · all ' + bibs.length, primary: true, run: p => applyLap([...p.bibs], p.delta, 'validated proposal', p.t) }] : []),
+          { label: 'Dismiss', run: p => { const key = p.key; S.dismissed[key] = true; logEvent('OP', 'Dismissed: ' + bibList(p.bibs) + (gaining ? ' gaining' : ' losing') + ' 20 points', true, () => { delete S.dismissed[key]; logEvent('OP', 'Dismissal withdrawn · the proposal may come back · reversal', true); }); } },
         ] });
     }
   }

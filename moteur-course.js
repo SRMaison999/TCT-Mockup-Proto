@@ -125,9 +125,16 @@
     const tourS = c => { const v = vitesse(c); return v ? R.piste / v : null; };  // sa duree de tour
 
     /* ------------------------------------------------------------------ 2. confirmer une cassure */
-    function confirme(cle, depasse) {
+    // Le délai sert à ne pas osciller, pas à retarder la PREMIÈRE mesure d’une paire. Quand la clé
+    // est neuve, on prend la mesure telle quelle si l’appelant le demande (`amorce`).
+    //
+    // E13. LES PAIRES CHANGENT DE VOISIN SANS ARRÊT. Mesuré à la build 194 : la coupure des groupes
+    //      est gardée sous la clé « suiveur|devant », et chaque fois que le voisin change, la clé
+    //      est neuve et repart à « pas de cassure ». À 360,9 s du palier 2, le 7 et le 12 étaient
+    //      dans le même groupe avec 13,99 s entre eux — 1 207 images de la course.
+    function confirme(cle, depasse, amorce) {
       let e = cassures.get(cle);
-      if (!e) { e = { etat: false, depuis: null }; cassures.set(cle, e); }
+      if (!e) { e = { etat: amorce ? depasse : false, depuis: null }; cassures.set(cle, e); return e.etat; }
       if (depasse === e.etat) { e.depuis = null; return e.etat; }
       // le délai ne vaut que pour DÉCLARER, pas pour lever : une cassure doit tenir avant d’être
       // déclarée (§1), mais deux coureurs qui se rejoignent sont réunis tout de suite.
@@ -248,7 +255,7 @@
         let coupe = !g, ec = null;
         if (devant) {
           ec = ecartEntre(devant, x);
-          coupe = ec == null ? false : confirme(x.c.bib + '|' + devant.c.bib, ec > R.cassureS);
+          coupe = ec == null ? false : confirme(x.c.bib + '|' + devant.c.bib, ec > R.cassureS, true);
         }
         if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null }; gs.push(g); }
         g.coureurs.push(x.c.bib);

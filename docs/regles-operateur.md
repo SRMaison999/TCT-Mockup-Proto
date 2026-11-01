@@ -2630,3 +2630,37 @@ groupes qui se rejoignent. Sa réponse :
 
 Il a aussi relevé un mot de plus à moi, dans la même réponse : « c'EST QUOI "L'ECRAN" ???? » — c'est
 **la timeline**.
+
+### 188. Les points se disent en rattrapages, jamais en mètres (1er novembre 2026)
+
+Je lui rendais compte des 20 points en écrivant « le 12 (+943 m) et le 52 (+941 m) à 60 points ».
+
+> Pourquoi tu reparles à nouveau en mètres ??
+
+Les mètres sont ce qui me sert à vérifier ; ce ne sont pas ce qui se dit. Un compte rendu de points
+se dit en **rattrapages** : « le 12 a rattrapé le peloton 3 fois, 60 points », « le 46 s'est fait
+rattraper 3 fois, −60 points ». C'est son point 182 — « on ne gagne pas un tour, on gagne 20
+points » — et la suite de son point 184 sur la façon de parler.
+
+### 189. On vérifie en cassures, pas en mètres (1er novembre 2026)
+
+> mais tu ne dois pas vérifier en m ! tu dois vérifier en cassures !
+
+Les mètres de la simulation ne sont pas ce que la course donne. La vérification se fait donc sur la
+seule mesure qui existe, celle de son §1 : le temps entre la roue arrière d'un coureur et la roue
+avant de celui qui le suit, lu aux boucles.
+
+Deux contrôles, et pas d'autres :
+
+- **Les groupes.** Entre deux coureurs qui se suivent dans la timeline, une coupure de groupe doit
+  tomber là, et seulement là, où cet écart dépasse une seconde.
+- **Les ±20.** Au moment du constat, l'écart entre le coureur et celui qu'il rattrape — ou celui
+  qui le rattrape — doit être **sous la seconde**, et il devait être **au-dessus** juste avant.
+
+### 190. Un défaut se compte en secondes de course, pas en « images » (1er novembre 2026)
+
+> mais c'est quoi les « images » ?
+
+Encore un mot à moi. L'écran recalcule vingt fois par seconde ; j'appelais « image » un de ces
+calculs. Un défaut se compte donc en **secondes de course** : « 926 images » se dit **« 46 secondes
+sur les 1 042 de la course »**.

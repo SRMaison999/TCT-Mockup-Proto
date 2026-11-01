@@ -3459,3 +3459,36 @@ constats de ±20 sont intacts et les points restent justes coureur par coureur.
 timeline mais mesurait AUSSI les ±20 sur la place déroulée : les écarts devenaient des dizaines de
 secondes, plus aucun constat ne se déclenchait, et les sept coureurs concernés finissaient à zéro
 point. Le test l'a dit avant le commit.
+
+### Build 194 · les ±20 viennent du moteur de course, et la vérification se fait en cassures
+
+Deux de ses demandes du 1er novembre 2026 : « oui tu rebranches tout, évidemment ! » et « tu ne dois
+pas vérifier en m ! tu dois vérifier en cassures ! »
+
+**Ce qui est branché.** Les propositions de ±20 points ne sont plus calculées par l'écran : elles
+viennent du moteur de course, qui les constate selon son point 180 — le gain quand un coureur
+rattrape le dernier du peloton, la perte quand le premier du peloton le rattrape. L'écran ne mesure
+plus rien lui-même, il propose ce qui a été constaté, et la carte nomme le coureur rattrapé et
+l'écart au contact.
+
+**La vérification, en cassures.** Deux contrôles, et pas d'autres, sur la course 2 entière
+(1 042 secondes) :
+
+| | résultat |
+|---|---|
+| une coupure de groupe là où l'écart ne dépasse pas une seconde | **0 seconde de course** |
+| une cassure de plus d'une seconde restée à l'intérieur d'un groupe | **40 secondes sur 1 042** |
+| les douze constats de ±20, écart au contact | **0,03 s à 0,97 s** — tous sous la seconde |
+| les points, coureur par coureur | **tous justes** |
+| écarts négatifs affichés | **0** |
+
+**Les 40 secondes qui restent** se répartissent en 119 moments, le plus long de 5,5 secondes. Les
+trois plus longs : à 809,4 s entre le 3 et le 12 pour un écart de 1,5 s ; à 820,1 s entre le 52 et
+le 46 pour 1,7 s ; à 825,9 s entre le 12 et le 52 pour 1,5 s. Ce sont des écarts qui viennent de
+franchir la seconde, et son §1 demande qu'une cassure **tienne** avant d'être déclarée : pendant ce
+délai, les deux coureurs restent dans le même groupe. C'est sa règle qui produit ce retard.
+
+**Une erreur de mesure corrigée au passage.** Mon premier contrôle comparait les derniers passages
+de deux coureurs sans vérifier qu'ils étaient sur le même tour : à 36,8 s, le 4 au mètre 239 et le
+15 au mètre 241 — deux mètres l'un de l'autre — sortaient avec un écart de 18,2 s. Le contrôle
+compare maintenant les places déroulées, comme le moteur de course le fait.
