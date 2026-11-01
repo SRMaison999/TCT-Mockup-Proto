@@ -787,9 +787,9 @@ peloton ne se verra proposer un tour perdu.
 
 **Ce que la build 174 a corrigé.** On mesurait les tours contre le voisin dans la file du paquet,
 qui pouvait être à 126,6 m ; on les mesure contre le coureur le plus proche **sur la piste**, et
-rien n'est proposé s'il n'est pas côte à côte. La première proposition pour le 12 et le 52 passe
+rien n'est proposé s'ils ne se suivent pas. La première proposition pour le 12 et le 52 passe
 du **tour 12** au **tour 19**, elle les porte **tous les deux** au lieu du 12 seul, les deux lâchés
-passent de −2 à −1 tour, et 91 calculs sont refusés faute de face-à-face. Les chiffres complets
+passent de −2 à −1 tour, et 91 calculs sont refusés parce que les deux coureurs ne se suivaient pas. Les chiffres complets
 sont dans `docs/mesures.md`, « Build 174 ».
 
 **Ce qui reste.** La même échappée est encore proposée à plusieurs tours, et quatre coureurs du

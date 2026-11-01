@@ -612,7 +612,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '174';
+const BUILD = '175';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1205,7 +1205,7 @@ function computeGroups(M) {
   // et ainsi de suite ». L'écart d'un bloc se mesure donc DEPUIS LE BLOC QUI LE PRÉCÈDE, et le premier n'en a pas.
   //   Entre QUELS DEUX COUREURS : « l'écart se mesure entre le dernier du groupe des leaders et le premier du
   // groupe du peloton » (point 167). Donc de la QUEUE du bloc du dessus à la TÊTE du bloc du dessous — les deux
-  // coureurs qui se font face — et non de tête à tête. Son chiffre : le bloc du 12 et du 52 sous le peloton
+  // coureurs qui se suivent — et non de tête à tête. Son chiffre : le bloc du 12 et du 52 sous le peloton
   // affiche 2 m, la distance du 7 au 12, et non 31 m qui était celle du 15 au 12.
   //   Quand la mesure contredit l'ordre — parce que l'opérateur a forcé un groupe en tête — l'écart sort négatif.
   // Il ne peut pas l'être : sur un anneau fermé, un groupe qui paraît 31 m devant est 219 m derrière, 250 − 31.
@@ -1458,7 +1458,7 @@ function detect(G, M) {
   //    on the frame before, he is now. No distance to the bunch is tested, and no tolerance is invented.
   //    HOW MANY LAPS: the crossings say it, counted against THE RIDER HE FACES (§4, "la mesure doit être entre…") —
   //    the bunch's last rider when he catches it from behind, the bunch's first rider when it catches him. Those two
-  //    are the pair of consecutive riders at the border of the two groups, which is why the facing rider is simply
+  //    are the pair of consecutive riders at the border of the two groups, which is why that rider is simply
   //    his nearest neighbour in the cluster who was already in the bunch. Being side by side, the difference between
   //    their measured race distances is within a few metres of a whole number of laps — one lap more and he gained
   //    one, one lap fewer and he lost one, zero and he simply closed an ordinary gap.
@@ -1471,7 +1471,7 @@ function detect(G, M) {
     const seq = S.bunchSeq || [];                     // the bunch's cluster, rear -> front in travel order
     // ce qui reste de l'écart une fois les tours entiers retirés : c'est leur distance sur la piste, l'un de l'autre
     const resteDe = (a, b) => (a - b) - TRACK * Math.round((a - b) / TRACK);
-    const facing = bib => {
+    const pairOf = bib => {
       const mm = M.get(bib); if (!mm || !mm.read || mm.pos == null) return null;
       let best = null;
       for (const ob of seq) {
@@ -1486,7 +1486,7 @@ function detect(G, M) {
     for (const r of S.riders) {
       if (r.mode === 'out') continue;
       const inNow = inBunchNow.has(r.bib), m = M.get(r.bib);
-      const f = inNow && !r.inBunchPrev && m && m.read ? facing(r.bib) : null;
+      const f = inNow && !r.inBunchPrev && m && m.read ? pairOf(r.bib) : null;
       if (f != null) {
         const face = f.pos, reste = f.reste;
         const delta = Math.round((m.pos - face) / TRACK);
@@ -1496,18 +1496,18 @@ function detect(G, M) {
         // vélo. Au-delà, les deux coureurs ne sont pas au même point de la piste, et l'arrondi INVENTERAIT le tour
         // au lieu de le constater. Mesuré le 1er novembre 2026 : 126,6 m, quotient 0,506, un tour pris proposé.
         const marge = GROUP_GAP_S * (m.spd || CFG.pace) + BIKE_L;
-        const faceAFace = Math.abs(reste) <= marge;
+        const seSuivent = Math.abs(reste) <= marge;
         // POURQUOI UN ±20 EST PROPOSÉ. Le déclencheur est l'ENTRÉE dans le paquet : il n'y était pas à l'image
         // précédente, il y est maintenant. Le nombre de tours vient de la différence de distance de course avec le
-        // coureur qu'il a en face. Le log porte les deux distances, leur différence en mètres, et le quotient.
+        // coureur de sa paire. Le log porte les deux distances, leur différence en mètres, et le quotient.
         dbg('PROPOSITION-CALCUL', 'BIB ' + r.bib + ' entre dans le paquet · delta ' + delta + (open ? ' · déjà ouverte' : (delta ? ' · proposée' : ' · rien')),
-          { bib: r.bib, pos: +m.pos.toFixed(1), enFace: +face.toFixed(1), ecartM: +(m.pos - face).toFixed(1),
+          { bib: r.bib, pos: +m.pos.toFixed(1), voisinPos: +face.toFixed(1), ecartM: +(m.pos - face).toFixed(1),
             quotient: +((m.pos - face) / TRACK).toFixed(3), delta, dejaOuverte: open, tour: lap,
-            enFaceBib: f.bib, reste: +reste.toFixed(1), marge: +marge.toFixed(1), faceAFace });
-        if (delta && !faceAFace)
+            voisinBib: f.bib, reste: +reste.toFixed(1), marge: +marge.toFixed(1), seSuivent });
+        if (delta && !seSuivent)
           dbg('PROPOSITION-REFUS', 'BIB ' + r.bib + ' : rien proposé · le plus proche du paquet est BIB ' + f.bib + ', à ' + Math.abs(reste).toFixed(1) + ' m de lui sur la piste, pour une marge de ' + marge.toFixed(1) + ' m',
-            { bib: r.bib, enFaceBib: f.bib, delta, reste: +reste.toFixed(1), marge: +marge.toFixed(1), tour: lap });
-        if (delta && !open && faceAFace) cands.push({ bib: r.bib, delta });
+            { bib: r.bib, voisinBib: f.bib, delta, reste: +reste.toFixed(1), marge: +marge.toFixed(1), tour: lap });
+        if (delta && !open && seSuivent) cands.push({ bib: r.bib, delta });
       }
       if (inNow !== r.inBunchPrev && dbgChanged('paquet:' + r.bib, inNow))
         dbg('PAQUET', 'BIB ' + r.bib + (inNow ? ' entre dans le paquet' : ' sort du paquet'), { bib: r.bib, dedans: inNow, tour: lap });
@@ -1559,7 +1559,7 @@ function detect(G, M) {
   }
 }
 // No median anywhere: the operator forbade it on 28 October 2026 (regles-operateur.md §5). The bunch is measured
-// by its front rider, a junction by the facing rider. If a statistic of positions reappears here, it is a bug.
+// by its front rider, a junction by the rider of the pair. If a statistic of positions reappears here, it is a bug.
 function dropProposals(pred) { S.proposals = S.proposals.filter(p => !pred(p)); }
 
 // ---------- operator actions: facts ----------

@@ -168,7 +168,7 @@ sont arrivés à moins de 15,65 m du dernier coureur de la queue — pas de son 
 > **Seuil remplacé le 25 octobre 2026.** Le « moins de 2 mètres » de cet énoncé est
 > remplacé par la règle des cassures du §1 : « rattrapé par le peloton » veut dire qu'il
 > n'y a plus de cassure entre lui et le peloton. Le reste tient inchangé — la mesure
-> entre les deux coureurs qui se font face (qui sont précisément la paire de coureurs
+> entre les deux coureurs qui se suivent (qui sont précisément la paire de coureurs
 > consécutifs à la frontière des deux groupes), et le fait que le merge n'attend aucune
 > validation.
 
@@ -206,7 +206,7 @@ Deux questions distinctes, et le §3 répond aux deux.
 entre le coureur et le peloton, **« et ceci peu importe à quel endroit de la piste »**.
 Aucune distance au peloton n'est testée, aucune tolérance n'existe.
 
-**Combien.** L'écart se compte entre lui et **le coureur d'en face** — le dernier coureur
+**Combien.** L'écart se compte entre lui et **le coureur qui le suit ou qu'il suit** — le dernier coureur
 du peloton quand il le rattrape, le premier coureur du peloton quand il se fait rattraper
 (§3, « la mesure doit être entre… »). À cet instant les deux sont au même endroit de la
 piste : la différence entre leurs deux comptes de passages vaut 0, +1 ou −1. **+1 il a
@@ -2329,7 +2329,7 @@ l'écran, une à la fois.
      dossards concernés** — « le bloc du 12 et du 52, sous le peloton, doit-il afficher 2 m ou
      31 m ? » — et jamais sur une règle énoncée en général.
 
-167. **L'écart se mesure entre les deux coureurs qui se font face.** Ses mots, le 1er novembre
+167. **L'écart se mesure entre les deux coureurs qui se suivent.** Ses mots, le 1er novembre
      2026 : « **l'écart se mesure entre le dernier du groupe des leaders et le premier du groupe
      du peloton. Concrètement entre le n° 52 et le n°15. Le résultat n'est pas 219m, c'est une
      certitude !** » Et sur le cas sans forçage, mis devant les deux chiffres : « **Effectivement
@@ -2486,3 +2486,16 @@ l'écran, une à la fois.
      générale, les propositions de valider 20 points pour avoir rattrapé un tour de perte de
      20 points pour avoir s'est fait rattrapé un tour, arrivent toujours beaucoup, beaucoup
      trop tôt** ».
+
+176. **« Se faire face » n'est pas de lui, et ne veut pas dire ça.** Ses mots, le 1er novembre
+     2026, devant les documents et le code : « **je dois avouer que cette dénomination "le
+     coureur en face", "la mesure doit être entre les deux coureurs qui se font face", "se faire
+     face" ne me plait pas. Se faire face ça signifie une chose différente. Toi ici tu veux
+     parler de la mesure entre deux coureurs qui se suivent, c'est bien ça ?** »
+     Oui : **deux coureurs qui se suivent**, l'un derrière l'autre sur la piste. C'est ce que
+     disent déjà ses propres mots du point 167 — « le dernier du groupe des leaders et le
+     premier du groupe du peloton », « entre le 7 et le 12, soit 2m ».
+     La formule « se font face » avait été écrite **par moi**, dans le titre du point 167 et dans
+     la note du 25 octobre 2026 du §4, puis reprise de proche en proche comme si elle était sa
+     règle. Elle est retirée de tous les documents et du code à la build 175. C'est la même
+     faute que `pitfalls.md` A12 : une de mes phrases rangée parmi les siennes.

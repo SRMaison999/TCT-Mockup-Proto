@@ -525,7 +525,7 @@ se sont révélés en la remplaçant, à garder en tête si on y retouche :
   l'attardé arrive **devant** le peloton, se retrouve en tête de l'amas, et le tour du
   peloton chutait d'un tour à l'image même où on mesurait l'attardé contre lui. Le premier
   coureur se prend donc parmi ceux qui étaient **déjà dans le peloton à l'image précédente**.
-- **Le coureur d'en face n'est pas toujours le voisin immédiat.** D'autres attardés ou
+- **Le coureur qui le suit n'est pas toujours son voisin immédiat.** D'autres attardés ou
   échappés peuvent rouler entre le coureur mesuré et le peloton, dans le même amas, tout en
   étant à un tour. Mesurer contre le voisin immédiat donnerait `delta = 0` et aucune
   proposition. `facingPos()` s'écarte donc d'un cran à la fois jusqu'au premier voisin qui
@@ -762,17 +762,17 @@ build précédent et on discute d'un écran qui n'existe plus.
 **À vérifier avant de conclure qu'un écran est cassé** : le type servi pour `styles.css`, et le
 numéro de build affiché comparé à celui du dépôt.
 
-## A14. Le voisin dans la file n'est pas le voisin sur la piste
+## A14. Le voisin dans la file n'est pas le coureur qui vous suit sur la piste
 
 Un groupe, c'est une **chaîne** : chaque coureur est à moins d'une seconde de celui qui le suit.
 Rien n'oblige les deux **bouts** de la chaîne à être proches. Au palier 2, le peloton de seize
 mesurait jusqu'à **218,9 m** de long sur une piste de 250 m.
 
-Prendre « le voisin dans la file » pour « le coureur qu'on a en face » a donc fait compter un tour
+Prendre « le voisin dans la file » pour « le coureur qui le suit sur la piste » a donc fait compter un tour
 pris contre un coureur à **126,6 m**, soit un demi-tour : l'arrondi a transformé 0,506 en 1, et un
 +20 a été proposé au tour 12 à un coureur qui venait de s'échapper.
 
 **La vérification** : quand une décision se prend « entre deux coureurs », retirer les tours
 entiers de leur écart et regarder **ce qui reste**. C'est leur distance l'un de l'autre sur la
-piste. Si ce reste n'est pas de l'ordre de la longueur d'un groupe, les deux coureurs ne se font
-pas face et la décision ne tient pas.
+piste. Si ce reste n'est pas de l'ordre de la longueur d'un groupe, les deux coureurs ne se
+suivent pas et la décision ne tient pas.

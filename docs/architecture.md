@@ -252,22 +252,24 @@ L'événement est l'image où le coureur **entre dans l'amas du peloton** : `r.i
 était faux, il est vrai maintenant. L'appartenance à l'amas *est* le test de cassure (§4.1),
 donc il n'y a aucune mesure séparée, aucune distance au peloton testée et aucune tolérance.
 
-Le nombre de tours se mesure contre **le coureur d'en face** (`regles-operateur.md` §4) :
-`delta = Math.round((m.pos − face) / TRACK)`, où `face` est la position du coureur d'en
-face. `delta` non nul → proposition, `0` → rien, il a seulement refermé un écart ordinaire.
+Le nombre de tours se mesure contre **le coureur qui le suit, ou qu'il suit** (`regles-operateur.md` §4) :
+`delta = Math.round((m.pos − face) / TRACK)`, où `face` est la position de ce coureur.
+`delta` non nul → proposition, `0` → rien, il a seulement refermé un écart ordinaire.
 Les deux positions sont **brutes** (`m.pos`, jamais la position repliée de l'affichage). Un
 coureur non lu à cet instant ne produit rien : on ne propose que ce que les boucles
 montrent.
 
-**Qui est le coureur d'en face.** `facingPos(bib)` part de la place du coureur dans
-`S.bunchSeq` et s'écarte d'un cran à la fois, vers l'arrière puis vers l'avant, jusqu'au
-premier voisin qui était **déjà dans le peloton** à l'image précédente. Le voisin ainsi
-trouvé est bien celui que la règle désigne : le **dernier** coureur du peloton pour un
-coureur qui le rattrape par l'arrière, le **premier** coureur du peloton pour un coureur que
-le peloton rattrape — ce sont précisément les deux coureurs consécutifs à la frontière des
-deux groupes. Les attardés ou les échappés qui roulent entre les deux sont sautés, parce
-qu'ils ne sont pas le peloton. Si aucun voisin du peloton n'est lu, on retombe sur
-`S.bunchRaw`, qui est le premier coureur du peloton : même famille de mesure.
+**Qui est ce coureur.** `pairOf(bib)` prend, parmi les coureurs **déjà dans le peloton** à
+l'image précédente, celui qui est **le plus proche de lui sur la piste**. C'est bien celui que
+la règle désigne : le **dernier** coureur du peloton pour un coureur qui le rattrape par
+l'arrière, le **premier** coureur du peloton pour un coureur que le peloton rattrape — les deux
+coureurs consécutifs à la frontière des deux groupes. Les attardés et les échappés qui roulent
+entre les deux sont sautés, parce qu'ils ne sont pas le peloton. Si aucun coureur du peloton
+n'est lu, **rien n'est proposé** : on ne mesure pas contre quelqu'un qui n'est pas là.
+
+Jusqu'à la build 173 ce coureur était pris comme **voisin dans la file** du peloton, et non le
+plus proche sur la piste — ce qui a fait compter un tour contre un coureur à 126,6 m. Le §47
+raconte la correction et ce qu'elle a changé.
 
 Les coureurs qui arrivent avec le même `delta` sont regroupés dans **une seule**
 proposition. Une proposition déjà ouverte pour un coureur l'exclut.
@@ -1894,7 +1896,7 @@ Les mesures sont au `mesures.md`, « La cassure lue sur les boucles ».
 temps dans les en-tête des groupes ».
 
 C'est la **même mesure que la cassure**, sur la **même paire** : la queue du bloc du dessus et
-la tête du bloc du dessous — les deux coureurs qui se font face, son point 167 — passées à
+la tête du bloc du dessous — les deux coureurs qui se suivent, son point 167 — passées à
 `pairGap`, donc z − (x + y) lu sur les boucles. L'en-tête affiche une seconde avec une décimale,
 `3.9 s`, là où il affichait `74 m`. Le premier bloc affiche toujours `leader`.
 
@@ -1991,18 +1993,24 @@ Six points de décision sont instrumentés, là où ils sont pris :
 | `CASSURE` | `pairCass()`, dans la marche le long de la piste | les deux dossards, **z**, sa source (boucle ou positions), les mètres, la vitesse du suiveur, le temps d'une longueur de vélo, l'écart obtenu, le seuil, et la décision |
 | `TOUR` | `impliedOf()` | le dossard, le nombre de tours retranchés, sa position brute, celle du paquet, et s'il est dans le paquet |
 | `LEADER` | après le choix du leader | le dossard, **la source** — `désigné` ou `mesure` —, les trois meilleurs `np()` et l'avance du premier sur le second |
-| `ECART-TOUR` | la boucle des écarts | le bloc, l'écart brut négatif, le nombre de tours ajoutés, l'écart corrigé, et les deux coureurs qui se font face |
-| `PROPOSITION-CALCUL` | `detect()` | le dossard, sa distance de course, celle du coureur qu'il a en face, leur différence en mètres, **le quotient avant arrondi**, le delta retenu |
+| `ECART-TOUR` | la boucle des écarts | le bloc, l'écart brut négatif, le nombre de tours ajoutés, l'écart corrigé, et les deux coureurs qui se suivent |
+| `PROPOSITION-CALCUL` | `detect()` | le dossard, sa distance de course, celle du coureur de sa paire, leur différence en mètres, **le quotient avant arrondi**, le delta retenu |
 | `PAQUET` | `detect()` | un coureur entre dans le paquet ou en sort |
 
 `DBG.on` est vrai par défaut, la liste est bornée à 200 000 lignes, et elle repart avec la
 course. Les logs sortent par le **même bouton Export trace** que la trace : le fichier porte
 `trace` et `logsDuCode` côte à côte. `window.__proto.dbg()` les rend lisibles sans le fichier.
 
-## 47. Le coureur qu'on a en face (build 174)
+## 47. Le coureur qui le suit sur la piste (build 174)
 
-C'est **la mesure** d'un ±20, et le §4 des règles la pose : « la mesure doit être entre les deux
-coureurs qui se font face ». Se faire face, c'est être au **même point de la piste**.
+C'est **la mesure** d'un ±20. Ses mots au point 167 : « **l'écart se mesure entre le dernier du
+groupe des leaders et le premier du groupe du peloton. Concrètement entre le n° 52 et le n°15** ».
+Le dernier d'un groupe et le premier du suivant : **deux coureurs qui se suivent**, l'un derrière
+l'autre sur la piste, à quelques mètres.
+
+(La formule « les deux coureurs qui se font face », qui traînait dans ces documents et dans le
+code, n'était pas de lui : je l'avais écrite moi-même. Il l'a relevée le 1er novembre 2026 :
+« **se faire face ça signifie une chose différente** ». Elle est retirée partout.)
 
 Jusqu'à la build 173, `facingPos()` prenait le **voisin dans la file du paquet** : on partait de
 l'index du coureur dans `S.bunchSeq` et on s'écartait d'un cran à gauche, d'un cran à droite,
@@ -2011,7 +2019,7 @@ pas une file serrée : au palier 2, les seize coureurs s'étirent jusqu'à **218
 voisin de file pouvait donc être à un demi-tour de distance, et c'est contre lui qu'on comptait les
 tours.
 
-`facing()` le remplace et choisit le coureur du paquet **le plus proche sur la piste** : pour
+`pairOf()` le remplace et choisit le coureur du paquet **le plus proche sur la piste** : pour
 chacun, on retire de l'écart de distance de course le nombre entier de tours, et ce qui reste est
 leur distance l'un de l'autre sur la piste. Le plus petit reste gagne.
 
@@ -2021,7 +2029,7 @@ paquet parce que son écart de temps est tombé sous la **seconde du §1**, donc
 deux seules longueurs qui entrent dans ce calcul sont les siennes. À 13,5 m/s cela fait 15,2 m.
 
 Le refus s'écrit : `PROPOSITION-REFUS` porte le dossard, celui du coureur le plus proche, le reste
-et la marge. Et `PROPOSITION-CALCUL` porte désormais `enFaceBib`, `reste`, `marge` et `faceAFace`
+et la marge. Et `PROPOSITION-CALCUL` porte désormais `voisinBib`, `voisinPos`, `reste`, `marge` et `seSuivent`
 à côté du quotient.
 
 **Deux autres changements de la même build, dont la mesure dit qu'ils ne suffisent pas** — les

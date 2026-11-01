@@ -62,7 +62,7 @@ tourner la boucle d'affichage — ce qui a été fait à la build 67, voir §12.
 | 62 | 716,5 s | les deux mêmes | 173 passages, contacts 643·622·617·620·623, zéro `lone` faux |
 | 63 | 728 s | les deux mêmes | les trois oscillations du simulateur retirées ; contacts 638·622·624·624·623, 180 passages, un `short` maximum au lieu de trois |
 | 66 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` 458,0 s | pace par défaut passée à 15 m/s ; détection des tours réécrite |
-| 67 | 674,2 s | les deux mêmes, aux mêmes instants | médiane supprimée ; tour du peloton = son premier coureur, delta contre le coureur d'en face (§12) |
+| 67 | 674,2 s | les deux mêmes, aux mêmes instants | médiane supprimée ; tour du peloton = son premier coureur, delta contre le coureur qui le suit (§12) |
 | 68 | 674,2 s | les deux mêmes, aux mêmes instants | seuil de cassure paire par paire, vitesse du coureur qui suit (§13) |
 | 74 | 674,2 s | `lap:12:1` 165,5 s · `lap:4,11:-1` **458,1 s** | le scénario câblé devient une course enregistrée ; la perte de tour se propose **un dixième plus tard** (§15) |
 | 75 | 674,2 s | les deux mêmes, aux mêmes instants | la simulation quitte le code et devient une ligne de la liste enregistrée ; renommer et effacer (§16) |
@@ -277,7 +277,7 @@ mêmes qu'à la build 66. Les deux propositions tombent **aux mêmes instants et
 mêmes deltas** : `lap:12:1` à **165,5 s**, `lap:4,11:-1` à **458,1 s**. Aucune troisième
 proposition, aucune erreur de console, `bunchRaw` fini à chacun des 13 485 pas.
 
-**Ce que le coureur d'en face a donné.** Les deux jonctions, relevées à l'image où la
+**Ce que le coureur qui le suit a donné.** Les deux jonctions, relevées à l'image où la
 proposition naît :
 
 | | Tour gagné, 165,5 s | Tour perdu, 458,1 s |
@@ -285,7 +285,7 @@ proposition naît :
 | Coureur mesuré | BIB 12 | BIB 4 |
 | Sa place dans l'amas | **arrière** | **avant** |
 | L'amas, de l'arrière vers l'avant | 12 · 4 · 11 · 52 · 7 · 61 · 18 · 3 · 9 · 1 · 67 · 58 · 70 · 46 · 23 · 15 | 52 · 12 · 7 · 61 · 18 · 3 · 9 · 1 · 67 · 58 · 70 · 46 · 23 · 15 · 11 · 4 |
-| Coureur d'en face retenu | **BIB 52**, 3 crans devant lui | **BIB 15**, 2 crans derrière lui |
+| Coureur retenu de la paire | **BIB 52**, 3 crans devant lui | **BIB 15**, 2 crans derrière lui |
 | Ce qu'il est pour la règle | le **dernier** coureur du peloton | le **premier** coureur du peloton |
 | Positions brutes | 2 608,5 m contre 2 428,5 m | 6 580,6 m contre 6 814,3 m |
 | `delta` | **+1** | **−1** |
@@ -376,7 +376,7 @@ La correction joue donc **dans les deux sens**, et chaque fois du bon côté.
 Les quatre épisodes dépassent le délai de confirmation de 0,3 s, donc les blocs affichés
 diffèrent brièvement. **Les deux propositions de tour, elles, ne bougent pas** : `lap:12:1` à
 165,5 s et `lap:4,11:-1` à 458,0 s, les mêmes qu'aux builds 66 et 67, avec les mêmes coureurs
-d'en face (BIB 52 et BIB 15). *(La seconde est passée à 458,1 s à la build 74 ; le §15 dit
+de la paire (BIB 52 et BIB 15). *(La seconde est passée à 458,1 s à la build 74 ; le §15 dit
 pourquoi.)*
 
 **Course complète à ×16**, boucle d'affichage réelle : 674,2 s, 185 passages de bande, aucune
@@ -2729,7 +2729,7 @@ roule à **2,2 m** derrière le 18 POR, dans la file, treizième sur seize.
 **premier du groupe suivant (15 IRL)**, en faisant le tour de la piste : 250 − 33,0 =
 **217,0 m**, et non 219. Les 219 venaient de 250 − 31, c'est-à-dire d'une mesure de tête à tête.
 
-### L'écart entre les deux coureurs qui se font face (build 165)
+### L'écart entre les deux coureurs qui se suivent (build 165)
 
 Même course, même tour 6. Les positions réelles sont au §42 : file de 33,0 m, 2,20 m entre
 coureurs, du 15 IRL en tête au 52 ITA en queue.
@@ -3021,7 +3021,7 @@ dossard et la tranche de temps.
 | Le 12 et le 52 proposés ensemble | non — le 12 seul | **oui** |
 | Les deux lâchés 46-70 | **−2 tours** (quotient −1,56, −40 points) | **−1 tour** |
 | Coureurs du peloton à qui on propose un tour perdu | **six** d'un coup, tour 32 | quatre, tour 32 |
-| Calculs refusés faute de face-à-face | aucun — le refus n'existait pas | **91** |
+| Calculs refusés, les deux coureurs ne se suivant pas | aucun — le refus n'existait pas | **91** |
 
 Les sept tours et les 117 secondes gagnés sur la première proposition, c'est exactement ce qu'il
 dit au point 175. La proposition tombe maintenant quand le reste vaut **8,1 m** puis **1,8 m** :
