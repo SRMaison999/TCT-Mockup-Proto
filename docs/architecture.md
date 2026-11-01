@@ -2117,7 +2117,7 @@ ambiguïté, 0 m ou 250 m. Mesuré à la build 179 : posée sur les mètres lus,
 142. C'est le seul endroit où la mesure interpolée est meilleure, et c'est parce qu'on ne lui
 demande pas un ordre.
 
-## 50. La pièce qui décide la course, reconstruite (build 181)
+## 50. Le moteur de course, reconstruit (build 181)
 
 **Sa demande, le 1er novembre 2026** : « Ce serait pas plus simple de reconstruire cet algorithme
 depuis le début, avec les erreurs que nous savons qu'il ne faut pas commettre....? »
@@ -2153,7 +2153,7 @@ l'empêche. Elles viennent de `pitfalls.md` et des mesures des builds 166 à 180
 
 **Ce qui n'y est pas encore** : l'attribution du tour au bon coureur. L'article UCI 3.2.017 quater
 veut qu'un tour se perde quand on est rejoint **par le plus gros peloton**, et se gagne quand on
-rattrape l'arrière de ce peloton. La pièce mesure la paire sans regarder quel groupe est le plus
+rattrape l'arrière de ce peloton. Le moteur de course mesure la paire sans regarder quel groupe est le plus
 gros, et attribue donc un tour **perdu** à des coureurs du peloton là où ce sont les échappés qui
 en **gagnent** un. C'est le poste 26.
 
@@ -2168,7 +2168,7 @@ peloton le plus proche de lui sur la piste, parmi ceux qui y étaient déjà —
 lui seul : plus de distance, il a rattrapé ; moins, il a été rattrapé. Un même nombre ne se
 réannonce pas (`annonce`).
 
-**Ce que la pièce relève au palier 2**, chaque ligne une seule fois :
+**Ce que le moteur de course relève au palier 2**, chaque ligne une seule fois :
 
 | Coureurs | Ce qui est relevé |
 |---|---|
@@ -2184,7 +2184,7 @@ plus, quatre tours ; les deux lâchés, avec 0,9 m/s de moins, trois tours et de
 **Un trou mesuré** : le 18, le 61 et le 7 passent de +2 à +4 sans que le +3 soit annoncé. Le
 passage où il aurait dû l'être n'a pas satisfait la vérification du face-à-face.
 
-**Ce qui N'est PAS décidé, et qui ne doit pas l'être par moi.** La pièce **constate** le tour ; elle
+**Ce qui N'est PAS décidé, et qui ne doit pas l'être par moi.** Le moteur de course **constate** le tour ; il
 ne le **crédite** pas. J'ai essayé deux fois de créditer automatiquement, et les deux fois la
 mesure l'a démenti : en partant des distances, 198 constats pour 16 coureurs ; en comptant les
 passages sur la ligne d'arrivée et en prenant le tour du plus grand nombre, 960 constats au

@@ -874,7 +874,7 @@ nommer — une échappée qui part, un bloc qui se fait rejoindre — et pas à 
 **plus gros peloton en course**, et se **perd** quand on est rejoint par lui. C'est le président
 du collège des commissaires qui dit quel peloton est le plus gros.
 
-**Ce qu'on mesure.** La pièce reconstruite relève 8 événements de tour au palier 2, tous du côté
+**Ce qu'on mesure.** Le moteur de course relève 8 événements de tour au palier 2, tous du côté
 du coureur rejoint : « 15 IRL : −1 tour, avec le 7 NED », « 46 BEL : −1 tour, avec le 9 ». Or le
 15 et le 46 sont dans le groupe de treize, et le 7 dans celui de trois : ce sont les trois
 échappés qui prennent un tour, pas les treize qui en perdent un. Le moteur actuel fait la même
@@ -886,8 +886,8 @@ faute autrement — il propose un tour perdu à quatre coureurs du plus gros pel
 **On saura que c'est fini quand** : au palier 2, le 7, le 18 et le 61 se verront proposer **+1
 tour**, et aucun coureur du groupe le plus nombreux ne se verra proposer un tour perdu.
 
-**Fait dans la pièce reconstruite, build 183.** Le 18, le 61 et le 7 sont annoncés **+1 à 296 s**,
+**Fait dans le moteur de course, build 183.** Le 18, le 61 et le 7 sont annoncés **+1 à 296 s**,
 le 12 et le 52 **+1 à 453 s**, et les deux lâchés 46 et 70 **−1 à 362 s** : chaque ligne une seule
 fois, aucun coureur du peloton pénalisé, et aucun tour relevé au palier 1. Reste un trou : le 18,
 le 61 et le 7 passent de +2 à +4 sans que le +3 soit annoncé. Le moteur actuel, lui, n’est pas
-corrigé — c’est la pièce reconstruite qui porte ce comportement.
+corrigé — c’est le moteur de course qui porte ce comportement.

@@ -2514,3 +2514,13 @@ l'écran, une à la fois.
      C'est le **peloton** qui est la référence des deux côtés, et non le coureur voisin : la paire
      de coureurs qui se suivent donne le **nombre** de tours, le peloton dit **à qui** ce nombre
      revient et dans quel sens.
+
+179. **Les mots ont un sens : pas de métaphore pour nommer une partie du logiciel.** Ses mots, le
+     1er novembre 2026, devant le mot « pièce » que j'employais pour désigner `moteur-course.js` :
+     « **ça veut dire quoi "la pièce" ?** », puis « **les mots ont un sens, je ne vois pas pourquoi
+     on se mettrait à parler des moteurs de course ou de calculs comme des "pièces" .... Evidemment
+     qu'il faut changer cette façon de parler** ».
+     Une partie du logiciel s'appelle donc par ce qu'elle est : **le moteur de course**, qui est le
+     nom de son fichier. Pas de « pièce », pas d'image, ni dans les documents, ni dans le code, ni
+     en parlant. C'est la même faute que le point 176 : un mot de moi qui s'installe à la place du
+     sien.

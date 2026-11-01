@@ -1,7 +1,7 @@
 <title>Lap Timeline Prototype · mixed</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="styles.css">
-<!-- La pièce qui décide la course, reconstruite le 1er novembre 2026. Elle tourne À CÔTÉ de l'actuelle
+<!-- Le moteur de course, reconstruit le 1er novembre 2026. Il tourne À CÔTÉ de l'actuelle
      le temps qu'on compare les deux : aucun écran ne la lit encore. -->
 <script src="moteur-course.js"></script>
 
@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '183';
+const BUILD = '184';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;

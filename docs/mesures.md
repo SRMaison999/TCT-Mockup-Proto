@@ -3114,15 +3114,15 @@ d'intervalle, ce qui donne un z de 18,3 s. Les mètres `g.gapM`, eux, ne servent
 et sont grossiers par construction : au tour 6, trois blocs distincts portent `head` 0, 135 et
 250 m, parce que ce sont les seules distances que les trois boucles donnent.
 
-## Build 181 · la pièce reconstruite, comparée à l'actuelle
+## Build 181 · le moteur de course reconstruit, comparé à l'ancien
 
-Les deux paliers rejoués du départ à l'arrivée. Le moteur actuel pilote la course ; la pièce
+Les deux paliers rejoués du départ à l'arrivée. L’ancien moteur pilote la course ; le moteur de course
 reconstruite reçoit ensuite **exactement les mêmes détections** — 2 896 au palier 1, 2 749 au
 palier 2 — et on regarde ce qu'elle en fait.
 
 **Palier 1 — le peloton groupé.**
 
-| | moteur actuel | pièce reconstruite |
+| | ancien moteur | moteur de course |
 |---|---|---|
 | Groupes | toujours **un** | toujours **un** |
 | Changements de tête | 1 | **0** |
@@ -3133,7 +3133,7 @@ coureurs qui se doublent, ce que les boucles voient réellement.
 
 **Palier 2 — deux échappées, deux lâchés.**
 
-| | moteur actuel | pièce reconstruite |
+| | ancien moteur | moteur de course |
 |---|---|---|
 | Changements de tête | 32 | **4** |
 | L'échappée du 12 et du 52 | apparaît comme bloc, écart qui saute | bloc séparé dès **129,6 s**, écart **1,4 → 2,7 → 3,3 → 5,8 s** |
@@ -3159,7 +3159,7 @@ peloton le plus proche de lui sur la piste, parmi ceux qui y étaient déjà —
 lui seul : plus de distance, il a rattrapé ; moins, il a été rattrapé. Un même nombre ne se
 réannonce pas (`annonce`).
 
-**Ce que la pièce relève au palier 2**, chaque ligne une seule fois :
+**Ce que le moteur de course relève au palier 2**, chaque ligne une seule fois :
 
 | Coureurs | Ce qui est relevé |
 |---|---|
@@ -3175,7 +3175,7 @@ plus, quatre tours ; les deux lâchés, avec 0,9 m/s de moins, trois tours et de
 **Un trou mesuré** : le 18, le 61 et le 7 passent de +2 à +4 sans que le +3 soit annoncé. Le
 passage où il aurait dû l'être n'a pas satisfait la vérification du face-à-face.
 
-**Ce qui N'est PAS décidé, et qui ne doit pas l'être par moi.** La pièce **constate** le tour ; elle
+**Ce qui N'est PAS décidé, et qui ne doit pas l'être par moi.** Le moteur de course **constate** le tour ; il
 ne le **crédite** pas. J'ai essayé deux fois de créditer automatiquement, et les deux fois la
 mesure l'a démenti : en partant des distances, 198 constats pour 16 coureurs ; en comptant les
 passages sur la ligne d'arrivée et en prenant le tour du plus grand nombre, 960 constats au

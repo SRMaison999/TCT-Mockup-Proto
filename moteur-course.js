@@ -1,5 +1,5 @@
 /* ===========================================================================
-   LA PIÈCE QUI DÉCIDE LA COURSE — reconstruite le 1er novembre 2026.
+   LE MOTEUR DE COURSE — reconstruit le 1er novembre 2026.
 
    L'opérateur, ce jour-là : « Ce serait pas plus simple de reconstruire cet algorithme depuis
    le début, avec les erreurs que nous savons qu'il ne faut pas commettre....? »
@@ -9,7 +9,7 @@
      2. qui roule avec qui — les groupes, et la cassure d'une seconde ;
      3. qui a pris ou perdu un tour.
 
-   ELLE NE LIT QUE LES DÉTECTIONS DES BOUCLES. Un dossard, une boucle, une heure. Rien d'autre
+   IL NE LIT QUE LES DÉTECTIONS DES BOUCLES. Un dossard, une boucle, une heure. Rien d'autre
    n'entre. Sa règle, le 1er novembre 2026 : « La seule façon certaine de savoir l'ordre de
    passage des coureurs, c'est les détections des boucles. A chaque tour. 3 boucle par tour. »
 
@@ -20,7 +20,7 @@
        Entre deux boucles personne ne mesure rien. Mesuré : la tête changeait 67 fois sur une
        course, 65 fois pour 3 m ou moins, et à 539,4 s elle passait du 12 au 15 alors qu'aucune
        boucle n'avait rien détecté entre les deux instants.
-       → Le garde : cette pièce n'a pas d'entrée pour une position. `detection()` est la seule.
+       → Le garde : ce fichier n'a pas d'entrée pour une position. `detection()` est la seule.
 
    E2. Ne jamais mesurer entre deux coureurs qui ne se suivent pas.
        Un groupe est une chaîne : ses deux bouts peuvent être à 218 m l'un de l'autre. Mesuré :
@@ -45,13 +45,13 @@
          cette valeur n'est relue qu'à une nouvelle détection du coureur.
 
    E6. Ne rien proposer que les boucles ne montrent pas.
-       → Le garde : un coureur sans détection n'existe pas pour cette pièce. Il n'est ni classé,
+       → Le garde : un coureur sans détection n'existe pas pour le moteur de course. Il n'est ni classé,
          ni groupé, ni proposé.
 
    E8. Ne jamais attribuer un tour au coureur rejoint.
        Sa règle du point 178 : « les tours se gagnent lorsqu'on rattrape le peloton, et se perdent
        lorsqu'on se fait rattraper par le peloton ». La paire de coureurs qui se suivent donne le
-       NOMBRE de tours ; c'est le peloton qui dit à QUI ce nombre revient. Mesuré : la pièce
+       NOMBRE de tours ; c'est le peloton qui dit à QUI ce nombre revient. Mesuré : le moteur de course
        écrivait « 15 IRL : −1 tour » là où c'étaient le 7, le 18 et le 61 qui en prenaient un.
        → Le garde : un tour n'est relevé que pour le coureur qui vient de REJOINDRE le peloton,
          et seulement contre un coureur qui y était déjà.
@@ -100,7 +100,7 @@
     });
 
     /* ------------------------------------------------------------------ 1. une détection */
-    // C'EST LA SEULE ENTRÉE DE CETTE PIÈCE (E1). boucle est une position en mètres sur la piste,
+    // C'EST LA SEULE ENTRÉE DU MOTEUR DE COURSE (E1). boucle est une position en mètres sur la piste,
     // prise dans `reglage.boucles` ; t est l'heure de course du passage.
     function detection(d) {
       const boucle = d.boucle, t = d.t, bib = d.bib;
