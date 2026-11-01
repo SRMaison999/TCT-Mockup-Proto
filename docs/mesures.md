@@ -3004,3 +3004,44 @@ Le nombre de tours vient de `Math.round((pos − enFace) / 250)`.
 **126,6 m, c'est la moitié d'un tour, et l'application en fait un tour pris.** Sur 192 calculs
 de ce genre, **8 portent un quotient inférieur à 0,75** en valeur absolue, le plus petit étant
 0,506. À l'autre bout, −1,56 devient −2 : un coureur à un tour et demi est pénalisé de 40 points.
+
+## Build 174 · ce que les trois corrections ont changé, et ce qu'elles n'ont pas changé
+
+**La course mesurée** : « Palier 2 — deux échappées, deux lâchés », 250 m, 60 tours, 16 coureurs,
+rejouée du départ à l'arrivée (1 042,3 s, 20 846 images), puis « Palier 1 — peloton groupé » en
+contrôle. Les deux courses rejouent à l'identique : le tirage des fluctuations est déterminé par le
+dossard et la tranche de temps.
+
+**1. Les ±20 : corrigé.**
+
+| | build 173 | build 174 |
+|---|---|---|
+| Première proposition pour l'échappée 12-52 | **tour 12**, à 209,85 s | **tour 19**, à 326,20 s |
+| Ce qu'on mesurait contre | un coureur à **126,6 m** · quotient **0,506** | le 3 ARG, à **8,1 m** sur la piste |
+| Le 12 et le 52 proposés ensemble | non — le 12 seul | **oui** |
+| Les deux lâchés 46-70 | **−2 tours** (quotient −1,56, −40 points) | **−1 tour** |
+| Coureurs du peloton à qui on propose un tour perdu | **six** d'un coup, tour 32 | quatre, tour 32 |
+| Calculs refusés faute de face-à-face | aucun — le refus n'existait pas | **91** |
+
+Les sept tours et les 117 secondes gagnés sur la première proposition, c'est exactement ce qu'il
+dit au point 175. La proposition tombe maintenant quand le reste vaut **8,1 m** puis **1,8 m** :
+les deux coureurs sont côte à côte, et le tour est **constaté** au lieu d'être arrondi.
+
+**Ce qui reste ouvert au poste 21** : la même échappée est encore proposée à plusieurs tours (19,
+puis 21, 22, 31…), et quatre coureurs du plus gros peloton se voient encore proposer un tour perdu,
+contre l'article UCI 3.2.017 quater.
+
+**2. Le tour retranché : pas corrigé.** 494 bascules de `TOUR` sur la course, dont **52 pour le 12,
+52 pour le 52, 61 pour le 18, 60 pour le 7**. Geler la valeur dans `S.took` n'a rien changé, et la
+mesure dit pourquoi : ce n'est pas le **repère** qui oscille, c'est l'**appartenance au paquet**.
+Elle oscille parce que l'ordre de la file se calcule sur les mètres interpolés, cet ordre décide
+quelles **paires** de coureurs se suivent, et c'est sur ces paires que la cassure est confirmée. La
+boucle se referme : tour retranché → `np()` → ordre → paires → cassure → paquet → tour retranché.
+
+**3. La tête : pas corrigée.** 67 changements de tête (90 à la build 172), tous pris sur la mesure,
+**marge médiane 1,7 m**, et **65 des 67 à 3 m ou moins**. Tenir la tête sur une longueur de vélo ne
+suffit pas : les marges mesurées se tiennent juste au-dessus de 1,65 m.
+
+**Le contrôle, palier 1** : un seul bloc d'un bout à l'autre, **un seul** coureur en tête de toute
+la course, **zéro** proposition, **zéro** tour retranché, **zéro** saut d'écart, **zéro** point qui
+recule. Aucune régression.

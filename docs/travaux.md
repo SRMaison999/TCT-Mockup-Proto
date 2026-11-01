@@ -762,7 +762,7 @@ puis à 1,6 s six dixièmes plus tard. À 13,5 m/s, 47,2 s valent 637 m, soit de
 à derrière sans que les coureurs se soient fait rejoindre, et aucun écart ne sautera d'un tour
 à l'autre.
 
-## 21. Les propositions de ±20 arrivent beaucoup trop tôt — **à corriger**
+## 21. Les propositions de ±20 arrivent beaucoup trop tôt — **la mesure corrigée, build 174 ; deux points restent**
 
 **Sa phrase est au point 175** de `regles-operateur.md`.
 
@@ -784,6 +784,17 @@ veut qu'un tour se perde quand on est rejoint **par le plus gros peloton en cour
 moment où les coureurs concernés auront réellement rejoint ou été rejoints, chaque échappée ne
 sera proposée qu'**une fois**, avec tous ses coureurs ensemble, et aucun coureur du plus gros
 peloton ne se verra proposer un tour perdu.
+
+**Ce que la build 174 a corrigé.** On mesurait les tours contre le voisin dans la file du paquet,
+qui pouvait être à 126,6 m ; on les mesure contre le coureur le plus proche **sur la piste**, et
+rien n'est proposé s'il n'est pas côte à côte. La première proposition pour le 12 et le 52 passe
+du **tour 12** au **tour 19**, elle les porte **tous les deux** au lieu du 12 seul, les deux lâchés
+passent de −2 à −1 tour, et 91 calculs sont refusés faute de face-à-face. Les chiffres complets
+sont dans `docs/mesures.md`, « Build 174 ».
+
+**Ce qui reste.** La même échappée est encore proposée à plusieurs tours, et quatre coureurs du
+plus gros peloton se voient encore proposer un tour perdu.
+
 
 ## 22. Un sprint n'est jugé que sur le premier groupe — **à corriger**
 

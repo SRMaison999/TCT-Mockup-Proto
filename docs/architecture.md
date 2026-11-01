@@ -1998,3 +1998,38 @@ Six points de décision sont instrumentés, là où ils sont pris :
 `DBG.on` est vrai par défaut, la liste est bornée à 200 000 lignes, et elle repart avec la
 course. Les logs sortent par le **même bouton Export trace** que la trace : le fichier porte
 `trace` et `logsDuCode` côte à côte. `window.__proto.dbg()` les rend lisibles sans le fichier.
+
+## 47. Le coureur qu'on a en face (build 174)
+
+C'est **la mesure** d'un ±20, et le §4 des règles la pose : « la mesure doit être entre les deux
+coureurs qui se font face ». Se faire face, c'est être au **même point de la piste**.
+
+Jusqu'à la build 173, `facingPos()` prenait le **voisin dans la file du paquet** : on partait de
+l'index du coureur dans `S.bunchSeq` et on s'écartait d'un cran à gauche, d'un cran à droite,
+jusqu'à tomber sur un coureur déjà dans le paquet à l'image précédente. Or la file du paquet n'est
+pas une file serrée : au palier 2, les seize coureurs s'étirent jusqu'à **218,9 m** de long. Le
+voisin de file pouvait donc être à un demi-tour de distance, et c'est contre lui qu'on comptait les
+tours.
+
+`facing()` le remplace et choisit le coureur du paquet **le plus proche sur la piste** : pour
+chacun, on retire de l'écart de distance de course le nombre entier de tours, et ce qui reste est
+leur distance l'un de l'autre sur la piste. Le plus petit reste gagne.
+
+Et ce reste doit tenir dans une marge, sans quoi **rien n'est proposé** : un coureur entre dans le
+paquet parce que son écart de temps est tombé sous la **seconde du §1**, donc à sa vitesse il est à
+`GROUP_GAP_S × sa vitesse` du coureur devant lui, plus une **longueur de vélo** (§1 encore). Les
+deux seules longueurs qui entrent dans ce calcul sont les siennes. À 13,5 m/s cela fait 15,2 m.
+
+Le refus s'écrit : `PROPOSITION-REFUS` porte le dossard, celui du coureur le plus proche, le reste
+et la marge. Et `PROPOSITION-CALCUL` porte désormais `enFaceBib`, `reste`, `marge` et `faceAFace`
+à côté du quotient.
+
+**Deux autres changements de la même build, dont la mesure dit qu'ils ne suffisent pas** — les
+chiffres sont dans `docs/mesures.md`, « Build 174 » :
+
+- `impliedOf()` ne recalcule plus le tour retranché à chaque image. Prendre le tour du paquet est
+  un **événement** (§2, « au moment où »), mesuré une fois et gardé dans `S.took` tant que le
+  coureur est dans le paquet. Et le repère du paquet, `bunchFront`, ne peut plus être un coureur
+  qui tient déjà un tour retranché : il est par construction à un tour du tour du paquet.
+- La tête ne passe plus d'un coureur à l'autre pour **moins d'une longueur de vélo** :
+  `S.lastLeadBib` garde le coureur en tête, et la mesure ne le détrône qu'au-delà de `BIKE_L`.

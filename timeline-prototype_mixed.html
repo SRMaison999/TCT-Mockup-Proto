@@ -612,7 +612,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '172';
+const BUILD = '174';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -718,6 +718,8 @@ function reset() {
     passes: [],             // every finish-line crossing read, raw {bib, t, n}
     log: [], proposals: [], snoozed: {}, dismissed: {}, nextId: 1, loggedLap: 0,
     cass: {},               // per pair of riders following each other: the break as it stands confirmed
+    took: {},               // par dossard : le nombre de tours retranchés AU MOMENT où il a pris le tour du paquet
+    lastLeadBib: null,      // le coureur en tête à l'image précédente, quand la tête vient de la mesure
     inelig: new Set(),      // riders not eligible, from the groups rule in computeGroups
     started: false,         // the race waits for Start: nothing moves before the operator says so
     // The laps to go carry their own provenance (operator, 29 October 2026): the lap counter on the track, the
@@ -1072,7 +1074,10 @@ function computeGroups(M) {
   // among the riders who were already in the bunch on the frame before, so that a rider merging on this very
   // frame cannot redefine the lap he is about to be measured against (at a lap lost he arrives in front of it).
   const bunchSeq = bunchCluster.rows.filter(x => x.m.read && x.m.pos != null);   // rear -> front in travel order
-  const bunchFront = [...bunchSeq].reverse().find(x => x.r.inBunchPrev) || bunchSeq[bunchSeq.length - 1];
+  // le repère du paquet ne peut pas être un coureur qui tient déjà un tour retranché : il est, par construction, à
+  // un tour du tour du paquet, et le prendre pour repère retranche un tour à tout le peloton.
+  const rev = [...bunchSeq].reverse();
+  const bunchFront = rev.find(x => x.r.inBunchPrev && !S.took[x.r.bib]) || rev.find(x => x.r.inBunchPrev) || bunchSeq[bunchSeq.length - 1];
   const bunchRaw = bunchFront ? bunchFront.m.pos : null;
   S.bunchRaw = bunchRaw; S.bunchSeq = bunchSeq.map(x => x.r.bib);
   // where each rider is by position alone, in laps from the front rider (alone, or the first of the front group): a rider a lap down from him has been caught by the leader
@@ -1089,15 +1094,23 @@ function computeGroups(M) {
   // and the bunch, wherever on the track that happens. Membership of the cluster IS that test (§3). And because the
   // cluster means they are at the same point on the track, the difference between their race distances is within a
   // few metres of a whole number of laps: the rounding below is exact, it decides nothing.
+  // PRENDRE LE TOUR DU PAQUET EST UN ÉVÉNEMENT, PAS UN CALCUL REFAIT À CHAQUE IMAGE. Il l'a écrit au §2 : un
+  // coureur prend le tour du paquet « au moment où » il n'y a plus de cassure entre lui et le paquet. Le nombre de
+  // tours se mesure donc UNE FOIS, à cette image-là, et il tient tant qu'il est dans le paquet ; il ne se refait
+  // pas vingt fois par seconde contre un repère qui, lui, bouge. Mesuré le 1er novembre 2026 : le 12 et le 52
+  // basculaient 53 fois chacun, et chaque bascule retournait la file et faisait sauter l'écart d'un tour entier.
+  for (const b of Object.keys(S.took)) if (!inBunchCluster.has(+b)) {
+    dbg('TOUR', 'BIB ' + b + ' sort du paquet : le tour retranché est rendu', { bib: +b, tours: S.took[b] });
+    delete S.took[b];
+  }
   const impliedOf = r => {
-    const v = bunchRaw != null && inBunchCluster.has(r.bib) ? Math.round((M.get(r.bib).pos - bunchRaw) / TRACK) : 0;
-    // C'EST ICI QU'UN TOUR EST RETRANCHÉ. Tant qu'un coureur est dans le paquet, sa distance de course est ramenée
-    // au tour du paquet par un nombre ENTIER de tours. Le log porte les deux distances brutes qui ont donné ce nombre.
-    if (dbgChanged('impl:' + r.bib, v))
-      dbg('TOUR', v ? 'BIB ' + r.bib + ' ramené de ' + v + ' tour(s) sur le paquet' : 'BIB ' + r.bib + ' : plus de tour retranché',
-        { bib: r.bib, tours: v, pos: M.get(r.bib) && M.get(r.bib).pos == null ? null : +M.get(r.bib).pos.toFixed(1),
-          paquet: bunchRaw == null ? null : +bunchRaw.toFixed(1), dansLePaquet: inBunchCluster.has(r.bib) });
-    return v;
+    if (bunchRaw == null || !inBunchCluster.has(r.bib)) return 0;
+    if (S.took[r.bib] == null) {
+      S.took[r.bib] = Math.round((M.get(r.bib).pos - bunchRaw) / TRACK);
+      if (S.took[r.bib]) dbg('TOUR', 'BIB ' + r.bib + ' prend le tour du paquet · ' + S.took[r.bib] + ' tour(s) retranché(s)',
+        { bib: r.bib, tours: S.took[r.bib], pos: +M.get(r.bib).pos.toFixed(1), paquet: +bunchRaw.toFixed(1), repere: bunchFront ? bunchFront.r.bib : null });
+    }
+    return S.took[r.bib];
   };
   // The merge, as the operator wrote it: as soon as there is no break left between him and the bunch, a rider
   // takes the bunch lap in the timeline, waiting for no validation at all. The operator validation now decides
@@ -1119,7 +1132,17 @@ function computeGroups(M) {
     }
   }
   let leaderSrc = leaderR ? 'désigné' : null;
-  if (!leaderR) { leaderR = readable.reduce((a, r) => (!a || np(r) > np(a) ? r : a), null); leaderSrc = 'mesure'; }
+  if (!leaderR) {
+    // LA TÊTE NE CHANGE PAS POUR RIEN. La seule longueur qu'il ait donnée pour « au même point de la piste » est la
+    // longueur d'un vélo (§1, BIKE_L). Deux coureurs séparés de moins que ça ne sont pas séparés, et la tête ne
+    // leur passe pas de l'un à l'autre. Mesuré le 1er novembre 2026 sur le palier 2 : 90 changements de tête, tous
+    // pris sur la mesure, 88 d'entre eux à 3 m ou moins, un à 0,0 m — à l'intérieur d'un peloton de seize.
+    const best = readable.reduce((a, r) => (!a || np(r) > np(a) ? r : a), null);
+    const held = S.lastLeadBib == null ? null : readable.find(r => r.bib === S.lastLeadBib);
+    leaderR = held && held !== best && np(best) - np(held) <= BIKE_L ? held : best;
+    leaderSrc = 'mesure';
+  }
+  S.lastLeadBib = leaderR.bib;
   const leaderBib = leaderR.bib, leader = M.get(leaderBib), leaderNp = np(leaderR);
   // POURQUOI CE COUREUR EST EN TÊTE. Trois chemins possibles : il a été désigné, il a été repris sur la piste par
   // la boucle ci-dessus, ou il est simplement celui dont np() est le plus grand. Le log porte les trois meilleurs
@@ -1446,29 +1469,45 @@ function detect(G, M) {
     // taken before the loop below, which overwrites r.inBunchPrev as it goes
     const prevIn = new Set(S.riders.filter(r => r.inBunchPrev).map(r => r.bib));
     const seq = S.bunchSeq || [];                     // the bunch's cluster, rear -> front in travel order
-    const facingPos = bib => {
-      const i = seq.indexOf(bib);
-      if (i >= 0) for (let d = 1; d < seq.length; d++) for (const j of [i - d, i + d]) {
-        if (j < 0 || j >= seq.length || !prevIn.has(seq[j])) continue;
-        const mm = M.get(seq[j]); if (mm && mm.read && mm.pos != null) return mm.pos;
+    // ce qui reste de l'écart une fois les tours entiers retirés : c'est leur distance sur la piste, l'un de l'autre
+    const resteDe = (a, b) => (a - b) - TRACK * Math.round((a - b) / TRACK);
+    const facing = bib => {
+      const mm = M.get(bib); if (!mm || !mm.read || mm.pos == null) return null;
+      let best = null;
+      for (const ob of seq) {
+        if (ob === bib || !prevIn.has(ob)) continue;
+        const om = M.get(ob); if (!om || !om.read || om.pos == null) continue;
+        const reste = resteDe(mm.pos, om.pos);
+        if (!best || Math.abs(reste) < Math.abs(best.reste)) best = { bib: ob, pos: om.pos, reste };
       }
-      return S.bunchRaw;                              // no neighbour of the bunch read: fall back to its front rider
+      return best;   // rien : aucun coureur du paquet n'est lu, on ne mesure contre personne et on ne propose rien
     };
     const cands = [];
     for (const r of S.riders) {
       if (r.mode === 'out') continue;
       const inNow = inBunchNow.has(r.bib), m = M.get(r.bib);
-      const face = inNow && !r.inBunchPrev && m && m.read ? facingPos(r.bib) : null;
-      if (face != null) {
+      const f = inNow && !r.inBunchPrev && m && m.read ? facing(r.bib) : null;
+      if (f != null) {
+        const face = f.pos, reste = f.reste;
         const delta = Math.round((m.pos - face) / TRACK);
         const open = S.proposals.some(p => p.kind === 'lap' && p.bibs.includes(r.bib));
+        // ET IL DOIT VRAIMENT ÊTRE EN FACE. Il entre dans le paquet parce que l'écart de temps au coureur devant lui
+        // est tombé sous la seconde du §1 : à sa vitesse, cela fait la distance ci-dessous, plus la longueur d'un
+        // vélo. Au-delà, les deux coureurs ne sont pas au même point de la piste, et l'arrondi INVENTERAIT le tour
+        // au lieu de le constater. Mesuré le 1er novembre 2026 : 126,6 m, quotient 0,506, un tour pris proposé.
+        const marge = GROUP_GAP_S * (m.spd || CFG.pace) + BIKE_L;
+        const faceAFace = Math.abs(reste) <= marge;
         // POURQUOI UN ±20 EST PROPOSÉ. Le déclencheur est l'ENTRÉE dans le paquet : il n'y était pas à l'image
         // précédente, il y est maintenant. Le nombre de tours vient de la différence de distance de course avec le
         // coureur qu'il a en face. Le log porte les deux distances, leur différence en mètres, et le quotient.
         dbg('PROPOSITION-CALCUL', 'BIB ' + r.bib + ' entre dans le paquet · delta ' + delta + (open ? ' · déjà ouverte' : (delta ? ' · proposée' : ' · rien')),
           { bib: r.bib, pos: +m.pos.toFixed(1), enFace: +face.toFixed(1), ecartM: +(m.pos - face).toFixed(1),
-            quotient: +((m.pos - face) / TRACK).toFixed(3), delta, dejaOuverte: open, tour: lap });
-        if (delta && !open) cands.push({ bib: r.bib, delta });
+            quotient: +((m.pos - face) / TRACK).toFixed(3), delta, dejaOuverte: open, tour: lap,
+            enFaceBib: f.bib, reste: +reste.toFixed(1), marge: +marge.toFixed(1), faceAFace });
+        if (delta && !faceAFace)
+          dbg('PROPOSITION-REFUS', 'BIB ' + r.bib + ' : rien proposé · le plus proche du paquet est BIB ' + f.bib + ', à ' + Math.abs(reste).toFixed(1) + ' m de lui sur la piste, pour une marge de ' + marge.toFixed(1) + ' m',
+            { bib: r.bib, enFaceBib: f.bib, delta, reste: +reste.toFixed(1), marge: +marge.toFixed(1), tour: lap });
+        if (delta && !open && faceAFace) cands.push({ bib: r.bib, delta });
       }
       if (inNow !== r.inBunchPrev && dbgChanged('paquet:' + r.bib, inNow))
         dbg('PAQUET', 'BIB ' + r.bib + (inNow ? ' entre dans le paquet' : ' sort du paquet'), { bib: r.bib, dedans: inNow, tour: lap });
