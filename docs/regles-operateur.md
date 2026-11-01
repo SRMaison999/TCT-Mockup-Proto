@@ -2524,3 +2524,13 @@ l'écran, une à la fois.
      nom de son fichier. Pas de « pièce », pas d'image, ni dans les documents, ni dans le code, ni
      en parlant. C'est la même faute que le point 176 : un mot de moi qui s'installe à la place du
      sien.
+
+180. **Quand un ±20 se propose, et à qui.** Ses mots, le 1er novembre 2026 :
+     > * un tour gagné doit être proposé par l'appli au moment un coureur rattrape le dernier
+     >   coureur du peloton.
+     > * Si ce sont deux coureurs qui rattrapent le peloton, l'appli doit le proposer pour les deux
+     >   coureurs en même temps si ils ne sont pas éloignés de plus d'une seconde l'un de l'autre.
+     > * Si ce sont deux coureurs qui rattrapent le peloton, l'appli doit le proposer pour les deux
+     >   coureurs séparément si ils sont éloignés de plus d'une seconde l'un de l'autre.
+     > * un tour perdu doit être proposé par l'appli au moment un coureur se fait rattraper par le
+     >   premier coureur du peloton.

@@ -203,50 +203,74 @@
       return (gs || groupes()).reduce((a, g) => (!a || g.coureurs.length > a.coureurs.length ? g : a), null);
     }
 
-    // parmi les coureurs du peloton qui y étaient DÉJÀ, celui qui est le plus proche de lui sur la
-    // piste : on retire les tours entiers de l'écart, et le plus petit reste gagne (E2).
-    function duPelotonLePlusProche(c, dedansAvant) {
-      let meilleur = null;
-      for (const bib of dedansAvant) {
-        if (bib === c.bib) continue;
-        const o = coureurs.get(bib); if (!o || o.d == null) continue;
-        const brut = c.d - o.d, reste = brut - R.piste * Math.round(brut / R.piste);
-        if (!meilleur || Math.abs(reste) < Math.abs(meilleur.reste)) meilleur = { o, reste, brut };
-      }
-      return meilleur;
-    }
-
-    // le dernier nombre de tours annoncé pour un coureur : on ne redit pas la même chose.
-    const annonce = new Map();
+    // l'état d'une paire telle qu'on l'a vue la dernière fois : c'est le PASSAGE de « cassés » à
+    // « collés » qui est l'événement, et non le fait d'être collés. Sans cela, deux coureurs déjà
+    // ensemble au départ se verraient proposer un tour dès la première détection.
+    const paireVue = new Map();
 
     function examiner() {
-      const pel = peloton();
+      const gs = groupes(), pel = peloton(gs);
       if (!pel || pel.coureurs.length < 2) return;
+      const tete = coureurs.get(pel.coureurs[0]);
+      const queue = coureurs.get(pel.coureurs[pel.coureurs.length - 1]);
       const dedans = new Set(pel.coureurs);
-      const dedansAvant = [...coureurs.values()].filter(x => x.dansPeloton).map(x => x.bib);
+      const gagnent = [], perdent = [];
 
+      // SES QUATRE RÈGLES, POINT 180.
+      //   « un tour gagné doit être proposé par l'appli au moment un coureur rattrape le dernier
+      //     coureur du peloton. »
+      //   « un tour perdu doit être proposé par l'appli au moment un coureur se fait rattraper par
+      //     le premier coureur du peloton. »
+      // Le moment, c'est le passage de la paire de « cassés » à « collés », au seuil du §1. Deux
+      // paires seulement sont regardées, et elles sont nommées : (la queue du peloton, lui) pour le
+      // tour gagné, (lui, la tête du peloton) pour le tour perdu.
       for (const c of coureurs.values()) {
-        if (c.n === 0) continue;
-        const est = dedans.has(c.bib);
-        // L'ÉVÉNEMENT : il n'était pas dans le peloton, il y est. Son point 178 : « les tours se
-        // gagnent lorsqu'on rattrape le peloton, et se perdent lorsqu'on se fait rattraper par le
-        // peloton ». Le peloton est la référence des deux côtés.
-        if (est && !c.dansPeloton && dedansAvant.length) {
-          const m = duPelotonLePlusProche(c, dedansAvant);
-          if (m) {
-            const n = Math.round(m.brut / R.piste);
-            const v = vitesse(c) || 0, marge = R.cassureS * v + R.veloM;
-            // E2 : s'ils ne se suivent pas, on ne constate rien.
-            if (Math.abs(m.reste) <= marge && annonce.get(c.bib) !== n) {
-              annonce.set(c.bib, n);
-              if (n) vus.push({ t: maintenant, bib: c.bib, tours: n, avec: m.o.bib,
-                sens: n > 0 ? 'il a rattrapé le peloton' : 'le peloton l\u2019a rattrapé',
-                resteM: +m.reste.toFixed(1), margeM: +marge.toFixed(1) });
-            }
+        if (c.n === 0 || dedans.has(c.bib)) continue;
+
+        if (queue && queue !== c) {
+          const e = ecartS(queue, c);                 // il suit la queue du peloton
+          if (e != null) {
+            const cle = 'G' + queue.bib + '|' + c.bib, colle = e <= R.cassureS;
+            if (colle && paireVue.get(cle) === false) gagnent.push({ c, avec: queue.bib, ecart: e });
+            paireVue.set(cle, colle);
           }
         }
-        c.dansPeloton = est;
+
+        if (tete && tete !== c) {
+          const e = ecartS(c, tete);                  // la tête du peloton le suit : elle le rattrape
+          if (e != null) {
+            const cle = 'P' + c.bib + '|' + tete.bib, colle = e <= R.cassureS;
+            if (colle && paireVue.get(cle) === false) perdent.push({ c, avec: tete.bib, ecart: e });
+            paireVue.set(cle, colle);
+          }
+        }
       }
+
+      //   « Si ce sont deux coureurs qui rattrapent le peloton, l'appli doit le proposer pour les
+      //     deux coureurs en même temps si ils ne sont pas éloignés de plus d'une seconde l'un de
+      //     l'autre », et séparément au-delà. On regroupe donc les coureurs d'un même constat sur
+      //     l'écart de temps ENTRE EUX, au même seuil d'une seconde.
+      const grouper = (liste, tours) => {
+        const restants = [...liste].sort((a, b) => (distance(b.c) - distance(a.c)) || (a.c.t - b.c.t));
+        while (restants.length) {
+          const chef = restants.shift(), ensemble = [chef];
+          for (let i = restants.length - 1; i >= 0; i--) {
+            const e = ecartS(chef.c, restants[i].c), f = ecartS(restants[i].c, chef.c);
+            const ec = e != null ? e : f;
+            if (ec != null && Math.abs(ec) <= R.cassureS) ensemble.push(...restants.splice(i, 1));
+          }
+          ensemble.sort((a, b) => a.c.bib - b.c.bib);
+          vus.push({ t: maintenant, tours, bibs: ensemble.map(x => x.c.bib), avec: chef.avec,
+            sens: tours > 0 ? 'ils ont rattrapé le dernier du peloton' : 'le premier du peloton les a rattrapés',
+            ecarts: ensemble.map(x => +x.ecart.toFixed(2)) });
+          // Son §2 : le retour dans le tour du peloton « n'attend aucune validation » — celle de
+          // l'opérateur ne décide que les 20 points. On ramène donc tout de suite.
+          for (const x of ensemble) ramener(x.c, tours > 0 ? 1 : -1);
+        }
+      };
+      const ramener = (c, n) => tours.set(c.bib, (tours.get(c.bib) || 0) + n);
+      if (gagnent.length) grouper(gagnent, 1);
+      if (perdent.length) grouper(perdent, -1);
     }
 
     const toursPris = () => vus;

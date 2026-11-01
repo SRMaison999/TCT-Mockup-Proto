@@ -3183,3 +3183,25 @@ palier 1, où personne ne prend ni ne perd un tour — parce que les coureurs d'
 franchissent pas la ligne au même instant, et que le premier à la franchir paraît avoir un tour de
 plus. Le moment où un tour compte pour de bon est une question à poser à l'opérateur, pas à
 deviner.
+
+### Build 185 · ses quatre règles du point 180, mesurées
+
+Le moteur de course applique le point 180 : le tour gagné au moment où un coureur rattrape **le
+dernier du peloton**, le tour perdu au moment où **le premier du peloton** le rattrape, et les
+coureurs regroupés dans une même proposition s'ils sont à moins d'une seconde l'un de l'autre.
+
+**Le regroupement marche, et on le voit** : « +1 pour le 7 et le 61 ensemble, écarts 0,47 s et
+0,32 s » ; « +1 pour le 12 seul à 326 s, puis +1 pour le 52 seul à 334 s » — ils étaient à plus
+d'une seconde l'un de l'autre. Au **palier 1, aucune proposition** sur toute la course.
+
+**Mais au palier 2, 48 propositions, dont beaucoup fausses**, et la mesure dit pourquoi :
+
+| Relevé | Pourquoi c'est faux |
+|---|---|
+| « −1 pour le 46 et le 70 à 305 s, **avec le 18** » | le 18 est un échappé, pas le premier du peloton : le plus gros groupe de l'instant était le trio |
+| « **+1** pour le 46 à 502 s » | le 46 est lâché d'un tour ; il revient au contact de la queue du peloton **par derrière**, exactement comme un coureur qui rattrape |
+
+Les deux défauts n'en font qu'un : **le moteur de course ne sait pas lequel des groupes est le
+peloton**, et sur une piste fermée « rattraper la queue du peloton » et « se faire rattraper d'un
+tour » se ressemblent. L'article UCI 3.2.017 quater laisse d'ailleurs le dernier mot au président
+du collège des commissaires sur quel peloton est le plus gros.
