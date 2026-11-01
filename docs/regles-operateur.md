@@ -2732,3 +2732,24 @@ ordinaires » :
 > « Ce qui est correct c'est qu'il ne les a pas enregistré dans le sprint à la place de coureurs
 > d'autres groupes. Mais il doit les griser et les annoncer comme inéligibles le temps de leur
 > inéligibilité. »
+
+### 196 · L'éligibilité d'un sprint se donne dans l'ordre chronologique des groupes sur la ligne · 2 novembre 2026
+
+> « je vais te le répéter pour la xème fois : du point de vue de la timeline, on ne tient pas en
+> compte les tours gagnés ou perdus !
+>
+> Mais justement, parfois on doit rendre inéligibles certains coureurs.
+>
+> Comment ça marche :
+>
+> A partir de l'instant ou le 1er coureur du groupe 1 de la timeline franchit la ligne de sprint et
+> remporte les 5 points, et jusqu'à ce que le dernier coureur du dernier groupe de la timeline
+> franchisse la ligne de ce même sprint, l'éligibilité au sprint est octroyée par l'ordre
+> chronologique des groupes de la timeline franchissant cette ligne de sprint.
+> En clair si les groupes successifs franchissant la ligne de sprint sont dans l'ordre chronologique
+> de la timeline, tout est en ordre.
+> En revanche, si un groupe, prenons un exemple le groupe 7 de la timeline, se retrouve
+> chronologiquement franchissant la ligne de sprint après le passage du groupe 2 de la timeline,
+> alors le groupe 7 est inéligible.
+> Une fois que le groupe 6 de la timeline, aura franchit la ligne de sprint, le 7 redeviendra
+> éligible la prochaine fois qu'il franchira la ligne de sprint à son tour. »

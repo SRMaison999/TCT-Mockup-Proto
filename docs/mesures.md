@@ -3704,3 +3704,25 @@ coureurs à chaque sprint, 5-3-2-1 au 15, 4, 11 et 23 et le double au sprint fin
 **Le sprint final reste à part** : le 46 et le 70, un tour en retard, y prennent les places 3 et 4 et
 marquent 4 et 2 points, parce que la conséquence sur le rang est coupée au sprint final. Rien n'a
 été changé là — c'est une décision à lui.
+
+## §57 · Sa règle 196 mesurée sur le palier 3 — l'ordre des groupes sur la ligne
+
+Pour chaque sprint : le passage qui remporte les 5 points, puis l'ordre chronologique dans lequel
+les **groupes de la timeline** franchissent cette même ligne.
+
+| sprint | vainqueur | ordre des groupes | ce que sa règle donne |
+|---|---|---|---|
+| 1 | 12 à 177,54 s | 1 → 2 → 3 | dans l'ordre, personne d'inéligible |
+| 2 | 12 à 349,95 s | 1 → 2 | dans l'ordre, personne d'inéligible |
+| 3 | 12 à 522,36 s | 1 → **2** → 1 | le 46 et le 70 franchissent à 534,25 s, avant la fin du groupe 1 : **inéligibles** |
+| 4 | 12 à 694,78 s | 1 → 2 → 3 | dans l'ordre, personne d'inéligible |
+| 5 | 12 à 867,19 s | 1 → 2 | dans l'ordre, personne d'inéligible |
+| 6 | 12 à 1108,57 s | 1 → **3** → 2 | le 46 et le 70 franchissent à 1109,65 s, avant le groupe 2 : **inéligibles** |
+
+**Ce que le logiciel fait aujourd'hui** : il grise le 46 et le 70 aux sprints **1 et 5**, et ne les
+grise ni au 3 ni au 6 — où ils prennent même les places 3 et 4 du sprint final, avec 4 et 2 points.
+C'est l'inverse de sa règle, à chaque sprint.
+
+La cause : l'éligibilité se calcule aujourd'hui en continu, sur la distance qui reste à chaque
+groupe jusqu'à la ligne, et non sur l'ordre dans lequel les groupes franchissent cette ligne
+pendant le sprint.
