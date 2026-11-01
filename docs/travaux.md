@@ -932,7 +932,7 @@ en regardant l'ovale. Les écarts négatifs tombent de 511 images à 161, et le 
 seconde avant d'être levée —, et cela vaut un dixième de seconde à l'écran. Détail dans
 `docs/mesures.md`, build 191.
 
-### 29. Une cassure de 14 s restée dans un groupe à 360,9 s · compris, build 196
+### 29. Une cassure de 14 s restée dans un groupe à 360,9 s · fermé build 197
 
 Mesuré au palier 2, build 196. Le 7 et le 12 sont affichés dans le même groupe alors que 13,99 s
 les séparent. Les autres moments du même genre portent sur des écarts qui viennent de franchir la
@@ -957,3 +957,9 @@ entre le 3 et le 12 à partir de 809,4 s, pour un écart qui ne dépasse jamais 
 **Deux retouches essayées et retirées.** J'ai tenté de ne pas appliquer le délai à une paire qui
 vient de se former. Aucune des deux n'a changé la mesure — 38,9 secondes avant comme après — et je
 les ai retirées plutôt que de garder du code qui ne sert à rien.
+
+**Fermé build 197.** La cause n'était pas le délai lui-même mais un **vieux souvenir** : le logiciel
+mesure chaque coureur contre celui qui est juste au-dessus de lui dans la timeline, et quand ce
+coureur du dessus change, il gardait l'état de l'ancienne paire. Le souvenir est maintenant jeté
+dès que le coureur du dessus change. 38,9 secondes tombent à 22,2, le plus gros écart concerné de
+13,99 s à 2,57 s.

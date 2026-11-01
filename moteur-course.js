@@ -135,6 +135,11 @@
     function confirme(cle, depasse, amorce) {
       let e = cassures.get(cle);
       if (!e) { e = { etat: amorce ? depasse : false, depuis: null }; cassures.set(cle, e); return e.etat; }
+      // `amorce` vaut aussi pour une paire DÉJÀ CONNUE qui vient de se reformer : son souvenir est
+      // vieux et ne vaut rien. Mesuré à la build 196 : à 359,5 s le 15 roule entre le 7 et le 12 ;
+      // à 360,9 s il s’écarte, la paire 7→12 se forme avec 14 s d’écart, et les deux restaient dans
+      // le même groupe le temps du délai — parce que la clé existait depuis le début de la course.
+      if (amorce) { e.etat = depasse; e.depuis = null; return depasse; }
       if (depasse === e.etat) { e.depuis = null; return e.etat; }
       // le délai ne vaut que pour DÉCLARER, pas pour lever : une cassure doit tenir avant d’être
       // déclarée (§1), mais deux coureurs qui se rejoignent sont réunis tout de suite.
@@ -247,15 +252,23 @@
     /* ------------------------------------------------------------------ 4. les groupes */
     // On descend la chaîne : entre deux coureurs qui se suivent, une cassure confirmée ouvre un
     // groupe. C'est le §3, et la règle qu'il a instaurée au point 174.
+    // QUI SUIVAIT QUI À L’INSTANT D’AVANT. Le délai du §1 sert à ne pas osciller entre deux coureurs
+    // qui roulent côte à côte ; il n’a rien à vérifier sur une paire qui vient de se former. `groupes()`
+    // étant appelé plusieurs fois pour une même détection, le souvenir ne bascule qu’au changement
+    // d’instant, sans quoi le premier appel l’écrase et les suivants ne voient plus aucune paire neuve.
+    let voisinsAvant = new Set(), voisins = new Set(), voisinsT = null;
     function groupes() {
       const ch = chaine(), gs = [];
+      if (maintenant !== voisinsT) { voisinsAvant = voisins; voisins = new Set(); voisinsT = maintenant; }
       let g = null;
       for (let i = 0; i < ch.length; i++) {
         const x = ch[i], devant = i ? ch[i - 1] : null;
         let coupe = !g, ec = null;
         if (devant) {
           ec = ecartEntre(devant, x);
-          coupe = ec == null ? false : confirme(x.c.bib + '|' + devant.c.bib, ec > R.cassureS, true);
+          const cle = x.c.bib + '|' + devant.c.bib;
+          voisins.add(cle);
+          coupe = ec == null ? false : confirme(cle, ec > R.cassureS, !voisinsAvant.has(cle));
         }
         if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null }; gs.push(g); }
         g.coureurs.push(x.c.bib);

@@ -3552,3 +3552,32 @@ seconde**, et **100 portent sur un écart de moins de deux secondes**. Le cas de
 gros écart de la course, dure **exactement trois dixièmes de seconde** : le 12 venait de remonter
 juste derrière le 7 dans la timeline, et le délai du §1 veut qu'une cassure tienne avant d'être
 déclarée. Les 38,9 secondes sont donc entièrement ce délai, qui est sa règle.
+
+### Build 197 · le vieux souvenir d'une paire qui s'est reformée
+
+Sa question : « mais si il est à 14 secondes, quel est le problème de ces 0,3 secondes ? » Aucun
+problème avec les 14 secondes : le logiciel attendait alors qu'il n'y avait rien à vérifier.
+
+Le logiciel mesure l'écart de chaque coureur avec **celui qui est juste au-dessus de lui dans la
+timeline**. À 359,5 s, au-dessus du 12 il y a le 15. À 360,9 s, le 15 descend plus bas, et c'est le
+7 qui se retrouve au-dessus du 12. Le logiciel avait gardé en mémoire, depuis le début de la course
+quand tout le monde roulait ensemble, que le 12 et le 7 étaient collés — et ce vieux souvenir lui
+faisait attendre ses trois dixièmes de seconde avant de déclarer une cassure de 14 secondes.
+
+**La correction.** Quand le coureur du dessus change, le souvenir est jeté et la mesure du moment
+fait foi. Ma correction précédente ne jetait que les souvenirs de paires **jamais vues** — or
+celle-ci existait depuis le départ.
+
+| palier 2, course entière (1 042 s) | build 196 | build 197 |
+|---|---|---|
+| cassure restée dans un groupe | 38,9 s | **22,2 s** |
+| en combien de moments | 119 | **92** |
+| le plus long | 5,5 s | **3,2 s** |
+| le plus gros écart concerné | 13,99 s | **2,57 s** |
+
+Ce qui reste porte donc sur des écarts de moins de **2,6 secondes** — des écarts qui oscillent
+autour de la seconde, ce que le délai du §1 est fait pour absorber.
+
+**Rien d'autre n'a bougé** : ordre de la timeline juste d'un bout à l'autre des deux courses, zéro
+écart négatif, les douze constats de ±20 et les points justes coureur par coureur. Palier 1
+toujours parfait.
