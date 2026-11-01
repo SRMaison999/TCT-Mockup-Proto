@@ -3642,3 +3642,34 @@ Le 46 et le 70 sont les deux lâchés : ils portent `NO PTS` 197,3 s à partir d
 
 **Palier 1** (1002,6 s) : un seul groupe de seize du départ à l'arrivée, 0 de tout, **personne
 d'inéligible**.
+
+## §55 · Build 200 — les six sprints, et le palier 3
+
+### Palier 2 : les six sprints tombent juste, mais la situation demandée n'y arrive jamais
+
+Les six sprints s'ouvrent à leur tour, l'ordre lu est le bon, les points sont 5-3-2-1 et 10-6-4-2
+au sprint final. Ce que l'opérateur voulait voir ne s'y produit pourtant **jamais** : au sprint 1
+le 46 et le 70 ne sont pas encore inéligibles, et aux sprints 4 et 5 ils l'étaient à l'ouverture
+mais **redevenus éligibles** quand ils ont franchi la ligne — le peloton les avait reprise :
+leur passage du sprint 4 est lu à 780,2 s, et leur inéligibilité s'était arrêtée à 740,5 s.
+
+### Palier 3 : la course qui met un lâché inéligible SUR la ligne
+
+Tout part du tour 2 : le 12 et le 52 s'échappent à +1 m/s, le 70 et le 46 sont lâchés à −0,9 m/s.
+Il faut l'échappée : sans elle il n'y a que deux groupes, et la règle du §6 ne rend jamais
+inéligible un membre du groupe 2. Le 46 et le 70 sont inéligibles à partir de **194,1 s** et
+franchissent la ligne du sprint 1 (tour 10) à **196,9 s** et **197,0 s** — inéligibles à cet
+instant précis.
+
+**Ce que le sprint 1 en fait** : rien. Il ne les grise pas, ne les annonce pas sous
+« Not eligible », et les place **15e et 16e** dans l'ordre, en coureurs ordinaires.
+
+**La cause.** À 196,9 s leur passage n'est pas encore dans la liste des passages du sprint 1 : il
+est classé sur **leur** tour, le 9, pendant que le sprint est celui du tour 10 du leader. Il
+n'entre dans le sprint 1 qu'une fois le tour perdu validé et le passage reclassé sur le tour du
+peloton. À ce moment-là le sprint est fermé, et le grisage ne travaille que tant qu'il est ouvert
+(`spTick`). C'est le poste 22 de `docs/travaux.md`.
+
+**Un second fait, au sprint final.** Le 46 et le 70, un tour en retard, prennent les places **3 et
+4** et marquent **4 et 2 points** : `lappedAt` rend `false` dès qu'il s'agit du sprint final, donc
+la conséquence sur le rang ne s'y applique pas. Rien n'a été changé — c'est une décision à lui.

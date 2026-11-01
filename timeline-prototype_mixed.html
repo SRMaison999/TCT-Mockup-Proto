@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '199';
+const BUILD = '200';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -3260,6 +3260,23 @@ const PALIER_2 = { name: 'Palier 2 — deux échappées, deux lâchés', cfg: { 
     { t: 185.19, lap: 11, kind: 'spd', bibs: [7, 61, 18], v: 14.9 },
     { t: 203.7, lap: 12, kind: 'spd', bibs: [70, 46], v: 12.6 },
   ] };
+// Troisième palier : la course qui met un coureur inéligible SUR une ligne de sprint. L'opérateur, 1er novembre
+// 2026 : « teste les sprints et fais en sorte que des coureurs non éligibles passent sur une ligne de sprint au
+// moment où leur inéligibilité les exclue du sprint ». Au palier 2 cela n'arrivait jamais : les deux lâchés
+// n'étaient pas encore inéligibles quand ils franchissaient la ligne du sprint 1, et ils l'étaient redevenus
+// éligibles — reprise du peloton — quand ils franchissaient celle des sprints 4 et 5.
+//
+// Tout part donc du tour 2, pour que le retard soit installé bien avant le sprint 1, au tour 10 :
+//   deux coureurs s'échappent à +1 m/s, deux autres sont lâchés à −0,9 m/s — les mêmes écarts qu'il a donnés
+//   pour le palier 2. Il faut les deux : sans échappée il n'y a que deux groupes, et sa règle du §6 ne rend
+//   jamais inéligible un membre du groupe 2.
+// Les dossards ne sont pas de lui : il a dit ce qui devait arriver, pas à qui.
+const PALIER_3 = { name: 'Palier 3 — un lâché inéligible sur la ligne du sprint', cfg: { ...DEF, track: 250, laps: 60, sprints: 6, pace: 13.5 }, laps: 60, dur: null,
+  wobble: { fromLap: 2, min: 0.1, max: 0.3, every: 5 },
+  acts: [
+    { t: 37.04, lap: 2, kind: 'spd', bibs: [12, 52], v: 14.5 },
+    { t: 37.04, lap: 2, kind: 'spd', bibs: [70, 46], v: 12.6 },
+  ] };
 // The saved list is read once. **Never seen before** and the reference race is put in it, as an ordinary row;
 // seen before — even if it is now empty — and what is there is what the operator left, reference race included or
 // deleted. He asked for it on 28 October 2026: « il faut pouvoir la supprimer et également pouvoir la renommer
@@ -3267,7 +3284,7 @@ const PALIER_2 = { name: 'Palier 2 — deux échappées, deux lâchés', cfg: { 
 // list and then forgets it: nothing downstream knows that one of these rows came from there.
 try {
   const raw = localStorage.getItem(RKEY);
-  if (raw == null) { RACES = [CALM_RACE, PALIER_2].map(x => JSON.parse(JSON.stringify(x))); numberRaces(); saveRaces(); }
+  if (raw == null) { RACES = [CALM_RACE, PALIER_2, PALIER_3].map(x => JSON.parse(JSON.stringify(x))); numberRaces(); saveRaces(); }
   else { RACES = JSON.parse(raw) || []; numberRaces(); }
 } catch (e) { RACES = []; }
 const VERB = { gain: ['takes a lap', 'take a lap'], lose: ['loses a lap', 'lose a lap'], up: ['joins the group ahead', 'join the group ahead'],
@@ -3806,7 +3823,7 @@ function loadRace(r) {
 }
 
 // ---------- loop ----------
-window.__proto = { state: () => S, LOOPS: () => LOOPS, moteur: () => MC, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
+window.__proto = { state: () => S, LOOPS: () => LOOPS, moteur: () => MC, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spTick, spPoints, dispLap, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
 loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();
