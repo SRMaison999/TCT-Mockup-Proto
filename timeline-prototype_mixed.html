@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">166</span>
+      <span class="bld" id="buildno">167</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -686,7 +686,7 @@ function reset() {
     riders: RIDERS.map(([bib, name, nat, color, dk], i) => ({
       bib, name, nat, color, dk: !!dk,
       dist: -40 + i * 2.2, offset: 16.5 - i * 2.2, lapTrue: 0, mode: 'bunch', spd: CFG.pace,
-      rec: null, lastRel: 0, inBunchSince: null, inBunchPrev: false,   // inBunchPrev: was he in the bunch's cluster on the previous frame? the lap event is the frame that goes false → true
+      rec: null, lastAt: [], lastRel: 0, inBunchSince: null, inBunchPrev: false,   // inBunchPrev: was he in the bunch's cluster on the previous frame? the lap event is the frame that goes false → true
     })),
     lapStatus: {},          // net laps by BIB (gained − lost), derived from S.laps
     laps: {}, refiles: {},  // per rider: { gained, lost } counters, and the crossings re-filings behind each rise
@@ -874,6 +874,7 @@ function step(dt) {
         const d = ka * TRACK + L, rec = { d, t: S.t - (r.dist - d) / r.spd, loop: L };
         rec.spd = o.rec ? (d - o.rec.d) / (rec.t - o.rec.t) : r.spd;
         o.rec = rec;
+        (o.lastAt || (o.lastAt = []))[li] = rec.t;   // son dernier temps de passage SUR CETTE BOUCLE : le z du §1
         S.reads[li].push({ bib: nb, t: rec.t });   // the loop's own passage log: the count that names the bikes
         // crossings log: line N = lap N of the race as judged. A rider's crossing is filed on his own count brought back by
         // his credited laps, so a rider who took a lap rides, and is listed, with the bunch. n keeps his real crossing count.
@@ -976,11 +977,34 @@ function computeGroups(M) {
   // a lap gained or lost that the crossings do not show yet (or a counter set by hand) does not move him on the timeline.
   const live = S.riders.filter(r => M.has(r.bib) && !M.get(r.bib).off);
   const readable = live.filter(r => M.get(r.bib).read);
-  // §1 of docs/regles-operateur.md: the 1.000 s is converted into metres with THE SPEED OF THE FOLLOWING RIDER,
-  // "puisque c'est sa roue avant qui doit couvrir l'écart". The threshold is therefore computed PAIR BY PAIR,
-  // never once for the whole field: the two only agree while everyone rides at the same speed, and they part
-  // exactly when a rider is catching up or dropping off — which is when the measurement decides something.
-  const gapThr = follower => GROUP_GAP_S * (M.get(follower.r.bib).spd || CFG.pace) + BIKE_L;
+  // §1 de docs/regles-operateur.md, sa reformulation à partir des temps de passage, mot pour mot : « On connaît
+  // avec précision le temps écoulé entre le passage des transpondeurs de deux vélos qui se suivent. Appelons-le
+  // valeur z. On obtient une donnée en temps par la formule suivante : z − (x + y). Si la valeur obtenue est
+  // supérieure à 1,000 seconde → CASSURE. » x + y est le temps que met le coureur QUI SUIT à couvrir une longueur
+  // de vélo, « puisque c'est sa roue avant qui doit couvrir l'écart ».
+  //   Le 1er novembre 2026 : « Nous n'avons pas besoin de faire un calcul spécial afin de connaitre le nombre de
+  // mètres séparant les coureurs et les groupes. Ce qui nous intéresse, ce sont les écarts en temps entre les
+  // coureurs. Et entre les groupes. » Donc z SE LIT sur les boucles : c'est la différence des deux temps de passage
+  // sur UNE MÊME boucle, rafraîchie à chaque passage. L'écart se prend à chaque fois d'un coureur à celui qui le
+  // suit, puis du suivant au suivant, et ainsi de suite jusqu'au dernier.
+  //   Tant qu'aucune boucle ne les a vus tous les deux, on retombe sur la même formule écrite sur les positions :
+  // « ce n'est pas une seconde méthode indépendante : c'est le même calcul écrit autrement » (§1).
+  const spdOfRow = x => M.get(x.r.bib).spd || CFG.pace;
+  const readGap = (ahead, follower) => {                 // z, lu sur la boucle que le suiveur a franchie en dernier
+    const A = ahead.r.lastAt, B = follower.r.lastAt;
+    if (!A || !B) return null;
+    let z = null, last = -Infinity;
+    for (let li = 0; li < LOOPS.length; li++) {
+      const ta = A[li], tb = B[li];
+      if (ta == null || tb == null || tb < ta || tb <= last) continue;   // tb < ta : le coureur de devant a déjà repassé
+      last = tb; z = tb - ta;
+    }
+    return z;
+  };
+  const pairGap = (ahead, follower, metres) => {         // z − (x + y), en secondes, de roue arrière à roue avant
+    const z = readGap(ahead, follower);
+    return (z != null ? z : metres / spdOfRow(follower)) - BIKE_L / spdOfRow(follower);
+  };
   // 1. physical clusters: riders close together ON THE TRACK, whatever their lap (what the loops measure)
   const rows = live.map(r => { const m = M.get(r.bib); return { r, m, track: ((m.pos % TRACK) + TRACK) % TRACK }; });
   const byTrack = [...rows].sort((a, b) => a.track - b.track);
@@ -989,7 +1013,7 @@ function computeGroups(M) {
   // and his speed is the one that converts the gap.
   for (const x of byTrack) {
     const back = cur && cur.rows[cur.rows.length - 1];
-    if (!cur || cassure(back.r.bib + '|' + x.r.bib, x.track - cur.last > gapThr(back))) { cur = { rows: [], id: clusters.length }; clusters.push(cur); }
+    if (!cur || cassure(back.r.bib + '|' + x.r.bib, pairGap(x, back, x.track - cur.last) > GROUP_GAP_S)) { cur = { rows: [], id: clusters.length }; clusters.push(cur); }
     cur.rows.push(x); cur.last = x.track; x.cluster = cur;
   }
   if (clusters.length > 1) {   // the track is a circle: join the last cluster to the first across the finish line
@@ -997,7 +1021,7 @@ function computeGroups(M) {
     // unshift, not push: the wrapped riders are BEHIND the ones just past the line, so a cluster's rows stay
     // ordered rear -> front in the direction of travel. The first and last rider of a group are read off that order.
     const back = last.rows[last.rows.length - 1];   // he has not crossed the line yet, so he is the follower here
-    if (!cassure(back.r.bib + '|' + first.rows[0].r.bib, TRACK - last.last + first.rows[0].track > gapThr(back))) { for (const x of last.rows) x.cluster = first; first.rows.unshift(...last.rows); clusters.pop(); }
+    if (!cassure(back.r.bib + '|' + first.rows[0].r.bib, pairGap(first.rows[0], back, TRACK - last.last + first.rows[0].track) > GROUP_GAP_S)) { for (const x of last.rows) x.cluster = first; first.rows.unshift(...last.rows); clusters.pop(); }
   }
   const bunchCluster = clusters.reduce((a, c) => (!a || c.rows.length > a.rows.length ? c : a), null);
   // §5 of docs/regles-operateur.md: "le tour du peloton, c'est celui des premiers !!", and the median of the

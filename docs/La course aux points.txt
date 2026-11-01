@@ -1,6 +1,6 @@
 La course aux points
 
-L’ordre dans un groupe. Le premier qui passe est premier, le deuxième est deuxième, et ainsi de suite. C’est l’ordre de passage, rien d’autre. Ma phrase sur les « mètres mesurés » et celle sur la ligne de sprint qui départagerait étaient une construction de ma part ; il n’y a pas à chercher plus loin qu’une course.
+L’ordre dans un groupe. Le premier qui passe est premier, le deuxième est deuxième, et ainsi de suite. C’est l’ordre de passage, rien d’autre. Il n’y a pas à chercher plus loin qu’une course.
 
 Un sprint, intermédiaire ou final. Le commissaire du lap counter sonne la cloche quand le premier coureur du groupe 1 passe la ligne au tour précédant le sprint. Au tour suivant, le premier coureur du groupe 1 prend la place 1, puis viennent chronologiquement les autres coureurs du groupe 1 dans leur ordre de passage, puis les coureurs du groupe 2 dans leur ordre de passage, puis ceux du groupe 3, du 4, du 5, et ainsi de suite jusqu’à ce que tous soient passés. Dans un sprint intermédiaire, seules les quatre premières places rapportent des points. Au sprint final, même principe, avec une nuance : si deux coureurs ou plus sont à égalité au classement général final, c’est l’ordre du sprint final qui les départage, le mieux placé au sprint final étant classé devant.
 

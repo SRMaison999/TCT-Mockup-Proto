@@ -1859,3 +1859,31 @@ Sa règle est au point 170 de `regles-operateur.md`, la mesure au §46 de `mesur
 
 **Ce qui ne suit pas encore** : l'ordre **jugé** d'un sprint, qui vient toujours des boucles.
 Son point 168 veut le coureur en tête de la timeline. En attente du point 169, dont il dépend.
+
+## 41. La cassure se mesure en temps, d'un coureur à celui qui le suit (build 167)
+
+**Sa demande, le 1er novembre 2026** : « Nous n'avons pas besoin de faire un calcul spécial afin
+de connaitre le nombre de mètres séparant les coureurs et les groupes. Ce qui nous intéresse, ce
+sont les écarts en temps entre les coureurs. Et entre les groupes. »
+
+**Ce qui est codé.** `computeGroups` ne convertit plus la seconde en mètres. Elle applique la
+reformulation de son §1, **z − (x + y)** :
+
+- **z** est lu sur les boucles : la différence des deux temps de passage **sur une même boucle**.
+  Chaque coureur garde son dernier temps de passage par boucle dans `r.lastAt[li]`, écrit au
+  moment de la lecture, à côté de `r.rec`. La boucle retenue pour une paire est **celle que le
+  coureur qui suit a franchie en dernier**, à condition que le coureur de devant y soit passé
+  avant lui — sinon c'est qu'il a déjà repassé, et la boucle est écartée.
+- **x + y** est le temps que met **le coureur qui suit** à couvrir une longueur de vélo,
+  `BIKE_L / spd`, « puisque c'est sa roue avant qui doit couvrir l'écart » (§1).
+- Au-dessus de `GROUP_GAP_S` (1,000 s), cassure. Le délai de confirmation de 0,3 s ne change pas.
+
+L'écart se prend à chaque fois d'un coureur à celui qui le suit, puis du suivant au suivant,
+jusqu'au dernier : `pairGap(x, back, …)` dans la marche le long de la piste, et la même fonction
+pour la paire qui enjambe la ligne d'arrivée.
+
+**Le repli.** Tant qu'aucune boucle n'a vu les deux coureurs — un coureur sans transpondeur, un
+coureur qui vient d'entrer en course — la même formule se calcule sur les positions. Son §1 le
+dit : « ce n'est pas une seconde méthode indépendante : c'est le même calcul écrit autrement ».
+
+Les mesures sont au `mesures.md`, « La cassure lue sur les boucles ».

@@ -2796,3 +2796,32 @@ Course de référence, le 12 et le 52 posés en tête au tour 6. Onglet Crossing
 
 Sa ligne, à la virgule près. Avant le build 166 la même liste commençait par le 15 et finissait
 par 12, 52.
+
+### La cassure lue sur les boucles (build 167)
+
+Scénario de référence, course de 40 tours, piste de 250 m, seize coureurs.
+
+**Ce que les boucles donnent pour une paire.** Au tour 40, le 12 SUI devant le 52 ITA :
+
+| Boucle | Passage du 12 | Passage du 52 | z |
+|---|---|---|---|
+| Finish | 685,75 s | 685,90 s | **0,147 s** |
+| Pursuit B | 693,42 s | 693,57 s | **0,147 s** |
+| Pursuit A | 685,09 s | 685,23 s | **0,147 s** |
+
+Les trois boucles donnent le **même z**. À 15,0 m/s, une longueur de vélo vaut
+1,65 / 15,0 = **0,110 s**, donc z − (x + y) = **0,037 s** : très au-dessous de 1,000 s, les deux
+coureurs sont dans le même groupe.
+
+**La course entière, comparée au build 166.** Composition des groupes relevée à chacun des
+**40 passages de tour** :
+
+| | |
+|---|---|
+| Tours où la composition est identique | **38 sur 40** |
+| Tours où elle diffère | **2** — les tours 7 et 14 |
+
+Aux tours 7 et 14, la cassure mesurée sur les boucles apparaît une fraction de seconde plus tard
+que celle calculée sur les positions interpolées : au tour 7 le 12 SUI est encore dans la file
+au lieu d'être déjà seul devant, au tour 14 le 11 JPN et le 4 GBR sont encore accrochés au lieu
+d'être déjà décrochés. Le leader est le même à chacun des 40 tours.
