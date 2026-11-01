@@ -650,3 +650,17 @@ décision.
 **Livré le 1er novembre 2026, build 162** : le poste §16 est clos. Le code est dans
 `architecture.md` §37, les mesures dans `mesures.md` §38. Reste noté, sans décision demandée :
 `Back to automatic` rend les places à la mesure et **ne reprend pas** le leader désigné.
+
+---
+
+## 17. Le panneau de l'ovale et le mot « manual » — **livré, build 163**
+
+Ses mots sont aux points 161 et 162 de `regles-operateur.md`, le code au §38 de
+`architecture.md`, l'horloge vérifiée dans `mesures.md` §39.
+
+**Livré** : les cinq champs du panneau en boîtes blanches à texte noir, dans la disposition de
+son croquis ; `TO GO` seul en vert ; `LEADER` avec son drapeau et son NOC ; le prochain sprint
+sur deux lignes ; l'horloge à `00:00.0` en marche et `12:26.54` à l'arrêt ; les deux boutons
+renommés `SET LEADER` à leur place exacte ; et « manual » partout à la place de « by hand ».
+
+**On saura que c'est fini quand** : il l'aura vu à l'écran et n'aura rien à reprendre.

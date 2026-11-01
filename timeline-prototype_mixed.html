@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">162</span>
+      <span class="bld" id="buildno">163</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -458,24 +458,27 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
                  − / + et les deux boutons d'armement sont partis dans la barre du haut, qu'il a
                  choisie (point 140) — ils sont dans #barctl, en haut de ce fichier.
                  92 px deviennent 64, et le panneau reste centré au même endroit : il descend de
-                 14 px pour que son milieu ne bouge pas. -->
-            <foreignObject id="ifpanel" x="267" y="263" width="446" height="64">
+                 14 px pour que son milieu ne bouge pas.
+                 LA DISPOSITION EST CELLE DE SON CROQUIS (1er novembre 2026) : l'horloge et LAP en
+                 haut, LEADER et TO GO en bas, le prochain sprint à droite sur les deux hauteurs.
+                 Boîtes blanches à texte noir, et TO GO seul en vert. -->
+            <foreignObject id="ifpanel" x="267" y="258" width="446" height="76">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifcols">
                 <div class="ifcol">
-                  <div class="ifb ifclock"><span class="ifv" id="iftime">0:00.0</span></div>
+                  <div class="ifb ifclock"><span class="ifv" id="iftime">00:00.0</span></div>
+                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span><span class="ifflag" id="ifleadflag"></span><span class="ifnoc" id="ifleadnoc"></span></div>
+                </div>
+                <div class="ifcol">
                   <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
-                </div>
-                <div class="ifcol">
                   <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
-                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span></div>
                 </div>
                 <div class="ifcol">
-                  <div class="ifb tall" id="ifnext"><span class="ifk" id="ifnextk">NEXT</span><span class="ifv sm" id="ifnextv"></span><span class="ifu" id="ifnextu"></span></div>
+                  <div class="ifb tall" id="ifnext"><span class="ifline"><span class="ifk" id="ifnextk">SPRINT</span><span class="ifv sm" id="ifnextv"></span></span><span class="ifu" id="ifnextu"></span></div>
                 </div>
               </div>
             </foreignObject>
-            <foreignObject id="armfo1" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET NEXT<br/>AS LEADER</button></div></foreignObject>
-            <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET NEXT<br/>AS LEADER</button></div></foreignObject>
+            <foreignObject id="armfo1" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="1">SET<br/>LEADER</button></div></foreignObject>
+            <foreignObject id="armfo2" x="0" y="0" width="140" height="36"><div xmlns="http://www.w3.org/1999/xhtml" class="armwrap"><button class="armb" data-arm="2">SET<br/>LEADER</button></div></foreignObject>
           </g>
         </svg>
         <!-- La taille du dessin se règle à CTRL + molette au-dessus de l'ovale (l'opérateur, 31 octobre 2026).
@@ -666,6 +669,11 @@ const TIGHT = { lap: 20, bibs: [52, 7] };       // sprint 2: BIB 7 and 52 cross 
 
 const $ = s => document.querySelector(s);
 const fmtT = s => { s = Math.max(0, s); const m = Math.floor(s / 60), r = s - m * 60; return m + ':' + (r < 10 ? '0' : '') + r.toFixed(1); };
+// L'HORLOGE DU PANNEAU, ET ELLE SEULE. « Il faut afficher 00:00.0, mais quand le chronomètre s'arrête il faut
+// afficher 12:26.54 » (l'opérateur, 31 octobre 2026) : deux chiffres de minutes toujours, UNE décimale tant
+// qu'elle tourne, DEUX une fois arrêtée. Le reste de l'application garde fmtT, qui écrit les heures du journal.
+const fmtClock = (s, stopped) => { s = Math.max(0, s); const m = Math.floor(s / 60), r = s - m * 60;
+  return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r.toFixed(stopped ? 2 : 1); };
 const bibList = bibs => bibs.length === 1 ? 'BIB ' + bibs[0] : 'BIB ' + bibs.slice(0, -1).join(', ') + ' and ' + bibs[bibs.length - 1];
 const plural = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
 const byBib = (a, b) => a - b;
@@ -1495,7 +1503,7 @@ function placeByHand(gi, band) {
   let op = g.op && g.op.type === 'manual' ? g.op : null;
   if (!op) { newGroup(g.bibs, 'manual'); op = S.groups[S.groups.length - 1]; }
   op.hand = { above: above && handKey(above), below: below && handKey(below) };
-  logEvent('GROUP', 'Placed by hand: ' + bibList(op.bibs), true, groupRev(before, 'Groups as before placing ' + bibList(op.bibs) + ' by hand'));
+  logEvent('GROUP', 'Placed manually: ' + bibList(op.bibs), true, groupRev(before, 'Groups as before placing ' + bibList(op.bibs) + ' manually'));
   // Posé en PREMIÈRE position, son coureur de tête devient le leader de la course : c'est la même décision
   // (l'opérateur, 1er novembre 2026, point 158 — « c'est exactement la même chose »).
   if (!above && !leadLinking) { leadLinking = true; try { designateLeader(g.bibs[0], 'set by operator'); } finally { leadLinking = false; } }
@@ -1524,7 +1532,7 @@ function backToAutomatic() {
   const before = groupsCopy();
   let n = 0; for (const g of S.groups) if (g.hand) { delete g.hand; n++; }
   if (!n) return;
-  logEvent('GROUP', plural(n, 'group') + ' back to the transponder order', true, groupRev(before, 'Groups as placed by hand'));
+  logEvent('GROUP', plural(n, 'group') + ' back to the transponder order', true, groupRev(before, 'Groups as placed manually'));
 }
 function removeFromGroups(bibs) { for (const g of S.groups) g.bibs = g.bibs.filter(b => !bibs.includes(b)); S.groups = S.groups.filter(g => g.bibs.length); }
 function dissolve(g) { const before = groupsCopy(); S.groups = S.groups.filter(x => x !== g); logEvent(g.type === 'manual' ? 'GROUP' : 'INCIDENT', (g.type === 'manual' ? 'Group dissolved: ' : 'Incident closed: ') + bibList(g.bibs), true, groupRev(before, (g.type === 'manual' ? 'Group of ' : 'Incident of ') + bibList(g.bibs) + ' restored')); }
@@ -1690,7 +1698,7 @@ function renderTimeline(G) {
   let html = '', props = '';
   // Elle n'existe que tant qu'au moins un groupe est posé à la main, et elle dit combien il y en a.
   const nHand = S.groups.filter(g => g.hand).length;
-  if (nHand) html += `<div class="tmode"><span class="k">${plural(nHand, 'group')} by hand</span><button class="btn xs" data-autogroups="1" title="Put every group back in the transponder order">Back to automatic</button></div>`;
+  if (nHand) html += `<div class="tmode"><span class="k">${nHand === 1 ? '1 manual group' : nHand + ' manual groups'}</span><button class="btn xs" data-autogroups="1" title="Put every group back in the transponder order">Back to automatic</button></div>`;
   G.groups.forEach((g, gi) => {
     const prev = G.groups[gi - 1];
     // La bande qui sépare deux blocs ne porte plus l'écart « 2 m · 0,1 s » : l'opérateur l'a marqué en rouge sur sa
@@ -1733,7 +1741,7 @@ function renderTimeline(G) {
       <div class="gh" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')} · click to select the whole group">
         <span class="ghl"><span class="gn">${name}</span>${g.op ? '<button class="btn xs quiet gx" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span>
         <span class="ghl"><span class="gi">${info}</span>${g.incident ? '' : '<span class="ggap">' + (isLead ? 'leader' : (g.head < 0 ? '+' + (-g.head).toFixed(0) : '−' + g.head.toFixed(0)) + ' m') + '</span>'}</span>
-        ${g.op && g.op.hand ? '<span class="pill warn hand">by hand</span>' : ''}
+        ${g.op && g.op.hand ? '<span class="pill warn hand">manual</span>' : ''}
         ${allOut ? '<span class="pill warn">out of sprint ' + sprintN + '</span>' : someOut ? '<span class="pill warn">part out of sprint ' + sprintN + '</span>' : ''}</div>`;
     for (const x of g.rows) {
     // La ligne d'un coureur ne porte que son dossard, son drapeau et son code pays. L'opérateur, 29 octobre 2026,
@@ -1808,7 +1816,7 @@ function renderTimeline(G) {
 // the panel is laid down once in the HTML, and a button that is replaced between the press and the release never
 // emits a click (pitfalls D2) — and this panel carries buttons.
 const IF = {};
-for (const k of ['leadchip', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
+for (const k of ['leadchip', 'leadflag', 'leadnoc', 'time', 'next', 'nextk', 'nextv', 'nextu', 'togo', 'togov',
                  'togomode', 'lap', 'lapof']) IF[k] = $('#if' + k);
 const SRC = { app: $('#srcapp'), cnt: $('#srccnt'), appk: $('#srcappk'), appv: $('#srcappv'), cntv: $('#srccntv') };
 const FINB = $('#armfinish');
@@ -1827,19 +1835,22 @@ function renderStrip(G) {
   const lead = S.riders.find(r => r.bib === G.leaderBib);
   IF.lap.textContent = S.finished ? LAPS : lap;
   IF.lapof.textContent = '/ ' + LAPS;
-  IF.time.textContent = fmtT(S.winT != null ? S.winT : S.t);
+  IF.time.textContent = fmtClock(S.winT != null ? S.winT : S.t, S.winT != null);
   IF.time.classList.toggle('stopped', S.winT != null);
   FINB.classList.toggle('armed', S.finArm);
   IF.leadchip.textContent = lead ? lead.bib : '—';
   IF.leadchip.style.background = 'none';     // le carré est parti là aussi : il ne reste que le numéro
   IF.leadchip.classList.toggle('dk', false);
+  // Son croquis du 1er novembre 2026 : « LEADER 16 [drapeau] POL ». Le drapeau et le pays rejoignent le numéro.
+  IF.leadflag.innerHTML = lead ? flag(lead.nat) : '';
+  IF.leadnoc.textContent = lead ? lead.nat : '';
   // The leader box carries his number and nothing else (operator, 29 October 2026). He said « retire » — so the
   // speed and the way he was named are gone, not moved into a tooltip where they would have survived his decision.
   // « SPRINT 3 - 6 LAPS », the operator's own wording, 29 October 2026.
   const over = S.finished || S.finishOpen;
   IF.nextk.textContent = over ? '' : 'SPRINT';
   IF.nextv.textContent = S.finished ? 'FINISHED' : S.finishOpen ? 'FINISHING · ' + S.finishCrossed.size + ' across' : n;
-  IF.nextu.textContent = over ? '' : sprintNow ? '- THIS LAP' : '- ' + plural(nextSprint - lap, 'lap').toUpperCase();
+  IF.nextu.textContent = over ? '' : sprintNow ? 'THIS LAP' : plural(nextSprint - lap, 'lap').toUpperCase();
   // « Quand le nombre de tours jusqu'au prochain Sprint arrive à 2 il faut que le champ devienne très visible et
   // immanquable » (operator, 29 October 2026). Two laps out and nearer, the box stops being a quiet field.
   const close = !S.finished && (sprintNow || nextSprint - lap <= 2);
@@ -2361,7 +2372,7 @@ function syncArm() {
     armShown[i] = want;
     b.classList.toggle('on', armed);
     b.classList.toggle('done', !!done);
-    b.innerHTML = done ? 'BIB ' + S.armDone.bib : 'SET NEXT<br/>AS LEADER';
+    b.innerHTML = done ? 'BIB ' + S.armDone.bib : 'SET<br/>LEADER';
     if (ARMG[i]) ARMG[i].setAttribute('stroke-opacity', armed ? '1' : '0');
   }
 }
@@ -3123,7 +3134,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#ovtitle').textContent = "Men's Points Race - " + plural(LAPS, 'lap') + ' - ' + plural(NSPRINTS, 'sprint') + ' - ' + TRACK + 'm';
-  $('#buildno').textContent = '162';
+  $('#buildno').textContent = '163';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

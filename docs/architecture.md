@@ -1733,15 +1733,11 @@ Sa maquette du 31 octobre 2026 (`regles-operateur.md` §17 points 148 et 149). *
 - **Les deux bandes « new group » sont visables** : 28 px de haut, la hauteur d'une ligne de
   coureur, et 9 px séparent celle du haut du premier bloc (point 150, `mesures.md` §34).
 
-### Pas fait
+### Ce qui restait, et qui est fait au build 163
 
-- Les champs du panneau en **boîtes blanches à texte noir**, leur nouvelle disposition —
-  horloge et `LAP` en haut, `LEADER` et `TO GO` en bas, `SPRINT` à droite sur deux hauteurs — et
-  `TO GO` seul en vert.
-- `LEADER` portant le **drapeau et le NOC** en plus du numéro.
-- L'horloge à **`00:00.0` en marche et `12:26.54` à l'arrêt** : `fmtT` donne aujourd'hui
-  `0:00.0`, un seul chiffre de minutes et une décimale toujours.
-- Les boutons renommés **`SET LEADER`**, à la place exacte qu'ils occupent (point 149).
+Les quatre points qui manquaient — les boîtes blanches et leur disposition, le drapeau et le NOC
+dans `LEADER`, l'horloge à deux formats, les boutons renommés — sont livrés. Le détail est au
+§38.
 
 ## 36. Le groupe posé à la main (build 161)
 
@@ -1798,3 +1794,29 @@ mesure.
   ferait avancer deux fois le détecteur de dépassement (H11).
 
 **Les tours à faire suivent sans rien ajouter** : `dispLap()` comptait déjà sur `S.leader`.
+
+## 38. Le panneau de l'ovale, sur son croquis (build 163)
+
+Son croquis du 1er novembre 2026 et ses mots sont aux points 148, 149 et 161 de
+`regles-operateur.md`.
+
+- **La disposition** — `#ifpanel` passe de 64 à **76 px** de haut et remonte de 5 px, à `y=258`,
+  pour garder son milieu. Trois colonnes : l'horloge puis `LEADER` ; `LAP` puis `TO GO` ; le
+  prochain sprint seul, sur les deux hauteurs. Les deux lignes font 34 px, `TO GO` comprise —
+  elle faisait 38 et dépassait.
+- **Les boîtes** — `#ifpanel .ifb` passe en **blanc à texte noir**, étiquettes en gris foncé.
+  `TO GO` garde son vert, c'est le seul champ coloré ; le sprint garde son ambre à deux tours,
+  qui est sa règle du 29 octobre 2026.
+- **`LEADER` porte trois choses** — le dossard, le drapeau et le NOC : `#ifleadflag` reçoit
+  `flag(lead.nat)` et `#ifleadnoc` le code pays.
+- **Le prochain sprint s'écrit sur deux lignes** — `SPRINT 1` puis `5 LAPS`, dans une `.ifline`
+  posée au-dessus de l'unité ; le tiret de « - 5 LAPS » est tombé avec elle.
+- **L'horloge a sa propre fonction**, `fmtClock(s, stopped)` : deux chiffres de minutes
+  toujours, **une** décimale en marche, **deux** à l'arrêt. `fmtT` ne bouge pas — c'est elle qui
+  écrit les heures du journal, et il n'a rien demandé là-dessus.
+- **Les deux boutons** portent `SET` / `LEADER` sur deux lignes, à la place exacte qu'ils
+  occupaient (point 149) ; le libellé de retour `BIB n` est inchangé.
+
+**Et le mot de l'étiquette change partout** : `by hand` devient `manual`, la bande du haut dit
+`1 manual group` / `2 manual groups`, et le journal écrit `Placed manually`. Les noms internes
+(`placeByHand`, `op.hand`, `.pill.hand`) ne changent pas : ils ne se lisent pas à l'écran.

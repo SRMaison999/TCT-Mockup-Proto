@@ -2627,3 +2627,15 @@ qui sont devant le restent.
 
 **Ce que `Back to automatic` ne fait pas** : il rend les places à la mesure, il **ne reprend pas
 le leader désigné**. Rien n'a été inventé là-dessus, il ne l'a pas demandé.
+
+### L'horloge du panneau, les deux formats (build 163)
+
+`fmtClock` vérifiée sur ses deux exemples et sur deux autres valeurs :
+
+| Temps | En marche | À l'arrêt |
+|---|---|---|
+| 0 s | `00:00.0` | — |
+| 5,2 s | `00:05.2` | — |
+| 746,54 s | `12:26.5` | `12:26.54` |
+
+Ses deux exemples — « `00:00.0` » en marche et « `12:26.54` » à l'arrêt — sortent tels quels.

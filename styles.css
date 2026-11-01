@@ -618,6 +618,30 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .ifcol #iftogo{height:38px}
 #ifpanel,.ifcols{pointer-events:none}
 .ifcol>*{pointer-events:auto}
+
+/* LE PANNEAU DE L'OVALE, SUR SON CROQUIS DU 1er NOVEMBRE 2026. « les champs du panneau en boîtes
+   blanches à texte noir » (regles-operateur.md §17 point 148) : le fond de l'ovale est clair, et
+   des boîtes sombres s'y posaient comme des trous. TO GO reste seul en couleur — c'est le seul
+   champ qu'il envoie, et le vert est déjà le sien. */
+#ifpanel .ifb{background:#fff;border-color:#c9ccd0;color:#111;height:34px}
+#ifpanel .ifb .ifk{color:#5a5f66}
+#ifpanel .ifb .ifv,#ifpanel .ifchip{color:#111}
+#ifpanel .ifb .ifu{color:#5a5f66}
+#ifpanel .ifchip{background:none;min-width:0;padding:0}
+#ifpanel .ifclock .ifv{font-size:23px}
+#ifpanel .ifflag{display:inline-flex;flex:0 0 auto}
+#ifpanel .ifflag .flag{width:21px;height:14px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+#ifpanel .ifnoc{font:600 13px var(--sans);color:#111;letter-spacing:.02em}
+/* Le prochain sprint tient deux hauteurs à lui seul et s'écrit sur deux lignes, « SPRINT 1 » puis
+   « 9 LAPS », comme son croquis. */
+#ifpanel .ifcol .ifb.tall{height:72px;flex-direction:column;justify-content:center;gap:3px}
+#ifpanel .ifb.tall .ifline{display:flex;align-items:center;gap:8px}
+#ifpanel .ifb.tall .ifu{font:600 13px var(--sans);letter-spacing:.04em;color:#5a5f66}
+#ifpanel .ifcol #iftogo{height:34px;background:var(--play);border-color:#3f8f52}
+#ifpanel #iftogo .ifk,#ifpanel #iftogo .ifv{color:#06220c}
+#ifpanel #iftogo .ifv{font-size:24px}
+#ifpanel .ifb.hot{background:var(--warn);border-color:var(--warn)}
+#ifpanel .ifb.hot .ifk,#ifpanel .ifb.hot .ifv,#ifpanel .ifb.hot .ifu{color:#2a1b05}
 .ifcol .startb,.ifcol .srcrow .ifk,.ifcol .ifb{white-space:nowrap}
 /* Smaller, on the operator's offer: « on peut réduire la taille des polices, des boutons d'armage, de l'horloge ».
    A tighter block leaves the group badges more room, and 23 frames in 197 had one partly covered. */

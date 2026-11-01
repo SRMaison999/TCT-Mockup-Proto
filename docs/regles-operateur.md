@@ -2253,3 +2253,19 @@ l'écran, une à la fois.
 160. **Le lien est approuvé.** Sa réponse du 1er novembre 2026 à la forme proposée — le leader
      qu'il désigne monte son groupe en première position, et poser un groupe en première
      position désigne son premier coureur comme leader : « **Oui, code-le.** »
+
+161. **Le mot est « manual », pas « by hand ».** Ses mots, le 1er novembre 2026 :
+     « **"by hand" et "1 group by hand" n'est pas la bonne formule ! Utilisons "manual"** ».
+
+162. **Son croquis du centre de l'ovale est à appliquer.** Ses mots, le 1er novembre 2026 :
+     « **tu n'as pas encore implémenté les modifications demandées concernant le style des
+     boutons et indications du centre de l'ovale. Je te rejoins la capture d'écran de mon
+     croquis** ». Le croquis ne dit rien de neuf : il montre ce que les points 148 et 149
+     disaient déjà — boîtes blanches à texte noir, horloge et `LAP` en haut, `LEADER` et
+     `TO GO` en bas, `TO GO` seul en vert, `LEADER` avec son drapeau et son NOC, le prochain
+     sprint à droite sur deux hauteurs, et les boutons `SET LEADER` à leur place.
+
+163. **Ce qu'il attend d'un compte rendu de test.** Ses mots, le 1er novembre 2026 : « **Pour
+     comprendre les résultats de ton test il me faut un peu plus d'info, là je dois deviner ce
+     qui se passe.** » Un tableau de chiffres ne suffit pas : il faut dire quelle course, quels
+     coureurs, quel geste, et ce qu'on voit à l'écran avant et après.
