@@ -3581,3 +3581,29 @@ autour de la seconde, ce que le délai du §1 est fait pour absorber.
 **Rien d'autre n'a bougé** : ordre de la timeline juste d'un bout à l'autre des deux courses, zéro
 écart négatif, les douze constats de ±20 et les points justes coureur par coureur. Palier 1
 toujours parfait.
+
+### Build 198 · plus aucun souvenir : la timeline est juste à chaque instant
+
+Son point 192. Le délai de confirmation de 0,3 s et l'état gardé par paire de coureurs sont
+supprimés : une cassure se déclare sur la mesure du moment.
+
+| palier 2, course entière (1 042 s) | build 197 | build 198 |
+|---|---|---|
+| cassure restée dans un groupe | 22,2 s | **0 s** |
+| en combien de moments | 92 | **0** |
+| ordre inversé | 0 s | **0 s** |
+| écarts négatifs | 0 | **0** |
+| constats de ±20 | 12 | **12** |
+| points faux | aucun | **aucun** |
+| changements de composition des groupes | 589 | 746 |
+
+**Palier 1** : un seul groupe de 16 du départ à l'arrivée, 6 changements de composition sur toute la
+course, rien d'autre à signaler.
+
+Les groupes changent de composition 746 fois au lieu de 589, soit 157 fois de plus sur 1 042
+secondes : c'est le prix de la justesse à chaque instant, et c'est ce que le délai masquait.
+
+**Le délai était le mien.** Il m'avait été laissé le 25 octobre 2026 pour absorber le saut de
+position d'un coureur au moment où il franchit une boucle. Son point 191 — la timeline ne se
+recalcule qu'aux passages — l'avait déjà rendu inutile ; je ne l'avais pas vu, et j'ai passé trois
+corrections à soigner ses effets au lieu de le retirer.

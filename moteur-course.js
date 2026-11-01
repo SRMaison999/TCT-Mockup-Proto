@@ -41,9 +41,10 @@
        puis 198, puis 960 constats de tour sur une course où personne n'en prend ni n'en perd.
        → Le garde : il n'y a plus de tour dans ce fichier. Rien n'ajoute ni ne retranche 250 m.
 
-   E4. Ne jamais décider sur un instantané.
-       Sa règle du §1 : une cassure se confirme sur 0,3 s avant de compter.
-       → Le garde : `confirme()`, et rien ne change de statut sans passer par elle.
+   E4. Ne garder aucun souvenir d’une paire de coureurs.
+       Son point 192 : « MAIS ON NE RECHERCHE PAS DES SOUVENIRS !! » Une cassure se déclare sur la
+       mesure du moment. Le délai de 0,3 s était à moi, et son point 191 l’a rendu inutile.
+       → Le garde : rien dans ce fichier ne retient l’état d’une paire.
 
    E5. Ne rien proposer que les boucles ne montrent pas.
        → Le garde : un coureur sans détection n'existe pas pour le moteur de course.
@@ -78,14 +79,12 @@
       arrivee: 0,            // laquelle est la ligne d'arrivée
       cassureS: 1.0,         // §1 : au-delà d'une seconde entre roue arrière et roue avant, cassure
       veloM: 1.65,           // §1 : la longueur d'un vélo
-      confirmationS: 0.3,    // §1 : le temps qu'une cassure doit tenir avant de compter
     }, reglage || {});
 
     const BOUCLES = [...R.boucles].sort((a, b) => a - b);
     const RANG = new Map(BOUCLES.map((b, i) => [b, i]));
 
     const coureurs = new Map();
-    const cassures = new Map();
     const points = [];        // les ±20 constatés, dans l'ordre
     let pelotonAvant = null;
     let maintenant = 0;
@@ -123,31 +122,12 @@
 
     const vitesse = c => (c.pas == null || !c.dt) ? null : c.pas / c.dt;
     const tourS = c => { const v = vitesse(c); return v ? R.piste / v : null; };  // sa duree de tour
-
-    /* ------------------------------------------------------------------ 2. confirmer une cassure */
-    // Le délai sert à ne pas osciller, pas à retarder la PREMIÈRE mesure d’une paire. Quand la clé
-    // est neuve, on prend la mesure telle quelle si l’appelant le demande (`amorce`).
-    //
-    // E13. LES PAIRES CHANGENT DE VOISIN SANS ARRÊT. Mesuré à la build 194 : la coupure des groupes
-    //      est gardée sous la clé « suiveur|devant », et chaque fois que le voisin change, la clé
-    //      est neuve et repart à « pas de cassure ». À 360,9 s du palier 2, le 7 et le 12 étaient
-    //      dans le même groupe avec 13,99 s entre eux — 1 207 images de la course.
-    function confirme(cle, depasse, amorce) {
-      let e = cassures.get(cle);
-      if (!e) { e = { etat: amorce ? depasse : false, depuis: null }; cassures.set(cle, e); return e.etat; }
-      // `amorce` vaut aussi pour une paire DÉJÀ CONNUE qui vient de se reformer : son souvenir est
-      // vieux et ne vaut rien. Mesuré à la build 196 : à 359,5 s le 15 roule entre le 7 et le 12 ;
-      // à 360,9 s il s’écarte, la paire 7→12 se forme avec 14 s d’écart, et les deux restaient dans
-      // le même groupe le temps du délai — parce que la clé existait depuis le début de la course.
-      if (amorce) { e.etat = depasse; e.depuis = null; return depasse; }
-      if (depasse === e.etat) { e.depuis = null; return e.etat; }
-      // le délai ne vaut que pour DÉCLARER, pas pour lever : une cassure doit tenir avant d’être
-      // déclarée (§1), mais deux coureurs qui se rejoignent sont réunis tout de suite.
-      if (!depasse) { e.etat = false; e.depuis = null; return false; }
-      if (e.depuis == null) e.depuis = maintenant;
-      if (maintenant - e.depuis >= R.confirmationS) { e.etat = depasse; e.depuis = null; }
-      return e.etat;
-    }
+    /* ------------------------------------------------------------------ 2. plus aucun souvenir */
+    // SON POINT 192 : « MAIS ON NE RECHERCHE PAS DES SOUVENIRS !! » Il n’y a plus d’état gardé par
+    // paire de coureurs, ni de délai de confirmation. Une cassure est déclarée sur la mesure du
+    // moment. Le délai de 0,3 s était à moi : il m’avait été laissé le 25 octobre 2026 pour absorber
+    // le saut de position d’un coureur au moment où il franchit une boucle, et depuis que la timeline
+    // ne se recalcule qu’aux passages (point 191), ce saut n’existe plus.
 
     /* ------------------------------------------------------------------ 3. la tête et la chaîne */
     // LA TÊTE, SON POINT 183. Sur un anneau, « devant » n'a de sens qu'à partir d'un coureur, et ce
@@ -252,23 +232,19 @@
     /* ------------------------------------------------------------------ 4. les groupes */
     // On descend la chaîne : entre deux coureurs qui se suivent, une cassure confirmée ouvre un
     // groupe. C'est le §3, et la règle qu'il a instaurée au point 174.
-    // QUI SUIVAIT QUI À L’INSTANT D’AVANT. Le délai du §1 sert à ne pas osciller entre deux coureurs
-    // qui roulent côte à côte ; il n’a rien à vérifier sur une paire qui vient de se former. `groupes()`
-    // étant appelé plusieurs fois pour une même détection, le souvenir ne bascule qu’au changement
-    // d’instant, sans quoi le premier appel l’écrase et les suivants ne voient plus aucune paire neuve.
-    let voisinsAvant = new Set(), voisins = new Set(), voisinsT = null;
     function groupes() {
       const ch = chaine(), gs = [];
-      if (maintenant !== voisinsT) { voisinsAvant = voisins; voisins = new Set(); voisinsT = maintenant; }
       let g = null;
       for (let i = 0; i < ch.length; i++) {
         const x = ch[i], devant = i ? ch[i - 1] : null;
         let coupe = !g, ec = null;
         if (devant) {
+          // SON POINT 192 : « MAIS ON NE RECHERCHE PAS DES SOUVENIRS !! » La cassure est déclarée
+          // sur la mesure du moment, et sur rien d’autre. Le délai de confirmation de 0,3 s était à
+          // moi — il absorbait le saut de position d’un coureur franchissant une boucle —, et depuis
+          // que la timeline ne se recalcule qu’aux passages (point 191), ce saut n’existe plus.
           ec = ecartEntre(devant, x);
-          const cle = x.c.bib + '|' + devant.c.bib;
-          voisins.add(cle);
-          coupe = ec == null ? false : confirme(cle, ec > R.cassureS, !voisinsAvant.has(cle));
+          coupe = ec == null ? false : ec > R.cassureS;
         }
         if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null }; gs.push(g); }
         g.coureurs.push(x.c.bib);
@@ -392,7 +368,7 @@
         // le contact, confirmé 0,3 s comme toute cassure du §1 — mais l'écart doit être positif À
         // L'INSTANT du constat, et pas seulement l'avoir été : sans cela, trois constats du palier
         // 2 sortaient avec un écart négatif, mesurés sur un coureur déjà repassé devant.
-        const colle = confirme('R' + c.bib + (avant ? '+' : '-'), e > 0 && e <= R.cassureS);
+        const colle = e > 0 && e <= R.cassureS;   // la mesure du moment, sans délai (point 192)
         if (colle && e > 0 && !c.colle) {
           const delta = avant ? 20 : -20;
           if (attente && attente.delta === delta && maintenant - attente.ouvertA <= R.cassureS) {

@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '197';
+const BUILD = '198';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -709,7 +709,7 @@ function reset() {
   tlGarde = null; tlSignature = '';
   MC = (window.MoteurCourse && LOOPS && LOOPS.length) ? window.MoteurCourse.creer({
     piste: TRACK, boucles: LOOPS, arrivee: 0,
-    cassureS: GROUP_GAP_S, veloM: BIKE_L, confirmationS: CASS_DELAY_S }) : null;
+    cassureS: GROUP_GAP_S, veloM: BIKE_L }) : null;
   S = {
     t: 0, factor: 1, finished: false,
     riders: RIDERS.map(([bib, name, nat, color, dk], i) => ({

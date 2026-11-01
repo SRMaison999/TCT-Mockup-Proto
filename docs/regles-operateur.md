@@ -2677,3 +2677,17 @@ C'est son point 177, qu'il avait posé le matin même et que je n'avais appliqu�
 coureurs : « La seule façon certaine de savoir l'ordre de passage des coureurs, c'est les détections
 des boucles. » Entre deux passages, la timeline ne peut rien apprendre : elle ne se recalcule donc
 pas. Seul l'ovale continue d'avancer, parce que lui dessine la piste.
+
+### 192. On ne garde aucun souvenir d'une paire de coureurs (1er novembre 2026)
+
+Je lui expliquais qu'un vieil état gardé pour la paire 12/7 retardait une cassure de 14 secondes.
+
+> MAIS ON NE RECHERCHE PAS DES SOUVENIRS !!
+
+Le **délai de confirmation de 0,3 s** était à moi : il m'avait été laissé le 25 octobre 2026
+(« vas-y comme tu le penses le mieux ») pour absorber le saut de position d'un coureur au moment où
+il franchit une boucle. Depuis son point 191, la timeline ne se recalcule **qu'aux passages sur les
+boucles** : ce saut n'existe plus, et le délai n'a plus de raison d'être.
+
+Une cassure est donc déclarée **sur la mesure du moment**, et sur rien d'autre : plus d'état gardé
+par paire de coureurs, plus de délai.
