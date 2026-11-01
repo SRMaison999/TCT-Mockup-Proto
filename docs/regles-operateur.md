@@ -2480,3 +2480,9 @@ l'écran, une à la fois.
 
      Il a posé la redite de cette explication dans `docs/La course aux points.txt`, le
      1er novembre 2026 : « **je pense que ça vaut la peine de le conserver en lieu sûr** ».
+
+175. **Les propositions de ±20 arrivent beaucoup trop tôt.** Ses mots, le 1er novembre 2026,
+     après avoir regardé le palier 2 se jouer à l'écran : « **j'ajouterais que de manière
+     générale, les propositions de valider 20 points pour avoir rattrapé un tour de perte de
+     20 points pour avoir s'est fait rattrapé un tour, arrivent toujours beaucoup, beaucoup
+     trop tôt** ».

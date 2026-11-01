@@ -736,3 +736,97 @@ premier. Aujourd'hui l'ordre jugé vient des boucles. À faire après le leader,
 **Livré au build 166** : l'onglet Crossings suit l'ordre de la timeline (point 170,
 `architecture.md` §40, `mesures.md` §46). Le §19 reste ouvert : la reprise du leader, et après
 elle le sprint du point 168.
+
+
+## 20. Un groupe qui en rattrape un autre passe derrière lui — **à corriger**
+
+**Constaté par l'opérateur le 1er novembre 2026**, en regardant le palier 2 se jouer à
+l'écran, et relevé sur ses captures.
+
+**Le défaut.** Quand un groupe rejoint par l'arrière le groupe qui le précède, il est posé
+**derrière** lui au lieu de se fondre dedans, et toute la file bascule.
+
+| Instant | Ce que montre la timeline |
+|---|---|
+| 05:52.5, tour 21 | `1-LEADERS` 18 POR, 61 COL, 7 NED · `2-BUNCH` à **13,6 s** · bandeau `LEADER 18 POR` |
+| 06:00.4, tour 21 | `1-BUNCH` porte le leader · `2-BEHIND` 18, 61, 7 à **1,1 s** · bandeau `LEADER 12 SUI` |
+| 09:20.3, tour 33 | `1-LEADERS` 12 SUI, 52 ITA · `2-BUNCH` à **47,2 s** |
+| 09:20.9, tour 33 | `2-BEHIND` 12 SUI, 52 ITA à **1,6 s** · bandeau `LEADER 18 POR` |
+
+Huit secondes séparent les deux premières lignes, six dixièmes les deux dernières.
+
+**Et l'écart saute avec.** Le même bloc est donné à 12,9 s au tour 32, à **47,2 s** au tour 33,
+puis à 1,6 s six dixièmes plus tard. À 13,5 m/s, 47,2 s valent 637 m, soit deux tours et demi.
+
+**On saura que c'est fini quand** : au palier 2 joué en entier, aucun bloc ne passera de devant
+à derrière sans que les coureurs se soient fait rejoindre, et aucun écart ne sautera d'un tour
+à l'autre.
+
+## 21. Les propositions de ±20 arrivent beaucoup trop tôt — **à corriger**
+
+**Sa phrase est au point 175** de `regles-operateur.md`.
+
+**Ce que montrent ses captures.** Au tour 13, « BIB 12 SUI · Lap gained? » alors que le 12 est
+en tête avec le 52, **6,4 s devant** le peloton : il s'est échappé, il n'a rien rattrapé. Au
+tour 19, « 7 NED, 18 POR, 61 COL · Lap gained? » alors qu'ils mènent de **11,8 s** ; partis au
+tour 11 avec 1,4 m/s de mieux, ils ont pris environ 130 m en cinq tours.
+
+**Et la même proposition revient à des tours différents** : le trio 7-18-61 est proposé au tour
+19, puis au tour 22, puis au tour 32 ; le 12 et le 52 au tour 12 — pour le seul 12 alors qu'ils
+roulent ensemble —, puis au tour 19, puis au tour 27.
+
+**Un tour perdu est aussi proposé à des coureurs du peloton lui-même** : au tour 32, « Lap
+lost? » pour le 4 GBR, le 11 JPN, le 15 IRL, le 23 DEN, le 58 KAZ et le 67 GER, qui sont six
+des douze coureurs du `2-BUNCH`, le plus gros groupe de la course. L'article UCI 3.2.017 quater
+veut qu'un tour se perde quand on est rejoint **par le plus gros peloton en course**.
+
+**On saura que c'est fini quand** : au palier 2, une proposition de ±20 n'apparaîtra qu'au
+moment où les coureurs concernés auront réellement rejoint ou été rejoints, chaque échappée ne
+sera proposée qu'**une fois**, avec tous ses coureurs ensemble, et aucun coureur du plus gros
+peloton ne se verra proposer un tour perdu.
+
+## 22. Un sprint n'est jugé que sur le premier groupe — **à corriger**
+
+**Constaté sur sa capture du sprint 2**, tour 20, envoyé en direct : place 1 au 18 POR, place 2
+au 61 COL à +0,051, place 3 au 7 NED à +0,144, **puis plus rien** — places 4 et 5 vides,
+`NEXT PLACE 4th`. Les treize autres coureurs ont franchi la ligne et aucun n'est classé.
+
+Sa règle, au point 174 : après le premier coureur du groupe 1 viennent les autres coureurs du
+groupe 1 dans leur ordre de passage, puis ceux du groupe 2 dans leur ordre de passage, puis
+ceux du groupe 3, « et ainsi de suite jusqu'à ce que tous les coureurs soient passés ».
+
+**On saura que c'est fini quand** : au palier 2, chaque sprint classera les seize coureurs,
+groupe par groupe, et pas seulement ceux du premier bloc.
+
+## 23. Des points acquis changent après coup — **à corriger**
+
+**Constaté sur ses deux captures du classement**, même course, à 07:52.6 puis à 09:51.5 :
+
+| | 07:52.6 | 09:51.5 |
+|---|---|---|
+| 52 ITA, points de sprint | **4** | **3** |
+| 46 BEL, points de sprint | **5** | **0** |
+| 70 BRA, points de sprint | **3** | **0** |
+| 46 BEL, tours | LOST 1, **−20** | plus rien |
+| 70 BRA, tours | LOST 1, **−20** | plus rien |
+
+**Et le 46 et le 70 n'auraient jamais dû marquer.** Ils sont lâchés depuis le tour 12, roulent
+0,9 m/s moins vite que le peloton et sont `3-LAST` à 10,9 s. Cinq points, c'est une première
+place de sprint.
+
+**On saura que c'est fini quand** : au palier 2, un point inscrit au classement n'en ressortira
+plus, et aucun coureur ne marquera dans un sprint qu'il n'a pas disputé.
+
+## 24. Deux défauts d'affichage relevés sur ses captures — **à corriger**
+
+**L'étiquette d'un bloc est posée sur le mauvais groupe.** Au tour 33, en bas de l'ovale, deux
+paires côte à côte : le 46 BEL avec le 70 BRA, et le 12 SUI avec le 52 ITA. L'étiquette
+`1-Leaders` est posée sur la paire **46-70**, alors que la timeline donne le 12 et le 52 comme
+leaders.
+
+**`NO PTS` apparaît et disparaît.** Le 46 et le 70 le portent aux tours 17, 19, 21 et 32, et ne
+le portent plus au tour 33, sans que leur situation ait changé : ils sont toujours derniers.
+
+**On saura que c'est fini quand** : l'étiquette d'un bloc sur l'ovale désignera toujours le
+groupe que la timeline nomme, et `NO PTS` ne s'allumera et ne s'éteindra qu'avec l'éligibilité
+du coureur.
