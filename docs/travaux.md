@@ -664,3 +664,35 @@ sur deux lignes ; l'horloge à `00:00.0` en marche et `12:26.54` à l'arrêt ; l
 renommés `SET LEADER` à leur place exacte ; et « manual » partout à la place de « by hand ».
 
 **On saura que c'est fini quand** : il l'aura vu à l'écran et n'aura rien à reprendre.
+
+---
+
+## 18. L'écart des groupes est faux dès qu'on force un groupe en tête — **à corriger**
+
+Sa règle et ses mots sont au point 164 de `regles-operateur.md`.
+
+**Ce que fait le code aujourd'hui.** L'écart affiché sur l'en-tête d'un bloc est
+`g.head = min(behind)`, et `behind = leaderNp − np(coureur)` : une **distance de course
+continue**, mesurée depuis le **coureur** désigné leader, et qui peut être **négative** — d'où
+le `+31 m` sur le peloton. Rien là-dedans ne sait que le groupe 1 est le groupe 1.
+
+**Ce qu'il demande.** Aucun groupe n'est devant le groupe 1 : le groupe 2 est pointé depuis le
+groupe 1, et ainsi de suite. Sur la piste fermée, 31 m devant devient **219 m derrière**
+(250 − 31). Le signe `+` disparaît.
+
+**Ce qui existe déjà et va dans ce sens.** `computeGroups` calcule déjà, pour l'éligibilité, un
+`x.dS` qui est exactement cette distance **en arrière du groupe de tête, autour de la piste**,
+avec le groupe 1 à 0 par construction — la règle du §6, « toujours prendre le groupe de tête
+comme le plus proche ». La timeline est donc le seul endroit qui compte autrement.
+
+**Ce qui attend sa réponse** : le groupe 3 se mesure-t-il depuis le groupe 2, ou depuis le
+groupe 1 comme tous les autres ? Sa phrase est coupée là, et les deux lectures donnent le même
+chiffre sur son exemple à deux groupes.
+
+**Noté, pas tranché** : « c'est le groupe 1 qui est attendu au sprints en premier, et [...] les
+coureurs 12 et 52 se seraient partagé les 2 premières places de chaque sprint ». Aujourd'hui
+l'ordre jugé vient des boucles (point 157). Ce que le forçage doit changer au sprint se
+tranchera après l'écart.
+
+**On saura que c'est fini quand** : un groupe posé en tête n'affichera plus aucun `+`, et le
+groupe suivant portera sa distance en arrière, autour de la piste.

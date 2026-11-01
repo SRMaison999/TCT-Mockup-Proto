@@ -2269,3 +2269,41 @@ l'écran, une à la fois.
      comprendre les résultats de ton test il me faut un peu plus d'info, là je dois deviner ce
      qui se passe.** » Un tableau de chiffres ne suffit pas : il faut dire quelle course, quels
      coureurs, quel geste, et ce qu'on voit à l'écran avant et après.
+
+164. **L'écart d'un groupe se mesure depuis le groupe qui le précède, et le groupe 1 n'en a
+     pas.** Ses mots, le 1er novembre 2026, devant le compte rendu du test :
+
+     > Bon alors je constate qu'à l'instant T, notre système ne fonctionne pas du tout comme il
+     > devrait ! L'appli n'a pas réagi correctement [...]
+     >
+     > Cependant, il faut aussi affirmer que ce que tu as essayé de faire n'est pas vraiment
+     > plausible : Tu as définis que les deux derniers coureurs du peloton, 12 et 52, étaient
+     > les leaders de la course, mais tu n'as pas du tout adapté la vitesse de ces coureurs, ni
+     > de tous les autres. Ce qui signifie que ces deux coureurs se trouvaient toujours très
+     > proches du reste du peloton. Tu m'as dit que tout d'abord, avant que tu les déclares
+     > leaders, ces deux coureurs 12 et 52 formaient un groupe pointé à 31m du peloton. Et après
+     > les avoir déclarés leaders, ils étaient encore et toujours à 31m du peloton, 31m d'avance
+     > cette fois-ci. Alors là il y a quelque chose qui manifestement ne fonctionne pas !
+     >
+     > Je résume, si tu déclares les deux coureurs 12 et 52 comme leaders, ils doivent donc se
+     > retrouver en haut de la timeline. Etant en haut de la time, ils ne doivent être pointés à
+     > x mètres de tel ou tel groupe. Non, car ce sont les leaders, le groupe 1, et donc c'est
+     > le groupe 2 qui doit être pointé à x mètres du groupe 1 des leaders. Et le groupe 3 doit
+     > être pointé à x mètres du groupe, et ainsi de suite.
+     >
+     > Donc dans ton test, une fois que tu les a déclarés leaders, ils devenaient le groupe 1 et
+     > le peloton le groupe 2. Si il y avait effectivement une distance de 31m entre les deux
+     > groupes, alors en réalité l'appli aurait dû indiquer :
+     >
+     > Groupe 1 - Leaders / 12 SUI / 52 ITA
+     > Groupe 2 - Bunch à 219m / 15 IRL / 4 GBR / 11 JPN / 23 DEN / 46 BEL / 70 BRA / 58 KAZ /
+     > 67 GER / 1 ESP / 9 SLO / 3 FRA / 18 POR / 61 COL / 7 NED
+     >
+     > Et à partir de là c'est le groupe 1 qui est attendu au sprints en premier, et donc sans
+     > nouvelle modification de position des groupes, les coureurs 12 et 52 se seraient partagé
+     > les 2 premières places de chaque sprint
+
+     **Les 219 m sont l'arithmétique de la piste** : 250 − 31. Sur un anneau fermé, dire que le
+     12 et le 52 sont en tête, c'est dire que le peloton, qui est 31 m devant eux sur le
+     revêtement, est 219 m **derrière** eux dans la course. Le signe `+` n'a donc pas sa place
+     dans la timeline : aucun groupe n'est devant le groupe 1.
