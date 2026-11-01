@@ -2236,3 +2236,27 @@ peloton » exclut les coureurs qui ont eux aussi fait le tour : sinon, quand le 
 reviennent ensemble, le dernier du groupe devient le 12.
 
 Le moteur de course tourne toujours **à côté** de l'ancien moteur : aucun écran ne le lit.
+
+## 52. Le moteur de course branché (build 190)
+
+`MC` naît dans `reset()`, avec la piste, les boucles et les trois mesures du §1 (`GROUP_GAP_S`,
+`BIKE_L`, `CASS_DELAY_S`). Il reçoit chaque détection là où elle est enregistrée, à côté de
+`S.reads[li].push(...)`, et **rien d'autre** : ni position, ni vitesse, ni tour.
+
+`computeGroups(M)` lui prend trois choses :
+
+| ce que l'écran prend | ce que le moteur donne | le repli quand il ne connaît pas le coureur |
+|---|---|---|
+| `cmpRead`, l'ordre de la file et des blocs | le rang dans `chaine()` | les mètres lus, `ndOf` puis l'heure de passage |
+| la découpe des blocs | deux `groupes()` différents = deux blocs | « sont-ils à un tour l'un de l'autre ? », sur `behind` |
+| `g.gap`, l'écart en temps d'un bloc | la différence des décalages, moins une longueur de vélo | `pairGap`, la même formule sur les mètres lus |
+
+Et son point 183 : `if (MC && S.leader) MC.designer(S.leader.bib)`. Tant qu'il n'a désigné personne,
+le moteur garde sa propre ancre — le premier coureur détecté — et c'est elle qui mène la file.
+
+**Ce que l'écran ne lui prend pas.** Les positions sur la piste : le moteur de course ne connaît
+pas les mètres. L'ovale lit donc toujours `x.behind`, la mesure interpolée, pour dessiner — mais
+les **blocs** qu'il dessine sont ceux du moteur, puisqu'ils viennent de `G.groups`.
+
+Les ±20 que le moteur constate ne sont **pas** branchés : les propositions de l'écran restent
+celles de l'ancien moteur. Ce n'est pas ce qui a été demandé.

@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '189';
+const BUILD = '190';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -697,7 +697,16 @@ const byBib = (a, b) => a - b;
 
 let simCols = { bib: true, nat: true, name: true };   // the dossard is never hidden: a rider without his number is nobody
 let S; // simulation + operator state
+// LE MOTEUR DE COURSE EST BRANCHÉ. L'opérateur, 1er novembre 2026 : « branche le moteur de course
+// sur la timeline et l'ovale ». Il naît avec la course, il ne reçoit que les détections des boucles,
+// et l'écran lui prend trois choses : l'ORDRE de la file, la COMPOSITION des blocs, et l'ÉCART entre
+// deux blocs. Les positions sur la piste restent à la simulation : le moteur de course ne connaît
+// pas les mètres, et l'ovale en a besoin pour dessiner.
+let MC = null;
 function reset() {
+  MC = (window.MoteurCourse && LOOPS && LOOPS.length) ? window.MoteurCourse.creer({
+    piste: TRACK, boucles: LOOPS, arrivee: 0,
+    cassureS: GROUP_GAP_S, veloM: BIKE_L, confirmationS: CASS_DELAY_S }) : null;
   S = {
     t: 0, factor: 1, finished: false,
     riders: RIDERS.map(([bib, name, nat, color, dk], i) => ({
@@ -909,6 +918,7 @@ function step(dt) {
         o.rec = rec;
         (o.lastAt || (o.lastAt = []))[li] = rec.t;   // son dernier temps de passage SUR CETTE BOUCLE : le z du §1
         S.reads[li].push({ bib: nb, t: rec.t });   // the loop's own passage log: the count that names the bikes
+        if (MC) MC.detection({ bib: nb, boucle: L, t: rec.t });   // la seule entrée du moteur de course
         // crossings log: line N = lap N of the race as judged. A rider's crossing is filed on his own count brought back by
         // his credited laps, so a rider who took a lap rides, and is listed, with the bunch. n keeps his real crossing count.
         if (L === 0 && ka > 0) {
@@ -1137,7 +1147,22 @@ function computeGroups(M) {
      67 fois, dont 65 pour 3 m ou moins. */
   const ndOf = r => (r.rec ? r.rec.d : M.get(r.bib).pos) - TRACK * impliedOf(r);
   const atOf = r => (r.rec ? r.rec.t : Infinity);
-  const cmpRead = (a, b) => (ndOf(b.r) - ndOf(a.r)) || (atOf(a.r) - atOf(b.r)) || (a.r.bib - b.r.bib);
+  // L'ORDRE, LES BLOCS ET LES ÉCARTS VIENNENT DU MOTEUR DE COURSE. Sa chaîne range les coureurs par
+  // leur décalage en secondes sur l'ancre, et ses groupes disent où elle se casse (§1). Un coureur
+  // qu'aucune boucle n'a encore situé par rapport à l'ancre n'y figure pas : pour lui seul, on
+  // retombe sur les mètres lus, qui sont le même calcul écrit autrement (§1).
+  const mcRang = new Map(), mcRetard = new Map(), mcBloc = new Map();
+  if (MC) {
+    MC.chaine().forEach((x, i) => { mcRang.set(x.c.bib, i); mcRetard.set(x.c.bib, x.retard); });
+    MC.groupes().forEach((g, i) => g.coureurs.forEach(b => mcBloc.set(b, i)));
+  }
+  const cmpRead = (a, b) => {
+    const ra = mcRang.get(a.r.bib), rb = mcRang.get(b.r.bib);
+    if (ra != null && rb != null) return (ra - rb) || (a.r.bib - b.r.bib);
+    if (ra != null) return -1;
+    if (rb != null) return 1;
+    return (ndOf(b.r) - ndOf(a.r)) || (atOf(a.r) - atOf(b.r)) || (a.r.bib - b.r.bib);
+  };
   let leaderR = null;
   if (S.leader) {
     leaderR = readable.find(r => r.bib === S.leader.bib) || null;
@@ -1153,6 +1178,10 @@ function computeGroups(M) {
       for (const r of readable) r.prevRel = np(r) - np(leaderR);
     }
   }
+  // SON POINT 183 : la tête de la timeline est celle qu'il désigne, et le moteur de course la tient.
+  // Tant qu'il n'a désigné personne, le moteur garde la sienne — le premier coureur détecté — et
+  // c'est elle qui mène la file.
+  if (MC && S.leader) MC.designer(S.leader.bib);
   let leaderSrc = leaderR ? 'désigné' : null;
   // LA TÊTE EST LE PREMIER DE L'ORDRE RELEVÉ AUX BOUCLES. Plus de seuil, plus de retenue : l'ordre ne bouge
   // qu'au passage, donc la tête non plus.
@@ -1189,7 +1218,16 @@ function computeGroups(M) {
       // sont-ils à un tour l'un de l'autre ? —, à laquelle la mesure interpolée répond sans ambiguïté, 0 m ou 250 m.
       // Mesuré à la build 179 : posée sur les mètres LUS, dont le pas entre deux boucles atteint 125 m, elle coupait
       // un amas en deux blocs fantômes et les bascules de tour remontaient de 104 à 142.
-      if (!g || x.behind - g.rows[g.rows.length - 1].behind > TRACK / 2) { g = { rows: [], op: null, cluster: c }; groups.push(g); }
+      // LA DÉCOUPE EST CELLE DU MOTEUR DE COURSE : deux coureurs que sa chaîne sépare par une
+      // cassure confirmée sont deux blocs. Quand il ne connaît pas l'un des deux, on retombe sur la
+      // question physique — sont-ils à un tour l'un de l'autre ? —, à laquelle les mètres
+      // interpolés répondent sans ambiguïté, 0 m ou 250 m (build 179).
+      const prec = g && g.rows[g.rows.length - 1];
+      const ba = prec && mcBloc.get(prec.r.bib), bb = mcBloc.get(x.r.bib);
+      const coupe = !g ? true
+        : (ba != null && bb != null) ? ba !== bb
+        : x.behind - prec.behind > TRACK / 2;
+      if (coupe) { g = { rows: [], op: null, cluster: c }; groups.push(g); }
       g.rows.push(x);
     }
   }
@@ -1249,6 +1287,10 @@ function computeGroups(M) {
     if (!prevG) { g.gap = null; g.gapM = null; prevG = g; continue; }
     const d = g.head - prevG.tail;
     const ahead = prevG.rows[prevG.rows.length - 1], follower = g.rows[0];
+    // L'ÉCART EN TEMPS VIENT DU MOTEUR DE COURSE quand il connaît les deux coureurs de la paire :
+    // c'est la différence de leurs décalages, moins le temps qu'il faut au suiveur pour couvrir une
+    // longueur de vélo (§1). Sinon, la même formule écrite sur les mètres lus.
+    const rA = ahead && mcRetard.get(ahead.r.bib), rB = follower && mcRetard.get(follower.r.bib);
     // PLUS AUCUN TOUR N'EST AJOUTÉ ICI. Tant que l'ordre venait des mètres interpolés et l'écart des mêmes mètres,
     // un écart pouvait sortir négatif et on y ajoutait autant de tours qu'il fallait pour que le bloc repasse
     // derrière — 164 fois sur le palier 2, et c'est ce saut de 18,3 s que l'opérateur a vu. Les deux viennent
@@ -1261,7 +1303,8 @@ function computeGroups(M) {
           queueDessus: ahead ? ahead.r.bib : null, boucleQueue: ahead && ahead.r.rec ? ahead.r.rec.loop : null,
           teteDessous: follower ? follower.r.bib : null, boucleTete: follower && follower.r.rec ? follower.r.rec.loop : null });
     g.gapM = d;
-    g.gap = ahead && follower ? pairGap(ahead, follower, d) : d / CFG.pace;
+    g.gap = (rA != null && rB != null) ? rB - rA - BIKE_L / spdOfRow(follower)
+          : ahead && follower ? pairGap(ahead, follower, d) : d / CFG.pace;
     prevG = g;
   }
   // LE RANG DE CHAQUE COUREUR DANS LA TIMELINE. L'opérateur, 1er novembre 2026 (point 170) : « Puisque tu as

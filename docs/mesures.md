@@ -3336,3 +3336,32 @@ et zéro point dû à quiconque : le coureur le plus écarté du peloton a fini 
    peloton avant que sa dérive n'y soit. L'écart doit par ailleurs être positif **à l'instant** du
    constat, et pas seulement l'avoir été : c'est ce qui faisait sortir trois constats à écart
    négatif.
+
+### Build 190 · le moteur de course branché sur la timeline et sur l'ovale
+
+Sa demande du 1er novembre 2026 : « branche le moteur de course sur la timeline et l'ovale ».
+L'écran lui prend **trois choses**, et rien d'autre : l'**ordre** de la file, la **composition** des
+blocs, et l'**écart en temps** entre deux blocs. Les positions sur la piste restent à la simulation,
+parce que le moteur de course ne connaît pas les mètres et que l'ovale en a besoin pour dessiner —
+l'ovale suit donc les blocs du moteur en les plaçant à leur endroit sur la piste.
+
+| sur le palier 2, course entière (20 846 images) | ancien moteur, build 186 | moteur de course branché |
+|---|---|---|
+| sauts d'écart de plus de 10 s | 167 | **2** |
+| bascules de tour | 104 | 147 |
+| changements de composition de la file | — | 770 |
+| écarts affichés négatifs | 164 (inventés en tour) | 511, le pire à −1,9 s |
+
+**Palier 1, course entière (20 053 images).** Un seul bloc de 16 du départ à l'arrivée, **zéro**
+saut d'écart, **zéro** écart négatif, **zéro** bascule de tour, et la composition de la file change
+6 fois sur toute la course.
+
+**Ce que l'écran montre au palier 2 à 600 s** — trois blocs, et ils sont justes : `1-LEADERS` le 18,
+le 61 et le 7 ; `2-BUNCH` les onze du peloton ; `3-LAST` le 46 et le 70. À l'arrivée : le peloton de
+onze, puis le 12 et le 52 à **2,84 s**, puis le 18, le 61 et le 7 à **2,37 s**.
+
+**Ce qui n'est pas bon.** 511 images affichent un écart négatif entre deux blocs — en moyenne
+−0,38 s, au pire −1,9 s. Ce sont deux blocs que l'écran sépare parce qu'ils sont à un tour l'un de
+l'autre **sur la piste**, alors que le moteur de course, lui, n'y voit aucune cassure : il les range
+dans le même groupe, et leur écart est donc plus petit que le seuil du §1. Ce ne sont plus les
+sauts de 18 s qu'il avait vus, mais ça reste un nombre négatif à l'écran.
