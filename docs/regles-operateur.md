@@ -2324,3 +2324,11 @@ l'écran, une à la fois.
      Une question se pose donc sur **un nombre précis, à un endroit précis de l'écran, avec les
      dossards concernés** — « le bloc du 12 et du 52, sous le peloton, doit-il afficher 2 m ou
      31 m ? » — et jamais sur une règle énoncée en général.
+
+167. **L'écart se mesure entre les deux coureurs qui se font face.** Ses mots, le 1er novembre
+     2026 : « **l'écart se mesure entre le dernier du groupe des leaders et le premier du groupe
+     du peloton. Concrètement entre le n° 52 et le n°15. Le résultat n'est pas 219m, c'est une
+     certitude !** » Et sur le cas sans forçage, mis devant les deux chiffres : « **Effectivement
+     l'écart qu'il faut afficher est celui entre le 7 et le 12, soit 2m.** »
+     C'est donc, pour tout bloc, la distance de la **queue du bloc au-dessus** à la **tête du
+     bloc en dessous**, et non de tête à tête.

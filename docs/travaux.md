@@ -701,3 +701,11 @@ groupe suivant portera sa distance en arrière, autour de la piste.
 §39 de `architecture.md`, les mesures dans `mesures.md` §41. Reste ouvert, et à lui :
 l'éligibilité suit maintenant le groupe 1 forcé, mais l'ordre **jugé** d'un sprint vient
 toujours des boucles (point 157) — les deux peuvent donc se contredire.
+
+**Corrigé au build 165** : l'écart se mesure de la queue du bloc au-dessus à la tête du bloc en
+dessous (point 167). Ses deux chiffres sortent justes, 2 m et 217 m (`mesures.md` §43).
+
+**Reste ouvert, et mesuré** (`mesures.md` §44) : avec le bloc forcé en tête, les sprints 1 et 2
+ont été jugés `15, 4, 11, 23, 46` — l'ordre des boucles. Le 12 et le 52 n'ont rien marqué. Et
+depuis que le leader a été repris par le 7, le bloc du haut porte `leader` pendant que le
+panneau affiche `7 NED`.

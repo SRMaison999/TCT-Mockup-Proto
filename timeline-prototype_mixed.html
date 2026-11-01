@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">164</span>
+      <span class="bld" id="buildno">165</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -1094,8 +1094,11 @@ function computeGroups(M) {
   }
   // AUCUN GROUPE N'EST DEVANT LE GROUPE 1. L'opérateur, 1er novembre 2026 (point 164) : « c'est le groupe 2 qui
   // doit être pointé à x mètres du groupe 1 des leaders. Et le groupe 3 doit être pointé à x mètres du groupe 2,
-  // et ainsi de suite ». L'écart d'un bloc se mesure donc DEPUIS LE BLOC QUI LE PRÉCÈDE, de tête à tête, et le
-  // premier n'en a pas.
+  // et ainsi de suite ». L'écart d'un bloc se mesure donc DEPUIS LE BLOC QUI LE PRÉCÈDE, et le premier n'en a pas.
+  //   Entre QUELS DEUX COUREURS : « l'écart se mesure entre le dernier du groupe des leaders et le premier du
+  // groupe du peloton » (point 167). Donc de la QUEUE du bloc du dessus à la TÊTE du bloc du dessous — les deux
+  // coureurs qui se font face — et non de tête à tête. Son chiffre : le bloc du 12 et du 52 sous le peloton
+  // affiche 2 m, la distance du 7 au 12, et non 31 m qui était celle du 15 au 12.
   //   Quand la mesure contredit l'ordre — parce que l'opérateur a forcé un groupe en tête — l'écart sort négatif.
   // Il ne peut pas l'être : sur un anneau fermé, un groupe qui paraît 31 m devant est 219 m derrière, 250 − 31.
   // On lui ajoute donc autant de tours qu'il faut pour qu'il repasse derrière, et c'est exactement son chiffre.
@@ -1105,7 +1108,7 @@ function computeGroups(M) {
   for (const g of groups) {
     if (g.incident) continue;
     if (!prevG) { g.gap = null; prevG = g; continue; }
-    let d = g.head - prevG.head;
+    let d = g.head - prevG.tail;
     if (d < 0) d += TRACK * Math.ceil(-d / TRACK);
     g.gap = d; prevG = g;
   }
@@ -3151,7 +3154,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#ovtitle').textContent = "Men's Points Race - " + plural(LAPS, 'lap') + ' - ' + plural(NSPRINTS, 'sprint') + ' - ' + TRACK + 'm';
-  $('#buildno').textContent = '164';
+  $('#buildno').textContent = '165';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

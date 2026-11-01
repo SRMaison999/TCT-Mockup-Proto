@@ -1839,3 +1839,8 @@ Sa règle est aux points 164 et 165 de `regles-operateur.md`, les mesures dans `
 
 **Ce que cela ne touche pas** : `x.dS`, qui sert à l'éligibilité, mesurait déjà en arrière du
 groupe de tête autour de la piste. Les deux calculs disent maintenant la même chose.
+
+**Corrigé au build 165** : l'écart du §39 se mesure `g.head − précédent.tail`, de la queue du
+bloc au-dessus à la tête du bloc en dessous (point 167), et non plus de tête à tête. La même
+ligne donne ses deux chiffres : **2 m** pour le bloc du 12 et du 52 sous le peloton, et
+**217 m** pour le peloton une fois ce bloc posé en tête.

@@ -2728,3 +2728,41 @@ roule à **2,2 m** derrière le 18 POR, dans la file, treizième sur seize.
 **Ce que donne sa règle.** Mesuré entre le **dernier du groupe de tête (52 ITA)** et le
 **premier du groupe suivant (15 IRL)**, en faisant le tour de la piste : 250 − 33,0 =
 **217,0 m**, et non 219. Les 219 venaient de 250 − 31, c'est-à-dire d'une mesure de tête à tête.
+
+### L'écart entre les deux coureurs qui se font face (build 165)
+
+Même course, même tour 6. Les positions réelles sont au §42 : file de 33,0 m, 2,20 m entre
+coureurs, du 15 IRL en tête au 52 ITA en queue.
+
+| État | En-tête du bloc | Mesuré entre |
+|---|---|---|
+| Le bloc du 12 et du 52 **sous** le peloton | **2 m** | 7 NED → 12 SUI |
+| Le même bloc **posé en tête** | le peloton à **217 m** | 52 ITA → 15 IRL, par l'autre côté de la piste |
+
+Ses deux chiffres, sortis de la même ligne de code.
+
+### La suite de la course, avec le bloc forcé en tête (build 165)
+
+Course jouée du tour 6 au tour 26 avec le 12 et le 52 posés en tête.
+
+| Tour | Leader affiché | `TO GO` | La timeline |
+|---|---|---|---|
+| 9 | 12 SUI | 31 | `1-LEADERS · leader · manual` · `2-BUNCH · 217 m` |
+| 13 | 12 SUI | 27 | inchangée |
+| 18 | 12 SUI | 22 | inchangée |
+| 21 | **7 NED** | 19 | inchangée |
+| 26 | 7 NED | 14 | inchangée |
+
+**L'ordre forcé n'a pas bougé d'un tour** — le bloc est resté premier, avec son étiquette et ses
+217 m. **Le leader, lui, a été repris** entre le tour 18 et le tour 21 par le 7 NED, qui a
+dépassé le 12 sur la piste : c'est sa règle du point 159. Les tours restants ont continué de se
+décrémenter sans à-coup.
+
+**Les deux sprints traversés ont été jugés sur les boucles** : sprint 1 au tour 10 et sprint 2
+au tour 20, tous deux `15, 4, 11, 23, 46`. **Ni le 12 ni le 52 n'y figurent**, alors qu'il
+attend d'eux « les 2 premières places de chaque sprint » (point 164). Rien n'est codé de ce
+côté-là.
+
+**Ce qui se contredit à l'écran** : depuis le tour 21, le bloc du haut porte `leader` et
+s'appelle `1-LEADERS`, pendant que le champ `LEADER` du panneau dit `7 NED`, qui est dans le
+peloton.
