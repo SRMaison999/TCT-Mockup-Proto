@@ -2393,3 +2393,10 @@ l'écran, une à la fois.
      **Rien n'est codé.** Aujourd'hui la tête de la course est le coureur dont la position
      mesurée sur la piste est la plus avancée, et l'ordre à l'intérieur d'un bloc est celui des
      mètres mesurés : ni l'un ni l'autre ne regarde le groupe ni la ligne de sprint.
+
+173. **Dans un bloc, l'ordre affiché est celui des boucles, à chaque passage.** Ses mots, le
+     1er novembre 2026, à la question « après le sprint du tour 30, où le 52 a passé la ligne
+     avant le 12 : si le 12 roule ensuite devant le 52, le bloc affiche 52, 12 ou 12, 52 ? » :
+     « **il faut afficher ce qui est mesuré par les boucles à chaque passage** ».
+     Ce qu'il a dit au point 172 de la ligne de sprint tranche donc **le classement du sprint**
+     entre deux coureurs d'un même groupe, et non l'ordre que le bloc montre entre deux sprints.
