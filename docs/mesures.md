@@ -3516,3 +3516,33 @@ détection, le coureur de tête passe du mètre 5 690,36 au mètre 5 692,54 et l
 | propositions ouvertes à l'écran | 0 | **12** |
 
 Groupes à l'arrivée de la course 2 : 12 et 52 · 18, 61 et 7 à 2,37 s · le peloton de onze à 10,84 s.
+
+### Build 196 · la timeline seule, mesurée en cassures
+
+Sa question : « alors maintenant est-ce que LA TIMELINE est correcte ? Je te demande que LA
+TIMELINE ». Deux contrôles, et rien d'autre, sur les deux courses entières.
+
+**1. L'ordre.** Un coureur est-il jamais affiché au-dessus d'un coureur qui est devant lui ?
+
+| | course 1 (1 003 s) | course 2 (1 042 s) |
+|---|---|---|
+| ordre inversé | **0 seconde** | **0 seconde** |
+
+**2. Les groupes.** Une cassure de plus d'une seconde reste-t-elle à l'intérieur d'un groupe ?
+
+| | course 1 | course 2 |
+|---|---|---|
+| cassure restée dans un groupe | **0 seconde** | **38,9 s sur 1 042** |
+| en combien de moments | — | 119 |
+| le plus long | — | 5,5 s |
+| le plus gros écart vu | — | 13,99 s, entre le 7 et le 12, à 360,9 s |
+
+La plupart de ces moments sont des écarts qui viennent de franchir la seconde — 1,5 s, 1,7 s — et
+son §1 demande qu'une cassure **tienne** avant d'être déclarée : le délai est le sien. Le cas de
+360,9 s, lui, ne s'explique pas par ce délai et reste à comprendre.
+
+**Deux erreurs de mesure corrigées avant de rendre ces chiffres.** La première comparait deux
+coureurs sans vérifier qu'ils étaient sur le même tour. La seconde appelait « ordre inversé » tout
+écart négatif au sens du §1 — or `z − (x + y)` sort négatif dès que deux coureurs sont plus proches
+qu'une longueur de vélo, ce qui est le cas permanent dans un peloton : elle annonçait 1 021 secondes
+d'ordre inversé là où il n'y en a aucune.

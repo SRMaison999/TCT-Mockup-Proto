@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '195';
+const BUILD = '196';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -3786,7 +3786,7 @@ function loadRace(r) {
 }
 
 // ---------- loop ----------
-window.__proto = { state: () => S, LOOPS: () => LOOPS, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
+window.__proto = { state: () => S, LOOPS: () => LOOPS, moteur: () => MC, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
 loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();

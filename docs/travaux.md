@@ -931,3 +931,12 @@ en regardant l'ovale. Les écarts négatifs tombent de 511 images à 161, et le 
 −0,12 s. Ce qui reste est le délai de confirmation du §1 — une cassure doit tenir trois dixièmes de
 seconde avant d'être levée —, et cela vaut un dixième de seconde à l'écran. Détail dans
 `docs/mesures.md`, build 191.
+
+### 29. Une cassure de 14 s restée dans un groupe à 360,9 s · ouvert
+
+Mesuré au palier 2, build 196. Le 7 et le 12 sont affichés dans le même groupe alors que 13,99 s
+les séparent. Les autres moments du même genre portent sur des écarts qui viennent de franchir la
+seconde, et s'expliquent par le délai de confirmation du §1 ; celui-là non.
+
+Au total : 38,9 secondes sur les 1 042 de la course, en 119 moments, le plus long de 5,5 s.
+L'ordre de la timeline, lui, est juste d'un bout à l'autre des deux courses.
