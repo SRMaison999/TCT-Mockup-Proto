@@ -612,7 +612,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '178';
+const BUILD = '180';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1164,7 +1164,12 @@ function computeGroups(M) {
       avance: top.length > 1 ? +(top[0].lu - top[1].lu).toFixed(2) : null });
   }
   S.tlOf = {};
-  for (const x of rows) { x.behind = leaderNp - np(x.r); S.tlOf[x.r.bib] = x.behind; }   // the delay in the timeline, in metres
+  // DEUX RETARDS, DEUX USAGES. `behind` reste la mesure interpolée : elle sert l'OVALE, qui lit la piste et doit
+  // avancer en continu. `behindRead` est le retard tel que les DÉTECTIONS le donnent (point 177) : il sert tout ce
+  // qui parle de la course — la découpe des blocs, la tête et la queue d'un bloc, et l'écart entre deux blocs.
+  // L'opérateur, 1er novembre 2026 : « g.head et g.tail doivent venir des détections eux aussi ».
+  const leaderRead = ndOf(leaderR);
+  for (const x of rows) { x.behind = leaderNp - np(x.r); x.behindRead = leaderRead - ndOf(x.r); S.tlOf[x.r.bib] = x.behind; }
   rows.sort(cmpRead);   // l'ordre, lui, vient des boucles (point 177), jamais de `behind`
 
   // 2. display blocks: a physical cluster whose members are a lap apart in the race is shown as several blocks,
@@ -1177,20 +1182,26 @@ function computeGroups(M) {
     let g = null;
     for (const x of free) {
       x.pending = pendingOf(x.r.bib);
+      // La DÉCOUPE, elle, reste sur les mètres interpolés : elle pose une question physique — ces deux coureurs
+      // sont-ils à un tour l'un de l'autre ? —, à laquelle la mesure interpolée répond sans ambiguïté, 0 m ou 250 m.
+      // Mesuré à la build 179 : posée sur les mètres LUS, dont le pas entre deux boucles atteint 125 m, elle coupait
+      // un amas en deux blocs fantômes et les bascules de tour remontaient de 104 à 142.
       if (!g || x.behind - g.rows[g.rows.length - 1].behind > TRACK / 2) { g = { rows: [], op: null, cluster: c }; groups.push(g); }
       g.rows.push(x);
     }
   }
   for (const g of S.groups) {
     const grows = g.type === 'manual' ? rows.filter(x => g.bibs.includes(x.r.bib))
-      : g.bibs.filter(b => M.has(b)).map(b => ({ r: S.riders.find(r => r.bib === b), m: M.get(b), behind: null }));
+      : g.bibs.filter(b => M.has(b)).map(b => ({ r: S.riders.find(r => r.bib === b), m: M.get(b), behind: null, behindRead: null }));
     for (const x of grows) x.pending = pendingOf(x.r.bib);
     if (grows.length) groups.push({ rows: grows, op: g, cluster: grows[0].cluster || null });
   }
   for (const g of groups) {
     g.rows.sort(cmpRead);   // dans un bloc : l'ordre de passage sur les boucles (point 174, point 177)
     g.bibs = g.rows.map(x => x.r.bib);
-    g.head = Math.min(...g.rows.map(x => x.behind == null ? 1e9 : x.behind)); g.tail = Math.max(...g.rows.map(x => x.behind == null ? -1e9 : x.behind));
+    // la tête et la queue d'un bloc, en mètres LUS : son instruction du 1er novembre 2026
+    g.head = Math.min(...g.rows.map(x => x.behindRead == null ? 1e9 : x.behindRead));
+    g.tail = Math.max(...g.rows.map(x => x.behindRead == null ? -1e9 : x.behindRead));
     g.incident = !!(g.op && g.op.type !== 'manual');
     g.pending = g.rows.some(x => x.pending);
   }
@@ -1233,16 +1244,19 @@ function computeGroups(M) {
   for (const g of groups) {
     if (g.incident) continue;
     if (!prevG) { g.gap = null; g.gapM = null; prevG = g; continue; }
-    let d = g.head - prevG.tail;
-    const dBrut = d;
-    if (d < 0) d += TRACK * Math.ceil(-d / TRACK);
+    const d = g.head - prevG.tail;
     const ahead = prevG.rows[prevG.rows.length - 1], follower = g.rows[0];
-    // C'EST ICI QU'UN TOUR EST AJOUTÉ À UN ÉCART. Quand la mesure sort négative, on ajoute autant de tours qu'il
-    // faut pour que le bloc repasse derrière. Le log porte la valeur avant et après, et de combien de tours.
-    if (d !== dBrut && dbgChanged('gapfix:' + g.bibs[0], Math.round(d - dBrut)))
-      dbg('ECART-TOUR', 'Bloc ' + g.bibs[0] + ' : écart négatif ' + dBrut.toFixed(1) + ' m, ' + Math.round((d - dBrut) / TRACK) + ' tour(s) ajouté(s) → ' + d.toFixed(1) + ' m',
-        { bloc: g.bibs[0], brut: +dBrut.toFixed(1), corrige: +d.toFixed(1), tours: Math.round((d - dBrut) / TRACK),
-          queueDessus: ahead ? ahead.r.bib : null, teteDessous: follower ? follower.r.bib : null });
+    // PLUS AUCUN TOUR N'EST AJOUTÉ ICI. Tant que l'ordre venait des mètres interpolés et l'écart des mêmes mètres,
+    // un écart pouvait sortir négatif et on y ajoutait autant de tours qu'il fallait pour que le bloc repasse
+    // derrière — 164 fois sur le palier 2, et c'est ce saut de 18,3 s que l'opérateur a vu. Les deux viennent
+    // maintenant des détections : un bloc rangé derrière un autre a, par construction, une distance lue plus
+    // petite. Ce qui peut encore sortir légèrement négatif, c'est le pas entre deux boucles — les deux coureurs de
+    // la paire n'ont pas été lus sur la même —, et cela ne s'invente pas en tour : on le NOTE.
+    if (d < 0 && dbgChanged('ecartneg:' + g.bibs[0], Math.round(d / 10)))
+      dbg('ECART-NEGATIF', 'Bloc ' + g.bibs[0] + ' : écart lu de ' + d.toFixed(1) + ' m sous le bloc ' + prevG.bibs[0],
+        { bloc: g.bibs[0], blocDessus: prevG.bibs[0], metres: +d.toFixed(1),
+          queueDessus: ahead ? ahead.r.bib : null, boucleQueue: ahead && ahead.r.rec ? ahead.r.rec.loop : null,
+          teteDessous: follower ? follower.r.bib : null, boucleTete: follower && follower.r.rec ? follower.r.rec.loop : null });
     g.gapM = d;
     g.gap = ahead && follower ? pairGap(ahead, follower, d) : d / CFG.pace;
     prevG = g;

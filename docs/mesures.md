@@ -3080,3 +3080,36 @@ les boucles, mais la **place** du bloc vient désormais des détections tandis q
 `g.tail`, qui servent la correction de tour, viennent encore des mètres interpolés. Les deux ne
 disent pas toujours la même chose, et quand elles se contredisent un tour est ajouté à l'écart.
 C'est le poste 18 et le poste 20 de `travaux.md`.
+
+## Build 180 · l'écart des blocs, mesuré aux détections
+
+**La course mesurée** : « Palier 2 », 250 m, 60 tours, 16 coureurs, du départ à l'arrivée, puis
+« Palier 1 » en contrôle.
+
+| | build 178 | build 180 |
+|---|---|---|
+| Tours ajoutés d'office à un écart négatif | **164** | **0** — le code ne le fait plus |
+| Écarts lus légèrement négatifs, notés sans correction | — | **9**, de −115 m et −125 m |
+| Tours retranchés, bascules | 104 | **104** |
+| Changements de tête | 32 | **32** |
+| Changements de composition de la file | 397 | **397** |
+| Propositions | une par nombre de tours | une par nombre de tours |
+| Points qui reculent | 0 | **0** |
+| Sauts d'écart de plus de 10 s | 164 | **167** |
+
+**Les 9 écarts négatifs qui restent sont tous d'un pas de boucle.** Les boucles sont à 0, 115 et
+240 m : les pas valent 115 m, 125 m et 10 m. Les neuf valeurs relevées sont **−115 m** et
+**−125 m**, jamais autre chose. C'est la queue du bloc du dessus et la tête du bloc du dessous lues
+sur deux boucles différentes, et rien d'autre.
+
+**Le contrôle, palier 1** : un seul bloc, un seul leader, la file change **3 fois** sur toute la
+course, zéro proposition, zéro tour retranché, zéro écart négatif, zéro saut d'écart, zéro point
+qui recule.
+
+**Ce qui reste.** 167 sauts d'écart de plus de 10 s subsistent, et ils ne viennent plus du tour
+ajouté : l'écart affiché sort de `pairGap()`, qui lit les **heures de passage** des deux coureurs
+de la paire. Il saute quand la **paire change** — la composition d'un bloc bouge 397 fois sur la
+course — ou quand les deux coureurs de la paire ont franchi leur dernière boucle commune à un tour
+d'intervalle, ce qui donne un z de 18,3 s. Les mètres `g.gapM`, eux, ne servent plus que de repli
+et sont grossiers par construction : au tour 6, trois blocs distincts portent `head` 0, 135 et
+250 m, parce que ce sont les seules distances que les trois boucles donnent.

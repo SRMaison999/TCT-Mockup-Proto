@@ -2081,3 +2081,36 @@ viennent du même endroit.
 dixième : le 12 et le 52 entrent dans le paquet à deux détections différentes, et deux
 propositions séparées s'ouvraient pour le même fait de course. Si une proposition du même nombre
 de tours est déjà ouverte, le coureur la **rejoint** — `PROPOSITION-JOINT` le dit dans les logs.
+
+## 49. La tête et la queue d'un bloc viennent des détections (build 180)
+
+**Son instruction, le 1er novembre 2026** : « Attaque l'écart des blocs : g.head et g.tail doivent
+venir des détections eux aussi. »
+
+`behindRead(x)` est le retard d'un coureur tel que les détections le donnent — la distance lue du
+leader moins la sienne. `g.head` et `g.tail` en sortent, et avec eux l'écart `d = g.head −
+prevG.tail`.
+
+**Et le tour ajouté d'office disparaît.** Tant que l'ordre venait des mètres interpolés et l'écart
+des mêmes mètres, un écart pouvait sortir négatif, et le code y ajoutait autant de tours qu'il en
+fallait pour que le bloc repasse derrière. C'était le saut de 18,3 s que l'opérateur voyait, et il
+se produisait 164 fois au palier 2. Les deux grandeurs viennent maintenant du même endroit : un
+bloc rangé derrière un autre a, par construction, une distance lue plus petite. Il reste
+**9 écarts légèrement négatifs** sur toute la course, de **−115 m** et **−125 m** — exactement le
+pas entre deux boucles, quand les deux coureurs de la paire n'ont pas été lus sur la même. Cela ne
+s'invente plus en tour : `ECART-NEGATIF` le **note**, et c'est tout.
+
+**Trois grandeurs maintenant, pas deux**, et chacune répond à une question différente :
+
+| | d'où elle vient | la question à laquelle elle répond |
+|---|---|---|
+| `behind` | la position interpolée | **où est-il sur la piste ?** — l'ovale, qui doit avancer en continu ; et **est-il à un tour de son voisin ?** — la découpe d'un amas en blocs |
+| `behindRead` | la distance lue à la dernière détection | **de combien est-il en retard dans la course ?** — la tête et la queue d'un bloc, l'écart entre deux blocs |
+| `cmpRead` | distance lue, puis heure du passage | **qui est devant qui ?** — la file, les blocs, la tête |
+
+La découpe est restée sur les mètres interpolés **à dessein** : elle pose une question physique —
+ces deux coureurs sont-ils à un tour l'un de l'autre ? —, à laquelle l'interpolation répond sans
+ambiguïté, 0 m ou 250 m. Mesuré à la build 179 : posée sur les mètres lus, dont le pas atteint
+125 m, elle coupait un amas en deux blocs fantômes et les bascules de tour remontaient de 104 à
+142. C'est le seul endroit où la mesure interpolée est meilleure, et c'est parce qu'on ne lui
+demande pas un ordre.

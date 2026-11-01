@@ -845,3 +845,25 @@ le portent plus au tour 33, sans que leur situation ait changé : ils sont toujo
 **On saura que c'est fini quand** : l'étiquette d'un bloc sur l'ovale désignera toujours le
 groupe que la timeline nomme, et `NO PTS` ne s'allumera et ne s'éteindra qu'avec l'éligibilité
 du coureur.
+
+## 25. L'écart d'un bloc saute quand la paire change — **à corriger**
+
+**Ce qui est déjà réglé** : le tour ajouté d'office à un écart négatif a disparu à la build 180,
+et avec lui 164 sauts de 18,3 s. Ce poste-ci est ce qui reste.
+
+**Ce qu'on mesure.** 167 sauts d'écart de plus de 10 s subsistent au palier 2. L'écart affiché
+sort de `pairGap()`, qui lit les heures de passage de deux coureurs : la **queue du bloc du
+dessus** et la **tête du bloc du dessous** (son point 167). Il saute pour deux raisons :
+
+1. **La paire change.** La composition des blocs bouge 397 fois sur la course ; à chaque fois,
+   l'écart affiché est celui d'une autre paire de coureurs, et il n'y a aucune continuité.
+2. **Les deux coureurs de la paire ont franchi leur dernière boucle commune à un tour
+   d'intervalle**, et `readGap()` rend alors un z de 18,3 s — un tour entier — pour deux coureurs
+   qui roulent côte à côte. Relevé au tour 6, bien avant que personne n'ait pris de tour.
+
+**Ce qui n'est pas en cause** : la correction de tour, retirée ; l'ordre des blocs, relevé aux
+boucles depuis la build 178 ; les mètres `g.gapM`, qui ne servent plus que de repli.
+
+**On saura que c'est fini quand** : au palier 2, l'écart d'un bloc ne sautera plus d'un tour
+entier, et un changement d'écart de plus de 10 s correspondra à un fait de course qu'on peut
+nommer — une échappée qui part, un bloc qui se fait rejoindre — et pas à un changement de paire.
