@@ -2753,3 +2753,12 @@ ordinaires » :
 > alors le groupe 7 est inéligible.
 > Une fois que le groupe 6 de la timeline, aura franchit la ligne de sprint, le 7 redeviendra
 > éligible la prochaine fois qu'il franchira la ligne de sprint à son tour. »
+
+### 197 · L'inéligibilité s'affiche tant qu'elle est certaine, sprint ou pas · 2 novembre 2026
+
+Sur la question « hors d'un sprint, la timeline doit-elle encore afficher NO PTS ? » :
+
+> « disons que moi j'aime bien afficher l'inéligibilité tant qu'elle est certaine, et ce même si le
+> sprint n'a pas encore de vainqueur.
+> Pourquoi ?
+> Parce que un opérateur souhaite en continue savoir qui est éligible ou non au prohain sprint »

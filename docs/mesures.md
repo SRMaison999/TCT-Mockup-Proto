@@ -3726,3 +3726,23 @@ C'est l'inverse de sa règle, à chaque sprint.
 La cause : l'éligibilité se calcule aujourd'hui en continu, sur la distance qui reste à chaque
 groupe jusqu'à la ligne, et non sur l'ordre dans lequel les groupes franchissent cette ligne
 pendant le sprint.
+
+## §58 · Deux découpages essayés, deux échecs — ce qui manque pour coder son point 196
+
+Sa règle lit l'ordre des groupes sur la ligne. Pour la coder il faut savoir **où un passage de tous
+les groupes se termine et où le suivant commence** — et ce découpage n'est pas dans ses mots.
+
+**Premier essai** : un passage se termine dès qu'un coureur repasse la ligne. Le 12 et le 52, plus
+rapides, la repassaient avant que le 46 n'y soit arrivé ; le passage repartait sans lui, et le 46
+devenait inéligible dès **97,8 s** au palier 3, alors qu'il roulait à quatre secondes du peloton et
+franchissait la ligne dans l'ordre.
+
+**Second essai** : un passage se termine quand les seize l'ont franchie, selon sa phrase « jusqu'à
+ce que le dernier coureur du dernier groupe franchisse la ligne ». Pire : la coupure tombe au
+milieu du peloton, et à partir de **204,1 s** les douze coureurs du peloton deviennent inéligibles
+les uns après les autres pendant que le 46 et le 70 restent éligibles. Au sprint 4 le logiciel
+grise les douze et donne les 2 et 1 points au 46 et au 70.
+
+Le code est revenu à la build 201. La cause des deux échecs est la même : sur une course entière,
+les coureurs ne franchissent pas la ligne au même rythme — au palier 3 le 12 la franchit 64 fois,
+le peloton 60 fois et le 46 56 fois. Il n'existe donc pas de découpage évident en « passages ».
