@@ -2379,9 +2379,9 @@ l'écran, une à la fois.
      un coureur qui en dépasse un autre sur la piste. **Rien n'est codé** : c'est le premier
      travail de la session suivante.
 
-172. **Le classement d'un coureur vient d'abord de son groupe, et la ligne de sprint départage
-     à l'intérieur du groupe.** Ses mots, le 1er novembre 2026, à la question « le bloc du 61 et
-     du 7 posé en queue, si le 15 passe le 12 : le panneau reste sur 12 ou passe au 15 ? » :
+172. **Où se range un coureur par rapport à un autre.** Ses mots, le 1er novembre 2026, à la
+     question « le bloc du 61 et du 7 posé en queue, si le 15 passe le 12 : le panneau reste
+     sur 12 ou passe au 15 ? » :
 
      > Si 15 est dans un groupe mieux classé que celui de 12 alors il sera devant 12.
      >
@@ -2390,13 +2390,93 @@ l'écran, une à la fois.
      >
      > Si 15 est dans un groupe moins bien classé que celui de 12 alors il sera derrière 12.
 
-     **Rien n'est codé.** Aujourd'hui la tête de la course est le coureur dont la position
-     mesurée sur la piste est la plus avancée, et l'ordre à l'intérieur d'un bloc est celui des
-     mètres mesurés : ni l'un ni l'autre ne regarde le groupe ni la ligne de sprint.
-
 173. **Dans un bloc, l'ordre affiché est celui des boucles, à chaque passage.** Ses mots, le
      1er novembre 2026, à la question « après le sprint du tour 30, où le 52 a passé la ligne
      avant le 12 : si le 12 roule ensuite devant le 52, le bloc affiche 52, 12 ou 12, 52 ? » :
      « **il faut afficher ce qui est mesuré par les boucles à chaque passage** ».
-     Ce qu'il a dit au point 172 de la ligne de sprint tranche donc **le classement du sprint**
-     entre deux coureurs d'un même groupe, et non l'ordre que le bloc montre entre deux sprints.
+174. **La course aux points, par lui, le 1er novembre 2026.** Devant les phrases que j'avais
+     ajoutées aux points 172 et 173 : « **tu interprètes ce qui te semble correct, et sans
+     vérifier tu considères les choses validées** ». Puis son explication, mot pour mot :
+
+     > Mais en fait c'est simple : à l'intérieur le premier qui passe est premier, le deuxième
+     > est deuxième ... Pourquoi ce besoin de mètres mesurés ? Mais enfin tu comprends le
+     > principe d'une course ? Ben ça s'applique là.
+     >
+     > Pour la première place d'un sprint, intermédiaire ou final, le commissaire affecté au
+     > lap counter va sonner la cloche quand le premier coureur du groupe 1 passera la ligne au
+     > tour précédent le sprint.
+     > Suite à quoi, au prochain tour donc, le premier coureur du groupe 1 remportera la place 1
+     > de ce sprint, suivi chronologiquement ainsi :
+     > ordre de passage des autres coureurs du groupe 1
+     > ordre de passage des coureurs du groupe 2
+     > ordre de passage des coureurs du groupe 3
+     > ordre de passage des coureurs du groupe 4
+     > ordre de passage des coureurs du groupe 5
+     > ordre de passage des coureurs du groupe 6
+     > ordre de passage des coureurs du groupe 7
+     > ordre de passage des coureurs du groupe 8
+     > et ainsi de suite jusqu'à ce que tous les coureurs soient passés.
+     >
+     > Il se trouve que dans les sprints intermédiaires, seuls les 4 premières places remportent
+     > des points.
+     >
+     > Lors du sprint final de la course, le même principe s'applique mais avec une nuance : en
+     > cas d'égalité entre 2 ou plusieurs coureurs au classement général final de la course aux
+     > points, c'est l'ordre final de sprint final qui départagera les cas. Le coureur mieux
+     > classé dans le sprint final sera finalement classé devant au classement général final.
+     >
+     > IL faut bien comprendre que la distance totale parcourue par un coureur n'est pas
+     > déterminante pour connaitre sa position dans la timeline.
+     >
+     > Pourquoi ?
+     >
+     > Tour gagné
+     > Parce que un coureur qui s'échappe à l'avant de la course et parviens à rattraper et à
+     > reprendre sa place dans le peloton duquel il s'était extirpé un peu plus tôt est crédité
+     > de 20 points. On dit alors qu'il a gagné un tour. Mais il a gagné 20 points en réalité et
+     > non pas gagné un tour, et il les a gagné en effectuant un tour de plus que les autres
+     > coureurs. A des fins de facilité de calcul et de vérification du classement général
+     > final, on va marquer pour chacun des coureurs le nombre de fois où il réussit à remporter
+     > à 20 points.
+     >
+     > Tour perdu
+     > A l'inverse un coureur se faisant lâcher à l'arrière de la course et rattrapé par le
+     > peloton qui l'avait lâché un peu plus tôt, sera lui pénalisé de 20 points. On dit alors
+     > qu'il a perdu un tour. Mais il a perdu 20 points en réalité et non pas perdu un tour, et
+     > il les a perdu en effectuant un tour de moins que les autres coureurs. A des fins de
+     > facilité de calcul et de vérification du classement général final, on va marquer pour
+     > chacun des coureurs le nombre de fois où il seront pénalisés de 20 points.
+     >
+     > Au départ de la course, tous les coureurs sont ensemble dans le seul groupe existant à ce
+     > moment là : le peloton.
+     >
+     > Ensuite des groupes se forment au gré des écarts qui se créent entre coureurs. Une règle
+     > que j'ai instauré dans le projet est que si il y a plus d'une seconde d'écart entre 2
+     > coureurs alors le groupe se scinde entre ces deux coureurs pour en former deux distincts.
+     > Et le coureur qui avait donc plus d'une seconde de retard sur celui qui le précédait
+     > devient instantanément le coureur en première position de son groupe. Si le coureur qui
+     > le suit se trouve à moins de 1 seconde de retard, il fait partie du même groupe. Et
+     > pareil pour celui qui suit jusqu'au dernier. A chaque fois qu'il y a plus d'une seconde
+     > entre deux coureurs, on crée un nouveau groupe.
+     >
+     > Tous ces groupes forment la timeline, et ils la composent dans l'ordre chronologique de
+     > leurs groupes.
+     >
+     > Le groupe 1 de la timeline, est toujours celui observé par le juge starter qui à chaque
+     > passage sur la ligne de sprint montre du doigt le coureur de ce groupe 1 se trouvant en
+     > première position du groupe. Et le juge de lap counter lui sonnera la cloche au passage
+     > précédent l'enregsitrement de chaque sprint.
+     >
+     > A ce stade il faut comprendre que les coureurs remportant 20 points (du fait qu'ils
+     > effectuent un tout de plus que les autres) au moment du gain de leurs 20 points on ne va
+     > pas considérer qu'ils ont parcourus une distance plus importante (justement, on leur a
+     > offert 20 points à la place), et donc ils sont considérés avoir parcouru la même distance
+     > que leur adversaires mais avec la nuance qu'au classement général ils sont crédités de
+     > 20 points.
+     >
+     > Cela explique donc que la timeline ne considère pas les tours effectués en plus pour
+     > déterminer les positions des uns et des autres. Chacun est toujours dans le même tour que
+     > les autres du point de vue la timeline.
+
+     Il a posé la redite de cette explication dans `docs/La course aux points.txt`, le
+     1er novembre 2026 : « **je pense que ça vaut la peine de le conserver en lieu sûr** ».
