@@ -2378,3 +2378,18 @@ l'écran, une à la fois.
      Cela ne retire rien au point 159 : hors forçage, l'application continue de donner la tête à
      un coureur qui en dépasse un autre sur la piste. **Rien n'est codé** : c'est le premier
      travail de la session suivante.
+
+172. **Le classement d'un coureur vient d'abord de son groupe, et la ligne de sprint départage
+     à l'intérieur du groupe.** Ses mots, le 1er novembre 2026, à la question « le bloc du 61 et
+     du 7 posé en queue, si le 15 passe le 12 : le panneau reste sur 12 ou passe au 15 ? » :
+
+     > Si 15 est dans un groupe mieux classé que celui de 12 alors il sera devant 12.
+     >
+     > Si 15 est dans le même groupe que 12, alors le premier des deux à passer la ligne de
+     > sprint sera la mieux classé des deux.
+     >
+     > Si 15 est dans un groupe moins bien classé que celui de 12 alors il sera derrière 12.
+
+     **Rien n'est codé.** Aujourd'hui la tête de la course est le coureur dont la position
+     mesurée sur la piste est la plus avancée, et l'ordre à l'intérieur d'un bloc est celui des
+     mètres mesurés : ni l'un ni l'autre ne regarde le groupe ni la ligne de sprint.
