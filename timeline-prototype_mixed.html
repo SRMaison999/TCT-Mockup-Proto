@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '200';
+const BUILD = '201';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -931,7 +931,15 @@ function step(dt) {
           // the finish, however, is judged on the lap the loops measure for the head of the race
           const imp = S.bunchRaw == null || !S.inBunch || !S.inBunch.has(nb) ? 0 : Math.round((d - S.bunchRaw) / TRACK);
           const kn = ka - imp;
-          const entry = { bib: nb, t: rec.t, n: ka }, pm = S.markPending[nb];
+          // L'INÉLIGIBILITÉ EST GRAVÉE SUR LE PASSAGE, à l'instant où il est lu, et ne bouge plus.
+          // L'opérateur, 1er novembre 2026 : « il doit les griser et les annoncer comme inéligibles le temps
+          // de leur inéligibilité ». Le passage d'un coureur en retard est d'abord classé sur SON tour, et
+          // n'entre dans le sprint qu'une fois le tour perdu validé et le passage reclassé : à ce moment-là
+          // l'inéligibilité est souvent terminée, et le sprint fermé. En la gravant ici, le sprint la retrouve
+          // telle qu'elle était quand la ligne a été franchie — c'est pitfalls.md F10 au pied de la lettre.
+          // Mesuré à la build 200, palier 3, sprint 1 : le 46 et le 70 franchissaient la ligne à 196,9 s,
+          // inéligibles depuis 194,1 s, et finissaient 15e et 16e sans un mot.
+          const entry = { bib: nb, t: rec.t, n: ka, inelig: !!(S.inelig && S.inelig.has(nb)) }, pm = S.markPending[nb];
           if (pm) { entry.mark = pm; if (pm < 0 && k !== ka) (S.holes[k - 1] = S.holes[k - 1] || []).push(nb); delete S.markPending[nb]; }
           (S.cross[k] = S.cross[k] || []).push(entry);
           S.passes.push({ bib: nb, t: rec.t, n: ka });
@@ -1713,7 +1721,8 @@ function refile(bib, delta, t0, reverse) {
     if (!mine.length) S.markPending[bib] = delta;
     else { mine[0].mark = delta; if (delta < 0) (S.holes[mine[0].from] = S.holes[mine[0].from] || []).push(bib); }
   }
-  for (const c of moved) { (S.cross[c.k] = S.cross[c.k] || []).push({ bib: c.bib, t: c.t, n: c.n, mark: c.mark || null }); S.cross[c.k].sort((a, b) => a.t - b.t); }
+  // L'inéligibilité suit le passage de tour en tour : c'est celle de la lecture, pas celle d'aujourd'hui.
+  for (const c of moved) { (S.cross[c.k] = S.cross[c.k] || []).push({ bib: c.bib, t: c.t, n: c.n, mark: c.mark || null, inelig: !!c.inelig }); S.cross[c.k].sort((a, b) => a.t - b.t); }
 }
 function addLap(bib, kind, who, since) {
   const l = lapsOf(bib), t0 = since == null ? S.t : since, delta = kind === 'gained' ? 1 : -1, from = l[kind];
@@ -2790,6 +2799,15 @@ function spCrossings(k) {
   for (const p of [...list].sort((a, b) => a.t - b.t)) if (!first.has(p.bib)) first.set(p.bib, p.t);
   return first;   // bib → time on the line
 }
+// L'inéligibilité gravée sur le premier passage de chaque coureur dans ce sprint : dossard → vrai ou faux.
+// Un sprint enregistré à la main (« Clear and record ») et le sprint final lisent S.passes, qui ne porte pas
+// la marque : ces deux cas retombent sur l'inéligibilité de l'instant, comme avant.
+function spIneligLus(k) {
+  const s = sp(k), out = new Map();
+  if (s.recordFrom != null || isFinal(k)) return out;
+  for (const c of [...(S.cross[s.lap] || [])].sort((a, b) => a.t - b.t)) if (!out.has(c.bib)) out.set(c.bib, !!c.inelig);
+  return out;
+}
 // why a rider who crossed the line is not ranked in sprint k; null = eligible
 // who is not eligible is computed by the groups rule in computeGroups, then frozen when the sprint opens
 function lappedNow() { return [...(S.inelig || [])].sort(byBib); }
@@ -2950,12 +2968,15 @@ function spTick() {
       S.sprintOpen = k; S.neOpen = false;
       logEvent('SPRINT', spLabel(k) + ' · Lap ' + s.lap + ' · this lap' + (s.excluded.length ? ' · ignored by the operator: ' + bibList(s.excluded) : ''), false);
     }
-    if (s.opened && !s.closed) {
-      s.lapped = lappedNow();   // an open sprint follows the lap status until it closes; a closed one keeps its judgement
-      // Each crossing is judged ONCE, the moment it is read: a crossing read while the rider was not eligible
-      // stays on the screen greyed for the rest of the sprint, and one read while he was eligible never greys.
-      const X = spCrossings(k);
-      for (const b of X.keys()) if (!s.judged.includes(b)) { s.judged.push(b); if (s.lapped.includes(b)) s.greyed.push(b); }
+    if (s.opened && !s.closed) s.lapped = lappedNow();   // an open sprint follows the lap status until it closes; a closed one keeps its judgement
+    if (s.opened) {
+      // Chaque passage est jugé UNE SEULE FOIS, à l'instant où il est lu : il est grisé si son coureur était
+      // inéligible à cet instant-là, et ne grise jamais sinon. Le jugement ne s'arrête plus à la fermeture du
+      // sprint, parce que le passage d'un coureur en retard n'y entre qu'après — reclassé sur le tour du
+      // peloton. Rien n'est rejugé : la liste des coureurs déjà jugés tient le verrou.
+      const X = spCrossings(k), lus = spIneligLus(k);
+      for (const b of X.keys()) if (!s.judged.includes(b)) { s.judged.push(b);
+        if (lus.has(b) ? lus.get(b) : s.lapped.includes(b)) s.greyed.push(b); }
     }
     if (s.opened && !s.closed && s.live) spSend(k, 'live');
     if (S.sprintOpen === k && !isFinal(k) && !s.closed && lap >= s.lap + 2) {

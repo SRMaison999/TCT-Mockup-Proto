@@ -3673,3 +3673,34 @@ peloton. À ce moment-là le sprint est fermé, et le grisage ne travaille que t
 **Un second fait, au sprint final.** Le 46 et le 70, un tour en retard, prennent les places **3 et
 4** et marquent **4 et 2 points** : `lappedAt` rend `false` dès qu'il s'agit du sprint final, donc
 la conséquence sur le rang ne s'y applique pas. Rien n'a été changé — c'est une décision à lui.
+
+## §56 · Build 201 — le passage lu pendant l'inéligibilité se grise
+
+Son point 195. L'inéligibilité est désormais **gravée sur le passage** à l'instant où la ligne est
+franchie, et elle suit ce passage quand le tour perdu le reclasse sur le tour du peloton. Le sprint
+la relit telle qu'elle était, et le jugement ne s'arrête plus à la fermeture du sprint — c'est après
+elle que le passage d'un coureur en retard y entre. Chaque passage n'est jugé qu'une fois.
+
+**Palier 3** (1113,7 s) :
+
+| sprint | tour | grisés | annoncés | ordre |
+|---|---|---|---|---|
+| 1 | 10 | **46, 70** | 46 lu 15e, 70 lu 16e | 14 coureurs, 12 et 52 à 5 et 3 points |
+| 2 | 20 | — | — | 16 coureurs, le 46 et le 70 15e et 16e |
+| 3 | 30 | — | — | 16 coureurs |
+| 4 | 40 | — | — | 16 coureurs |
+| 5 | 50 | **46, 70** | 46 lu 15e, 70 lu 16e | 14 coureurs |
+| 6 | 60 | — | — | 16 coureurs |
+
+Au sprint 1 le 46 franchit la ligne à 196,9 s et le 70 à 197,0 s, inéligibles depuis 194,1 s : tous
+deux grisés, annoncés, et **aucune place prise à un coureur d'un autre groupe** — les quatorze
+autres gardent exactement l'ordre et les points qu'ils avaient. Aux sprints 2, 3 et 4 ils
+franchissent la ligne redevenus éligibles : rien n'est grisé, et ils sont classés 15e et 16e.
+
+**Palier 2** (1042,3 s) : le sprint 5 grise le 46 et le 70, les quatre premiers et leurs points sont
+inchangés aux six sprints. **Palier 1** (1002,6 s) : rien de grisé, personne d'annoncé, seize
+coureurs à chaque sprint, 5-3-2-1 au 15, 4, 11 et 23 et le double au sprint final.
+
+**Le sprint final reste à part** : le 46 et le 70, un tour en retard, y prennent les places 3 et 4 et
+marquent 4 et 2 points, parce que la conséquence sur le rang est coupée au sprint final. Rien n'a
+été changé là — c'est une décision à lui.

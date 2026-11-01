@@ -2273,3 +2273,16 @@ tour de la tête, que le moteur expose pour cela.
 La règle du §6 n'a pas changé : après les membres du groupe *n*, seuls ceux du groupe *n+1* peuvent
 être éligibles ; tout membre d'un groupe plus bas qui est plus proche de la ligne qu'eux est
 inéligible. Seule la mesure a changé. Son point 194.
+
+## §54 · L'inéligibilité voyage avec le passage
+
+Trois endroits. Dans `step`, le passage sur la ligne naît avec `inelig`, vrai si `S.inelig` tient
+son dossard à cet instant. Dans `refile`, le passage emporte cette marque quand le tour perdu le
+reclasse sur le tour du peloton. Dans `spTick`, `spIneligLus(k)` relit la marque du premier passage
+de chaque coureur et c'est elle, et non l'inéligibilité du moment, qui décide du grisage ; le
+jugement tourne maintenant dès que le sprint est ouvert, fermé ou non, parce que le passage d'un
+coureur en retard n'entre dans le sprint qu'après la fermeture. `s.judged` garde le verrou : un
+passage n'est jugé qu'une fois.
+
+Un sprint enregistré à la main et le sprint final lisent `S.passes`, qui ne porte pas la marque :
+ces deux cas retombent sur l'inéligibilité de l'instant, comme avant. Son point 195.

@@ -2722,3 +2722,13 @@ Ce qui a déclenché la règle, dans ses mots, au tour précédent :
 Et, dans le même message :
 
 > « t'as absolument aucune mémoire ?? Ne calcule pas en mètres !!!! »
+
+### 195 · Un passage lu pendant l'inéligibilité se grise et s'annonce · 1er novembre 2026
+
+Sur le constat de la build 200 — « Le sprint 1 ne fait rien : il ne les grise pas, il ne les
+annonce pas sous « Not eligible », et il les classe 15e et 16e dans l'ordre, en coureurs
+ordinaires » :
+
+> « Ce qui est correct c'est qu'il ne les a pas enregistré dans le sprint à la place de coureurs
+> d'autres groupes. Mais il doit les griser et les annoncer comme inéligibles le temps de leur
+> inéligibilité. »

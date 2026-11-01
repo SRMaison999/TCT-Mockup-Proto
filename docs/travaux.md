@@ -970,10 +970,13 @@ L'opérateur a vu le 15 et le 46 porter `NO PTS` alors qu'ils étaient dans le m
 tranché (point 194) : l'éligibilité se juge sur les boucles, comme la timeline. Fait, mesuré sur
 les deux paliers, `docs/mesures.md` §54.
 
-### Poste 31 · ouvert — un passage lu pendant l'inéligibilité n'est jamais jugé
+### Poste 31 · clos à la build 201 — un passage lu pendant l'inéligibilité n'était jamais jugé
 
 Mesuré à la build 200, palier 3, sprint 1 : `docs/mesures.md` §55. Le passage du 46 et du 70 est
 lu à 196,9 s alors qu'ils sont inéligibles depuis 194,1 s, mais il est classé sur leur propre tour
 et n'entre dans le sprint qu'après la validation du tour perdu, sprint fermé. Ils finissent 15e et
 16e sans un mot. En attente de son accord : juger le passage à l'instant où il est lu, sprint
 ouvert ou non, comme le veut `docs/pitfalls.md` F10.
+
+Clos à la build 201 : il a tranché (point 195), l'inéligibilité est gravée sur le passage et le
+sprint la grise et l'annonce. Mesuré sur les trois paliers, `docs/mesures.md` §56.
