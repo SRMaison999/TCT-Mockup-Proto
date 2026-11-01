@@ -1993,7 +1993,9 @@ Six points de décision sont instrumentés, là où ils sont pris :
 | `CASSURE` | `pairCass()`, dans la marche le long de la piste | les deux dossards, **z**, sa source (boucle ou positions), les mètres, la vitesse du suiveur, le temps d'une longueur de vélo, l'écart obtenu, le seuil, et la décision |
 | `TOUR` | `impliedOf()` | le dossard, le nombre de tours retranchés, sa position brute, celle du paquet, et s'il est dans le paquet |
 | `LEADER` | après le choix du leader | le dossard, **la source** — `désigné` ou `mesure` —, les trois meilleurs `np()` et l'avance du premier sur le second |
-| `ECART-TOUR` | la boucle des écarts | le bloc, l'écart brut négatif, le nombre de tours ajoutés, l'écart corrigé, et les deux coureurs qui se suivent |
+| `ECART-NEGATIF` | la boucle des écarts | le bloc, celui du dessus, les mètres lus, et les deux coureurs de la paire avec la boucle où chacun a été lu |
+| `PROPOSITION-REFUS` | `detect()` | le dossard, le coureur le plus proche de lui dans le paquet, le reste après les tours entiers, et la marge |
+| `PROPOSITION-JOINT` | `detect()` | les dossards qui arrivent, ceux de la proposition déjà ouverte, et le nombre de tours |
 | `PROPOSITION-CALCUL` | `detect()` | le dossard, sa distance de course, celle du coureur de sa paire, leur différence en mètres, **le quotient avant arrondi**, le delta retenu |
 | `PAQUET` | `detect()` | un coureur entre dans le paquet ou en sort |
 
