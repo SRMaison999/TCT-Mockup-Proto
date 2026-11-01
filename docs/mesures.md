@@ -2907,3 +2907,47 @@ le plus gros peloton en course**.
 
 **Le classement final, sans les ±20 :** 18 POR 27 points, 61 COL 16, 12 SUI 15, 7 NED 10,
 52 ITA 6, 15 IRL 2, 4 GBR 1.
+
+### Ce que la trace relève sur le palier 2 (build 171)
+
+Le palier 2 joué en entier, 60 tours, sans aucune intervention : **1296 lignes**.
+
+| Sorte | Lignes |
+|---|---|
+| `FILE` — la file change | **873** |
+| `ECART` — un écart bouge d'au moins 1 s | **289** |
+| `LEADER` — le coureur de tête change | **90** |
+| `POINTS` | 20 |
+| `ORDRE` | 18 |
+| `PROPOSITION` | 5 |
+
+**Quatre-vingt-dix changements de leader en soixante tours**, et ils commencent avant toute
+échappée : au tour 2, `Leader 15 → 4` puis `Leader 4 → 15` ; au tour 3, la même chose ; aux
+tours 4, 5 et 6 encore. Le peloton est alors **un seul groupe de seize** : ce sont les
+fluctuations de vitesse, de 0,1 à 0,3 m/s, qui font permuter deux coureurs de quelques mètres,
+et la tête de la course suit ces mètres.
+
+**L'inversion de la file, prise sur le fait**, trois lignes `FILE` en six dixièmes de seconde
+au tour 21 :
+
+```
+353.90 s   [12,52] | [18,61,7] | [15] | [4,11,23,58,67,1,9,3] | [46,70]
+354.20 s   [18,61,7] | [15,12,52,4,11,23,58,67,1,9,3] | [46,70]
+354.50 s   [12,15,52,4,11,23,58,67,1,9,3] | [18,61,7] | [46,70]
+```
+
+Le 12 et le 52 mènent seuls, puis se retrouvent **au milieu du peloton**, puis en tête d'un bloc
+qui contient tout le monde — pendant que le 18, le 61 et le 7 passent de la première à la
+deuxième place.
+
+**Les écarts sautent d'un tour entier.** Sur les 289 lignes `ECART`, **26 sautent de 18,4 s à
+un dixième près** — et 250 m à 13,5 m/s font **18,52 s**. Exemples relevés :
+
+| Instant | Ligne |
+|---|---|
+| 98,10 s, tour 6 | bloc de tête 18 : 18,3 s → **−0,1 s** |
+| 185,20 s, tour 11 | bloc de tête 4 : 4,3 s → **18,3 s** |
+| 334,15 s, tour 19 | bloc de tête 58 : −0,1 s → **18,4 s** |
+
+Un écart **négatif** apparaît aussi, −0,1 s, que la règle de l'opérateur interdit : l'écart d'un
+bloc se mesure depuis le bloc qui le précède.

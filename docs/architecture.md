@@ -1941,3 +1941,35 @@ builds. La tranche de 5 s est un choix, pas une mesure.
 Le correcteur qui tient un coureur à sa place dans le peloton rattrape cette différence, donc
 une fluctuation de 0,3 m/s déplace le coureur de quelques mètres dans la file sans casser le
 groupe : il faut plus d'une seconde, soit une quinzaine de mètres, pour une cassure.
+
+## 45. La trace : ce que l'application a vu, et à quel instant (build 171)
+
+**Sa demande, le 1er novembre 2026** : « tu vas commencer par implémenter un système qui
+surveille l'appli et crée des logs. Suite à quoi on pourra mettre le doigt sur le problème plus
+facilement ».
+
+**Elle note les changements, pas les états.** Les défauts qu'il a relevés sont des
+basculements — une file qui s'inverse, un écart qui saute, des points qui reculent. Un
+instantané ne les montre pas, deux instantanés consécutifs si. `traceTick(G)` est appelée par
+`detectNow()`, donc à chaque pas fixe de la course, et compare l'image à la précédente.
+
+Sept sortes de lignes :
+
+| Sorte | Écrite quand |
+|---|---|
+| `LEADER` | le coureur de tête change — `avant`, `apres` |
+| `FILE` | la composition ou l'ordre des blocs change ; la ligne porte les blocs, leurs coureurs et leurs écarts |
+| `ECART` | l'écart d'un bloc bouge d'au moins **1 s** depuis la dernière valeur notée — `avant`, `apres`, `saut` |
+| `PROPOSITION` | une proposition apparaît ou disparaît — sa clé, son genre, ses coureurs, son delta |
+| `SPRINT` | un sprint s'ouvre ou se ferme |
+| `ORDRE` | l'ordre jugé d'un sprint change — `avant`, `apres` |
+| `POINTS` | les points d'un coureur changent ; le drapeau `recule` est mis quand un total **baisse** |
+| `RESET` | la course repart : `S.t` a reculé, la trace recommence |
+
+`ORDRE` et `POINTS` ne se regardent **qu'au passage du tour** : `standings()` et `spOrder()`
+refont tout le calcul, et les appeler vingt fois par seconde ne dirait rien de plus.
+
+**Elle ne touche à rien.** Le journal `S.log` reste ce qu'il est — les faits et les décisions,
+pour l'opérateur, 120 lignes au plus. La trace est pour le diagnostic : elle garde tout, jusqu'à
+40 000 lignes, et sort par le bouton **Export trace** de l'onglet Standings, à côté des deux
+autres exports. `window.__proto.trace()` la rend aussi lisible sans passer par le fichier.

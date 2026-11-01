@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">170</span>
+      <span class="bld" id="buildno">171</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -601,7 +601,7 @@ const round1 = x => Math.round(x * 10) / 10;
 // setting, and Pursuit A, Pursuit B and the tape switches are all derived from it and from the lap length.
 // LE NUMÉRO DE BUILD, À UN SEUL ENDROIT. Il était écrit deux fois — dans la balise de l'en-tête et dans
 // syncSub(), qui l'écrasait — et l'écran a montré 166 pendant trois builds.
-const BUILD = '170';
+const BUILD = '171';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -2214,7 +2214,7 @@ function selectGroup(gi) {   // the group name selects all its riders; again, it
 
 let logTab = 'cross';
 function renderLog() {
-  $('#xbtns').innerHTML = logTab === 'sprints' ? '<button class="btn xs quiet" data-export="sprints" title="Every sprint with its order, points and photo flags, and the outputs">Export sprints</button>' : logTab === 'stand' ? '<button class="btn xs quiet" data-export="standings" title="The standings as CSV">Export standings</button><button class="btn xs quiet" data-export="journal" title="The journal, facts and decisions">Export journal</button>' : '';
+  $('#xbtns').innerHTML = logTab === 'sprints' ? '<button class="btn xs quiet" data-export="sprints" title="Every sprint with its order, points and photo flags, and the outputs">Export sprints</button>' : logTab === 'stand' ? '<button class="btn xs quiet" data-export="standings" title="The standings as CSV">Export standings</button><button class="btn xs quiet" data-export="journal" title="The journal, facts and decisions">Export journal</button><button class="btn xs quiet" data-export="trace" title="La trace : tous les changements vus par le prototype, pour le diagnostic">Export trace</button>' : '';
   if ($('#log').hidden) return;   // fermé : on ne reconstruit pas ses lignes à chaque image
   if (logTab === 'sprints') { logrows.innerHTML = renderSprintsTab(); return; }
   if (logTab === 'stand') { logrows.innerHTML = renderStandingsTab(); return; }
@@ -2958,7 +2958,7 @@ function renderStandingsTab() {
   return h;
 }
 logrows.addEventListener('click', e => { const t = e.target.closest('[data-spopen]'); if (t) { spOpen(+t.dataset.spopen); render(); } });
-$('#xbtns').addEventListener('click', e => { const b = e.target.closest('[data-export]'); if (!b) return; ({ sprints: exportSprints, standings: exportStandings, journal: exportJournal })[b.dataset.export](); dirty = true; render(); });
+$('#xbtns').addEventListener('click', e => { const b = e.target.closest('[data-export]'); if (!b) return; ({ sprints: exportSprints, standings: exportStandings, journal: exportJournal, trace: exportTrace })[b.dataset.export](); dirty = true; render(); });
 
 // ---------- a rider without transponder: carried with his group, placed by hand ----------
 function nearestHost(bib) {
@@ -3584,7 +3584,7 @@ function loadRace(r) {
 }
 
 // ---------- loop ----------
-window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, markDirty: () => { dirty = true; } };
+window.__proto = { state: () => S, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
 loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();
@@ -3597,7 +3597,101 @@ function advance(dt) {
   carry += dt * S.factor;
   while (carry >= FIXED && !S.finished) { replayTick(); step(FIXED); detectNow(); carry -= FIXED; }
 }
-function detectNow() { const M = measured(); detect(computeGroups(M), M); lastDetect = S.t; }
+/* ===========================================================================
+   LA TRACE — ce que l'application a vu, et à quel instant.
+   L'opérateur, 1er novembre 2026 : « tu vas commencer par implémenter un système qui surveille
+   l'appli et crée des logs. Suite à quoi on pourra mettre le doigt sur le problème plus
+   facilement ».
+   Elle ne juge rien et ne corrige rien : elle note les CHANGEMENTS, parce que les défauts
+   qu'il a relevés sont des basculements — une file qui s'inverse, un écart qui saute, des
+   points qui reculent. Un instantané ne les montre pas ; deux instantanés consécutifs, si.
+   Le journal (S.log) reste ce qu'il est : les faits et les décisions, pour l'opérateur, 120
+   lignes au plus. La trace est pour le diagnostic : elle garde tout, et s'exporte.
+   =========================================================================== */
+const TRACE = { lines: [], last: {}, lastT: -1, max: 40000 };
+const traceGap = g => g.gap == null ? null : +g.gap.toFixed(2);
+function traceAdd(kind, text, data) {
+  if (TRACE.lines.length >= TRACE.max) return;
+  TRACE.lines.push(Object.assign({ t: +S.t.toFixed(2), lap: dispLap(), kind, text }, data || {}));
+}
+function traceSign(G) { return G.groups.map(g => groupName(g) + '[' + g.bibs.join(',') + ']').join(' | '); }
+function tracePoints() { const o = {}; for (const x of standings()) o[x.r.bib] = { spr: x.spr, gained: x.gained, lost: x.lost, total: x.total }; return o; }
+function traceTick(G) {
+  // Une course rejouée, reculée ou rechargée repart à zéro : la trace aussi.
+  if (S.t < TRACE.lastT) { TRACE.lines.length = 0; TRACE.last = {}; traceAdd('RESET', 'La course est repartie : la trace recommence'); }
+  TRACE.lastT = S.t;
+  const L = TRACE.last;
+
+  // 1. LE LEADER
+  if (G.leaderBib !== L.leader) {
+    traceAdd('LEADER', (L.leader == null ? 'Leader : ' + G.leaderBib : 'Leader ' + L.leader + ' → ' + G.leaderBib),
+      { avant: L.leader == null ? null : L.leader, apres: G.leaderBib });
+    L.leader = G.leaderBib;
+  }
+
+  // 2. LA FILE : composition et ordre des blocs
+  const sign = traceSign(G);
+  if (sign !== L.sign) {
+    traceAdd('FILE', sign, { avant: L.sign || null, blocs: G.groups.map(g => ({ nom: groupName(g), bibs: [...g.bibs], ecart: traceGap(g) })) });
+    L.sign = sign;
+  }
+
+  // 3. L'ÉCART D'UN BLOC qui bouge de plus d'une seconde depuis la dernière valeur notée.
+  //    C'est le saut de 12,9 s à 47,2 s qu'il a vu sur ses captures.
+  L.gaps = L.gaps || {};
+  for (const g of G.groups) {
+    const k = g.bibs[0], v = traceGap(g);
+    if (v == null) { delete L.gaps[k]; continue; }
+    const was = L.gaps[k];
+    if (was == null || Math.abs(v - was) >= 1) {
+      if (was != null) traceAdd('ECART', 'Le bloc de tête ' + k + ' : ' + was.toFixed(1) + ' s → ' + v.toFixed(1) + ' s', { bloc: k, avant: was, apres: v, saut: +(v - was).toFixed(2) });
+      L.gaps[k] = v;
+    }
+  }
+
+  // 4. LES PROPOSITIONS qui apparaissent et qui disparaissent
+  const now = new Map((S.proposals || []).map(x => [x.key, x]));
+  L.props = L.props || new Set();
+  for (const [k, pr] of now) if (!L.props.has(k)) traceAdd('PROPOSITION', 'Apparaît : ' + k, { cle: k, genre: pr.kind, bibs: [...(pr.bibs || [])], delta: pr.delta == null ? null : pr.delta });
+  for (const k of L.props) if (!now.has(k)) traceAdd('PROPOSITION', 'Disparaît : ' + k, { cle: k });
+  L.props = new Set(now.keys());
+
+  // 5. LE SPRINT ouvert, et l'ordre qu'il porte
+  if (S.sprintOpen !== L.sprintOpen) {
+    traceAdd('SPRINT', S.sprintOpen ? 'Sprint ' + S.sprintOpen + ' ouvert' : 'Sprint ' + L.sprintOpen + ' fermé', { sprint: S.sprintOpen || L.sprintOpen });
+    L.sprintOpen = S.sprintOpen;
+  }
+
+  // 6. CE QUI NE SE REGARDE QU'AU PASSAGE DU TOUR : les ordres de sprint et les points.
+  //    standings() et spOrder() refont tout le calcul ; les appeler vingt fois par seconde ne dirait rien de plus.
+  const lap = dispLap();
+  if (lap !== L.lap) {
+    L.lap = lap;
+    L.orders = L.orders || {};
+    for (let k = 1; k <= NSPRINTS; k++) {
+      if (!spStarted(k)) continue;
+      const seq = spOrder(k).seq.filter(e => !e.empty).map(e => e.bib).join(',');
+      if (seq !== L.orders[k]) { traceAdd('ORDRE', 'Sprint ' + k + ' : ' + (seq || '(vide)'), { sprint: k, avant: L.orders[k] == null ? null : L.orders[k], apres: seq }); L.orders[k] = seq; }
+    }
+    const pts = tracePoints();
+    L.pts = L.pts || {};
+    for (const bib of Object.keys(pts)) {
+      const a = L.pts[bib], b = pts[bib];
+      if (!a) { L.pts[bib] = b; continue; }
+      if (a.spr !== b.spr || a.gained !== b.gained || a.lost !== b.lost) {
+        traceAdd('POINTS', 'BIB ' + bib + ' · sprint ' + a.spr + ' → ' + b.spr + ' · tours pris ' + a.gained + ' → ' + b.gained + ' · tours perdus ' + a.lost + ' → ' + b.lost,
+          { bib: +bib, avant: a, apres: b, recule: b.spr < a.spr || b.gained < a.gained || b.lost < a.lost });
+        L.pts[bib] = b;
+      }
+    }
+  }
+}
+function exportTrace() {
+  const head = 'La trace de la course · ' + (LOADED ? LOADED.name : 'course en cours') + ' · build ' + BUILD + ' · ' + TRACE.lines.length + ' lignes';
+  download('trace.json', JSON.stringify({ course: LOADED ? LOADED.name : null, build: BUILD, lignes: TRACE.lines }, null, 1), 'application/json');
+  logEvent('EXPORT', 'Trace exported · ' + TRACE.lines.length + ' lines', true);
+}
+function detectNow() { const M = measured(); const G = computeGroups(M); detect(G, M); traceTick(G); lastDetect = S.t; }
 function frame() {
   const now = performance.now(), dt = Math.min(0.25, (now - last) / 1000); last = now;
   try { advance(dt); render(); } catch (e) { console.error(e); }
