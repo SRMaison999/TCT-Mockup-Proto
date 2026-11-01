@@ -2359,3 +2359,10 @@ l'écran, une à la fois.
      > / 15 et puis tous les autres coureurs du peloton ....
 
      **Aucune de ces étapes n'a eu lieu** : ce qui a été mesuré est au §45 de `mesures.md`.
+
+170. **La timeline est l'ordre de la course, et toutes les vues la suivent.** Ses mots, le
+     1er novembre 2026, devant la liste des passages sur la ligne qui commençait encore par le
+     15 : « **Cela est faux !! Puisque tu as déclaré que les n° 12 et 52 étaient els leaders,
+     alors 12 et 52 doivent les premiers de la file : 17 | 12, 52 … 61, 7** ».
+     Ce qu'il écrit vaut pour l'onglet Crossings, mais l'énoncé est général : une vue qui montre
+     l'ordre de la course le prend dans la timeline, et non dans les heures de passage.

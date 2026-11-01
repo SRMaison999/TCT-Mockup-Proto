@@ -1844,3 +1844,18 @@ groupe de tête autour de la piste. Les deux calculs disent maintenant la même 
 bloc au-dessus à la tête du bloc en dessous (point 167), et non plus de tête à tête. La même
 ligne donne ses deux chiffres : **2 m** pour le bloc du 12 et du 52 sous le peloton, et
 **217 m** pour le peloton une fois ce bloc posé en tête.
+
+## 40. L'ordre de la course se lit dans la timeline (build 166)
+
+Sa règle est au point 170 de `regles-operateur.md`, la mesure au §46 de `mesures.md`.
+
+- **`S.tlRank`** — construit à la fin de `computeGroups`, après le rangement à la main : le rang
+  de chaque dossard dans la colonne, blocs dans l'ordre affiché et coureurs dans l'ordre du
+  bloc. C'est la seule source d'ordre pour les vues qui montrent la course.
+- **L'onglet Crossings** trie chaque tour sur `S.tlRank`, l'heure de passage ne servant plus que
+  de départage pour un coureur absent de la timeline (retiré, hors piste).
+- **Sans forçage, rien ne change** : les blocs sont alors rangés par la mesure, et le rang de la
+  timeline coïncide avec l'ordre des passages.
+
+**Ce qui ne suit pas encore** : l'ordre **jugé** d'un sprint, qui vient toujours des boucles.
+Son point 168 veut le coureur en tête de la timeline. En attente du point 169, dont il dépend.

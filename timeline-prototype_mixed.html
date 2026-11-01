@@ -419,7 +419,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">165</span>
+      <span class="bld" id="buildno">166</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -1112,6 +1112,11 @@ function computeGroups(M) {
     if (d < 0) d += TRACK * Math.ceil(-d / TRACK);
     g.gap = d; prevG = g;
   }
+  // LE RANG DE CHAQUE COUREUR DANS LA TIMELINE. L'opérateur, 1er novembre 2026 (point 170) : « Puisque tu as
+  // déclaré que les n° 12 et 52 étaient les leaders, alors 12 et 52 doivent [être] les premiers de la file ».
+  // La timeline EST l'ordre de la course ; toute vue qui prétend montrer cet ordre le lit ici, et non dans les
+  // heures de passage. Sans forçage les deux coïncident, puisque les blocs sont alors rangés par la mesure.
+  S.tlRank = {}; { let n = 0; for (const g of groups) for (const b of g.bibs) S.tlRank[b] = n++; }
   const bunch = groups.filter(g => !g.incident && g.cluster === bunchCluster).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null)
     || groups.filter(g => !g.incident).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null);
   // --- not eligible, by groups (the operator rule of 25 October 2026) ---
@@ -2167,7 +2172,7 @@ function renderLog() {
   if (logTab === 'cross') {   // the order of the finish-line crossings, lap by lap, from the leader to the tail of the race
     const laps = Object.keys(S.cross).map(Number).filter(k => S.cross[k] && S.cross[k].length && S.cross[k][0]).sort((a, b) => b - a);
     logrows.innerHTML = laps.map(k => { const sprint = sprintNumOf(k), final = k === LAPS;
-      return `<div class="lrow${sprint ? ' sprint' : ''}"><span class="t">${fmtT(S.cross[k][0].t)}</span><span class="k">LAP ${k}${sprint ? '<br><b>' + (final ? 'FINAL SPRINT' : 'SPRINT ' + sprint) + '</b>' : ''}</span><span class="m">${[...S.cross[k]].sort((a, b) => a.t - b.t).map(c => chipN(S.riders.find(r => r.bib === c.bib), c.n) + (c.mark ? '<span class="pill ' + (c.mark > 0 ? 'good' : 'warn') + '" title="re-filed on the bunch\'s lap after the validated lap">' + (c.mark > 0 ? 'lap gained' : 'lap lost') + '</span>' : '')).join(' ')}${(S.holes[k] || []).map(b => ' <span class="ghost">BIB ' + b + ' · lapped, no crossing</span>').join('')}</span></div>`; }).join('');
+      return `<div class="lrow${sprint ? ' sprint' : ''}"><span class="t">${fmtT(S.cross[k][0].t)}</span><span class="k">LAP ${k}${sprint ? '<br><b>' + (final ? 'FINAL SPRINT' : 'SPRINT ' + sprint) + '</b>' : ''}</span><span class="m">${[...S.cross[k]].sort((a, b) => ((S.tlRank && S.tlRank[a.bib] != null ? S.tlRank[a.bib] : 1e9) - (S.tlRank && S.tlRank[b.bib] != null ? S.tlRank[b.bib] : 1e9)) || (a.t - b.t)).map(c => chipN(S.riders.find(r => r.bib === c.bib), c.n) + (c.mark ? '<span class="pill ' + (c.mark > 0 ? 'good' : 'warn') + '" title="re-filed on the bunch\'s lap after the validated lap">' + (c.mark > 0 ? 'lap gained' : 'lap lost') + '</span>' : '')).join(' ')}${(S.holes[k] || []).map(b => ' <span class="ghost">BIB ' + b + ' · lapped, no crossing</span>').join('')}</span></div>`; }).join('');
 
     return;
   }
@@ -3154,7 +3159,7 @@ function syncSub() {
   // Le numéro de build est dans un champ à lui : le sous-titre se laisse couper quand la barre se resserre, le
   // numéro jamais -- le prototype doit le porter dans son en-tête (CLAUDE.md).
   $('#ovtitle').textContent = "Men's Points Race - " + plural(LAPS, 'lap') + ' - ' + plural(NSPRINTS, 'sprint') + ' - ' + TRACK + 'm';
-  $('#buildno').textContent = '165';
+  $('#buildno').textContent = '166';
   const focused = document.activeElement;
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;

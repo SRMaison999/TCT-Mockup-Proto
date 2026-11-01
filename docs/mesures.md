@@ -2787,3 +2787,12 @@ automatique du leader compare les positions **sur la piste** ; elle ne regarde p
 Elle a donc vu le 7 repasser devant le 12 et lui a donné la tête, pendant que la timeline
 affichait un bloc de tête à **217 m** devant le peloton. Les deux vérités tournent côte à côte,
 et rien ne les relie.
+
+### La liste des passages suit la timeline (build 166)
+
+Course de référence, le 12 et le 52 posés en tête au tour 6. Onglet Crossings, tours 4 et 5 :
+
+> 12, 52, 15, 4, 11, 23, 46, 70, 58, 67, 1, 9, 3, 18, 61, 7
+
+Sa ligne, à la virgule près. Avant le build 166 la même liste commençait par le 15 et finissait
+par 12, 52.

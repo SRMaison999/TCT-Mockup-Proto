@@ -732,3 +732,7 @@ toute seule tant qu'un bloc est posé à la main.
 
 **Et il reste le point 168** : au sprint, c'est le coureur en tête de la timeline qui est jugé
 premier. Aujourd'hui l'ordre jugé vient des boucles. À faire après le leader, dont il dépend.
+
+**Livré au build 166** : l'onglet Crossings suit l'ordre de la timeline (point 170,
+`architecture.md` §40, `mesures.md` §46). Le §19 reste ouvert : la reprise du leader, et après
+elle le sprint du point 168.
