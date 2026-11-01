@@ -632,3 +632,10 @@ décrit — le leader — et deux leviers qui peuvent se contredire valent moins
 
 **On saura que c'est fini quand** : il aura dit si poser un groupe en tête doit aussi désigner
 son premier coureur comme leader de la course.
+
+**Le 1er novembre 2026** : il a tranché la reprise automatique du leader — elle reste
+(point 159), rien à coder. Ce qui attend encore son accord est la forme proposée du §16 : le
+leader qu'il désigne **monte son groupe en première position**, posé à la main avec son
+étiquette, et **poser un groupe en première position désigne son premier coureur** comme leader
+(point 158). La reprise automatique sur la piste, elle, ne pose aucun groupe : ce n'est pas sa
+décision.

@@ -2232,3 +2232,8 @@ l'écran, une à la fois.
      première position sur la timeline. C'est tout l'intérêt de ces boutons "SET LEADERS"** ».
      Les trois boutons dont il parle sont ceux posés sur la piste, à leurs boucles (§17,
      « Les trois boutons de désignation du leader »).
+
+159. **Le leader désigné se fait reprendre sur la piste, et c'est voulu.** À la question
+     « quand vous avez désigné un leader, l'application peut-elle le remplacer toute seule ? »,
+     sa réponse du 1er novembre 2026 : « **Oui, laisse comme aujourd'hui : un coureur qui le
+     dépasse sur la piste lui prend la tête.** » Rien à coder : c'est le comportement en place.
