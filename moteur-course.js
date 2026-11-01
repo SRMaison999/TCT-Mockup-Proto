@@ -197,16 +197,40 @@
     // moins, le peloton l'a rattrapé et il en perd un.
     const vus = [];                                  // les tours relevés, dans l'ordre où ils arrivent
 
-    // le peloton : le groupe le plus nombreux. L'article UCI 3.2.017 quater laisse le dernier mot
-    // au président du collège ; ici on rend ce que les boucles donnent, et il tranche.
+    // LE PELOTON GARDE SON IDENTITÉ. Le plus gros groupe de l'instant ne suffit pas : quand la
+    // course est éclatée en quatre blocs, le trio échappé peut se trouver être le plus nombreux, et
+    // c'est alors contre un échappé qu'un tour perdu se compte. Mesuré à la build 185 : « −1 pour
+    // le 46 et le 70, avec le 18 », qui est un échappé.
+    // Le peloton reste donc LE MÊME tant que la plupart de ses coureurs roulent encore ensemble :
+    // parmi les groupes du moment, c'est celui qui en partage le plus avec le peloton précédent. Au
+    // départ, le plus nombreux. L'article UCI 3.2.017 quater laisse de toute façon le dernier mot au
+    // président du collège des commissaires.
+    let pelotonAvant = null;
     function peloton(gs) {
-      return (gs || groupes()).reduce((a, g) => (!a || g.coureurs.length > a.coureurs.length ? g : a), null);
+      const liste = gs || groupes();
+      if (!liste.length) return null;
+      const plusGros = liste.reduce((a, g) => (!a || g.coureurs.length > a.coureurs.length ? g : a), null);
+      let g = plusGros;
+      if (pelotonAvant && pelotonAvant.length) {
+        const avant = new Set(pelotonAvant);
+        let mieux = 0;
+        for (const x of liste) {
+          const k = x.coureurs.filter(b => avant.has(b)).length;
+          if (k > mieux) { mieux = k; g = x; }
+        }
+        // s'il ne reste plus la moitié de l'ancien peloton, c'est qu'il a éclaté : on repart du plus gros
+        if (mieux * 2 < pelotonAvant.length) g = plusGros;
+      }
+      pelotonAvant = g.coureurs.slice();
+      return g;
     }
 
     // l'état d'une paire telle qu'on l'a vue la dernière fois : c'est le PASSAGE de « cassés » à
     // « collés » qui est l'événement, et non le fait d'être collés. Sans cela, deux coureurs déjà
     // ensemble au départ se verraient proposer un tour dès la première détection.
     const paireVue = new Map();
+    // les retours dans le tour du peloton, qui ne proposent rien mais se notent : son point 181.
+    const rendus = [];
 
     function examiner() {
       const gs = groupes(), pel = peloton(gs);
@@ -231,7 +255,16 @@
           const e = ecartS(queue, c);                 // il suit la queue du peloton
           if (e != null) {
             const cle = 'G' + queue.bib + '|' + c.bib, colle = e <= R.cassureS;
-            if (colle && paireVue.get(cle) === false) gagnent.push({ c, avec: queue.bib, ecart: e });
+            // SON POINT 181 : « Rien : ils sont lâchés d'un tour, revenir au contact de la queue du
+            // peloton ne leur fait rien gagner. » Le geste est le même que celui d'un coureur qui
+            // prend un tour — il arrive par derrière et il colle —, et ce qui les distingue n'est pas
+            // ce que les boucles voient à cet instant mais le SOLDE de tours qu'il porte déjà. Un
+            // coureur en retard d'un tour revient simplement dans le tour du peloton (§2).
+            const enRetard = (tours.get(c.bib) || 0) < 0;
+            if (colle && paireVue.get(cle) === false) {
+              if (enRetard) { tours.set(c.bib, (tours.get(c.bib) || 0) + 1); rendus.push({ t: maintenant, bib: c.bib, avec: queue.bib, ecart: +e.toFixed(2) }); }
+              else gagnent.push({ c, avec: queue.bib, ecart: e });
+            }
             paireVue.set(cle, colle);
           }
         }
@@ -274,6 +307,7 @@
     }
 
     const toursPris = () => vus;
+    const retours = () => rendus;
 
     // ce que l'opérateur valide ne change que les points ; le retour dans le tour du paquet, lui,
     // n'attend aucune validation (§2). C'est ici qu'on le relève, et une seule fois (E5).
@@ -297,7 +331,7 @@
       };
     }
 
-    return { detection, etat, groupes, ordre: () => ordre().map(c => c.bib), toursPris, rejoint,
+    return { detection, etat, groupes, ordre: () => ordre().map(c => c.bib), toursPris, retours, rejoint,
              peloton: () => { const g = peloton(); return g ? g.coureurs.slice() : []; },
              reglage: R, _coureurs: coureurs };
   }

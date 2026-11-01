@@ -2534,3 +2534,11 @@ l'écran, une à la fois.
      >   coureurs séparément si ils sont éloignés de plus d'une seconde l'un de l'autre.
      > * un tour perdu doit être proposé par l'appli au moment un coureur se fait rattraper par le
      >   premier coureur du peloton.
+
+181. **Un coureur lâché d'un tour ne gagne rien en revenant au contact.** Ses mots, le 1er novembre
+     2026, mis devant le cas du 46 BEL et du 70 BRA au palier 2 — lâchés d'un tour, puis revenus au
+     contact de la queue du peloton : « **Rien : ils sont lâchés d'un tour, revenir au contact de la
+     queue du peloton ne leur fait rien gagner.** »
+     Le geste est pourtant le même que celui d'un coureur qui prend un tour : il arrive par
+     derrière, il colle, l'écart tombe sous la seconde. Ce qui les distingue n'est donc pas ce que
+     les boucles voient à cet instant, mais **le solde de tours** que le coureur porte déjà.

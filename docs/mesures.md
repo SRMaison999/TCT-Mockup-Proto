@@ -3205,3 +3205,28 @@ Les deux défauts n'en font qu'un : **le moteur de course ne sait pas lequel des
 peloton**, et sur une piste fermée « rattraper la queue du peloton » et « se faire rattraper d'un
 tour » se ressemblent. L'article UCI 3.2.017 quater laisse d'ailleurs le dernier mot au président
 du collège des commissaires sur quel peloton est le plus gros.
+
+### Build 186 · son point 181, et le peloton qui garde son identité
+
+**Son point 181 marche.** Au palier 2, le 46 BEL et le 70 BRA, lâchés d'un tour, reviennent au
+contact de la queue du peloton à **502 s** : l'appli ne propose **rien** et les remet simplement
+dans le tour du peloton. Même chose à 780 s. Huit retours de ce genre sur la course, zéro
+proposition pour eux.
+
+**Le peloton garde son identité.** Il n'est plus le plus gros groupe de l'instant mais celui qui
+partage le plus de coureurs avec le peloton précédent ; s'il n'en reste plus la moitié, on repart du
+plus gros. À l'arrivée du palier 2 il désigne **15, 4, 11, 23, 58, 67, 1, 9, 3** — le vrai peloton.
+
+**Palier 1** : aucune proposition, un seul groupe, zéro changement de tête.
+
+**Ce qui reste faux : 41 propositions au palier 2 au lieu d'une poignée.** Les relevés qui le
+disent :
+
+| Relevé | Ce qui cloche |
+|---|---|
+| « −1 pour le 7, le 18 et le 61 à 389 s, avec le 15 » | ce sont les échappés, ils ne perdent pas de tour |
+| « +1 pour le 12 et le 52 à 677 s, **avec le 70** » | le 70 est lâché d'un tour ; il roulait dans le peloton, et c'est lui que l'appli a pris pour la queue du peloton |
+
+Les deux disent la même chose : quand des coureurs en retard d'un tour roulent **à l'intérieur** du
+peloton, « le dernier coureur du peloton » et « le premier coureur du peloton » du point 180 ne
+désignent plus ce qu'il faut. C'est la question à trancher avant d'aller plus loin.
