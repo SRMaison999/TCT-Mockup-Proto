@@ -3045,3 +3045,38 @@ suffit pas : les marges mesurées se tiennent juste au-dessus de 1,65 m.
 **Le contrôle, palier 1** : un seul bloc d'un bout à l'autre, **un seul** coureur en tête de toute
 la course, **zéro** proposition, **zéro** tour retranché, **zéro** saut d'écart, **zéro** point qui
 recule. Aucune régression.
+
+## Build 178 · l'ordre relevé aux boucles
+
+**La course mesurée** : « Palier 2 — deux échappées, deux lâchés », 250 m, 60 tours, 16 coureurs,
+rejouée du départ à l'arrivée (1 042,3 s), puis « Palier 1 — peloton groupé » en contrôle.
+
+| | build 174 | build 178 |
+|---|---|---|
+| Tours retranchés, bascules sur la course | **494** | **104** |
+| dont le 12 SUI | 52 | **15** |
+| Coureurs à qui un tour est retranché un jour | les **16** | **8** |
+| Changements de tête | **67** | **32** |
+| Changements de composition de la file | 858 | **397** |
+| Propositions ouvertes pour les cinq coureurs qui prennent un tour | 2 puis 3, séparées | **une seule**, qui les rassemble |
+| Points qui reculent | 0 | 0 |
+| Sauts d'écart de plus de 10 s | 141 | **164** |
+
+**Ce que les logs montrent de l'ancien défaut.** À 539,4 s le 12 SUI est en tête : sa dernière
+détection, à 532,73 s sur la boucle 115, a donné **7 615 m**. À 540,7 s le 15 IRL prend la tête :
+sa détection, à 537,48 s sur la boucle 0, a donné **7 250 m** — moins que le 12. Ce n'est donc pas
+une détection qui a fait changer la tête, c'est le tour retranché au 12, recalculé entre deux
+passages. Sur 67 changements de tête, **9 seulement** tombaient dans les trois dixièmes d'une
+détection du nouveau leader. D'où la build 177 : le tour retranché ne se décide, lui aussi, qu'à
+une détection.
+
+**Le contrôle, palier 1** : un seul bloc, **un seul** coureur en tête, la composition de la file
+change **3 fois** sur toute la course (contre des centaines), zéro proposition, zéro tour
+retranché, zéro saut d'écart, zéro point qui recule.
+
+**Ce qui reste, et qui est maintenant le défaut dominant.** Les écarts de blocs sautent d'un tour
+entier — « 18,3 s → −0,1 s » puis l'inverse, 164 fois. L'écart s'affiche bien en secondes lues sur
+les boucles, mais la **place** du bloc vient désormais des détections tandis que `g.head` et
+`g.tail`, qui servent la correction de tour, viennent encore des mètres interpolés. Les deux ne
+disent pas toujours la même chose, et quand elles se contredisent un tour est ajouté à l'écart.
+C'est le poste 18 et le poste 20 de `travaux.md`.

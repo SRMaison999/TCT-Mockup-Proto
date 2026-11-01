@@ -792,8 +792,12 @@ du **tour 12** au **tour 19**, elle les porte **tous les deux** au lieu du 12 se
 passent de −2 à −1 tour, et 91 calculs sont refusés parce que les deux coureurs ne se suivaient pas. Les chiffres complets
 sont dans `docs/mesures.md`, « Build 174 ».
 
-**Ce qui reste.** La même échappée est encore proposée à plusieurs tours, et quatre coureurs du
-plus gros peloton se voient encore proposer un tour perdu.
+**Ce que la build 178 a ajouté.** Une échappée ne se propose plus qu’une fois : si une proposition
+du même nombre de tours est déjà ouverte, le coureur la rejoint au lieu d’en ouvrir une seconde. Les
+cinq coureurs qui prennent un tour au palier 2 tiennent désormais dans **une seule** proposition.
+
+**Ce qui reste.** Quatre coureurs du plus gros peloton se voient encore proposer un tour perdu,
+contre l’article UCI 3.2.017 quater.
 
 
 ## 22. Un sprint n'est jugé que sur le premier groupe — **à corriger**

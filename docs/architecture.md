@@ -2041,3 +2041,43 @@ chiffres sont dans `docs/mesures.md`, « Build 174 » :
   qui tient déjà un tour retranché : il est par construction à un tour du tour du paquet.
 - La tête ne passe plus d'un coureur à l'autre pour **moins d'une longueur de vélo** :
   `S.lastLeadBib` garde le coureur en tête, et la mesure ne le détrône qu'au-delà de `BIKE_L`.
+
+## 48. L'ordre est relevé aux boucles, il ne se calcule pas (build 178)
+
+**Sa règle, le 1er novembre 2026** (point 177) : « La seule façon certaine de savoir l'ordre de
+passage des coureurs, c'est les détections des boucles. A chaque tour. 3 boucle par tour. »
+
+Jusqu'à la build 176, l'ordre de la timeline venait de `np()` — la position **interpolée** entre
+deux détections. Entre deux passages l'appli n'a plus de mesure : elle calcule où les coureurs
+devraient être, et c'est ce calcul qui classait les coureurs. D'où une tête qui changeait 67 fois,
+dont 65 pour 3 m ou moins.
+
+**Deux grandeurs, deux usages, qu'il ne faut plus confondre :**
+
+| | d'où elle vient | à quoi elle sert |
+|---|---|---|
+| `np(r)` | la position interpolée, moins les tours retranchés | les **distances** : la découpe des blocs, les mètres d'un écart |
+| `ndOf(r)` | `r.rec.d`, la distance que la **dernière détection** a donnée, moins les tours retranchés | l'**ordre** : la file, l'intérieur d'un bloc, le rang des blocs, la tête |
+
+`r.rec.d` vaut `ka × 250 + la boucle franchie`. Elle ne change qu'au passage, donc l'ordre ne
+change qu'au passage. Deux coureurs lus sur la **même boucle au même tour** portent la **même**
+distance : c'est alors l'**heure** du passage qui les sépare, et le premier passé est le premier —
+son point 174, « le premier qui passe est le premier, l'ordre de passage, rien d'autre ».
+
+Le comparateur `cmpRead` porte ces trois clés — distance lue, puis heure du passage, puis le
+dossard pour que deux coureurs jamais lus ne s'échangent pas — et il range **quatre** choses : la
+file, les coureurs libres d'un amas, les coureurs d'un bloc, et les blocs entre eux (« ils
+composent la timeline dans l'ordre chronologique de leurs groupes », point 174). La tête est le
+premier de cet ordre ; la retenue d'une longueur de vélo de la build 174 est retirée, elle n'a
+plus d'objet.
+
+**Le tour retranché suit la même règle.** `impliedOf()` ne se recalcule plus à chaque image : la
+valeur est relevée au dernier passage du coureur et **tient** jusqu'au suivant, quoi que fasse
+l'amas calculé entre-temps. C'est son point 177 appliqué au merge du §2. Et le repère du paquet,
+`bunchRaw`, est lui aussi une distance **lue**, pour que les deux termes de la soustraction
+viennent du même endroit.
+
+**Une échappée ne se propose qu'une fois.** Ses coureurs ne franchissent pas la boucle au même
+dixième : le 12 et le 52 entrent dans le paquet à deux détections différentes, et deux
+propositions séparées s'ouvraient pour le même fait de course. Si une proposition du même nombre
+de tours est déjà ouverte, le coureur la **rejoint** — `PROPOSITION-JOINT` le dit dans les logs.

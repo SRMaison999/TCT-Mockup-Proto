@@ -2499,3 +2499,11 @@ l'écran, une à la fois.
      la note du 25 octobre 2026 du §4, puis reprise de proche en proche comme si elle était sa
      règle. Elle est retirée de tous les documents et du code à la build 175. C'est la même
      faute que `pitfalls.md` A12 : une de mes phrases rangée parmi les siennes.
+
+177. **L'ordre des coureurs, ce sont les détections des boucles.** Ses mots, le 1er novembre
+     2026, à la question « l'ordre de la timeline doit-il ne changer qu'au passage d'une
+     boucle ? » : « **La seule façon certaine de savoir l'ordre de passage des coureurs, c'est
+     les détections des boucles. A chaque tour. 3 boucle par tour.** »
+     L'ordre de la timeline ne se calcule donc pas entre deux passages : il est **relevé** aux
+     passages, trois fois par tour, sur les trois boucles. Entre deux détections, l'ordre ne
+     bouge pas.

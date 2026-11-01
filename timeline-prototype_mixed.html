@@ -612,7 +612,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '175';
+const BUILD = '178';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -719,7 +719,6 @@ function reset() {
     log: [], proposals: [], snoozed: {}, dismissed: {}, nextId: 1, loggedLap: 0,
     cass: {},               // per pair of riders following each other: the break as it stands confirmed
     took: {},               // par dossard : le nombre de tours retranchés AU MOMENT où il a pris le tour du paquet
-    lastLeadBib: null,      // le coureur en tête à l'image précédente, quand la tête vient de la mesure
     inelig: new Set(),      // riders not eligible, from the groups rule in computeGroups
     started: false,         // the race waits for Start: nothing moves before the operator says so
     // The laps to go carry their own provenance (operator, 29 October 2026): the lap counter on the track, the
@@ -1077,8 +1076,10 @@ function computeGroups(M) {
   // le repère du paquet ne peut pas être un coureur qui tient déjà un tour retranché : il est, par construction, à
   // un tour du tour du paquet, et le prendre pour repère retranche un tour à tout le peloton.
   const rev = [...bunchSeq].reverse();
-  const bunchFront = rev.find(x => x.r.inBunchPrev && !S.took[x.r.bib]) || rev.find(x => x.r.inBunchPrev) || bunchSeq[bunchSeq.length - 1];
-  const bunchRaw = bunchFront ? bunchFront.m.pos : null;
+  const bunchFront = rev.find(x => x.r.inBunchPrev && !(S.took[x.r.bib] && S.took[x.r.bib].v)) || rev.find(x => x.r.inBunchPrev) || bunchSeq[bunchSeq.length - 1];
+  // la distance du paquet est elle aussi celle que les boucles ont LUE (point 177), pour que les deux termes de la
+  // soustraction ci-dessous viennent du même endroit.
+  const bunchRaw = bunchFront ? (bunchFront.r.rec ? bunchFront.r.rec.d : bunchFront.m.pos) : null;
   S.bunchRaw = bunchRaw; S.bunchSeq = bunchSeq.map(x => x.r.bib);
   // where each rider is by position alone, in laps from the front rider (alone, or the first of the front group): a rider a lap down from him has been caught by the leader
   const reads = live.map(r => ({ r, m: M.get(r.bib) })).filter(x => x.m.read && x.m.pos != null);
@@ -1099,23 +1100,41 @@ function computeGroups(M) {
   // tours se mesure donc UNE FOIS, à cette image-là, et il tient tant qu'il est dans le paquet ; il ne se refait
   // pas vingt fois par seconde contre un repère qui, lui, bouge. Mesuré le 1er novembre 2026 : le 12 et le 52
   // basculaient 53 fois chacun, et chaque bascule retournait la file et faisait sauter l'écart d'un tour entier.
-  for (const b of Object.keys(S.took)) if (!inBunchCluster.has(+b)) {
-    dbg('TOUR', 'BIB ' + b + ' sort du paquet : le tour retranché est rendu', { bib: +b, tours: S.took[b] });
-    delete S.took[b];
-  }
+  // ET LE TOUR PRIS SUR LE PAQUET NE SE DÉCIDE QU'À UNE DÉTECTION. C'est son point 177 appliqué au merge du §2 : si
+  // l'ordre ne peut se savoir qu'aux passages, le tour qu'on retranche à un coureur non plus. Entre deux détections,
+  // la valeur relevée au dernier passage TIENT, quoi que fasse l'amas calculé entre-temps.
+  // Mesuré le 1er novembre 2026, build 176 : recalculé à chaque image, ce terme basculait 494 fois sur la course —
+  // 52 fois pour le seul 12 — et chaque bascule déplaçait le coureur d'un tour entier dans la file.
   const impliedOf = r => {
-    if (bunchRaw == null || !inBunchCluster.has(r.bib)) return 0;
-    if (S.took[r.bib] == null) {
-      S.took[r.bib] = Math.round((M.get(r.bib).pos - bunchRaw) / TRACK);
-      if (S.took[r.bib]) dbg('TOUR', 'BIB ' + r.bib + ' prend le tour du paquet · ' + S.took[r.bib] + ' tour(s) retranché(s)',
-        { bib: r.bib, tours: S.took[r.bib], pos: +M.get(r.bib).pos.toFixed(1), paquet: +bunchRaw.toFixed(1), repere: bunchFront ? bunchFront.r.bib : null });
-    }
-    return S.took[r.bib];
+    const at = r.rec ? r.rec.t : null, st = S.took[r.bib];
+    if (st && st.at === at) return st.v;              // rien de neuf n'a été lu : rien ne change
+    const dedans = bunchRaw != null && inBunchCluster.has(r.bib);
+    const lu = r.rec ? r.rec.d : M.get(r.bib).pos;
+    const v = dedans ? Math.round((lu - bunchRaw) / TRACK) : 0;
+    S.took[r.bib] = { at, v };
+    if (st && st.v !== v)
+      dbg('TOUR', v ? 'BIB ' + r.bib + ' : ' + v + ' tour(s) retranché(s) sur le paquet' : 'BIB ' + r.bib + ' : plus de tour retranché',
+        { bib: r.bib, tours: v, avant: st.v, lu: +lu.toFixed(1), paquet: +bunchRaw.toFixed(1),
+          repere: bunchFront ? bunchFront.r.bib : null, dansLePaquet: dedans, auPassageDe: at == null ? null : +at.toFixed(2) });
+    return v;
   };
   // The merge, as the operator wrote it: as soon as there is no break left between him and the bunch, a rider
   // takes the bunch lap in the timeline, waiting for no validation at all. The operator validation now decides
   // the +/-20 points and nothing else. Laps gained and laps lost alike.
   const np = r => M.get(r.bib).pos - TRACK * impliedOf(r);
+  /* L'ORDRE DES COUREURS EST RELEVÉ AUX BOUCLES, IL NE SE CALCULE PAS. Ses mots, le 1er novembre 2026 (point 177) :
+     « La seule façon certaine de savoir l'ordre de passage des coureurs, c'est les détections des boucles. A chaque
+     tour. 3 boucle par tour. »
+     `r.rec.d` est la distance que la DERNIÈRE détection a donnée — un multiple de tour plus la boucle franchie. Elle
+     ne change qu'au passage, donc l'ordre ne change qu'au passage. Deux coureurs lus sur la même boucle au même tour
+     ont la MÊME distance : c'est alors l'heure du passage qui les sépare, et le premier passé est le premier (point
+     174, « le premier qui passe est le premier, l'ordre de passage, rien d'autre »).
+     `np()` juste au-dessus reste la position interpolée : elle sert les DISTANCES — la découpe des blocs, les mètres
+     d'un écart —, jamais l'ordre. Mesuré le 1er novembre 2026 : l'ordre pris sur l'interpolation changeait la tête
+     67 fois, dont 65 pour 3 m ou moins. */
+  const ndOf = r => (r.rec ? r.rec.d : M.get(r.bib).pos) - TRACK * impliedOf(r);
+  const atOf = r => (r.rec ? r.rec.t : Infinity);
+  const cmpRead = (a, b) => (ndOf(b.r) - ndOf(a.r)) || (atOf(a.r) - atOf(b.r)) || (a.r.bib - b.r.bib);
   let leaderR = null;
   if (S.leader) {
     leaderR = readable.find(r => r.bib === S.leader.bib) || null;
@@ -1132,29 +1151,21 @@ function computeGroups(M) {
     }
   }
   let leaderSrc = leaderR ? 'désigné' : null;
-  if (!leaderR) {
-    // LA TÊTE NE CHANGE PAS POUR RIEN. La seule longueur qu'il ait donnée pour « au même point de la piste » est la
-    // longueur d'un vélo (§1, BIKE_L). Deux coureurs séparés de moins que ça ne sont pas séparés, et la tête ne
-    // leur passe pas de l'un à l'autre. Mesuré le 1er novembre 2026 sur le palier 2 : 90 changements de tête, tous
-    // pris sur la mesure, 88 d'entre eux à 3 m ou moins, un à 0,0 m — à l'intérieur d'un peloton de seize.
-    const best = readable.reduce((a, r) => (!a || np(r) > np(a) ? r : a), null);
-    const held = S.lastLeadBib == null ? null : readable.find(r => r.bib === S.lastLeadBib);
-    leaderR = held && held !== best && np(best) - np(held) <= BIKE_L ? held : best;
-    leaderSrc = 'mesure';
-  }
-  S.lastLeadBib = leaderR.bib;
+  // LA TÊTE EST LE PREMIER DE L'ORDRE RELEVÉ AUX BOUCLES. Plus de seuil, plus de retenue : l'ordre ne bouge
+  // qu'au passage, donc la tête non plus.
+  if (!leaderR) { leaderR = readable.map(r => ({ r })).sort(cmpRead)[0].r; leaderSrc = 'boucles'; }
   const leaderBib = leaderR.bib, leader = M.get(leaderBib), leaderNp = np(leaderR);
-  // POURQUOI CE COUREUR EST EN TÊTE. Trois chemins possibles : il a été désigné, il a été repris sur la piste par
-  // la boucle ci-dessus, ou il est simplement celui dont np() est le plus grand. Le log porte les trois meilleurs
-  // np, pour qu'on voie de combien il devance le suivant.
+  // POURQUOI CE COUREUR EST EN TÊTE. Deux chemins : il a été désigné, ou il est le premier de l'ordre des boucles.
+  // Le log porte les trois premiers de cet ordre, avec la distance que leur dernière détection a donnée et son heure.
   if (dbgChanged('leader', leaderBib + '|' + leaderSrc)) {
-    const top = readable.map(r => ({ bib: r.bib, np: +np(r).toFixed(1) })).sort((a, b) => b.np - a.np).slice(0, 3);
+    const top = readable.map(r => ({ r })).sort(cmpRead).slice(0, 3)
+      .map(x => ({ bib: x.r.bib, lu: +ndOf(x.r).toFixed(1), a: x.r.rec ? +x.r.rec.t.toFixed(2) : null, boucle: x.r.rec ? x.r.rec.loop : null }));
     dbg('LEADER', 'BIB ' + leaderBib + ' en tête · ' + leaderSrc, { bib: leaderBib, source: leaderSrc, troisPremiers: top,
-      avance: top.length > 1 ? +(top[0].np - top[1].np).toFixed(2) : null });
+      avance: top.length > 1 ? +(top[0].lu - top[1].lu).toFixed(2) : null });
   }
   S.tlOf = {};
   for (const x of rows) { x.behind = leaderNp - np(x.r); S.tlOf[x.r.bib] = x.behind; }   // the delay in the timeline, in metres
-  rows.sort((a, b) => a.behind - b.behind);
+  rows.sort(cmpRead);   // l'ordre, lui, vient des boucles (point 177), jamais de `behind`
 
   // 2. display blocks: a physical cluster whose members are a lap apart in the race is shown as several blocks,
   //    each at its own distance from the leader; the block then says who it rides with on the track.
@@ -1162,7 +1173,7 @@ function computeGroups(M) {
   const pendingOf = b => { const p = S.proposals.find(p => p.kind === 'lap' && p.bibs.includes(b) && !(S.snoozed[p.key] && S.t < S.snoozed[p.key])); return p ? p.delta : 0; };
   const groups = [];
   for (const c of clusters) {
-    const free = c.rows.filter(x => !opOf.has(x.r.bib)).sort((a, b) => a.behind - b.behind);
+    const free = c.rows.filter(x => !opOf.has(x.r.bib)).sort(cmpRead);
     let g = null;
     for (const x of free) {
       x.pending = pendingOf(x.r.bib);
@@ -1177,13 +1188,15 @@ function computeGroups(M) {
     if (grows.length) groups.push({ rows: grows, op: g, cluster: grows[0].cluster || null });
   }
   for (const g of groups) {
-    g.rows.sort((a, b) => (a.behind == null ? 0 : a.behind) - (b.behind == null ? 0 : b.behind));   // inside a block: race order
+    g.rows.sort(cmpRead);   // dans un bloc : l'ordre de passage sur les boucles (point 174, point 177)
     g.bibs = g.rows.map(x => x.r.bib);
     g.head = Math.min(...g.rows.map(x => x.behind == null ? 1e9 : x.behind)); g.tail = Math.max(...g.rows.map(x => x.behind == null ? -1e9 : x.behind));
     g.incident = !!(g.op && g.op.type !== 'manual');
     g.pending = g.rows.some(x => x.pending);
   }
-  groups.sort((a, b) => (a.incident - b.incident) || (a.head - b.head));   // from the leader down to the tail of the race
+  // les blocs se rangent eux aussi sur l'ordre des boucles : « ils composent la timeline dans l'ordre chronologique
+  // de leurs groupes » (point 174). C'est le premier coureur de chaque bloc qui le place.
+  groups.sort((a, b) => (a.incident - b.incident) || cmpRead(a.rows[0], b.rows[0]));
   // UN GROUPE POSÉ À LA MAIN GARDE SA PLACE. L'opérateur, 1er novembre 2026 : « si on force pour déplacer un
   // groupe manuellement, il faut une indication pour informer que l'utilisateur a forcé. Et avoir la possibilité
   // de laisser tel quel (forcé) mais aussi de retourner au mode automatique (qui replacerait tous les groupes
@@ -1456,10 +1469,10 @@ function detect(G, M) {
   //    WHEN: the instant there is no cassure left between the rider and the bunch, "peu importe à quel endroit de
   //    la piste". That test is exactly what put him in the bunch's cluster (§3), so the event is: he was not in it
   //    on the frame before, he is now. No distance to the bunch is tested, and no tolerance is invented.
-  //    HOW MANY LAPS: the crossings say it, counted against THE RIDER HE FACES (§4, "la mesure doit être entre…") —
+  //    HOW MANY LAPS: the crossings say it, counted against THE RIDER WHO FOLLOWS HIM, OR WHOM HE FOLLOWS (§4) —
   //    the bunch's last rider when he catches it from behind, the bunch's first rider when it catches him. Those two
   //    are the pair of consecutive riders at the border of the two groups, which is why that rider is simply
-  //    his nearest neighbour in the cluster who was already in the bunch. Being side by side, the difference between
+  //    the nearest to him ON THE TRACK among those already in the bunch. Riding together, the difference between
   //    their measured race distances is within a few metres of a whole number of laps — one lap more and he gained
   //    one, one lap fewer and he lost one, zero and he simply closed an ordinary gap.
   //    Both numbers are raw measurements: `m.pos` is the loops' own distance, never the folded display position.
@@ -1515,7 +1528,20 @@ function detect(G, M) {
     }
     const byDelta = {}; for (const c of cands) (byDelta[c.delta] = byDelta[c.delta] || []).push(c.bib);
     for (const d in byDelta) {
-      const bibs = byDelta[d].sort(byBib), delta = +d, gaining = delta > 0;
+      const delta = +d, gaining = delta > 0;
+      // UNE ÉCHAPPÉE NE SE PROPOSE QU'UNE FOIS, AVEC TOUS SES COUREURS. Ses coureurs ne franchissent pas la boucle
+      // au même dixième : depuis que l'ordre est relevé aux passages (point 177), le 12 et le 52 entrent dans le
+      // paquet à deux détections différentes, et deux propositions séparées s'ouvraient pour le même fait de course.
+      // Si une proposition du même nombre de tours est déjà ouverte, le coureur la REJOINT.
+      let bibs = byDelta[d];
+      const deja = S.proposals.find(q => q.kind === 'lap' && q.delta === delta);
+      if (deja) {
+        bibs = [...new Set([...deja.bibs, ...bibs])];
+        S.proposals.splice(S.proposals.indexOf(deja), 1);
+        dbg('PROPOSITION-JOINT', 'BIB ' + byDelta[d].join(', ') + ' rejoint la proposition de ' + deja.bibs.join(', ') + ' · ' + delta + ' tour(s)',
+          { arrivent: byDelta[d], deja: deja.bibs, delta, tour: lap });
+      }
+      bibs = bibs.sort(byBib);
       addProposal({ key: 'lap:' + bibs.join(',') + ':' + delta, kind: 'lap', bibs, delta,
         text: '<b>' + bibList(bibs) + (gaining ? ' gaining a lap</b>' : ' losing a lap</b>') + ' · ' + (gaining ? 'caught the bunch from behind' : 'caught by the bunch') + ' at Lap ' + lap + ' · ' + (gaining ? 'one crossing more' : 'one crossing fewer') + ' than the bunch · validate per rider or all',
         actions: [
