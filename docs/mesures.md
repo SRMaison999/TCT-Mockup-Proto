@@ -3230,3 +3230,26 @@ disent :
 Les deux disent la même chose : quand des coureurs en retard d'un tour roulent **à l'intérieur** du
 peloton, « le dernier coureur du peloton » et « le premier coureur du peloton » du point 180 ne
 désignent plus ce qu'il faut. C'est la question à trancher avant d'aller plus loin.
+
+### Build 187 · le moteur de course sans aucun tour : palier 1 parfait, palier 2 inutilisable
+
+Le moteur de course est réécrit selon son point 182 : aucune distance cumulée, aucun tour ajouté ni
+retranché, la timeline est une chaîne d'écarts de temps, et le ±20 est un événement de points.
+
+**Palier 1 — le peloton groupé.** Exactement ce qu'il faut : **un seul groupe** du départ à
+l'arrivée, **zéro** changement de tête, **zéro** événement de points sur 2 896 détections. Les
+17 changements d'ordre relevés sont tous à l'intérieur du groupe unique.
+
+**Palier 2 — inutilisable.** **246** événements de points, **100** changements de tête, et la
+composition de la file change **1 509** fois. Les relevés sont incohérents dès la première minute :
+« +20 au 4 à 56 s », alors que personne n'a encore attaqué.
+
+**La cause, et elle est de conception.** Sur un anneau, « qui est devant » n'a de sens qu'à partir
+d'un coureur. J'ai fait choisir ce coureur par le moteur lui-même — celui qui a franchi la ligne le
+plus de fois —, et toute la chaîne se mesure par rapport à lui. Chaque fois que ce choix bascule,
+les retards de tous les coureurs se recalculent sur une autre référence et la file se retourne.
+Cent bascules, mille cinq cents retournements.
+
+**Or son point 174 dit qui désigne ce coureur, et ce n'est pas le logiciel** : « Le groupe 1 de la
+timeline, est toujours celui observé par le **juge starter** qui à chaque passage sur la ligne de
+sprint **montre du doigt** le coureur de ce groupe 1 se trouvant en première position du groupe. »

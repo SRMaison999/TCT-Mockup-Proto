@@ -2542,3 +2542,17 @@ l'écran, une à la fois.
      Le geste est pourtant le même que celui d'un coureur qui prend un tour : il arrive par
      derrière, il colle, l'écart tombe sous la seconde. Ce qui les distingue n'est donc pas ce que
      les boucles voient à cet instant, mais **le solde de tours** que le coureur porte déjà.
+
+182. **Aucun tour ne se compte : il n'y a que des 20 points.** Ses mots, le 1er novembre 2026, après
+     m'avoir renvoyé chercher dans le point 174 — il a confirmé les quatre phrases que j'en avais
+     tirées : « **si tu as trouvé !** »
+     > « le dernier coureur de ce groupe-là, sans regarder ses tours »
+     > « chacun est toujours dans le même tour que les autres du point de vue de la timeline »
+     > « on ne gagne pas un tour, on gagne 20 points »
+     > « on ne perd pas un tour, on perd 20 points »
+     Conséquence pour le code, qu'il a approuvée avant qu'elle soit écrite : **tout le comptage de
+     tours disparaît**. Plus de distance cumulée, plus de tour ajouté, plus de tour retranché. La
+     timeline est une chaîne d'écarts de temps sur la piste, et le ±20 est un événement de
+     **points**. L'appli ne retient d'un coureur sorti du peloton qu'une chose : **par où il est
+     sorti** — par l'avant il ne peut que gagner 20 points en revenant, par l'arrière il ne peut
+     qu'en perdre 20 quand le peloton le reprend.
