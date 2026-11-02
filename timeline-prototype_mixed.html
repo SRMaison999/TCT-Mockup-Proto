@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '202';
+const BUILD = '203';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1417,7 +1417,8 @@ function computeGroupsVraiment(M) {
   const numbered = groups.filter(g => !g.incident);
   numbered.forEach((g, i) => { g.no = i + 1; for (const x of g.rows) x.dS = 0; });
   const lus = S.reads[0] || [];
-  if (!S.ligne) S.ligne = { i: 0, ouverts: [], inelig: [] };
+  if (!S.ligne) S.ligne = { i: 0, ouverts: [], inelig: [], dernierT: {} };
+  if (!S.ligne.dernierT) S.ligne.dernierT = {};
   const enCourse = S.riders.filter(r => r.mode !== 'out' && !S.noTp.has(r.bib)).map(r => r.bib);
   // LES GROUPES D'UN PASSAGE SONT CEUX DE L'INSTANT OÙ IL S'OUVRE, et ils ne bougent plus jusqu'à ce
   // qu'il se termine. La timeline, elle, se remanie à chaque détection : un coureur change de groupe,
@@ -1448,7 +1449,15 @@ function computeGroupsVraiment(M) {
     // seconde ; le passage ouvert par le 12 a cru son groupe 1 complet, le 52 en a donc ouvert un
     // second qui attendait le 12 pour toujours, et tout le peloton passait hors rang derrière lui.
     if (gi === 0 && numbered[0].bibs[0] === r.bib && !S.ligne.ouverts.some(P => attend(P) === 1))
-      S.ligne.ouverts.push({ de: r.t, vus: [], groupes: numbered.map(g => g.bibs.slice()) });
+      // LE PREMIER DE LA TIMELINE N'EST PAS TOUJOURS LE PREMIER SUR LA LIGNE. Un coureur de son groupe
+      // peut le précéder d'un dixième. Ceux-là sont déjà passés quand la liste s'ouvre : on les coche
+      // tout de suite, sinon la liste les attend pour rien et tout le monde derrière paraît hors rang.
+      // Un coureur « déjà passé », c'est passé depuis moins d'une seconde — la seconde du §1, celle qui
+      // dit que deux coureurs sont du même groupe. Mesuré sans cela, au palier 2 : le 18 franchit la
+      // ligne à 455,75 s et le 12, en tête de la timeline, à 455,84 s ; la liste attendait le 18, et le
+      // peloton entier portait « NO PTS » pendant 20,2 s à partir de 463,4 s.
+      S.ligne.ouverts.push({ de: r.t, groupes: numbered.map(g => g.bibs.slice()),
+        vus: numbered[0].bibs.filter(b => S.ligne.dernierT[b] != null && r.t - S.ligne.dernierT[b] <= GROUP_GAP_S) });
     // UN SEUL PASSAGE SUR LA LIGNE COMPTE POUR TOUS LES PASSAGES OUVERTS QUI ATTENDENT SON GROUPE,
     // et pas seulement pour le plus ancien. Un même coureur n'a pas le même rang dans deux passages
     // ouverts à des moments différents : le 46 était le groupe 2 du passage ouvert à 833 s et le
@@ -1462,7 +1471,13 @@ function computeGroupsVraiment(M) {
     // déjà passé ne gêne personne. Au palier 3 au sprint final, le 46 et le 70 franchissent la ligne
     // entre l'échappée et le peloton : eux sont hors rang, le peloton derrière eux ne l'est pas.
     // Mesuré avec l'égalité stricte : le peloton devenait inéligible pendant 94 s à partir de 222,7 s.
-    const dansSonRang0 = !!enCours0 && (rang(enCours0, r.bib) <= attend(enCours0) || gi + 1 <= attendIci(enCours0));
+    // SANS PASSAGE OUVERT, PERSONNE N'EST HORS RANG : il n'y a rien devant quoi l'être. Le passage se
+    // termine dès que tout le monde l'a franchie ; les coureurs qui franchissent la ligne ensuite, avant
+    // que la tête de la timeline ne la repasse, n'ont aucun passage où se situer. Mesuré sans cela, au
+    // palier 3 : le passage se termine sur le 70 à 316,02 s, et le 58, le 67, le 1, le 9, le 3, le 18,
+    // le 61 et le 7 — qui franchissent la ligne entre 316,29 s et 317,63 s — portaient « NO PTS »
+    // pendant 19,8 s. Même chose au palier 2 à partir de 463,4 s, pendant 20,2 s.
+    const dansSonRang0 = !enCours0 || rang(enCours0, r.bib) <= attend(enCours0) || gi + 1 <= attendIci(enCours0);
     for (const P of pris) if (!P.vus.includes(r.bib)) P.vus.push(r.bib);
     // C'EST LE PASSAGE EN COURS QUI JUGE, le dernier ouvert — pas un plus ancien qui traîne encore.
     // Sa phrase : « dans certains cas, commence alors que le précédent n'est pas encore terminé ». Un
@@ -1473,6 +1488,7 @@ function computeGroupsVraiment(M) {
     // le 46 y est le groupe 3. Jugé sur l'ancien, il gardait ses 4 points alors qu'il avait franchi la
     // ligne hors de son rang, entre l'échappée et le peloton. ON NE COMPTE PAS LES TOURS : ni ici, ni
     // ailleurs. Sa phrase du 2 novembre 2026 : « IL NE FAUT PAS COMPTER LES TOURS DE RETARD ! »
+    S.ligne.dernierT[r.bib] = r.t;
     if (!dansSonRang0) { if (!S.ligne.inelig.includes(r.bib)) S.ligne.inelig.push(r.bib); }
     else S.ligne.inelig = S.ligne.inelig.filter(b => b !== r.bib);
     // tous les groupes enregistrés : le passage est terminé

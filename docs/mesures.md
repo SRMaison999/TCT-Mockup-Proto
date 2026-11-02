@@ -3813,3 +3813,30 @@ pendant une seconde, le passage fige la scission, et les coureurs de la deuxièm
 hors rang jusqu'à ce que le passage se termine — **19,8 s au palier 3 à partir de 316,4 s** (le 58,
 67, 1, 9, 3, 18, 61 et 7), **20,2 s au palier 2 à partir de 463,4 s**. Aucun sprint ne tombe dans
 ces fenêtres, mais la timeline affiche `NO PTS` à tort pendant vingt secondes.
+
+## §61 · Build 203 — plus un seul `NO PTS` à tort
+
+Les deux fenêtres de vingt secondes du poste 32 avaient deux causes différentes, toutes deux dans
+mon code.
+
+**Au palier 3, à 316,0 s : plus aucune liste ouverte.** Le 70 franchit la ligne à 316,02 s et
+termine la liste en cours. Le 58, le 67, le 1, le 9, le 3, le 18, le 61 et le 7 la franchissent
+derrière lui, entre 316,29 s et 317,63 s, avant que la tête de la timeline n'y revienne : aucune
+liste n'est ouverte, et ils étaient déclarés hors rang faute de point de comparaison. Sans liste
+ouverte, personne n'est hors rang.
+
+**Au palier 2, à 455,8 s : la tête de la timeline n'est pas la première sur la ligne.** Le 18
+franchit la ligne à 455,75 s et le 12, en tête de la timeline, à 455,84 s — nine centièmes plus
+tard. La liste s'ouvrait sur le 12 et attendait le 18, qui venait de passer. Elle ne se complétait
+jamais, et le peloton entier portait `NO PTS` pendant 20,2 s à partir de 463,4 s. Les coureurs du
+premier groupe qui ont franchi la ligne **depuis moins d'une seconde** — la seconde du §1 — sont
+maintenant cochés dès l'ouverture.
+
+**Les trois paliers, après correction** : seuls le 46 et le 70 sont jamais inéligibles, sur les
+trois courses. Plus un seul coureur du peloton.
+
+| | palier 1 | palier 2 | palier 3 |
+|---|---|---|---|
+| sprints où le 46 et le 70 sont grisés | aucun | 2, 3, 5 | 4, 5, 6 |
+| autres coureurs grisés | aucun | aucun | aucun |
+| les quatre premiers de chaque sprint | 15, 4, 11, 23 | 18, 61, 7, 12 | 12, 52, 15, 4 |
