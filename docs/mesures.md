@@ -3804,8 +3804,8 @@ enregistrés, et plusieurs peuvent être ouverts en même temps.
 | 5 | **46, 70** | 12=5, 52=3, 15=2, 4=1 |
 | 6 | **46, 70** | 12=10, 52=6, 15=4, 4=2 |
 
-Le sprint final ne donne plus 4 et 2 points au 46 et au 70, qui le franchissaient avec quatre tours
-de retard. **Palier 2** : grisés aux sprints 2, 3 et 5. **Palier 1** : rien de grisé, seize
+Le sprint final ne donne plus 4 et 2 points au 46 et au 70 : ils franchissent la ligne entre
+l'échappée et le peloton, donc hors de leur rang. **Palier 2** : grisés aux sprints 2, 3 et 5. **Palier 1** : rien de grisé, seize
 coureurs à chaque sprint, 5-3-2-1 au 15, 4, 11 et 23.
 
 **Ce qui reste faux**, et c'est encore mon code : une fois par course, le peloton se scinde en deux

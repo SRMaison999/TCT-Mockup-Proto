@@ -2783,3 +2783,19 @@ Et sa réponse, les deux questions reformulées par lui :
 > il commence quand le premier du groupe 1 passe.
 >
 > > important : dans certains cas, commence alors que le précédent n'est pas encore terminé ! »
+
+### 199 · On ne compte pas les tours de retard, même pour expliquer · 2 novembre 2026
+
+Sur la phrase « le sprint final ne donne plus 4 et 2 points au 46 et au 70, qui le franchissaient
+avec quatre tours de retard » :
+
+> « IL NE FAUT PAS COMPTER LES TOURS DE RETARD ! »
+
+Et sur deux explications écrites dans mon vocabulaire — « le 46 est le groupe 2 du passage ouvert à
+833 s et le groupe 1 de celui ouvert à 850 s », « le passage ouvert par le 12 a cru son groupe 1
+complet » :
+
+> « ABSOLUMENT RIEN COMPRIS ! »
+
+C'est son point 184 appliqué à un compte rendu de correction : ce qui se raconte, ce sont les
+dossards, les secondes et la ligne — pas les objets que j'ai inventés dans le code.

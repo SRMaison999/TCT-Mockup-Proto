@@ -1470,7 +1470,9 @@ function computeGroupsVraiment(M) {
     // pour le passage qui vient de s'ouvrir, il arrive avant son rang. C'est celui-là qui compte.
     // Mesuré au palier 3 au sprint final : le 46 franchit la ligne à 1109,65 s. Le passage ouvert à
     // 1091 s l'attendait comme groupe 2 ; celui ouvert à 1108,57 s avec le 12 attendait le peloton, et
-    // le 46 y est le groupe 3. Jugé sur l'ancien, il gardait ses 4 points avec quatre tours de retard.
+    // le 46 y est le groupe 3. Jugé sur l'ancien, il gardait ses 4 points alors qu'il avait franchi la
+    // ligne hors de son rang, entre l'échappée et le peloton. ON NE COMPTE PAS LES TOURS : ni ici, ni
+    // ailleurs. Sa phrase du 2 novembre 2026 : « IL NE FAUT PAS COMPTER LES TOURS DE RETARD ! »
     if (!dansSonRang0) { if (!S.ligne.inelig.includes(r.bib)) S.ligne.inelig.push(r.bib); }
     else S.ligne.inelig = S.ligne.inelig.filter(b => b !== r.bib);
     // tous les groupes enregistrés : le passage est terminé
