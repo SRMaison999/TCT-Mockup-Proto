@@ -3826,7 +3826,7 @@ liste n'est ouverte, et ils étaient déclarés hors rang faute de point de comp
 ouverte, personne n'est hors rang.
 
 **Au palier 2, à 455,8 s : la tête de la timeline n'est pas la première sur la ligne.** Le 18
-franchit la ligne à 455,75 s et le 12, en tête de la timeline, à 455,84 s — nine centièmes plus
+franchit la ligne à 455,75 s et le 12, en tête de la timeline, à 455,84 s — neuf centièmes plus
 tard. La liste s'ouvrait sur le 12 et attendait le 18, qui venait de passer. Elle ne se complétait
 jamais, et le peloton entier portait `NO PTS` pendant 20,2 s à partir de 463,4 s. Les coureurs du
 premier groupe qui ont franchi la ligne **depuis moins d'une seconde** — la seconde du §1 — sont
