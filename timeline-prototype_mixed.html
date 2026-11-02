@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '203';
+const BUILD = '204';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1443,12 +1443,12 @@ function computeGroupsVraiment(M) {
     const r = lus[S.ligne.i++];
     const gi = numbered.findIndex(g => g.bibs.includes(r.bib));
     if (gi < 0) continue;
-    // « il commence quand le premier du groupe 1 passe » — LE PREMIER, c'est-à-dire la tête de la
-    // timeline, et pas n'importe lequel du groupe 1. Mesuré en ouvrant sur tout coureur du groupe 1,
-    // au palier 3 à 215 s : le 12 et le 52 ont été séparés en deux groupes pendant une fraction de
-    // seconde ; le passage ouvert par le 12 a cru son groupe 1 complet, le 52 en a donc ouvert un
-    // second qui attendait le 12 pour toujours, et tout le peloton passait hors rang derrière lui.
-    if (gi === 0 && numbered[0].bibs[0] === r.bib && !S.ligne.ouverts.some(P => attend(P) === 1))
+    // « il commence quand le premier du groupe 1 passe » — LE PREMIER SUR LA LIGNE, c'est-à-dire
+    // n'importe lequel du groupe 1, celui qui arrive le premier. Ce n'est jamais un dossard désigné
+    // d'avance : l'opérateur, 2 novembre 2026, sur une version qui attendait la tête de la timeline —
+    // « EST-CE QUE CELA VEUT DIRE QUE LE PREMIER COUREUR DE LA TIMELINE QUI EST ATTENDU EST UN NO BIEN
+    // PRECIS ? CA NE DEVRAIT PAS ETRE LE CAS, CA DEVRAIT SIMPLEMENT ETRE LE PREMIER COUREUR SU GROUPE 1 ».
+    if (gi === 0 && !S.ligne.ouverts.some(P => attend(P) === 1))
       // LE PREMIER DE LA TIMELINE N'EST PAS TOUJOURS LE PREMIER SUR LA LIGNE. Un coureur de son groupe
       // peut le précéder d'un dixième. Ceux-là sont déjà passés quand la liste s'ouvre : on les coche
       // tout de suite, sinon la liste les attend pour rien et tout le monde derrière paraît hors rang.
@@ -1456,8 +1456,14 @@ function computeGroupsVraiment(M) {
       // dit que deux coureurs sont du même groupe. Mesuré sans cela, au palier 2 : le 18 franchit la
       // ligne à 455,75 s et le 12, en tête de la timeline, à 455,84 s ; la liste attendait le 18, et le
       // peloton entier portait « NO PTS » pendant 20,2 s à partir de 463,4 s.
+      // Un coureur du groupe 1 déjà coché dans une liste encore ouverte a déjà franchi la ligne :
+      // la nouvelle liste n'a pas à l'attendre. Mesuré sans cela, au palier 2 à 500,4 s : le groupe de
+      // tête s'était montré scindé pendant une fraction de seconde, quatre listes traînaient, et celle
+      // qui jugeait attendait le 18 — passé depuis longtemps. Les onze coureurs du peloton portaient
+      // « NO PTS » pendant 22 s.
       S.ligne.ouverts.push({ de: r.t, groupes: numbered.map(g => g.bibs.slice()),
-        vus: numbered[0].bibs.filter(b => S.ligne.dernierT[b] != null && r.t - S.ligne.dernierT[b] <= GROUP_GAP_S) });
+        vus: numbered[0].bibs.filter(b => (S.ligne.dernierT[b] != null && r.t - S.ligne.dernierT[b] <= GROUP_GAP_S)
+          || S.ligne.ouverts.some(o => o.vus.includes(b))) });
     // UN SEUL PASSAGE SUR LA LIGNE COMPTE POUR TOUS LES PASSAGES OUVERTS QUI ATTENDENT SON GROUPE,
     // et pas seulement pour le plus ancien. Un même coureur n'a pas le même rang dans deux passages
     // ouverts à des moments différents : le 46 était le groupe 2 du passage ouvert à 833 s et le

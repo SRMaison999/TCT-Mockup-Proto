@@ -3840,3 +3840,22 @@ trois courses. Plus un seul coureur du peloton.
 | sprints où le 46 et le 70 sont grisés | aucun | 2, 3, 5 | 4, 5, 6 |
 | autres coureurs grisés | aucun | aucun | aucun |
 | les quatre premiers de chaque sprint | 15, 4, 11, 23 | 18, 61, 7, 12 | 12, 52, 15, 4 |
+
+## §62 · Build 204 — le premier du groupe 1, qui qu'il soit
+
+Son point 200. Le passage s'ouvre sur **n'importe quel coureur du groupe 1**, celui qui arrive le
+premier sur la ligne — plus sur la tête de la timeline, qui était un dossard désigné d'avance.
+
+Un seul ajustement a été nécessaire : un coureur du groupe 1 déjà coché dans une liste encore
+ouverte a déjà franchi la ligne, donc la nouvelle liste ne l'attend pas. Sans cela, au palier 2 à
+500,4 s, le groupe de tête s'était montré scindé pendant une fraction de seconde, quatre listes
+traînaient, et celle qui jugeait attendait le 18 — passé depuis longtemps ; les onze coureurs du
+peloton portaient `NO PTS` pendant 22 s.
+
+Les trois paliers donnent exactement les mêmes sprints qu'à la build 203, et toujours aucun
+coureur du peloton inéligible :
+
+| | palier 1 | palier 2 | palier 3 |
+|---|---|---|---|
+| sprints où le 46 et le 70 sont grisés | aucun | 2, 3, 5 | 4, 5, 6 |
+| autres coureurs grisés | aucun | aucun | aucun |

@@ -2799,3 +2799,11 @@ complet » :
 
 C'est son point 184 appliqué à un compte rendu de correction : ce qui se raconte, ce sont les
 dossards, les secondes et la ligne — pas les objets que j'ai inventés dans le code.
+
+### 200 · Le premier du groupe 1 n'est pas un dossard désigné d'avance · 2 novembre 2026
+
+Sur une version qui ouvrait le passage sur la tête de la timeline, un dossard précis :
+
+> « EST-CE QUE CELA VEUT DIRE QUE LE PREMIER COUREUR DE LA TIMELINE QUI EST ATTENDU EST UN NO BIEN
+> PRECIS ?
+> CA NE DEVRAIT PAS ETRE LE CAS, CA DEVRAIT SIMPLEMENT ETRE LE PREMIER COUREUR SU GROUPE 1 »
