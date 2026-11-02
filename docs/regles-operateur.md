@@ -2762,3 +2762,24 @@ Sur la question « hors d'un sprint, la timeline doit-elle encore afficher NO PT
 > sprint n'a pas encore de vainqueur.
 > Pourquoi ?
 > Parce que un opérateur souhaite en continue savoir qui est éligible ou non au prohain sprint »
+
+### 198 · Où commence et où finit un passage de tous les groupes · 2 novembre 2026
+
+Sur les deux découpages essayés et ratés — « un passage se termine dès qu'un coureur repasse la
+ligne » :
+
+> « FAUX »
+
+Et sa réponse, les deux questions reformulées par lui :
+
+> « L'ordre des groupes sur la ligne, à chaque tour :
+>
+> * où un passage de tous les groupes se termine ?
+> ou plutôt "Quand le passage de tous les groupes se termine" ?
+> il se termine quand tous les groupes ont été enregistrés (et donc pour être comptabilisés, les
+> groupes doivent passer cela ils doivent passer dans l'ordre des groupes de la timeline)
+>
+> * où le suivant commence ? ou plutôt "Quand le suivant commence ?"
+> il commence quand le premier du groupe 1 passe.
+>
+> > important : dans certains cas, commence alors que le précédent n'est pas encore terminé ! »

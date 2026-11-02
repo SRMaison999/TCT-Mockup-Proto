@@ -3746,3 +3746,27 @@ grise les douze et donne les 2 et 1 points au 46 et au 70.
 Le code est revenu à la build 201. La cause des deux échecs est la même : sur une course entière,
 les coureurs ne franchissent pas la ligne au même rythme — au palier 3 le 12 la franchit 64 fois,
 le peloton 60 fois et le 46 56 fois. Il n'existe donc pas de découpage évident en « passages ».
+
+## §59 · Son point 198 codé, et toujours pas juste — le passage ne survit pas au remaniement
+
+Les passages qui se chevauchent sont codés comme il les décrit : un passage s'ouvre quand le
+premier du groupe 1 franchit la ligne, il enregistre les groupes **dans l'ordre de la timeline**,
+et il se termine quand tous sont enregistrés. Plusieurs restent ouverts en même temps.
+
+Deux variantes mesurées au palier 3, et les deux laissent le peloton entier inéligible :
+
+- **groupes relus à chaque passage sur la ligne** : à 851,7 s un passage reste bloqué sur « attend
+  le groupe 1 » avec quatorze coureurs enregistrés, parce que le groupe 1 n'a plus les mêmes
+  membres qu'à l'ouverture. Les quatorze coureurs du peloton deviennent inéligibles un par un.
+- **groupes figés à l'ouverture du passage** : à 852,3 s les douze du peloton deviennent
+  inéligibles alors que le 12 et le 52 (groupe 1) ont franchi la ligne à 849,95 s et 850,11 s et le
+  peloton (groupe 2) entre 851,71 s et 854,34 s — dans l'ordre. Au sprint final, le logiciel grise
+  les douze et laisse les 4 et 2 points au 46 et au 70.
+
+Le code est revenu à la build 201.
+
+**Ce qui résiste.** Les coureurs ne franchissent pas la ligne au même rythme : au palier 3 le 12 la
+franchit toutes les 17,2 s, le peloton toutes les 18,5 s, le 46 toutes les 19,8 s. Le 46 recule
+donc d'un rang à la fois, et le moment où il double le peloton ne se voit que sur UN passage. Entre
+ses deux franchissements de 1089,9 s et 1109,65 s, le peloton est passé une fois, à 1093,0 s ; la
+fois suivante, à 1111,58 s, le 46 est déjà passé devant lui.
