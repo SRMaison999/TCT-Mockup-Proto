@@ -615,7 +615,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '201';
+const BUILD = '202';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1382,44 +1382,101 @@ function computeGroupsVraiment(M) {
   S.tlRank = {}; { let n = 0; for (const g of groups) for (const b of g.bibs) S.tlRank[b] = n++; }
   const bunch = groups.filter(g => !g.incident && g.cluster === bunchCluster).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null)
     || groups.filter(g => !g.incident).reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null);
-  // --- not eligible, by groups (the operator rule of 25 October 2026) ---
-  // Groups are numbered from 1, the front group, down the timeline. On the oval, the distance of a group to the
-  // next sprint is measured back from the front group, which is therefore at 0 by construction: that is the rule
-  // "always take the front group as the closest one". After group n, only the members of group n+1 can be
-  // eligible: any member of a group further down who is closer to the line than they are is not eligible.
+  // L'ÉLIGIBILITÉ SE LIT DANS L'ORDRE DES GROUPES SUR LA LIGNE, À CHAQUE TOUR.
+  //
+  // Son point 196, le 2 novembre 2026 : « l'éligibilité au sprint est octroyée par l'ordre
+  // chronologique des groupes de la timeline franchissant cette ligne de sprint. [...] si un groupe,
+  // prenons un exemple le groupe 7 de la timeline, se retrouve chronologiquement franchissant la ligne
+  // de sprint après le passage du groupe 2 de la timeline, alors le groupe 7 est inéligible. Une fois
+  // que le groupe 6 de la timeline, aura franchit la ligne de sprint, le 7 redeviendra éligible la
+  // prochaine fois qu'il franchira la ligne à son tour. »
+  //
+  // Son point 197 : l'inéligibilité s'affiche « tant qu'elle est certaine, et ce même si le sprint n'a
+  // pas encore de vainqueur », parce que « un opérateur souhaite en continue savoir qui est éligible ou
+  // non au prohain sprint ». D'où la lecture à CHAQUE tour, et pas seulement au tour du sprint : « exact ».
+  //
+  // Son point 198, le découpage en passages, qui est à lui et non à moi :
+  //   « il se termine quand tous les groupes ont été enregistrés (et donc pour être comptabilisés, les
+  //    groupes doivent passer cela ils doivent passer dans l'ordre des groupes de la timeline) »
+  //   « il commence quand le premier du groupe 1 passe. »
+  //   « important : dans certains cas, commence alors que le précédent n'est pas encore terminé ! »
+  //
+  // Donc PLUSIEURS passages sont ouverts en même temps. Chacun attend un numéro de groupe : il s'ouvre
+  // en attendant le groupe 1, et n'attend le groupe suivant qu'une fois le groupe attendu passé en
+  // entier. Un coureur qui franchit la ligne alors qu'aucun passage ouvert n'attend son groupe est
+  // inéligible — il a doublé un groupe. Il le redevient éligible à son passage suivant, dès qu'un
+  // passage attend enfin son groupe.
+  //
+  // Ce que cela remplace : le calcul en continu de la distance qui restait à chaque groupe jusqu'à la
+  // ligne. Mesuré à la build 201, palier 3 : il grisait le 46 et le 70 aux sprints 1 et 5, où ils
+  // passaient pourtant dans l'ordre, et ne les grisait ni au 3 ni au 6, où ils doublaient un groupe.
+  //
+  // Deux découpages de mon cru avaient été essayés et mesurés avant qu'il ne tranche, mesures.md §58 :
+  // couper dès qu'un coureur repasse la ligne rendait le 46 inéligible dès 97,8 s ; attendre que les
+  // seize soient passés rendait les douze du peloton inéligibles à partir de 204,1 s.
   const numbered = groups.filter(g => !g.incident);
-  // JUGÉE SUR LES BOUCLES, JAMAIS SUR LA PISTE. L'opérateur, 1er novembre 2026 (point 194) : « mais bon
-  // sang arrête une fois pour toute de calculer des vérités sur la piste, ça fait combien de fois que je
-  // te le demande ?? » — et à la question « l'éligibilité doit-elle se juger sur les boucles, comme la
-  // timeline — et non plus sur les positions de la piste ? » : « OUI ».
-  //
-  // Ce qui reste à parcourir jusqu'à la ligne du prochain sprint, c'est la place du coureur dans la
-  // timeline repliée sur un tour. La ligne est sur la piste, donc la question est forcément modulo un
-  // tour ; mais la MESURE, elle, est celle des boucles, la même qui range la timeline et qui coupe les
-  // groupes. Les deux ne peuvent plus se contredire.
-  //
-  // Mesuré à la build 198, au palier 2 à 472,0 s : le 70, seul dans le groupe 2, était passé sur les
-  // boucles 1,1 s avant le 15 ; sur la piste le 15 était devant lui. Le 15 et le 46, tous deux dans le
-  // groupe 3, portaient « NO PTS » alors que sa règle ne compare jamais un coureur à son propre groupe.
-  // La place se compte sur L'ANCRE, qui n'est pas forcément le premier de la timeline : celui qui
-  // est devant elle a une place NÉGATIVE. On ramène donc tout sur le PREMIER de la timeline avant de
-  // replier, sans quoi l'échappée paraît la plus loin de la ligne et le peloton le plus proche.
-  // Mesuré à la build 199 sans ce report : au palier 2, les onze coureurs du peloton portaient
-  // « NO PTS » pendant 398 s à partir de 222,0 s, alors que l'échappée du 12 et du 52 était devant.
-  const tourTete = (MC && MC.tour()) || null;
-  const places = numbered.flatMap(g => g.rows.map(x => mcRetard.get(x.r.bib))).filter(v => v != null);
-  const placeTete = places.length ? Math.min(...places) : null;
-  numbered.forEach((g, i) => {
-    g.no = i + 1;
-    for (const x of g.rows) { const pl = mcRetard.get(x.r.bib);
-      x.dS = (g.no === 1 || pl == null || placeTete == null || !tourTete) ? 0
-        : (((pl - placeTete) % tourTete) + tourTete) % tourTete; }
-  });
-  S.inelig = new Set();                                  // group 1 and group 2 are always eligible
-  for (let i = 2; i < numbered.length; i++) {
-    const ref = Math.min(...numbered[i - 1].rows.map(x => x.dS));
-    for (const x of numbered[i].rows) if (x.dS < ref) S.inelig.add(x.r.bib);
+  numbered.forEach((g, i) => { g.no = i + 1; for (const x of g.rows) x.dS = 0; });
+  const lus = S.reads[0] || [];
+  if (!S.ligne) S.ligne = { i: 0, ouverts: [], inelig: [] };
+  const enCourse = S.riders.filter(r => r.mode !== 'out' && !S.noTp.has(r.bib)).map(r => r.bib);
+  // LES GROUPES D'UN PASSAGE SONT CEUX DE L'INSTANT OÙ IL S'OUVRE, et ils ne bougent plus jusqu'à ce
+  // qu'il se termine. La timeline, elle, se remanie à chaque détection : un coureur change de groupe,
+  // deux groupes se rejoignent, un troisième naît. Relire les groupes à chaque passage sur la ligne
+  // faisait perdre au passage le compte de ce qu'il attendait. Mesuré au palier 3 à 851,7 s : un
+  // passage restait bloqué à « attend le groupe 1 » avec quatorze coureurs enregistrés, parce que le
+  // groupe 1 n'avait plus les quatre mêmes membres qu'à l'ouverture ; les quatorze coureurs du peloton
+  // devenaient inéligibles les uns après les autres.
+  const rang = (P, bib) => P.groupes.findIndex(g => g.includes(bib)) + 1;
+  // Le rang d'aujourd'hui, lu sur la timeline du moment : les groupes bougent entre l'ouverture d'un
+  // passage et la ligne. Un coureur n'est déclaré hors rang que si les DEUX lectures le disent — celle
+  // du passage et celle de maintenant. Mesuré sans ce second regard, au palier 3 à 316,4 s : le peloton
+  // s'était scindé en deux pendant une seconde, le passage avait figé la scission, et huit coureurs
+  // restaient hors rang pendant vingt secondes alors qu'ils franchissaient la ligne dans l'ordre.
+  const attendIci = P => { for (let n = 1; n <= numbered.length; n++)
+      if (!numbered[n - 1].bibs.every(b => !enCourse.includes(b) || P.vus.includes(b))) return n;
+    return numbered.length + 1; };
+  const attend = P => { for (let n = 1; n <= P.groupes.length; n++)
+      if (!P.groupes[n - 1].every(b => !enCourse.includes(b) || P.vus.includes(b))) return n;
+    return P.groupes.length + 1; };
+  while (S.ligne.i < lus.length) {
+    const r = lus[S.ligne.i++];
+    const gi = numbered.findIndex(g => g.bibs.includes(r.bib));
+    if (gi < 0) continue;
+    // « il commence quand le premier du groupe 1 passe » — LE PREMIER, c'est-à-dire la tête de la
+    // timeline, et pas n'importe lequel du groupe 1. Mesuré en ouvrant sur tout coureur du groupe 1,
+    // au palier 3 à 215 s : le 12 et le 52 ont été séparés en deux groupes pendant une fraction de
+    // seconde ; le passage ouvert par le 12 a cru son groupe 1 complet, le 52 en a donc ouvert un
+    // second qui attendait le 12 pour toujours, et tout le peloton passait hors rang derrière lui.
+    if (gi === 0 && numbered[0].bibs[0] === r.bib && !S.ligne.ouverts.some(P => attend(P) === 1))
+      S.ligne.ouverts.push({ de: r.t, vus: [], groupes: numbered.map(g => g.bibs.slice()) });
+    // UN SEUL PASSAGE SUR LA LIGNE COMPTE POUR TOUS LES PASSAGES OUVERTS QUI ATTENDENT SON GROUPE,
+    // et pas seulement pour le plus ancien. Un même coureur n'a pas le même rang dans deux passages
+    // ouverts à des moments différents : le 46 était le groupe 2 du passage ouvert à 833 s et le
+    // groupe 1 de celui ouvert à 850 s. Mesuré avec un seul enregistrement, au palier 3 à 852,2 s :
+    // son passage de 851,71 s était consommé par le plus ancien, le plus récent l'attendait encore,
+    // n'atteignait jamais son groupe 2, et les douze coureurs du peloton se retrouvaient hors rang.
+    const pris = S.ligne.ouverts.filter(o => rang(o, r.bib) === attend(o));
+    const enCours0 = S.ligne.ouverts[S.ligne.ouverts.length - 1];
+    // HORS RANG, c'est : un groupe AU-DESSUS du sien n'a pas encore franchi la ligne dans ce passage.
+    // Pas « il n'est pas exactement le suivant attendu » : dans l'autre sens, un groupe plus bas qui est
+    // déjà passé ne gêne personne. Au palier 3 au sprint final, le 46 et le 70 franchissent la ligne
+    // entre l'échappée et le peloton : eux sont hors rang, le peloton derrière eux ne l'est pas.
+    // Mesuré avec l'égalité stricte : le peloton devenait inéligible pendant 94 s à partir de 222,7 s.
+    const dansSonRang0 = !!enCours0 && (rang(enCours0, r.bib) <= attend(enCours0) || gi + 1 <= attendIci(enCours0));
+    for (const P of pris) if (!P.vus.includes(r.bib)) P.vus.push(r.bib);
+    // C'EST LE PASSAGE EN COURS QUI JUGE, le dernier ouvert — pas un plus ancien qui traîne encore.
+    // Sa phrase : « dans certains cas, commence alors que le précédent n'est pas encore terminé ». Un
+    // coureur en train de se faire prendre un tour est, pour le passage précédent, la queue attendue ;
+    // pour le passage qui vient de s'ouvrir, il arrive avant son rang. C'est celui-là qui compte.
+    // Mesuré au palier 3 au sprint final : le 46 franchit la ligne à 1109,65 s. Le passage ouvert à
+    // 1091 s l'attendait comme groupe 2 ; celui ouvert à 1108,57 s avec le 12 attendait le peloton, et
+    // le 46 y est le groupe 3. Jugé sur l'ancien, il gardait ses 4 points avec quatre tours de retard.
+    if (!dansSonRang0) { if (!S.ligne.inelig.includes(r.bib)) S.ligne.inelig.push(r.bib); }
+    else S.ligne.inelig = S.ligne.inelig.filter(b => b !== r.bib);
+    // tous les groupes enregistrés : le passage est terminé
+    S.ligne.ouverts = S.ligne.ouverts.filter(o => attend(o) <= o.groupes.length);
   }
+  S.inelig = new Set(S.ligne.inelig.filter(b => enCourse.includes(b)));
   return { groups, leaderBib, leader, bunch, bunchCluster };   // no single threshold any more: it is per pair
 }
 

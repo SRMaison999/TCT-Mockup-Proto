@@ -980,3 +980,10 @@ ouvert ou non, comme le veut `docs/pitfalls.md` F10.
 
 Clos à la build 201 : il a tranché (point 195), l'inéligibilité est gravée sur le passage et le
 sprint la grise et l'annonce. Mesuré sur les trois paliers, `docs/mesures.md` §56.
+
+### Poste 32 · ouvert — le peloton scindé une seconde reste hors rang vingt secondes
+
+Mesuré à la build 202, `docs/mesures.md` §60. Le passage fige les groupes à son ouverture ; si le
+peloton s'est scindé à cet instant, la deuxième moitié reste hors rang jusqu'à la fin du passage.
+Piste à essayer : ne plus figer les groupes du tout, et dire hors rang « un coureur qui est devant
+lui dans la timeline, et qui n'est pas de son groupe, n'a pas encore franchi la ligne ».

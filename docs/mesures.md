@@ -3770,3 +3770,46 @@ franchit toutes les 17,2 s, le peloton toutes les 18,5 s, le 46 toutes les 19,8 
 donc d'un rang à la fois, et le moment où il double le peloton ne se voit que sur UN passage. Entre
 ses deux franchissements de 1089,9 s et 1109,65 s, le peloton est passé une fois, à 1093,0 s ; la
 fois suivante, à 1111,58 s, le 46 est déjà passé devant lui.
+
+## §60 · Build 202 — l'ordre des groupes sur la ligne, et les trois erreurs de mon code
+
+Son point 196 est codé : l'éligibilité se lit dans l'ordre où les groupes franchissent la ligne, à
+chaque tour, avec son découpage du point 198 — un passage s'ouvre quand le premier du groupe 1
+passe, il enregistre les groupes dans l'ordre de la timeline, il se termine quand tous sont
+enregistrés, et plusieurs peuvent être ouverts en même temps.
+
+**Les trois erreurs qui faisaient griser le peloton**, trouvées en instrumentant la ligne :
+
+1. **Un franchissement n'était enregistré que dans un seul passage.** Le 46 est le groupe 2 du
+   passage ouvert à 833 s et le groupe 1 de celui ouvert à 850 s. Son passage de 851,71 s était
+   consommé par le plus ancien ; le plus récent l'attendait encore, n'atteignait jamais son groupe
+   2, et les douze coureurs du peloton passaient hors rang.
+2. **N'importe quel coureur du groupe 1 ouvrait un passage.** À 215 s le 12 et le 52 ont été
+   séparés en deux groupes pendant une fraction de seconde : le passage ouvert par le 12 a cru son
+   groupe 1 complet, le 52 en a ouvert un second qui attendait le 12 pour toujours. Sa phrase dit
+   « le **premier** du groupe 1 » : c'est la tête de la timeline, et elle seule.
+3. **Hors rang se lisait comme « il n'est pas exactement le suivant attendu ».** C'est : un groupe
+   **au-dessus** du sien n'a pas encore franchi la ligne. Un groupe plus bas déjà passé ne gêne
+   personne — au sprint final le 46 et le 70 passent entre l'échappée et le peloton : eux sont hors
+   rang, le peloton derrière eux ne l'est pas.
+
+**Palier 3** (1113,7 s), les six sprints :
+
+| sprint | grisés | les quatre premiers |
+|---|---|---|
+| 1 | — | 12=5, 52=3, 15=2, 4=1 |
+| 2 | — | 12=5, 52=3, 15=2, 4=1 |
+| 3 | — | 12=5, 52=3, 15=2, 4=1 |
+| 4 | **46, 70** | 12=5, 52=3, 15=2, 4=1 |
+| 5 | **46, 70** | 12=5, 52=3, 15=2, 4=1 |
+| 6 | **46, 70** | 12=10, 52=6, 15=4, 4=2 |
+
+Le sprint final ne donne plus 4 et 2 points au 46 et au 70, qui le franchissaient avec quatre tours
+de retard. **Palier 2** : grisés aux sprints 2, 3 et 5. **Palier 1** : rien de grisé, seize
+coureurs à chaque sprint, 5-3-2-1 au 15, 4, 11 et 23.
+
+**Ce qui reste faux**, et c'est encore mon code : une fois par course, le peloton se scinde en deux
+pendant une seconde, le passage fige la scission, et les coureurs de la deuxième moitié restent
+hors rang jusqu'à ce que le passage se termine — **19,8 s au palier 3 à partir de 316,4 s** (le 58,
+67, 1, 9, 3, 18, 61 et 7), **20,2 s au palier 2 à partir de 463,4 s**. Aucun sprint ne tombe dans
+ces fenêtres, mais la timeline affiche `NO PTS` à tort pendant vingt secondes.
