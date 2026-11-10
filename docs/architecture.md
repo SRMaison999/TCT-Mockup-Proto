@@ -451,6 +451,14 @@ double-clic sur `.slrow`, Entrée dans `#sinp` (focus conservé au re-rendu), gl
 pointeur entre `.srow`, `.slrow` et `.sdrop`. Onglets Sprints (`renderSprintsTab`) et
 Standings (`renderStandingsTab`) ; exports par `download()`.
 
+**La bande des sprints (point 201, build 207).** En tête de `#scard`, `renderCard` pose une
+`.sprow` : une pastille `.sptab[data-spjump=k]` par sprint (`1…NSPRINTS`, `F` pour `isFinal`),
+le sprint affiché en `.on`. La bande défile en `overflow-x`, et le sprint affiché est ramené en
+vue (`scrollIntoView`) **au seul changement** — `lastCardSprint` évite de contrarier un défilement
+manuel. Un deuxième écouteur de `#scard` capte `data-spjump` et appelle `spOpen(k)` : la carte de
+n'importe quel sprint, fermé compris, s'ouvre dans la vue Race sans passer par l'onglet Sprints,
+qui continue d'y mener (`data-spopen` → `spOpen`). Tient de 4 sprints à 20 et plus.
+
 **Sans transpondeur** : `measured()` place le coureur à `BIKE_L` derrière son host
 (`read: true, notp: true`) ; `step()` ne produit aucune lecture pour lui ; l'arrivée n'attend
 pas son passage. S'il a été fixé par une bande (`S.noTpRec`), c'est ce point qui le porte
@@ -1788,6 +1796,12 @@ mesure.
 - **La reprise automatique ne pose rien** : `byOperator` vaut `!/passed/.test(how)`, et la
   reprise s'annonce « passed BIB n on the track ». C'est sa règle du point 159 — « l'appli doit
   continuer à refléter ce qu'elle voit ».
+- **Un bloc posé à la main gèle le leader (point 171, build 205)** : dans `computeGroups`, avant la
+  boucle de reprise, `frozen = S.groups.some(g => g.hand && g.bibs.includes(leaderR.bib))`. Tant que
+  le bloc qui **porte le leader** est posé à la main, la reprise « passed on the track » ne tourne
+  pas ; le test porte sur le bloc du leader, un autre bloc rangé à la main ne gèle rien. Hors forçage
+  elle tient toujours (point 159). Le `prevRel` reste tenu à jour même gelé, pour qu'aucune reprise
+  ne saute au dégel sur une valeur périmée.
 - **Le drapeau `leadLinking`** empêche les deux sens de se rappeler l'un l'autre. Il est
   nécessaire, pas défensif : le coureur qu'il désigne n'est pas forcément le coureur de tête de
   son groupe, et le second appel lui reprendrait son choix pour le donner à un autre.

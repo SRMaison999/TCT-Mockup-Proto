@@ -2420,6 +2420,29 @@ Les quatre couleurs suivantes des seize sont à moins de ΔE 20 : `#c8102e` / `#
 l'écran** sur l'écran de référence. Le cercle porte bien le numéro, en `font-size` 10 et
 `font-weight` 700 — c'est la couleur qui se lit sans lire, pas le numéro.
 
+### Recalcul du gris après la palette de l'opérateur (10 novembre 2026, build 208)
+
+L'opérateur a recréé sa propre palette dans l'éditeur de couleurs en direct et me l'a rendue.
+Il a éclairci deux des trois fonds de la page : `--panel` passe de `#1b1e21` à **`#4a4945`** et
+`--deep` de `#0f1113` à **`#2c455e`** ; le fond des lignes de la timeline reste `#17191c`. Sur
+ces fonds plus clairs, **le `#8a8780` d'octobre ne passe plus 4,5 : 1** — ni même l'ancien
+`--muted` `#9a9890`. Le `--dim` qu'il avait posé lui-même (`#0d0d0c`, presque noir) aurait
+effacé tous les petits textes grisés, dont les écarts du 29 octobre qu'il veut lisibles en
+permanence ; il m'a demandé de **garder `--dim` à un gris lisible**. Recalcul par sa règle du
+31 octobre, le fond le plus clair (`--panel`) commandant :
+
+| Gris | sur `--deep` `#2c455e` | sur `#17191c` | sur `--panel` `#4a4945` |
+|---|---|---|---|
+| `#8a8780` (ancien `--dim`) | 2,77 | 4,87 | **2,51** |
+| `#9a9890` (ancien `--muted`) | 3,43 | 6,04 | **3,12** |
+| `#b8b4ab` | — | — | **4,36** |
+| `#c1bdb4` **(nouveau `--dim`)** | 5,29 | 9,40 | **4,81** |
+
+**`#c1bdb4` est le premier gris, gardé chaud, qui passe 4,5 : 1 sur `--panel`** — le fond le
+plus clair et donc le plus exigeant. Conséquence du choix de l'opérateur : un panneau clair
+oblige un gris clair ; `--dim` reste le plus discret des trois textes, mais il est forcément
+plus lumineux qu'avant. S'il veut un gris plus sombre, c'est le panneau qu'il faut assombrir.
+
 ---
 
 ## 32. Le NOC attaché au dossard sur l'ovale (build 156, 31 octobre 2026)
@@ -3859,3 +3882,53 @@ coureur du peloton inéligible :
 |---|---|---|---|
 | sprints où le 46 et le 70 sont grisés | aucun | 2, 3, 5 | 4, 5, 6 |
 | autres coureurs grisés | aucun | aucun | aucun |
+
+
+## §63 · Build 205-206 — le leader gelé par la main, et les sprints qui s'ouvraient en sautant un tour
+
+Mesuré directement dans `timeline-prototype_mixed.html`, moteur piloté par `window.__proto`, course
+par défaut (250 m, 40 tours, 4 sprints). La page de test `test-blk0.html` avait servi au moteur
+reconstruit `blk0.js` (build 181), un fichier resté orphelin ; les deux correctifs ci-dessous sont
+posés et vérifiés sur le **prototype vivant**, pas sur l'orphelin.
+
+**Le leader gelé par la main (point 171, build 205).** Un coureur lancé plus vite dépasse réellement
+le leader désigné sur la piste. Deux fois le même dépassement, le seul changement étant le bloc posé
+à la main :
+
+| | dépassement réel | leader | raison |
+|---|---|---|---|
+| bloc du 23 posé à la main | 46 passe 23 (2211,2 > 2142,6 m) | reste **23** | `set by operator` |
+| sans forçage | 46 passe 23 (961,0 > 887,9 m) | passe à **46** | `passed BIB 23 on the track` |
+
+Le gel porte sur le bloc **du leader** : `frozen = S.groups.some(g => g.hand && g.bibs.includes(leaderR.bib))`.
+Un autre bloc rangé à la main ne gèle rien, et hors forçage la reprise du point 159 fonctionne.
+
+**Les sprints qui ne s'ouvraient pas (build 206).** Course complète jouée par l'opérateur le
+2 novembre 2026 (`trace.json`, build 205) : sprints 1, 2, 3 absents de la carte. La trace ne porte
+aucun « Sprint 1 ouvert » alors que l'ordre du sprint 1 est calculé au tour 17 — jugé mais jamais
+ouvert. Cause : `spTick` n'ouvrait un sprint intermédiaire qu'à l'égalité exacte `dispLap() === s.lap`,
+et le tour du leader avait sauté par-dessus 10 (forçages de leader + échappée du 67). Corrigé en
+`lap >= s.lap`.
+
+| test (build 206) | résultat |
+|---|---|
+| tour du leader forcé de 9 à 11, par-dessus 10 | sprint 1 s'ouvre (`S.sprintOpen = 1`) |
+| course normale | sprints ouverts à 10, 20, 30, 40, fermés à 12, 22, 32 — pas d'ouverture prématurée ni double |
+
+Le garde `!s.opened` empêche toute ré-ouverture ; la finale garde son repli `S.finishOpen != null`.
+
+
+## §64 · Build 207 — la bande des sprints en tête de la carte
+
+Son point 201. Mesuré dans `timeline-prototype_mixed.html`, moteur piloté par `window.__proto`.
+
+**Course par défaut (4 sprints).** La `.sprow` affiche `1 2 3 F`, le sprint affiché surligné. En
+montrant le sprint 3 puis en cliquant la pastille 1 : la carte passe de `SPRINT 3` à `SPRINT 1`,
+`S.sprintOpen = 1`, pastille 1 surlignée. Aucune erreur console.
+
+**Course à 20 sprints** (réglée au stepper de config avant départ). La bande rend **20 pastilles**
+(1 à 19 + `F`), et défile : `scrollWidth 695` pour `clientWidth 498`. En ouvrant le sprint 14, sa
+pastille est surlignée et ramenée en vue par le `scrollIntoView` du changement.
+
+La carte ouverte reste la vraie carte, avec toutes ses commandes ; aucun bouton Exporter ni
+Sauvegarder n'a été ajouté.

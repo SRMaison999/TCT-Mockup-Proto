@@ -53,6 +53,11 @@
 .lgtab:hover{color:var(--fg)}
 .lgtab.on{font-weight:600;color:var(--fg);box-shadow:inset 0 -2px 0 var(--acc)}
 .lgtab:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+.sprow{display:flex;gap:4px;align-items:center;overflow-x:auto;padding:6px 10px;border-bottom:1px solid var(--line2);scrollbar-width:thin}
+.sprow .lbl{font:500 12px var(--sans);color:var(--muted);flex:0 0 auto;margin-right:2px}
+.sptab{flex:0 0 auto;min-width:26px;padding:4px 7px;font:500 12px var(--sans);background:0;border:0;border-radius:6px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.sptab:hover{color:var(--fg)}
+.sptab.on{font-weight:600;color:var(--fg);box-shadow:inset 0 -2px 0 var(--acc)}
 
 /* ---- l'onglet Passings (page 3d) ---------------------------------------- */
 .pfilt{display:flex;align-items:center;gap:7px;flex:0 0 auto;padding:6px 2px 4px}
@@ -615,7 +620,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '204';
+const BUILD = '208';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -1223,12 +1228,21 @@ function computeGroupsVraiment(M) {
     leaderR = readable.find(r => r.bib === S.leader.bib) || null;
     if (!leaderR) { logEvent('LEADER', 'BIB ' + S.leader.bib + ' no longer readable · leader taken from the track again', false); S.leader = null; }
     else {
-      // the leader is not frozen: a rider who passes him on the track takes the lead
-      const L0 = np(leaderR);
-      for (const r of readable) {
-        if (r === leaderR) continue;
-        const rel = np(r) - L0;
-        if (r.prevRel != null && r.prevRel <= 0 && rel > 0 && rel - r.prevRel < 40) { designateLeader(r.bib, 'passed BIB ' + leaderR.bib + ' on the track'); leaderR = r; break; }
+      // UN BLOC POSÉ À LA MAIN GÈLE LE LEADER. L'opérateur, 1er novembre 2026 (point 171) : « quand
+      // j'ai posé un bloc à la main, le leader ne change que si je le change moi-même. » Tant que le
+      // bloc qui porte le leader est posé à la main, la reprise automatique ci-dessous ne se déclenche
+      // pas. Hors forçage elle tient toujours (point 159) : un coureur qui en dépasse un autre sur la
+      // piste prend la tête. Le test porte sur le bloc DU LEADER : un autre bloc rangé à la main ne gèle
+      // rien. Le prevRel reste tenu à jour même gelé, pour qu'aucune reprise ne saute au dégel sur une
+      // valeur périmée.
+      const frozen = S.groups.some(g => g.hand && g.bibs.includes(leaderR.bib));
+      if (!frozen) {
+        const L0 = np(leaderR);
+        for (const r of readable) {
+          if (r === leaderR) continue;
+          const rel = np(r) - L0;
+          if (r.prevRel != null && r.prevRel <= 0 && rel > 0 && rel - r.prevRel < 40) { designateLeader(r.bib, 'passed BIB ' + leaderR.bib + ' on the track'); leaderR = r; break; }
+        }
       }
       for (const r of readable) r.prevRel = np(r) - np(leaderR);
     }
@@ -3042,7 +3056,12 @@ function spTick() {
   const lap = dispLap();
   for (let k = 1; k <= NSPRINTS; k++) {
     const s = sp(k);
-    if (!s.opened && ((!isFinal(k) && lap === s.lap) || (isFinal(k) && (lap === LAPS || S.finishOpen != null)))) {
+    // Un sprint intermédiaire s'ouvre dès que la tête ATTEINT son tour (`lap >= s.lap`), pas seulement à l'égalité
+    // exacte. Le tour du leader (dispLap) peut SAUTER une valeur — à un changement de leader, à un tour crédité ou
+    // retiré, à une échappée — et `=== s.lap` laissait alors le sprint ne jamais s'ouvrir : il était jugé mais
+    // absent de la carte (mesuré sur la course du 2 novembre 2026, le sprint 1 passé de 9 à 11 sans ouvrir). Le
+    // garde `!s.opened` empêche toute ré-ouverture. La finale garde son repli `S.finishOpen != null`.
+    if (!s.opened && ((!isFinal(k) && lap >= s.lap) || (isFinal(k) && (lap === LAPS || S.finishOpen != null)))) {
       s.opened = true; s.live = S.liveMode; s.target = null;
       if (!isFinal(k)) s.excluded = [...S.sprintOut].sort(byBib);
       s.greyed = []; s.judged = []; s.lapped = lappedNow(); S.sprintOut.clear();   // the rank consequence holds at the finish too
@@ -3071,6 +3090,7 @@ function spClose(k) { const s = sp(k); S.sprintOpen = null; s.closed = true; log
 
 // ---------- the sprint card ----------
 const scard = $('#scard');
+let lastCardSprint = -1;   // le dernier sprint montré dans la carte, pour ne ramener la bande en vue qu'au changement
 const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo check needed · click to confirm"><path d="M4 7h3.5l2-2.5h5l2 2.5H20v12H4z" fill="none" stroke="#FF5C5C" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="#FF5C5C" stroke-width="2"/></svg>';
 // La liste de départ : entière, sur une colonne, triable, qu'un sprint soit ouvert ou non. Glisser ou double-clic
 // place un coureur quand un sprint est ouvert ; hors sprint elle ne fait que montrer le plateau.
@@ -3118,7 +3138,13 @@ function renderCard() {
   }
   // Trois colonnes (l'operateur, 29 octobre 2026) : l'ordre a gauche, les coureurs au milieu, les commandes a droite.
   // Plus de pied de carte : tout ce qui est une commande vit dans la colonne de droite, et rien ne repousse l'ordre.
-  let h = `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>
+  // LA BANDE DES SPRINTS. L'opérateur, 2 novembre 2026 : « une rangée de sprints pour passer de l'une à
+  // l'autre sans aller dans l'onglet ». Une pastille par sprint, le sprint affiché surligné ; juste le
+  // numéro — F pour la finale — pour tenir les courses à vingt sprints, et la bande défile au-delà.
+  let strip = '<div class="sprow"><span class="lbl">Sprint</span>';
+  for (let j = 1; j <= NSPRINTS; j++) strip += `<button class="sptab${j === k ? ' on' : ''}" data-spjump="${j}" title="${spLabel(j)}${S.sprints[j] && S.sprints[j].closed ? ' · closed' : ''}">${isFinal(j) ? 'F' : j}</button>`;
+  strip += '</div>';
+  let h = strip + `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>
     <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
     ${open ? `<button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
   h += '<div class="sbody"><div class="sleft"><div class="ssec">Order<span class="hint">drag a line to reorder</span></div>';
@@ -3194,6 +3220,9 @@ function renderCard() {
   h += '</div></div>';
   scard.innerHTML = h;
   if (focused) { const i = $('#sinp'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }
+  // La bande ramène le sprint affiché en vue — mais seulement quand il change, pour ne pas contrarier un
+  // défilement manuel de la bande vers un autre sprint.
+  if (k !== lastCardSprint) { const on = scard.querySelector('.sptab.on'); if (on) on.scrollIntoView({ block: 'nearest', inline: 'center' }); lastCardSprint = k; }
 }
 // one click handler for the card
 scard.addEventListener('click', e => {
@@ -3216,6 +3245,8 @@ scard.addEventListener('click', e => {
   else if (act === 'sort') S.slSort = a;
   dirty = true; render();
 });
+// La bande des sprints : un clic ouvre la carte du sprint, fermé compris, par le mécanisme qui existe déjà (spOpen).
+scard.addEventListener('click', e => { const t = e.target.closest('[data-spjump]'); if (!t) return; spOpen(+t.dataset.spjump); dirty = true; render(); });
 scard.addEventListener('dblclick', e => { const row = e.target.closest('.slrow'); const k = sprintShown(); if (!row || k == null || k > NSPRINTS) return; const bib = +row.dataset.sl; if (S.withdrawn.has(bib)) return; pushUndo(spLabel(k) + ' place BIB ' + bib); spInsert(k, bib, spTarget(k), 'double-click'); dirty = true; render(); });
 scard.addEventListener('input', e => { if (e.target.id === 'sinp') { const k = S.sprintOpen; if (k != null) sp(k).manualText = e.target.value; e.target.classList.remove('err'); } });
 scard.addEventListener('keydown', e => {

@@ -1,12 +1,15 @@
 /* Layout: the lap timeline on the left is the working surface (groups, actions, proposals inside the groups). Centre: status strip, oval, decision log. */
 :root{color-scheme:dark;
-  --bg:#121416;--panel:#1b1e21;--deep:#0f1113;--line:#2d3237;--line2:#3a4046;
-  /* --dim est passé de #5f5c55 à #8a8780 le 31 octobre 2026 : « Les éclaircir, et les phrases quittent
-     les capitales ». #8a8780 est le PREMIER gris qui passe 4,5 : 1 sur les trois fonds de la page —
-     5,28 sur --deep, 4,91 sur le fond des lignes, 4,67 sur --panel. L'ancien était à 2,84 / 2,64 / 2,51.
-     Le tableau complet est dans docs/mesures.md §31. La hiérarchie fg › muted › dim est conservée. */
-  --fg:#ECEAE4;--muted:#9a9890;--dim:#8a8780;
-  --acc:#4F8CFF;--play:#1CC634;--acc-soft:#1b2a4a;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#b5884e;
+  --bg:#121416;--panel:#4a4945;--deep:#2c455e;--line:#2d3237;--line2:#87a8c9;
+  /* Palette de l'opérateur du 10 novembre 2026, réglée dans l'éditeur de couleurs en direct. --dim n'est
+     PAS celui qu'il avait posé (#0d0d0c, presque noir) : ses panneaux ayant éclairci (--panel #4a4945),
+     ce noir aurait effacé les petits textes grisés — dont les écarts qu'il veut lisibles en permanence
+     (29 octobre). --dim est donc recalculé sur ses nouveaux fonds selon sa règle du 31 octobre : #c1bdb4
+     est le premier gris (gardé chaud) qui passe 4,5 : 1 sur le plus clair des trois fonds, --panel #4a4945
+     — 4,81 sur --panel, 5,29 sur --deep, 9,40 sur le fond des lignes. L'ancien #8a8780 y tombait à 2,51.
+     Le tableau complet est dans docs/mesures.md §31. --dim reste le plus discret des trois textes. */
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;
+  --acc:#2265e2;--play:#1CC634;--acc-soft:#576585;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;--wood:#b5884e;
   --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.3 var(--sans);overflow:hidden}

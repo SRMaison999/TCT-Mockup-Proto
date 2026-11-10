@@ -712,7 +712,7 @@ panneau affiche `7 NED`.
 
 ---
 
-## 19. La reprise du leader ignore l'ordre forcé — **à trancher**
+## 19. La reprise du leader et le sprint jugé — **leader codé et mesuré au build 205, reste le point 168**
 
 Sa question et sa description de ce qu'une prise de tête doit montrer sont au point 169 de
 `regles-operateur.md` ; la mesure est au §45 de `mesures.md`.
@@ -727,15 +727,20 @@ deux coureurs du peloton suffit alors à donner la tête d'une course où le blo
 — et son point 169, qui veut qu'une prise de tête se raconte dans la timeline. Les deux ne se
 contredisent que lorsqu'un bloc est posé à la main.
 
-**On saura que c'est fini quand** : il aura dit si l'application cesse de changer le leader
-toute seule tant qu'un bloc est posé à la main.
+**Tranché le 1er novembre 2026 (point 171)** : « quand j'ai posé un bloc à la main, le leader ne
+change que si je le change moi-même. » **Codé et mesuré au build 205**
+(`timeline-prototype_mixed.html`, `mesures.md` §63) : dans `computeGroups`, la reprise automatique ne
+se déclenche pas tant qu'un bloc portant le leader porte `hand`
+(`frozen = S.groups.some(g => g.hand && g.bibs.includes(leaderR.bib))`) ; hors forçage elle tient
+toujours (point 159). Mesuré : même dépassement réel du leader sur la piste, gelé il ne bouge pas,
+non forcé il change. Le `prevRel` reste tenu à jour même gelé, pour qu'aucune reprise ne saute au
+dégel.
 
-**Et il reste le point 168** : au sprint, c'est le coureur en tête de la timeline qui est jugé
-premier. Aujourd'hui l'ordre jugé vient des boucles. À faire après le leader, dont il dépend.
+**Reste le point 168** : au sprint, c'est le coureur en tête de la timeline qui est jugé premier.
+Aujourd'hui l'ordre jugé vient des boucles. À faire après le leader, dont il dépend.
 
 **Livré au build 166** : l'onglet Crossings suit l'ordre de la timeline (point 170,
-`architecture.md` §40, `mesures.md` §46). Le §19 reste ouvert : la reprise du leader, et après
-elle le sprint du point 168.
+`architecture.md` §40, `mesures.md` §46).
 
 
 ## 20. Un groupe qui en rattrape un autre passe derrière lui — **à corriger**

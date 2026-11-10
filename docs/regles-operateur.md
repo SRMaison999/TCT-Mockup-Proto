@@ -2376,8 +2376,10 @@ l'écran, une à la fois.
      « **Non : quand j'ai posé un bloc à la main, le leader ne change que si je le change
      moi-même.** »
      Cela ne retire rien au point 159 : hors forçage, l'application continue de donner la tête à
-     un coureur qui en dépasse un autre sur la piste. **Rien n'est codé** : c'est le premier
-     travail de la session suivante.
+     un coureur qui en dépasse un autre sur la piste. **Codé et mesuré au build 205**
+     (`timeline-prototype_mixed.html`, `architecture.md` §37, `mesures.md` §63) : tant qu'un bloc
+     portant le leader est posé à la main, la reprise automatique de `computeGroups` ne se
+     déclenche plus ; sans forçage elle tient toujours.
 
 172. **Où se range un coureur par rapport à un autre.** Ses mots, le 1er novembre 2026, à la
      question « le bloc du 61 et du 7 posé en queue, si le 15 passe le 12 : le panneau reste
@@ -2807,3 +2809,20 @@ Sur une version qui ouvrait le passage sur la tête de la timeline, un dossard p
 > « EST-CE QUE CELA VEUT DIRE QUE LE PREMIER COUREUR DE LA TIMELINE QUI EST ATTENDU EST UN NO BIEN
 > PRECIS ?
 > CA NE DEVRAIT PAS ETRE LE CAS, CA DEVRAIT SIMPLEMENT ETRE LE PREMIER COUREUR SU GROUPE 1 »
+
+### 201 · Accéder à la carte de n'importe quel sprint, sans aller dans l'onglet · 2 novembre 2026
+
+Il jouait une course complète et ne retrouvait plus les sprints déjà courus : la carte d'un sprint
+ne s'ouvrait que dans la vue Race, loin de la liste de l'onglet Sprints où il cliquait, et il
+rebondissait de l'une à l'autre. Ses mots :
+
+> « améliore ce système qui est actuellement absolument épouvantable à utiliser »
+> « Quand je clique un sprint, sa carte s'ouvre dans la vue Race près de l'ovale, avec une rangée
+> de sprints pour passer de l'une à l'autre sans aller dans l'onglet »
+> « parfois certaines courses ont 20 sprints »
+
+**Codé au build 207** (`timeline-prototype_mixed.html`, `architecture.md` carte de sprint,
+`mesures.md` §64) : une bande de pastilles en haut de la carte, une par sprint — juste le numéro,
+`F` pour la finale — qui défile au-delà de la largeur ; le sprint affiché est surligné et ramené en
+vue, et un clic ouvre sa carte, fermé compris, par le `spOpen` qui existait déjà. Aucun bouton
+Exporter ni Sauvegarder n'a été ajouté : la carte n'en a pas, il l'a confirmé.
