@@ -1139,7 +1139,15 @@ body:not(.sprintmode) #scard .srow.empty{opacity:.5}
 .main{align-items:stretch}
 .work{flex:1 1 auto;min-width:0;min-height:0;display:flex;flex-direction:column;gap:10px}
 .stage{flex:1 1 auto;min-height:0;display:flex;gap:10px}
-.bar{height:40px;gap:8px}
+/* La barre se replie sur une deuxième ligne au lieu de pousser sa fin — le transport,
+   Replay — hors de l'écran (l'opérateur, 11 novembre 2026 : « il faut tout faire rentrer »).
+   Tant qu'elle ne tenait pas sur une ligne, sa largeur de contenu forçait toute la page plus
+   large que la fenêtre : le débord était rogné par overflow:hidden et la colonne de gauche — la
+   timeline — se retrouvait entièrement hors écran à gauche dès que la course tournait. Sur un
+   écran assez large elle reste sur une seule ligne et rien ne bouge. La hauteur redevient donc
+   celle du contenu (et non plus 40 px fixes, qui coupaient la deuxième ligne) ; `gap` tient déjà
+   lieu d'écart entre les lignes. */
+.bar{height:auto;min-height:40px;gap:8px;flex-wrap:wrap}
 .bar .logtabs{display:inline-flex;align-self:stretch;flex:0 0 auto;order:1}
 .bar #barctl{order:2}
 .bar #undo{order:3}
@@ -1947,7 +1955,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '208';
+const BUILD = '209';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;

@@ -2826,3 +2826,20 @@ rebondissait de l'une à l'autre. Ses mots :
 `F` pour la finale — qui défile au-delà de la largeur ; le sprint affiché est surligné et ramené en
 vue, et un clic ouvre sa carte, fermé compris, par le `spOpen` qui existait déjà. Aucun bouton
 Exporter ni Sauvegarder n'a été ajouté : la carte n'en a pas, il l'a confirmé.
+
+### 202 · Tout doit rentrer dans l'écran, rien n'est coupé · 11 novembre 2026
+
+Capture à l'appui, il montrait le bouton Replay coupé au bord droit. Ses mots :
+
+> « la page n'est pas responsive comme tu peux le voir sur cette capture. Corrige ça »
+> « Il faut tout faire rentrer, mais il y a aussi la timeline qui déborde quand la course tourne »
+
+Demandé — à la fenêtre trop étroite, l'écran **fait tout rentrer** plutôt que de laisser défiler :
+rien n'est jamais coupé, pas d'ascenseur. Son second mot pointait le même défaut vu de l'autre
+bout : ce qui poussait Replay hors du bord à droite poussait la timeline hors du bord à **gauche**
+dès que la course tournait.
+
+**Codé au build 209** (`timeline-prototype-autonome.html`, `mesures.md` §65) : la barre du haut se
+replie sur plusieurs lignes quand elle ne tient pas, au lieu de forcer la page plus large que la
+fenêtre. À l'étroit c'est l'ovale qui rétrécit ; la colonne du sprint garde son plancher de 500 px,
+et rien ne sort de l'écran.

@@ -3932,3 +3932,38 @@ pastille est surlignée et ramenée en vue par le `scrollIntoView` du changement
 
 La carte ouverte reste la vraie carte, avec toutes ses commandes ; aucun bouton Exporter ni
 Sauvegarder n'a été ajouté.
+
+
+## §65 · Build 209 — la page coupée au bord, et la timeline poussée hors écran
+
+Son point 202. Mesuré dans `timeline-prototype-autonome.html`, course de palier chargée depuis
+Files, le simulateur fermé, course lancée à ×16.
+
+**Le défaut.** La barre du haut est une seule ligne qui ne se replie pas. Ses commandes — les
+onglets, ARM START / ARM FINISH, AUTO / LAP COUNTER, Undo, le transport, Replay, New — demandent
+**≈ 1540 px** mises bout à bout. Dès que la fenêtre est plus étroite, cette largeur de contenu
+force toute la page plus large que la fenêtre ; `body{overflow:hidden}` rogne le débord et la page
+glisse de côté. Résultat : la colonne de gauche — la **timeline** — se retrouve **entièrement hors
+écran**.
+
+| à 1280 px, course lancée, avant | résultat |
+|---|---|
+| débord du document | **480 px** au-delà de la fenêtre |
+| colonne timeline (`.tl`) | `left −337 → right −161` — hors écran à gauche |
+| fin du transport (Replay, New) | au-delà du bord droit, rognée |
+
+**La correction** (`.bar{height:auto; flex-wrap:wrap}`) : la barre se replie sur une deuxième,
+puis une troisième ligne quand la fenêtre est trop étroite, et ne force donc plus la page. Sur un
+écran large elle reste sur une seule ligne, l'écran ne bouge pas.
+
+| après, course lancée | 1280 px | 1024 px |
+|---|---|---|
+| débord du document | **0** | **0** |
+| colonne timeline (`.tl`) | `left 16` — en place | `left 16` — en place |
+| fin de la carte de sprint | `right 1264` — dans la fenêtre | `right 1008` — dans la fenêtre |
+| rien hors écran, à gauche ou à droite | oui | oui |
+| hauteur de la barre | 82 px (2 lignes) | 106 px (3 lignes) |
+
+À l'étroit, c'est l'ovale qui cède la place (264 px de large à 1024) ; la colonne du sprint garde
+son plancher de 500 px (largeur qu'il a autorisée le 29 octobre 2026, en dessous de laquelle la
+place du nom dans l'ordre du sprint tombe à zéro), et aucun ascenseur n'apparaît.
