@@ -1,5 +1,24 @@
 # Course aux points : présentation du concept
 
+## Points à corriger sur le prototype — note de travail du 15 novembre 2026
+
+À la lecture des captures présentées à la partie 10, plusieurs points de lisibilité ont été relevés. Ils ne sont pas traités ici : ils sont notés pour une prochaine session de travail, afin de ne pas se perdre.
+
+**La vue par sprint.** Elle affiche trop de choses et prête à confusion : le même sprint revient plusieurs fois, avec des ordres partiels qui ressemblent à des résultats contradictoires. Il faut fixer les sprints et distinguer clairement le résultat du sprint de ce qui a été diffusé. Surtout, on n'envoie pas à chaque tour : on envoie uniquement lorsqu'il y a un sprint. La vue ne doit pas donner l'impression d'un envoi tour par tour.
+
+**La vue du classement (Standings).** Elle est trop vide, et ses colonnes de chiffres sont centrées, loin des noms. Il faut rapprocher les chiffres des noms, resserrer l'ensemble et mieux occuper l'espace.
+
+**Les vues tour par tour (Passings et ordre de passage).** Elles sont difficiles à lire et ne rendent pas assez. Il faut trouver une présentation plus claire.
+
+**Le journal des décisions (Decisions).** Plusieurs choses :
+
+- Il consigne le détail des capteurs — les comptages de contacts — mais pas la création automatique d'un groupe. Or les groupes ne se forment et ne se défont pas en permanence : seulement de temps à autre. Les consigner ne noierait donc pas le journal, et la formation d'un groupe mérite une trace.
+- Le journal doit porter des repères colorés : un groupe qui se forme reçoit un fond plus marqué que de simples contacts.
+- Il faut pouvoir trier et filtrer les entrées : par couleur, par type d'événement, par niveau d'alerte, et ainsi de suite.
+- La page devra le permettre, et le document devra le présenter.
+
+---
+
 ## 1 · Le point de départ : un logiciel qui a fait ses preuves
 
 Tout part d'un logiciel de chronométrage piste encore en service : **Timing Manager**. À sa sortie, c'était un outil qu'on n'avait jamais vu, et il reste très performant. Il couvre toutes les disciplines du cyclisme sur piste, et elles sont nombreuses. Vingt ans d'utilisation intensive ont permis d'apprendre énormément sur les besoins de l'opérateur et sur le temps dont il dispose pour agir. On sait donc assez précisément ce qu'il faut.
