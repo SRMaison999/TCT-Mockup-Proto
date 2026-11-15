@@ -5,7 +5,8 @@ Travail sur **`timeline-prototype_mixed.html`** (la version à six onglets). Tou
 l'opérateur l'a choisi explicitement.
 
 Deux choses très différentes dans cette session : **du code livré** (le restyle des onglets) et
-**des maquettes validées mais pas encore intégrées** (deux écrans). Ne pas confondre.
+**des maquettes validées mais pas encore intégrées** (trois écrans : All sprints, Lap by lap,
+Standings). Ne pas confondre.
 
 ---
 
@@ -108,7 +109,33 @@ que le moteur garde l'historique des groupes — à confirmer avant de coder.
 
 ---
 
-## 4. Règles de l'opérateur à consigner dans `docs/regles-operateur.md`
+## 4. Validé mais PAS codé — écran « Standings »
+
+Maquette : `mockups/maquette-standings.html`. **Validé.** C'est le **classement général**. Logique
+exacte dans `mockups/gen-standings.js`.
+
+- **Bloc de gauche, resserré** (l'info qu'on ne va pas chercher loin ; les colonnes se suivent
+  collées — le vide part à **droite**, jamais au milieu) : **rang · dossard · drapeau · NOC ·
+  prénom + nom · TOTAL**. Le total juste après le nom, en gros.
+- **Points par sprint** : une colonne par sprint (**S1 … F**, le final), chaque score dans une
+  **pastille ambrée** ; « · » pour 0. Défile pour 15–20 sprints.
+- **Lap + / Lap −** : les **points** (pas le nombre de tours) dans une **pastille** — **+60** verte,
+  **−20** rouge — suivis des **tours** où c'est arrivé (ex. `L17, L34, L48`). La cellule s'étale (la
+  liste des tours passe sur deux lignes si besoin).
+- **Finish order** : la place à l'arrivée (ordre du sprint final), en ordinal. Nom de colonne
+  **confirmé par l'opérateur = « Finish order »** (terme UCI).
+- **Export PDF / Export CSV** en haut à droite.
+- Tout est **grand et lisible** (l'opérateur tient à la taille), pastilles comme « Lap by lap ».
+
+À savoir pour coder :
+- **Le modèle n'a que le nom de famille** — pas de prénom. Dans la maquette les prénoms sont
+  **illustratifs** ; à l'intégration il faut un **champ prénom** (il vient de la vraie startlist).
+- Données : `standings()` donne l'essentiel ; points par sprint = `spPoints(k)[bib]` ; le **tour**
+  de chaque gain / perte se lit dans le journal (`logEvent`) ; `LAP_PTS = 20`.
+
+---
+
+## 5. Règles de l'opérateur à consigner dans `docs/regles-operateur.md`
 
 À faire **au moment de l'intégration** (mot pour mot, datées du 15 novembre 2026), pas avant :
 
@@ -121,11 +148,15 @@ que le moteur garde l'historique des groupes — à confirmer avant de coder.
 - **Détection ratée / transpondeur manquant** : ne jamais décaler automatiquement ; le logiciel
   **propose** à l'opérateur de décaler. Après acceptation, le coureur est placé **en bas de son
   groupe** au tour raté, avec légende.
+- **Classement (Standings)** : la colonne d'arrivée s'appelle **« Finish order »** ; les colonnes
+  Lap affichent les **points** (±20 par tour) avec les tours, pas le nombre de tours ; points de
+  sprint et de tour en **pastilles** ; le classement affiche **prénom + nom** (le modèle doit
+  porter un champ prénom).
 - **Toute l'interface est en anglais.**
 
 ---
 
-## 5. Méthode (rappels, cf. CLAUDE.md §14 et docs/regles-operateur.md §14)
+## 6. Méthode (rappels, cf. CLAUDE.md §14 et docs/regles-operateur.md §14)
 
 - **Proposer avant de coder.** On a appris cette session : une intégration lancée sans feu vert a
   dû être annulée. Les maquettes se montrent, l'opérateur critique, on ne code qu'après son
@@ -142,7 +173,7 @@ que le moteur garde l'historique des groupes — à confirmer avant de coder.
 
 ---
 
-## 6. Maquettes restant à faire
+## 7. Maquettes restant à faire
 
 La liste vient de la **« note de travail du 15 novembre 2026 »** en tête de
 `presentation/Course-aux-points-presentation.md` (quatre points de lisibilité relevés) et de la
@@ -152,15 +183,12 @@ demande initiale de l'opérateur. Sur ces quatre points :
 |---|---|
 | **Vue par sprint** (le Sprints répète le même sprint, mélange résultat et diffusion) | **Fait** (maquette « All sprints »). |
 | **Ordre de passage tour par tour** (difficile à lire) | **Fait** (maquette « Lap by lap »). |
-| **Standings** | **À maquetter.** |
+| **Standings** | **Fait** (maquette « Standings »). |
 | **Journal Decisions** | **À maquetter.** |
 | **Passings** (relevé brut des boucles) | **À maquetter** (la note groupait « Passings et ordre de passage » ; seul l'ordre de passage est fait). |
 
 Ce qui reste, avec les demandes déjà exprimées :
 
-- **Standings** — aujourd'hui **trop vide**, les colonnes de chiffres sont **centrées, loin des
-  noms**. À faire : **rapprocher les chiffres des noms**, **resserrer** l'ensemble, **mieux occuper
-  l'espace**. (Même dessin que la page de course, comme le reste.)
 - **Journal Decisions** — plusieurs demandes :
   - consigner aussi la **formation automatique d'un groupe** (pas seulement les comptages de
     contacts capteurs) ; les groupes ne se forment que de temps à autre, ça ne noierait pas le
@@ -172,14 +200,14 @@ Ce qui reste, avec les demandes déjà exprimées :
 - **Passings** — **présentation plus claire** du relevé brut des boucles (la note le juge, comme
   les vues tour par tour, « difficile à lire, ne rend pas assez »).
 
-## 7. Prochaine étape
+## 8. Prochaine étape
 
 Deux voies possibles, à proposer à l'opérateur :
 
-1. **Maquetter** l'un des trois écrans restants ci-dessus (Standings est le plus simple pour
-   repartir) ; ou
-2. **Intégrer** dans `timeline-prototype_mixed.html` l'un des deux écrans déjà validés (All sprints
-   ou Lap by lap) — en **proposant d'abord**, puis en **consignant les règles du §4** dans
+1. **Maquetter** l'un des deux écrans restants ci-dessus (**Journal Decisions** ou **Passings**) ;
+   ou
+2. **Intégrer** dans `timeline-prototype_mixed.html` l'un des trois écrans déjà validés (All sprints,
+   Lap by lap ou Standings) — en **proposant d'abord**, puis en **consignant les règles du §5** dans
    `docs/regles-operateur.md` dans le même tour que le code, build incrémenté.
 
 Demander à l'opérateur lequel il veut attaquer. **Ne rien coder dans le prototype sans son accord

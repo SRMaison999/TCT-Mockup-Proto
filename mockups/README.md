@@ -13,8 +13,10 @@ pour montrer les anomalies. **Ces écrans ne sont pas encore codés dans le prot
 | `maquette-tous-sprints-20.html` | Même écran avec **20 sprints** — montre le défilement horizontal et les flèches. |
 | `maquette-lapbylap.html` | Écran **« Lap by lap »** (ex-onglet « Crossings »), état **avant** correction, avec alertes. **Validé.** |
 | `maquette-lapbylap-shift.html` | « Lap by lap » **après** que l'opérateur a cliqué « Shift −1 lap ». |
+| `maquette-standings.html` | Écran **« Standings »** (classement général : points par sprint, tours gagnés/perdus en points, Finish order, exports). **Validé.** |
 | `gen-tous-sprints.js` | Génère les deux maquettes de sprints depuis `sprints.json` + `flags.js`. |
 | `gen-lapbylap.js` | Génère les deux maquettes « Lap by lap » (`buildPage(false)` = avant, `buildPage(true)` = après shift). |
+| `gen-standings.js` | Génère la maquette Standings depuis `sprints.json` + `flags.js`. |
 | `sprints.json` | Résultats réels des 6 sprints de la course de test (palier 1), récupérés via Playwright. |
 
 ## Regénérer
@@ -23,6 +25,7 @@ pour montrer les anomalies. **Ces écrans ne sont pas encore codés dans le prot
 cd mockups
 node gen-tous-sprints.js
 node gen-lapbylap.js
+node gen-standings.js
 ```
 
 Les chemins sont relatifs (`__dirname`) : les scripts lisent `flags.js` à la racine du dépôt et

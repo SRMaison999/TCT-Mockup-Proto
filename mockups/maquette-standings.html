@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maquette · Standings</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--deep:#2c455e;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-shadow:0 18px 48px #000a}
+.board-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
+.board-h .ex{margin-left:auto;display:flex;gap:6px}
+.exbtn{font:500 12px var(--sans);color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:5px 11px;background:#23272b;cursor:pointer;white-space:nowrap}
+.tbl{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto}
+/* colonnes : rang | bib | drapeau | noc | nom | TOTAL || sprints || lap+ | lap- || finish */
+/* colonnes contiguës, largeurs confortables ; le vide éventuel part à droite (dernière colonne 1fr) */
+.hd,.row{display:grid;grid-template-columns:44px 52px 30px 48px 248px 80px 14px 348px 14px 176px 176px 14px 124px 1fr;gap:9px;align-items:center;padding:0 10px}
+.hd{height:30px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line2)}
+.hd span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd .r{text-align:right}.hd .c{text-align:center}
+.row{min-height:44px;border-bottom:1px solid #23262a;font-size:14px}
+.row:nth-child(even){background:#00000022}
+.rk{font:600 15px var(--mono);color:var(--muted);text-align:right}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:25px;font:600 15px var(--mono);color:var(--fg)}
+.flagw .flag{width:27px;height:17px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.noc{font:600 14px var(--mono);letter-spacing:.03em;color:var(--dim)}
+.nm{font:600 15px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.nm .fn{color:var(--dim);font-weight:500}
+.nm b{color:var(--muted);font-weight:700}
+.tot{font:700 21px var(--mono);color:var(--fg);text-align:right;font-variant-numeric:tabular-nums}
+.sep{height:70%;border-left:1px solid var(--line)}
+.sprints{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.sprints .sp{min-width:0;text-align:center;font:500 15px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums;padding:4px 0;border-radius:4px}
+.sprints .sp.on{color:var(--fg);font-weight:700;background:#39311c}
+.lap{font:500 13px var(--mono);color:var(--dim);white-space:normal;line-height:1.3;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.lpill{display:inline-block;font:700 14px var(--mono);border-radius:5px;padding:2px 9px;font-variant-numeric:tabular-nums}
+.lpill.up{color:#121416;background:var(--good)}
+.lpill.down{color:#fff;background:var(--crit)}
+.lap .lp{color:var(--dim);font-size:12px}
+.lap .z{color:#555;font-size:16px}
+.fin{font:600 15px var(--mono);color:var(--muted);text-align:center}
+.hd .fo{white-space:normal;line-height:1.05;text-align:center}
+.hdsprints{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.hdsprints span{text-align:center}
+</style></head>
+<body>
+<div class="board">
+  <div class="board-h"><b>Standings</b><span class="hint">classement général · points par sprint, tours gagnés / perdus, arrivée</span>
+    <span class="ex"><button class="exbtn">Export PDF</button><button class="exbtn">Export CSV</button></span>
+  </div>
+  <div class="tbl">
+    <div class="hd">
+      <span class="r">#</span><span>Bib</span><span></span><span>NOC</span><span>Rider</span><span class="r">Total</span>
+      <span></span><span class="hdsprints"><span class="sp">S1</span><span class="sp">S2</span><span class="sp">S3</span><span class="sp">S4</span><span class="sp">S5</span><span class="sp">F</span></span><span></span>
+      <span class="c">Lap +</span><span class="c">Lap −</span><span></span><span class="c fo">Finish order</span>
+    </div>
+    <div class="row">
+    <span class="rk">1</span>
+    <span class="chip">12</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span>
+    <span class="noc">SUI</span>
+    <span class="nm"><span class="fn">Marco</span> <b>HUBER</b></span>
+    <span class="tot">60</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="lpill up">+60</span> <span class="lp">L17, L34, L48</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">15th</span>
+  </div>
+    <div class="row">
+    <span class="rk">2</span>
+    <span class="chip">15</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span>
+    <span class="noc">IRL</span>
+    <span class="nm"><span class="fn">Liam</span> <b>O'NEILL</b></span>
+    <span class="tot">35</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp on">5</span><span class="sp on">5</span><span class="sp on">5</span><span class="sp on">5</span><span class="sp on">5</span><span class="sp on">10</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">1st</span>
+  </div>
+    <div class="row">
+    <span class="rk">3</span>
+    <span class="chip">4</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span>
+    <span class="noc">GBR</span>
+    <span class="nm"><span class="fn">Tom</span> <b>WALSH</b></span>
+    <span class="tot">21</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp on">3</span><span class="sp on">3</span><span class="sp on">3</span><span class="sp on">3</span><span class="sp on">3</span><span class="sp on">6</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">2nd</span>
+  </div>
+    <div class="row">
+    <span class="rk">4</span>
+    <span class="chip">11</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span>
+    <span class="noc">JPN</span>
+    <span class="nm"><span class="fn">Yuki</span> <b>TANAKA</b></span>
+    <span class="tot">14</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp on">2</span><span class="sp on">2</span><span class="sp on">2</span><span class="sp on">2</span><span class="sp on">2</span><span class="sp on">4</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">3rd</span>
+  </div>
+    <div class="row">
+    <span class="rk">5</span>
+    <span class="chip">23</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span>
+    <span class="noc">DEN</span>
+    <span class="nm"><span class="fn">Mads</span> <b>IVERSEN</b></span>
+    <span class="tot">7</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp on">1</span><span class="sp on">1</span><span class="sp on">1</span><span class="sp on">1</span><span class="sp on">1</span><span class="sp on">2</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">4th</span>
+  </div>
+    <div class="row">
+    <span class="rk">6</span>
+    <span class="chip">46</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span>
+    <span class="noc">BEL</span>
+    <span class="nm"><span class="fn">Lars</span> <b>DE WIT</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">5th</span>
+  </div>
+    <div class="row">
+    <span class="rk">7</span>
+    <span class="chip">58</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span>
+    <span class="noc">KAZ</span>
+    <span class="nm"><span class="fn">Dmitriy</span> <b>PETROV</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">7th</span>
+  </div>
+    <div class="row">
+    <span class="rk">8</span>
+    <span class="chip">67</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span>
+    <span class="noc">GER</span>
+    <span class="nm"><span class="fn">Max</span> <b>LEHMANN</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">8th</span>
+  </div>
+    <div class="row">
+    <span class="rk">9</span>
+    <span class="chip">1</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span>
+    <span class="noc">ESP</span>
+    <span class="nm"><span class="fn">Carlos</span> <b>RIVERA</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">9th</span>
+  </div>
+    <div class="row">
+    <span class="rk">10</span>
+    <span class="chip">9</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span>
+    <span class="noc">SLO</span>
+    <span class="nm"><span class="fn">Luka</span> <b>KOVAC</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">10th</span>
+  </div>
+    <div class="row">
+    <span class="rk">11</span>
+    <span class="chip">3</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span>
+    <span class="noc">FRA</span>
+    <span class="nm"><span class="fn">Julien</span> <b>MOREAU</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">11th</span>
+  </div>
+    <div class="row">
+    <span class="rk">12</span>
+    <span class="chip">18</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span>
+    <span class="noc">POR</span>
+    <span class="nm"><span class="fn">João</span> <b>SANTOS</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">12th</span>
+  </div>
+    <div class="row">
+    <span class="rk">13</span>
+    <span class="chip">61</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span>
+    <span class="noc">COL</span>
+    <span class="nm"><span class="fn">Juan</span> <b>NAVARRO</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">13th</span>
+  </div>
+    <div class="row">
+    <span class="rk">14</span>
+    <span class="chip">7</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span>
+    <span class="noc">NED</span>
+    <span class="nm"><span class="fn">Daan</span> <b>BRAND</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">14th</span>
+  </div>
+    <div class="row">
+    <span class="rk">15</span>
+    <span class="chip">52</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span>
+    <span class="noc">ITA</span>
+    <span class="nm"><span class="fn">Luca</span> <b>ROSSI</b></span>
+    <span class="tot">0</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="sep"></span>
+    <span class="fin">16th</span>
+  </div>
+    <div class="row">
+    <span class="rk">16</span>
+    <span class="chip">70</span>
+    <span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span>
+    <span class="noc">BRA</span>
+    <span class="nm"><span class="fn">Lucas</span> <b>SILVA</b></span>
+    <span class="tot">-20</span>
+    <span class="sep"></span>
+    <span class="sprints"><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span><span class="sp">·</span></span>
+    <span class="sep"></span>
+    <span class="lap"><span class="z">·</span></span>
+    <span class="lap"><span class="lpill down">−20</span> <span class="lp">L19</span></span>
+    <span class="sep"></span>
+    <span class="fin">6th</span>
+  </div>
+  </div>
+</div>
+</body></html>
