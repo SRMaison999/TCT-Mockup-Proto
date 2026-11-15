@@ -142,9 +142,45 @@ que le moteur garde l'historique des groupes — à confirmer avant de coder.
 
 ---
 
-## 6. Prochaine étape probable
+## 6. Maquettes restant à faire
 
-Soit **intégrer** l'un des deux écrans validés (All sprints ou Lap by lap) dans
-`timeline-prototype_mixed.html` — en proposant d'abord, puis en consignant les règles du §4 — soit
-**maquetter le point suivant** de la liste initiale (Standings à resserrer, journal Decisions avec
-trace des groupes / tri / filtres). Demander à l'opérateur.
+La liste vient de la **« note de travail du 15 novembre 2026 »** en tête de
+`presentation/Course-aux-points-presentation.md` (quatre points de lisibilité relevés) et de la
+demande initiale de l'opérateur. Sur ces quatre points :
+
+| Point de la note | État |
+|---|---|
+| **Vue par sprint** (le Sprints répète le même sprint, mélange résultat et diffusion) | **Fait** (maquette « All sprints »). |
+| **Ordre de passage tour par tour** (difficile à lire) | **Fait** (maquette « Lap by lap »). |
+| **Standings** | **À maquetter.** |
+| **Journal Decisions** | **À maquetter.** |
+| **Passings** (relevé brut des boucles) | **À maquetter** (la note groupait « Passings et ordre de passage » ; seul l'ordre de passage est fait). |
+
+Ce qui reste, avec les demandes déjà exprimées :
+
+- **Standings** — aujourd'hui **trop vide**, les colonnes de chiffres sont **centrées, loin des
+  noms**. À faire : **rapprocher les chiffres des noms**, **resserrer** l'ensemble, **mieux occuper
+  l'espace**. (Même dessin que la page de course, comme le reste.)
+- **Journal Decisions** — plusieurs demandes :
+  - consigner aussi la **formation automatique d'un groupe** (pas seulement les comptages de
+    contacts capteurs) ; les groupes ne se forment que de temps à autre, ça ne noierait pas le
+    journal et ça mérite une trace ;
+  - des **repères colorés** : un groupe qui se forme reçoit un **fond plus marqué** que de simples
+    contacts ;
+  - pouvoir **trier et filtrer** les entrées : par couleur, par type d'événement, par niveau
+    d'alerte, etc.
+- **Passings** — **présentation plus claire** du relevé brut des boucles (la note le juge, comme
+  les vues tour par tour, « difficile à lire, ne rend pas assez »).
+
+## 7. Prochaine étape
+
+Deux voies possibles, à proposer à l'opérateur :
+
+1. **Maquetter** l'un des trois écrans restants ci-dessus (Standings est le plus simple pour
+   repartir) ; ou
+2. **Intégrer** dans `timeline-prototype_mixed.html` l'un des deux écrans déjà validés (All sprints
+   ou Lap by lap) — en **proposant d'abord**, puis en **consignant les règles du §4** dans
+   `docs/regles-operateur.md` dans le même tour que le code, build incrémenté.
+
+Demander à l'opérateur lequel il veut attaquer. **Ne rien coder dans le prototype sans son accord
+explicite.**
