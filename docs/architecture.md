@@ -1072,6 +1072,19 @@ qui laisse `.main` **dessiné et mesurable**. `#gmeas` y mesure la largeur des �
 l'ovale, et dans un `display:none` il rendrait 0 pour toujours, car `labelWidth()` garde ce
 qu'il a mesuré (`pitfalls.md` D25).
 
+**Les onglets reprennent le dessin de la page de course (build 209, 15 novembre 2026).**
+L'opérateur a demandé que Standings, Crossings, Decisions, Sprints et Passings aient le même
+dessin et les mêmes couleurs que la page de course. Le seul écart tenait au panneau du journal,
+`.log` (`styles.css:253`), posé sur le bleu `--deep` avec une bordure `--acc` : ce fond
+remplissait de bleu tout l'espace autour et sous les lignes, et donnait aux onglets l'air d'un
+autre écran. L'override, dans le bloc `<style>` de ce fichier, le pose sur le gris `--panel` à
+bordure `--line`, comme la timeline (`.tl`) et la barre d'actions ; et l'en-tête du tableau
+Passings (`.rows.pass .ph`), lui aussi en `--deep`, passe à `--panel`. Le reste était déjà la
+page de course : cartes `#17191c` à bord `--line2`, données en ambre `--fg`, nombres en `--mono`
+alignés, noms et libellés en `--sans`. Rien n'entre dans `styles.css` : le journal superposé du
+prototype de référence garde son dessin. Les changements de couleur sont les seuls ; aucun
+comportement n'est touché.
+
 ### L'onglet Passings
 
 Il reprend la page 3d. `renderLog()` est **enveloppée, pas réécrite** : les onglets `race` et

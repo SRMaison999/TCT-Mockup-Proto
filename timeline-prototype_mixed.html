@@ -59,6 +59,18 @@
 .sptab:hover{color:var(--fg)}
 .sptab.on{font-weight:600;color:var(--fg);box-shadow:inset 0 -2px 0 var(--acc)}
 
+/* ---- les onglets reprennent le dessin de la page de course (15 novembre 2026) ----
+   L'opérateur veut que Standings, Crossings, Decisions, Sprints et Passings
+   reprennent le même dessin et les mêmes couleurs que la page de course. Le seul
+   écart tenait au panneau du journal (.log, styles.css:253), posé sur le bleu
+   --deep avec une bordure --acc : c'est ce fond qui emplissait de bleu tout
+   l'espace autour et sous les lignes, et donnait aux onglets l'air d'un autre
+   écran. On le pose sur le gris --panel à bordure --line, exactement comme la
+   timeline (.tl) et la barre d'actions. Le reste était déjà la page de course :
+   cartes #17191c à bord --line2, données en ambre --fg, nombres en --mono alignés,
+   noms et libellés en --sans. Rien hors ce fichier : styles.css n'est pas touché. */
+.log{background:var(--panel);border-color:var(--line)}
+
 /* ---- l'onglet Passings (page 3d) ---------------------------------------- */
 .pfilt{display:flex;align-items:center;gap:7px;flex:0 0 auto;padding:6px 2px 4px}
 .pfilt .hint{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
@@ -78,7 +90,7 @@
 .rows.pass{gap:1px}
 .rows.pass .ph,.rows.pass .prow{display:grid;
   grid-template-columns:88px 116px 44px 46px 48px minmax(0,1fr) 124px;gap:10px;align-items:center;padding:0 8px}
-.rows.pass .ph{position:sticky;top:0;z-index:1;height:24px;background:var(--deep);
+.rows.pass .ph{position:sticky;top:0;z-index:1;height:24px;background:var(--panel);
   font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .rows.pass .prow{min-height:30px;background:#17191c;border-left:3px solid var(--line2);font-size:13px}
 .rows.pass .prow.odd{border-left-color:var(--warn)}
@@ -620,7 +632,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '208';
+const BUILD = '209';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
