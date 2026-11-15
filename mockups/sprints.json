@@ -1,0 +1,799 @@
+{
+  "N": 6,
+  "riders": {
+    "1": {
+      "nat": "ESP",
+      "name": "RIVERA"
+    },
+    "3": {
+      "nat": "FRA",
+      "name": "MOREAU"
+    },
+    "4": {
+      "nat": "GBR",
+      "name": "WALSH"
+    },
+    "7": {
+      "nat": "NED",
+      "name": "BRAND"
+    },
+    "9": {
+      "nat": "SLO",
+      "name": "KOVAC"
+    },
+    "11": {
+      "nat": "JPN",
+      "name": "TANAKA"
+    },
+    "12": {
+      "nat": "SUI",
+      "name": "HUBER"
+    },
+    "15": {
+      "nat": "IRL",
+      "name": "O'NEILL"
+    },
+    "18": {
+      "nat": "POR",
+      "name": "SANTOS"
+    },
+    "23": {
+      "nat": "DEN",
+      "name": "IVERSEN"
+    },
+    "46": {
+      "nat": "BEL",
+      "name": "DE WIT"
+    },
+    "52": {
+      "nat": "ITA",
+      "name": "ROSSI"
+    },
+    "58": {
+      "nat": "KAZ",
+      "name": "PETROV"
+    },
+    "61": {
+      "nat": "COL",
+      "name": "NAVARRO"
+    },
+    "67": {
+      "nat": "GER",
+      "name": "LEHMANN"
+    },
+    "70": {
+      "nat": "BRA",
+      "name": "SILVA"
+    }
+  },
+  "sprints": [
+    {
+      "k": 1,
+      "final": false,
+      "lap": 10,
+      "sent": "live",
+      "seq": [
+        {
+          "bib": 15,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 5
+        },
+        {
+          "bib": 4,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 3
+        },
+        {
+          "bib": 11,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 2
+        },
+        {
+          "bib": 23,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 1
+        },
+        {
+          "bib": 46,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 70,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 58,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 67,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 1,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 9,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 3,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 18,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 61,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 7,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 12,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 52,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        }
+      ],
+      "notEligible": []
+    },
+    {
+      "k": 2,
+      "final": false,
+      "lap": 20,
+      "sent": "live",
+      "seq": [
+        {
+          "bib": 15,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 5
+        },
+        {
+          "bib": 4,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 3
+        },
+        {
+          "bib": 11,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 2
+        },
+        {
+          "bib": 23,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 1
+        },
+        {
+          "bib": 46,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 70,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 58,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 67,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 1,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 9,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 3,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 18,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 61,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 12,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 7,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 52,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        }
+      ],
+      "notEligible": []
+    },
+    {
+      "k": 3,
+      "final": false,
+      "lap": 30,
+      "sent": "live",
+      "seq": [
+        {
+          "bib": 15,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 5
+        },
+        {
+          "bib": 4,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 3
+        },
+        {
+          "bib": 11,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 2
+        },
+        {
+          "bib": 23,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 1
+        },
+        {
+          "bib": 46,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 70,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 58,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 67,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 1,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 9,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 3,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 18,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 61,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 7,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 12,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 52,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        }
+      ],
+      "notEligible": []
+    },
+    {
+      "k": 4,
+      "final": false,
+      "lap": 40,
+      "sent": "live",
+      "seq": [
+        {
+          "bib": 15,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 5
+        },
+        {
+          "bib": 4,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 3
+        },
+        {
+          "bib": 11,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 2
+        },
+        {
+          "bib": 23,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 1
+        },
+        {
+          "bib": 46,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 70,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 58,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 67,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 1,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 9,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 3,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 18,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 61,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 7,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 12,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 52,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        }
+      ],
+      "notEligible": []
+    },
+    {
+      "k": 5,
+      "final": false,
+      "lap": 50,
+      "sent": "live",
+      "seq": [
+        {
+          "bib": 15,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 5
+        },
+        {
+          "bib": 4,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 3
+        },
+        {
+          "bib": 11,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 2
+        },
+        {
+          "bib": 23,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 1
+        },
+        {
+          "bib": 46,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 70,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 58,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 67,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 1,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 9,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 3,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 18,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 61,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 7,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 12,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 52,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        }
+      ],
+      "notEligible": []
+    },
+    {
+      "k": 6,
+      "final": true,
+      "lap": 60,
+      "sent": "live",
+      "seq": [
+        {
+          "bib": 15,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 10
+        },
+        {
+          "bib": 4,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 6
+        },
+        {
+          "bib": 11,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 4
+        },
+        {
+          "bib": 23,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 2
+        },
+        {
+          "bib": 46,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 70,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 58,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 67,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 1,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 9,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 3,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 18,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 61,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 7,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 12,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        },
+        {
+          "bib": 52,
+          "held": false,
+          "empty": false,
+          "photo": false,
+          "pts": 0
+        }
+      ],
+      "notEligible": []
+    }
+  ],
+  "t": 1002.6,
+  "finished": true
+}

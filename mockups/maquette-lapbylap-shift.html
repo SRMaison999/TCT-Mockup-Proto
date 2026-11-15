@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maquette · Lap by lap</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--deep:#2c455e;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-shadow:0 18px 48px #000a}
+.board-h{display:flex;align-items:baseline;gap:12px;flex:0 0 auto}
+.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
+.board-h .close{margin-left:auto;font:500 12px var(--sans);color:var(--dim);border:1px solid var(--line2);border-radius:4px;padding:4px 10px;background:#23272b;cursor:pointer}
+.colswrap{position:relative;flex:1 1 auto;min-height:0;display:flex}
+.cols{flex:1 1 auto;min-height:0;display:flex;align-items:flex-start;gap:8px;overflow-x:auto;overflow-y:hidden;padding:0 38px 6px;scroll-behavior:smooth}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:30px;height:54px;border-radius:6px;border:1px solid var(--line2);background:#23272bf0;color:var(--muted);font:400 22px var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:0 2px 10px #0008}
+.nav.left{left:0}.nav.right{right:0}
+.lapcol{flex:0 0 194px;max-height:100%;display:flex;flex-direction:column;background:#17191c;border:1px solid var(--line2);border-radius:4px;overflow:hidden}
+.lapcol.sprint{border-color:#8FB4FF}
+.lapcol.live{border-color:var(--good)}
+.lapcol.alert{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn)}
+.lapcol-h.alert{background:#2a1d08}
+.alertbadge{font:700 9px var(--sans);letter-spacing:.04em;color:#120d02;background:var(--warn);border-radius:3px;padding:1px 6px}
+.lapcol-h{padding:6px 8px 7px;border-bottom:1px solid var(--line);background:#1b1d20;font:700 13px var(--sans);letter-spacing:.03em;color:var(--muted);flex:0 0 auto;display:flex;align-items:center;gap:7px}
+.lapcol-h.sprint{background:#1a2238}
+.lapcol-h.live{background:#14241a}
+.spbadge{font:700 9px var(--sans);letter-spacing:.05em;color:#8FB4FF;border:1px solid #8FB4FF;border-radius:3px;padding:1px 5px}
+.livebadge{display:inline-flex;align-items:center;gap:4px;font:700 9px var(--sans);letter-spacing:.05em;color:var(--good);border:1px solid var(--good);border-radius:3px;padding:1px 5px}
+.livebadge .dot{width:6px;height:6px;border-radius:50%;background:var(--good)}
+.lapcol-b{flex:1 1 auto;min-height:0;overflow-y:auto;padding:3px}
+.lgrp{border-left:3px solid var(--gc);background:color-mix(in srgb, var(--gc) 13%, transparent);border-radius:0 3px 3px 0;margin:0 0 2px;padding:2px 0}
+.lgrp-h{font:700 9px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--gc);padding:2px 6px 1px}
+.lrkwrap{display:grid;grid-template-columns:16px 1fr;gap:3px;align-items:center;padding:0 5px;height:23px}
+.lrkwrap.missed{background:color-mix(in srgb, var(--warn) 14%, transparent)}
+.rk{font:600 11px var(--mono);color:var(--dim);text-align:right}
+.lrk{display:grid;grid-template-columns:26px 18px 1fr 40px 22px;gap:5px;align-items:center}
+.lcolhd{display:grid;grid-template-columns:16px 1fr;gap:3px;align-items:center;padding:3px 5px 4px;border-bottom:1px solid var(--line);background:#141619;flex:0 0 auto}
+.lcolhd .h{font:600 8px var(--sans);line-height:1.05;letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.lcolhd .ht{text-align:right}
+.lcolhd .hl{text-align:center}
+.lrkwrap.gain .chip{box-shadow:inset 2px 0 0 var(--good);border-radius:2px}
+.lrkwrap.lost .chip{box-shadow:inset 2px 0 0 var(--warn);border-radius:2px}
+.lrkwrap.missed .chip{box-shadow:inset 2px 0 0 var(--warn);border-radius:2px}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 3px;font:600 13px var(--mono);color:var(--fg)}
+.chip.sm{min-width:22px;height:17px;font-size:11px}
+.flagw .flag{width:18px;height:12px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.noc{font:600 12px var(--mono);letter-spacing:.02em;color:var(--dim)}
+.time{font:500 11px var(--mono);color:var(--dim);text-align:right;font-variant-numeric:tabular-nums}
+.time.warn{color:#121416;background:var(--warn);border-radius:3px;padding:0 3px;font-weight:700;justify-self:end}
+.time.none{color:var(--warn)}
+.lapchip{justify-self:end;min-width:22px;text-align:center;font:600 11px var(--mono);color:var(--dim);background:#0003;border:1px solid var(--line);border-radius:3px;padding:0 4px}
+.lapchip.up{color:#121416;background:var(--good);border-color:var(--good)}
+.lapchip.down{color:#fff;background:var(--crit);border-color:var(--crit)}
+.gapsep{display:flex;align-items:center;justify-content:center;height:16px;margin:1px 0}
+.gapsep span{font:600 9px var(--mono);color:var(--dim);background:#0004;border-radius:3px;padding:0 6px}
+.lapcol-leg{flex:0 0 auto;border-top:1px solid var(--warn);background:#1a1308;padding:6px 7px 8px;display:flex;flex-direction:column;gap:6px}
+.legttl{font:700 9px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--warn)}
+.alertrow{display:flex;flex-direction:column;gap:3px;padding:6px 7px;background:#0e0f11;border-radius:4px;border-left:3px solid var(--warn)}
+.ahd{display:flex;align-items:center;gap:5px}
+.atxt{font:500 11px var(--sans);color:var(--muted);line-height:1.3}
+.legbtn{align-self:flex-start;margin-top:2px;font:600 11px var(--sans);color:#0b1020;background:var(--acc);border:1px solid var(--acc);border-radius:4px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.lapcol-live{flex:0 0 auto;border-top:1px dashed var(--line2);padding:5px 6px;font:500 10px var(--sans);color:var(--dim);text-align:center}
+</style></head>
+<body>
+<div class="board">
+  <div class="board-h"><b>Lap by lap</b><span class="hint">finish-line order of every lap · newest lap on the right · lap time next to each rider · colours follow the timeline groups</span><button class="close">Close</button></div>
+  <div class="colswrap">
+    <button class="nav left">&lsaquo;</button>
+    <div class="cols" id="cols"><div class="lapcol"><div class="lapcol-h">LAP 15</div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#2ED47A"><div class="lgrp-h">1 · Leader</div><div class="lrkwrap"><span class="rk">1</span><div class="lrk">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="HUBER · 15 laps">15</span>
+    </div></div></div><div class="gapsep"><span>+14.0 s</span></div><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">2 · Bunch</div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">8</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">9</span><div class="lrk">
+      <span class="chip">58</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="noc">KAZ</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="PETROV · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">10</span><div class="lrk">
+      <span class="chip">67</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="noc">GER</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="LEHMANN · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">11</span><div class="lrk">
+      <span class="chip">1</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="noc">ESP</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="RIVERA · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">12</span><div class="lrk">
+      <span class="chip">9</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="noc">SLO</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="KOVAC · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">13</span><div class="lrk">
+      <span class="chip">3</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="noc">FRA</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="MOREAU · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">14</span><div class="lrk">
+      <span class="chip">46</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="noc">BEL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="DE WIT · 15 laps">15</span>
+    </div></div><div class="lrkwrap"><span class="rk">15</span><div class="lrk">
+      <span class="chip">52</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="noc">ITA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="ROSSI · 15 laps">15</span>
+    </div></div></div><div class="gapsep"><span>+6.0 s</span></div><div class="lgrp" style="--gc:#e07a9a"><div class="lgrp-h">3 · Last</div><div class="lrkwrap"><span class="rk">16</span><div class="lrk">
+      <span class="chip">70</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="noc">BRA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="SILVA · 15 laps">15</span>
+    </div></div></div></div></div><div class="lapcol alert"><div class="lapcol-h alert">LAP 16<span class="alertbadge">1 alert</span></div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#2ED47A"><div class="lgrp-h">1 · Leader</div><div class="lrkwrap"><span class="rk">1</span><div class="lrk">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="HUBER · 16 laps">16</span>
+    </div></div></div><div class="gapsep"><span>+14.0 s</span></div><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">2 · Bunch</div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">8</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">9</span><div class="lrk">
+      <span class="chip">58</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="noc">KAZ</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="PETROV · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">10</span><div class="lrk">
+      <span class="chip">67</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="noc">GER</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="LEHMANN · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">11</span><div class="lrk">
+      <span class="chip">1</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="noc">ESP</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="RIVERA · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">12</span><div class="lrk">
+      <span class="chip">3</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="noc">FRA</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="MOREAU · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">13</span><div class="lrk">
+      <span class="chip">46</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="noc">BEL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="DE WIT · 16 laps">16</span>
+    </div></div><div class="lrkwrap"><span class="rk">14</span><div class="lrk">
+      <span class="chip">52</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="noc">ITA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="ROSSI · 16 laps">16</span>
+    </div></div><div class="lrkwrap missed"><span class="rk">15</span><div class="lrk missed">
+      <span class="chip">9</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="noc">SLO</span>
+      <span class="time none" title="lap time">—</span>
+      <span class="lapchip" title="KOVAC · 16 laps">16</span>
+    </div></div></div><div class="gapsep"><span>+6.0 s</span></div><div class="lgrp" style="--gc:#e07a9a"><div class="lgrp-h">3 · Last</div><div class="lrkwrap"><span class="rk">16</span><div class="lrk">
+      <span class="chip">70</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="noc">BRA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="SILVA · 16 laps">16</span>
+    </div></div></div></div><div class="lapcol-leg"><div class="legttl">1 alert — to check</div><div class="alertrow"><div class="ahd"><span class="chip sm">9</span><span class="noc">SLO</span></div><div class="atxt">transponder not detected — placed by shift</div></div></div></div><div class="lapcol alert"><div class="lapcol-h alert">LAP 17<span class="alertbadge">1 alert</span></div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#2ED47A"><div class="lgrp-h">1 · Leader</div><div class="lrkwrap gain"><span class="rk">1</span><div class="lrk gain">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="HUBER · 17 laps">17</span>
+    </div></div></div><div class="gapsep"><span>+14.0 s</span></div><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">2 · Bunch</div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">8</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 17 laps">17</span>
+    </div></div><div class="lrkwrap gain"><span class="rk">9</span><div class="lrk gain">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip up" title="HUBER · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">10</span><div class="lrk">
+      <span class="chip">58</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="noc">KAZ</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="PETROV · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">11</span><div class="lrk">
+      <span class="chip">67</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="noc">GER</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="LEHMANN · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">12</span><div class="lrk">
+      <span class="chip">1</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="noc">ESP</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="RIVERA · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">13</span><div class="lrk">
+      <span class="chip">9</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="noc">SLO</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="KOVAC · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">14</span><div class="lrk">
+      <span class="chip">3</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="noc">FRA</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="MOREAU · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">15</span><div class="lrk">
+      <span class="chip">46</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="noc">BEL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="DE WIT · 17 laps">17</span>
+    </div></div><div class="lrkwrap"><span class="rk">16</span><div class="lrk">
+      <span class="chip">52</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="noc">ITA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="ROSSI · 17 laps">17</span>
+    </div></div></div><div class="gapsep"><span>+6.0 s</span></div><div class="lgrp" style="--gc:#e07a9a"><div class="lgrp-h">3 · Last</div><div class="lrkwrap"><span class="rk">17</span><div class="lrk">
+      <span class="chip">70</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="noc">BRA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="SILVA · 17 laps">17</span>
+    </div></div></div></div><div class="lapcol-leg"><div class="legttl">1 alert — to check</div><div class="alertrow"><div class="ahd"><span class="chip sm">12</span><span class="noc">SUI</span></div><div class="atxt">gained a lap — appears twice</div></div></div></div><div class="lapcol"><div class="lapcol-h">LAP 18</div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">1 · Bunch</div><div class="lrkwrap"><span class="rk">1</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 18 laps">18</span>
+    </div></div><div class="lrkwrap gain"><span class="rk">8</span><div class="lrk gain">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip up" title="HUBER · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">9</span><div class="lrk">
+      <span class="chip">58</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="noc">KAZ</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="PETROV · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">10</span><div class="lrk">
+      <span class="chip">67</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="noc">GER</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="LEHMANN · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">11</span><div class="lrk">
+      <span class="chip">1</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="noc">ESP</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="RIVERA · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">12</span><div class="lrk">
+      <span class="chip">9</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="noc">SLO</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="KOVAC · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">13</span><div class="lrk">
+      <span class="chip">3</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="noc">FRA</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="MOREAU · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">14</span><div class="lrk">
+      <span class="chip">46</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="noc">BEL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="DE WIT · 18 laps">18</span>
+    </div></div><div class="lrkwrap"><span class="rk">15</span><div class="lrk">
+      <span class="chip">52</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="noc">ITA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="ROSSI · 18 laps">18</span>
+    </div></div></div><div class="gapsep"><span>+6.0 s</span></div><div class="lgrp" style="--gc:#e07a9a"><div class="lgrp-h">2 · Last</div><div class="lrkwrap"><span class="rk">16</span><div class="lrk">
+      <span class="chip">70</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="noc">BRA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="SILVA · 18 laps">18</span>
+    </div></div></div></div></div><div class="lapcol alert"><div class="lapcol-h alert">LAP 19<span class="alertbadge">1 alert</span></div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">1 · Bunch</div><div class="lrkwrap"><span class="rk">1</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 19 laps">19</span>
+    </div></div><div class="lrkwrap gain"><span class="rk">8</span><div class="lrk gain">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip up" title="HUBER · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">9</span><div class="lrk">
+      <span class="chip">58</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="noc">KAZ</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="PETROV · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">10</span><div class="lrk">
+      <span class="chip">67</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="noc">GER</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="LEHMANN · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">11</span><div class="lrk">
+      <span class="chip">1</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="noc">ESP</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="RIVERA · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">12</span><div class="lrk">
+      <span class="chip">9</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="noc">SLO</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="KOVAC · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">13</span><div class="lrk">
+      <span class="chip">3</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="noc">FRA</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="MOREAU · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">14</span><div class="lrk">
+      <span class="chip">46</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="noc">BEL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="DE WIT · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">15</span><div class="lrk">
+      <span class="chip">52</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="noc">ITA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="ROSSI · 19 laps">19</span>
+    </div></div></div></div><div class="lapcol-leg"><div class="legttl">1 alert — to check</div><div class="alertrow"><div class="ahd"><span class="chip sm">70</span><span class="noc">BRA</span></div><div class="atxt">lapped — no crossing this lap</div></div></div></div><div class="lapcol sprint"><div class="lapcol-h sprint">LAP 20<span class="spbadge">SPRINT 2</span></div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">1 · Bunch</div><div class="lrkwrap"><span class="rk">1</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 20 laps">20</span>
+    </div></div><div class="lrkwrap gain"><span class="rk">8</span><div class="lrk gain">
+      <span class="chip">12</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="noc">SUI</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip up" title="HUBER · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">9</span><div class="lrk">
+      <span class="chip">58</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="noc">KAZ</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="PETROV · 20 laps">20</span>
+    </div></div><div class="lrkwrap lost"><span class="rk">10</span><div class="lrk lost">
+      <span class="chip">70</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="noc">BRA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip down" title="SILVA · 19 laps">19</span>
+    </div></div><div class="lrkwrap"><span class="rk">11</span><div class="lrk">
+      <span class="chip">67</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="noc">GER</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="LEHMANN · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">12</span><div class="lrk">
+      <span class="chip">1</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="noc">ESP</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="RIVERA · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">13</span><div class="lrk">
+      <span class="chip">9</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="noc">SLO</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="KOVAC · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">14</span><div class="lrk">
+      <span class="chip">3</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="noc">FRA</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="MOREAU · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">15</span><div class="lrk">
+      <span class="chip">46</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="noc">BEL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="DE WIT · 20 laps">20</span>
+    </div></div><div class="lrkwrap"><span class="rk">16</span><div class="lrk">
+      <span class="chip">52</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="noc">ITA</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="ROSSI · 20 laps">20</span>
+    </div></div></div></div></div><div class="lapcol live"><div class="lapcol-h live">LAP 21<span class="livebadge"><span class="dot"></span>live</span></div><div class="lcolhd"><span class="rk"></span><div class="lrk"><i></i><i></i><i></i><span class="h ht">lap<br>time</span><span class="h hl">laps<br>done</span></div></div><div class="lapcol-b"><div class="lgrp" style="--gc:#5b8fd6"><div class="lgrp-h">1 · Bunch</div><div class="lrkwrap"><span class="rk">1</span><div class="lrk">
+      <span class="chip">18</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="noc">POR</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="SANTOS · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">2</span><div class="lrk">
+      <span class="chip">61</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="noc">COL</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="NAVARRO · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">3</span><div class="lrk">
+      <span class="chip">7</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="noc">NED</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="BRAND · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">4</span><div class="lrk">
+      <span class="chip">15</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="noc">IRL</span>
+      <span class="time" title="lap time">16.4</span>
+      <span class="lapchip" title="O'NEILL · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">5</span><div class="lrk">
+      <span class="chip">4</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="noc">GBR</span>
+      <span class="time" title="lap time">16.6</span>
+      <span class="lapchip" title="WALSH · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">6</span><div class="lrk">
+      <span class="chip">11</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="noc">JPN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="TANAKA · 21 laps">21</span>
+    </div></div><div class="lrkwrap"><span class="rk">7</span><div class="lrk">
+      <span class="chip">23</span><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="noc">DEN</span>
+      <span class="time" title="lap time">16.9</span>
+      <span class="lapchip" title="IVERSEN · 21 laps">21</span>
+    </div></div></div></div><div class="lapcol-live">riders still crossing…</div></div></div>
+    <button class="nav right">&rsaquo;</button>
+  </div>
+</div>
+<script>var c=document.getElementById('cols');c.scrollLeft=c.scrollWidth;</script>
+</body></html>
