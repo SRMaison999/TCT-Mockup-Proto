@@ -225,31 +225,33 @@ précisions données en séance (mot pour mot, reportées aussi dans `mockups/RE
 - **Passings** : « Il faut des démarcations colorées pour différencier les différents types de
   Passings (dans le même style que la vue Race logs). »
 
-Livré ce tour (maquettes statiques, **en attente de critique de l'opérateur** — rien n'est codé
-dans le prototype) :
+Livré ce tour :
 
-- **`mockups/maquette-passings.html`** (+ `gen-passings.js`) — relevé brut repensé. Liste
-  chronologique, style des lignes du journal « Race logs » (bordure gauche + pastille de type),
-  **une couleur par point de passage** : Finish (or), Pursuit A (cyan), Pursuit B (violet), Tape
-  switch (rose). Les anomalies — *contact sans lecture* (vélo sans transpondeur) et *lecture sans
-  contact* (deux roues trop proches pour le ruban) — ressortent en **orange / rouge**. Loop health,
-  filtres de source, un tour « live » partiel en haut. Lectures **illustratives** (cf. README).
-- **`mockups/maquette-standings.html`** (+ `gen-standings.js` réécrit) — deux vues basculables :
-  - **Table** : la maquette validée, **finalisée en anglais** (`lang`, sous-titre) ; « Finish
-    order » tient à l'écran aux largeurs usuelles.
-  - **Evolution** : **nouvelle vue** demandée. Bump chart du rang de chaque coureur, un checkpoint
-    par sprint (S1…F) et par tour gagné/perdu (L17/L19/L34/L48). Grimpeur en **vert** (12 Huber,
-    15e → 1er), lâché en **rouge** (70 Silva → 16e), sprinteurs en **or**, sans-point en gris ;
-    étiquettes de fin drapeau + dossard + total.
+- **`mockups/maquette-passings.html`** (+ `gen-passings.js`) — relevé brut repensé, **VALIDÉ par
+  l'opérateur le 16 novembre 2026**. Colonnes reprises de la feuille **Race log** : **Daytime ·
+  Race time · Lap · Type · Location · Rider · Event**. Deux familles — *Transponder* (les 3
+  boucles, trait plein) et *Timing pulse* (les 5 tape switches, trait tireté) — modèle de capteurs
+  repris TEL QUEL du prototype (`buildTapes` : Finish 0 m, 200 m start 50 m, Pursuit B 115 m,
+  100 m intermediate 150 m, Pursuit A 240 m). **Couleur par position** sur toute la ligne (style
+  Race log) ; anomalies *contact sans lecture* / *lecture sans contact* en orange dans Event ;
+  filtres cliquables **Type** + **Location** et Loop health. Lectures **illustratives** (cf. README).
+- **`mockups/maquette-standings.html`** (+ `gen-standings.js`) — **ATTENTION, à revoir** :
+  - **Table** : finalisée en anglais (`lang`, sous-titre) ; « Finish order » tient à l'écran. OK.
+  - **Evolution** : le bump chart (graphe de lignes du rang avec noms au bout) livré ici **est
+    précisément l'approche déjà REJETÉE par l'opérateur** (voir §9.4). **Ne pas la considérer comme
+    validée.** À refaire en cadrant le besoin **en mots** d'abord (toggle `Live standings` /
+    `Standings evolution`, filtrage par coureur, lecture des écarts) — cf. §9.4.
 
-### État des maquettes restant à faire — à jour
+### État des maquettes — à jour
 
 | Écran | État |
 |---|---|
 | All sprints, Lap by lap | **Fait** (sessions précédentes). |
-| **Standings** | **Fait** — Table finalisée + vue Evolution (ce tour). |
-| **Passings** | **Fait** — relevé coloré par type (ce tour). |
-| **Journal Decisions** | **À maquetter** (seul écran restant ; demandes au §7 ci-dessus). |
+| **Passings** | **Validé** le 16 novembre 2026 (colonnes Race log, couleur par position). |
+| **Standings — Table** | Finalisée en anglais. |
+| **Standings — Evolution** | **À refaire** : l'essai livré reprend l'approche rejetée (§9.4). Cadrer le besoin en mots d'abord. |
+| **Race log (ex-Decisions)** | **À maquetter** depuis les exigences §9.2 (générateur scratchpad perdu). |
+| **Possible scenarios (ex-Race situation)** | **À refaire** depuis le besoin §9.4. |
 
 ### Prochaine étape
 
