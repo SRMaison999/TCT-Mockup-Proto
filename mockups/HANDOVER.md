@@ -254,7 +254,7 @@ Livré ce tour :
 | All sprints, Lap by lap | **Fait** (sessions précédentes). |
 | **Passings** | **Validé** le 16 novembre 2026 (colonnes Race log, couleur par position). |
 | **Standings** | **Validé** le 16 novembre 2026 : une page, toggle **Live** (classement complet) + **Evolution** (Compare). |
-| **Race log (ex-Decisions)** | **À maquetter** depuis les exigences §9.2 (générateur scratchpad perdu). |
+| **Race log (ex-Decisions)** | **Validé** le 16 novembre 2026 (`maquette-racelog.html` + `gen-racelog.js`), recréé depuis la capture retrouvée + §9.2 : colonnes Daytime·Race time·Lap·Type·Rider·Event·Status, anomalies Problème→Effet→Action, cycle de crash neutralisant (−5→0), résultats de sprint complets (drapeau + NOC), filtres + recherche. |
 | **Possible scenarios (ex-Race situation)** | **À refaire** depuis le besoin §9.4. |
 
 ### Prochaine étape
