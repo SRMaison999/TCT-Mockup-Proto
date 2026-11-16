@@ -212,3 +212,84 @@ Deux voies possibles, à proposer à l'opérateur :
 
 Demander à l'opérateur lequel il veut attaquer. **Ne rien coder dans le prototype sans son accord
 explicite.**
+
+---
+
+## 9. Continuation (15–16 novembre 2026) — Race log, Possible scenarios, Standings evolution
+
+Travail poursuivi en **maquettes de scratchpad** (générateurs node + captures Playwright),
+**non commitées** (le scratchpad est éphémère) : `gen-decisions.js`, `gen-situation.js`,
+`gen-standings-evo.js`. Les **exigences** sont consignées ci-dessous pour refaire sans repartir
+de zéro.
+
+### 9.1. Renommages demandés par l'opérateur
+- **« Decisions » → « Race log »** (la boîte noire : les faits de la course).
+- **« Race situation » → « Possible scenarios »** (l'analyse sportive).
+- **« READ » → « Transponder »** partout dans l'appli (changement de code à **proposer** avant de
+  coder). L'opérateur y tient : « read » n'a aucun sens pour lui.
+
+### 9.2. Race log (ex-Decisions) — exigences (maquette plutôt bien reçue)
+Journal « boîte noire » en langage humain, tableau à colonnes alignées : **Daytime · Race time ·
+Lap · Type · Rider · Event · Status**. Anomalies au format **Problème → Effet → Action** avec
+pastille de statut (Resolved / Pending / Ignored), sur les vrais composants.
+- Types **réels** de l'appli (ne rien inventer) : RACE / GROUP / SPRINT / LAP / TRANSPONDER /
+  OPERATOR / WITHDRAW / ALERT / HARDWARE / **INCIDENT**.
+- Pannes matérielles à tracer : tape switch défectueux, transpondeur non détecté, boucle
+  défectueuse, perte réseau décodeur. Retraits : DNS (pas de départ), DNF (sorti par les
+  commissaires), ABD (abandon volontaire).
+- Résultat de sprint : infos **complètes** par place — place · dossard · **drapeau** · NOC · nom.
+- **Cycle d'un crash** (chaque changement d'état = une ligne) :
+  crash signalé (par l'opérateur **ou** détecté par le système, transpondeurs qui ne bougent
+  plus) · **cause** (chute, ou mécanique : dérailleur / pneu crevé) · **fenêtre de 5 tours** pour
+  reprendre · **course neutralisée ou non** (si neutralisée : décompte **−5 / −4 / −3 (le coureur
+  repart) / −2 / −1 (a repris sa place) / 0 (l'arbitre relance)**, + X tours jusqu'au prochain
+  sprint) · **issues** : reprend / reprend **sans transpondeur** (changement de vélo) / **abandon**
+  à la suite du crash. Couleur du type INCIDENT **à définir** (rouge provisoire).
+
+### 9.3. Fil CIS/MIS commentateurs — à concevoir séparément (PAS fait)
+Sortie vers le système central (Commentator / Monitor Infosystem) : start list, classement final,
+dernier sprint, standings, et le **journal** (pas les alertes hardware). Idée forte : un **abandon
+pressenti** saisi tôt (le coureur souffre, avant qu'il lève le pied) **poussé aux commentateurs
+avant l'officialisation**. Dépend des crashs/abandon dans le prototype. À maquetter ensuite.
+
+### 9.4. Possible scenarios (ex-Race situation) + Standings evolution — **REJETÉ, À REFAIRE**
+
+> **Verdict de l'opérateur (16 novembre 2026) :** le résultat est jugé **« de la merde »**,
+> **inutilisable, à refaire** — et, selon ses mots, **par quelqu'un « capable de réfléchir et de
+> comprendre le besoin », pas par l'assistant qui a produit ça**. Plusieurs itérations ont **toutes
+> été rejetées**. **Ne pas réutiliser les maquettes de scratchpad ; repartir du besoin ci-dessous.**
+
+Le besoin, tel que l'opérateur l'a exprimé :
+
+**(A) Standings — une page, toggle `Live standings` / `Standings evolution` (ou `progression`).**
+- **Live** : le classement général, **large et lisible** (rang · dossard · drapeau · NOC · nom ·
+  total), **pas comprimé**.
+- **Evolution** : montrer comment le classement bouge **à chaque entrée** (chaque sprint, chaque
+  tour gagné / perdu). Pistes demandées successivement (toutes jugées illisibles en l'état) :
+  en-têtes de colonnes **« lap N / événement »** (« lap 34 / lap gained · 3 FRA ») ; **graphe de
+  lignes** du rang dans le temps avec **noms au bout des lignes** ; **ne pas** afficher un coureur
+  tant qu'il a 0 point ; **axe des rangs gradué** ; **axe des tours à l'échelle réelle**. Le besoin
+  réel reste à **cadrer en mots** avec l'opérateur avant tout dessin.
+- **Filtrer par coureur** (clic), suivre **2–3** coureurs, lire **l'écart de rang et de points**
+  entre eux.
+
+**(B) Possible scenarios — l'analyse sportive, à refaire aussi.**
+- **Points encore en jeu** : Sprint 5 = 5, Final = 10 → **15 pts** par les sprints (**+20** avec un
+  tour gagné).
+- **Par coureur** : total actuel, **maximum atteignable** (actuel + 15, variante +20 avec un tour),
+  **meilleure place** que ce plafond permet.
+- Qui peut **gagner**, qui peut **prendre la place** de qui, qui peut être **relégué** — en **vrais
+  mots, courts**, **sans** notation cryptique, **sans** prendre tout l'écran.
+- **Race Insights** (séries, montées, luttes rapprochées) : **utile au commentateur, pas à
+  l'opérateur** → ne pas l'imposer dans la vue opérateur.
+
+**Méthode à tenir** : **cadrer le besoin en mots avec l'opérateur et le faire valider AVANT de
+dessiner** ; un écran = un seul job ; ne rien empiler ; ne rien inventer ; **relire son travail
+avant de le montrer**. L'enchaînement de maquettes produites sans cadrage préalable a fait perdre
+la session.
+
+### 9.5. Prochaine étape
+Reprendre **(A) Standings evolution** et **(B) Possible scenarios** **à zéro**, en cadrant le
+besoin **en mots** d'abord. Le **Race log** (9.2) est en bon état mais son générateur est en
+scratchpad éphémère : le re-créer depuis les exigences. Les trois écrans validés (§2–4) restent à
+intégrer.
