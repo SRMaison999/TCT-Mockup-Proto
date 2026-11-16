@@ -212,3 +212,48 @@ Deux voies possibles, à proposer à l'opérateur :
 
 Demander à l'opérateur lequel il veut attaquer. **Ne rien coder dans le prototype sans son accord
 explicite.**
+
+---
+
+## Addendum — session du 16 novembre 2026
+
+L'opérateur a demandé de **finir les maquettes manquantes de Passings et de Standings**. Deux
+précisions données en séance (mot pour mot, reportées aussi dans `mockups/README.md`) :
+
+- **Standings** : « Finaliser l'existante. Mais y intégrer également une vue Standings Évolution
+  qui indique l'évolution du classement tout au long de la course. »
+- **Passings** : « Il faut des démarcations colorées pour différencier les différents types de
+  Passings (dans le même style que la vue Race logs). »
+
+Livré ce tour (maquettes statiques, **en attente de critique de l'opérateur** — rien n'est codé
+dans le prototype) :
+
+- **`mockups/maquette-passings.html`** (+ `gen-passings.js`) — relevé brut repensé. Liste
+  chronologique, style des lignes du journal « Race logs » (bordure gauche + pastille de type),
+  **une couleur par point de passage** : Finish (or), Pursuit A (cyan), Pursuit B (violet), Tape
+  switch (rose). Les anomalies — *contact sans lecture* (vélo sans transpondeur) et *lecture sans
+  contact* (deux roues trop proches pour le ruban) — ressortent en **orange / rouge**. Loop health,
+  filtres de source, un tour « live » partiel en haut. Lectures **illustratives** (cf. README).
+- **`mockups/maquette-standings.html`** (+ `gen-standings.js` réécrit) — deux vues basculables :
+  - **Table** : la maquette validée, **finalisée en anglais** (`lang`, sous-titre) ; « Finish
+    order » tient à l'écran aux largeurs usuelles.
+  - **Evolution** : **nouvelle vue** demandée. Bump chart du rang de chaque coureur, un checkpoint
+    par sprint (S1…F) et par tour gagné/perdu (L17/L19/L34/L48). Grimpeur en **vert** (12 Huber,
+    15e → 1er), lâché en **rouge** (70 Silva → 16e), sprinteurs en **or**, sans-point en gris ;
+    étiquettes de fin drapeau + dossard + total.
+
+### État des maquettes restant à faire — à jour
+
+| Écran | État |
+|---|---|
+| All sprints, Lap by lap | **Fait** (sessions précédentes). |
+| **Standings** | **Fait** — Table finalisée + vue Evolution (ce tour). |
+| **Passings** | **Fait** — relevé coloré par type (ce tour). |
+| **Journal Decisions** | **À maquetter** (seul écran restant ; demandes au §7 ci-dessus). |
+
+### Prochaine étape
+
+À proposer à l'opérateur, après sa critique de Passings et Standings : soit **maquetter le
+Journal Decisions** (dernier écran), soit **intégrer** l'un des écrans validés dans
+`timeline-prototype_mixed.html` — en proposant d'abord, en consignant les règles de l'opérateur
+dans `docs/regles-operateur.md` dans le même tour que le code, build incrémenté.
