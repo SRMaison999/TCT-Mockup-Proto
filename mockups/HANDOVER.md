@@ -235,12 +235,17 @@ Livré ce tour :
   100 m intermediate 150 m, Pursuit A 240 m). **Couleur par position** sur toute la ligne (style
   Race log) ; anomalies *contact sans lecture* / *lecture sans contact* en orange dans Event ;
   filtres cliquables **Type** + **Location** et Loop health. Lectures **illustratives** (cf. README).
-- **`mockups/maquette-standings.html`** (+ `gen-standings.js`) — **ATTENTION, à revoir** :
-  - **Table** : finalisée en anglais (`lang`, sous-titre) ; « Finish order » tient à l'écran. OK.
-  - **Evolution** : le bump chart (graphe de lignes du rang avec noms au bout) livré ici **est
-    précisément l'approche déjà REJETÉE par l'opérateur** (voir §9.4). **Ne pas la considérer comme
-    validée.** À refaire en cadrant le besoin **en mots** d'abord (toggle `Live standings` /
-    `Standings evolution`, filtrage par coureur, lecture des écarts) — cf. §9.4.
+- **`mockups/maquette-standings.html`** (+ `gen-standings.js`) — **une page, toggle `Live` /
+  `Evolution`, VALIDÉE le 16 novembre 2026** (le bump chart rejeté §9.4 a été supprimé) :
+  - **Live** : le classement complet finalisé (anglais, « Finish order » tient à l'écran). Vue par
+    défaut à l'ouverture.
+  - **Evolution** : la vue **Compare** validée, cadrée en mots avec l'opérateur. Le classement à
+    l'instant choisi (panneau gauche) sert de **sélecteur** et se re-classe au moment cliqué ; on
+    suit **jusqu'à 4** coureurs (au-delà c'est illisible — testé) ; le graphe est en **points**
+    (l'écart = la distance verticale), avec à 2 coureurs la bande d'écart + les valeurs + la ligne
+    Gap ; tableau rang+points par mise à jour, aligné sous le graphe ; noms au bout des lignes ;
+    **axe des points et colonne de noms figés** pendant le défilement d'une longue course. Rendu
+    client (JS + données embarqués).
 
 ### État des maquettes — à jour
 
@@ -248,8 +253,7 @@ Livré ce tour :
 |---|---|
 | All sprints, Lap by lap | **Fait** (sessions précédentes). |
 | **Passings** | **Validé** le 16 novembre 2026 (colonnes Race log, couleur par position). |
-| **Standings — Table** | Finalisée en anglais. |
-| **Standings — Evolution** | **À refaire** : l'essai livré reprend l'approche rejetée (§9.4). Cadrer le besoin en mots d'abord. |
+| **Standings** | **Validé** le 16 novembre 2026 : une page, toggle **Live** (classement complet) + **Evolution** (Compare). |
 | **Race log (ex-Decisions)** | **À maquetter** depuis les exigences §9.2 (générateur scratchpad perdu). |
 | **Possible scenarios (ex-Race situation)** | **À refaire** depuis le besoin §9.4. |
 

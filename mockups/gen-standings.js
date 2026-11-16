@@ -1,35 +1,31 @@
 // Génère mockups/maquette-standings.html — le classement général.
 //
-// Deux vues, basculables dans l'en-tête :
-//   · Table      — le classement finalisé (points par sprint, tours gagnés/perdus
-//                  en points, Finish order, exports). Tout en anglais.
-//   · Evolution  — demande de l'opérateur (16 novembre 2026) : montrer l'évolution
-//                  du classement tout au long de la course. Un graphe de rang par
-//                  checkpoint (chaque sprint et chaque tour gagné / perdu).
+// Une page, deux vues basculables dans l'en-tête (hand-off §9.4) :
+//   · Live       — le classement complet finalisé (points par sprint, tours
+//                  gagnés/perdus en points, Finish order, exports). Tout en anglais.
+//   · Evolution  — la vue « Compare » validée le 16 novembre 2026 : le classement à
+//                  l'instant choisi sert de sélecteur (panneau gauche), on suit jusqu'à
+//                  4 coureurs, le graphe montre leurs points dans le temps et l'écart,
+//                  et un clic sur un moment re-classe le panneau à cet instant.
 //
 // Prénoms ILLUSTRATIFS : le modèle n'a que le nom de famille ; à l'intégration le
-// prénom vient de la vraie startlist. Les tours gagnés / perdus sont ceux de la
-// course de test (cohérents avec « Lap by lap ») : 12 gagne L17/L34/L48, 70 perd L19.
+// prénom vient de la vraie startlist. Tours gagnés/perdus (cohérents « Lap by lap ») :
+// 12 gagne L17/L34/L48, 70 perd L19.
 
 const fs = require('fs');
 const path = require('path');
 const BASE = __dirname;
 const flag = new Function(fs.readFileSync(path.join(__dirname, '..', 'flags.js'), 'utf8') + '\nreturn flag;')();
 const D = require(`${BASE}/sprints.json`);
-const R = D.riders;                       // {bib:{nat,name}}
+const R = D.riders;
 const FIRST = { 15: 'Liam', 4: 'Tom', 12: 'Marco', 11: 'Yuki', 23: 'Mads', 46: 'Lars', 58: 'Dmitriy', 67: 'Max', 1: 'Carlos', 9: 'Luka', 3: 'Julien', 18: 'João', 61: 'Juan', 7: 'Daan', 52: 'Luca', 70: 'Lucas' };
-const NS = D.sprints.length;              // 6 sprints (S1..S5 + Final)
-const LAP_PTS = 20;
+const NS = D.sprints.length, LAP_PTS = 20;
 
-// points par sprint et par coureur
 const sprintPts = {};
 for (const b of Object.keys(R)) sprintPts[b] = {};
 D.sprints.forEach((s, i) => s.seq.forEach(e => { sprintPts[e.bib][i] = e.pts || 0; }));
-
-// tours gagnés / perdus
 const lapEvents = { 12: { gained: [17, 34, 48], lost: [] }, 70: { gained: [], lost: [19] } };
 
-// classement final
 let rows = Object.keys(R).map(b => {
   const bib = +b;
   const spr = Object.values(sprintPts[b]).reduce((a, p) => a + p, 0);
@@ -46,7 +42,7 @@ rows.forEach((r, i) => r.rank = i + 1);
 const ord = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - n % 10 == 10) ? 0 : (n % 10 < 4 ? n % 10 : 0)] || 'th');
 const sprHd = D.sprints.map((s, i) => `<span class="sp">${s.final ? 'F' : 'S' + (i + 1)}</span>`).join('');
 
-/* ===== vue Table (inchangée, finalisée en anglais) ======================== */
+/* ===== vue Live (le classement complet) =================================== */
 const rowHtml = r => {
   const spr = D.sprints.map((s, i) => { const p = sprintPts[r.bib][i] || 0; return `<span class="sp${p ? ' on' : ''}">${p || '·'}</span>`; }).join('');
   const gained = r.ev.gained.length ? `<span class="lpill up">+${r.ev.gained.length * LAP_PTS}</span> <span class="lp">L${r.ev.gained.join(', L')}</span>` : '<span class="z">·</span>';
@@ -67,8 +63,7 @@ const rowHtml = r => {
     <span class="fin">${ord(r.fin)}</span>
   </div>`;
 };
-
-const tableView = `<div class="tbl" id="v-table">
+const liveView = `<div class="tbl" id="v-table">
     <div class="hd">
       <span class="r">#</span><span>Bib</span><span></span><span>NOC</span><span>Rider</span><span class="r">Total</span>
       <span></span><span class="hdsprints">${sprHd}</span><span></span>
@@ -77,7 +72,7 @@ const tableView = `<div class="tbl" id="v-table">
     ${rows.map(rowHtml).join('\n    ')}
   </div>`;
 
-/* ===== vue Evolution (nouvelle) =========================================== */
+/* ===== vue Evolution (Compare) ============================================ */
 // checkpoints, dans l'ordre de la course
 const CK = [
   { l: 'Start', lap: null, kind: 'start' },
@@ -92,88 +87,31 @@ const CK = [
   { l: 'S5', lap: 50, kind: 'sprint', k: 4 },
   { l: 'F', lap: 60, kind: 'sprint', k: 5 },
 ];
-const N = rows.length;                     // 16 coureurs
 const run = {}; Object.keys(R).forEach(b => run[b] = 0);
-const series = {}; Object.keys(R).forEach(b => series[b] = []);
+const rankS = {}, ptsS = {}; Object.keys(R).forEach(b => { rankS[b] = []; ptsS[b] = []; });
 CK.forEach(e => {
   if (e.k != null) Object.keys(R).forEach(b => run[b] += (sprintPts[b][e.k] || 0));
   if (e.bib != null) run[e.bib] += e.d;
   const order = Object.keys(R).map(Number).sort((a, b) => (run[b] - run[a]) || (fIdx(a) - fIdx(b)) || (a - b));
-  order.forEach((b, i) => series[b].push(i + 1));
+  order.forEach((b, i) => rankS[b].push(i + 1));
+  Object.keys(R).forEach(b => ptsS[b].push(run[b]));
 });
+const bibsFinal = rows.map(r => r.bib);   // par rang final
+const DATA = { CK: CK.map(e => ({ l: e.l, lap: e.lap, kind: e.kind })), order: bibsFinal, riders: {} };
+bibsFinal.forEach(b => { DATA.riders[b] = { nat: R[b].nat, name: R[b].name, flag: flag(R[b].nat), pts: ptsS[b], rank: rankS[b] }; });
+const DATA_JSON = JSON.stringify(DATA).replace(/</g, '\\u003c');
 
-// classe de chaque coureur : grimpeur (tour gagné) / lâché (tour perdu) / sprinteur / sans point
-const cls = bib => bib === 12 ? 'climb' : bib === 70 ? 'drop'
-  : (rows.find(r => r.bib === bib).spr > 0 ? 'score' : 'flat');
-const LINE = { climb: '#2ED47A', drop: '#FF5C5C', score: '#E0B64A', flat: '#6b7178' };
-
-// géométrie du graphe
-const W = 1640, H = 760, mL = 46, mR = 232, mT = 62, mB = 26;
-const x = i => mL + i * (W - mL - mR) / (CK.length - 1);
-const y = rank => mT + (rank - 1) * (H - mT - mB) / (N - 1);
-
-const grid = [];
-// lignes de rang horizontales + numéros
-for (let rk = 1; rk <= N; rk++) {
-  grid.push(`<line x1="${mL}" y1="${y(rk).toFixed(1)}" x2="${(W - mR).toFixed(1)}" y2="${y(rk).toFixed(1)}" class="grid"/>`);
-  grid.push(`<text x="${mL - 12}" y="${(y(rk) + 4).toFixed(1)}" class="axn">${rk}</text>`);
-}
-// colonnes de checkpoint : trait vertical + étiquette
-const cols = CK.map((e, i) => {
-  const xi = x(i).toFixed(1);
-  const head = e.kind === 'sprint' ? `<text x="${xi}" y="26" class="ckl sprint">${e.l}</text>`
-    : e.kind === 'gain' ? `<text x="${xi}" y="26" class="ckl gain">+1 lap</text>`
-    : e.kind === 'lose' ? `<text x="${xi}" y="26" class="ckl lose">−1 lap</text>`
-    : `<text x="${xi}" y="26" class="ckl start">Start</text>`;
-  const sub = e.lap != null ? `<text x="${xi}" y="44" class="cks">L${e.lap}</text>` : '';
-  return `<line x1="${xi}" y1="${mT}" x2="${xi}" y2="${H - mB}" class="colg${e.kind === 'sprint' ? ' on' : ''}"/>${head}${sub}`;
-}).join('');
-
-// une polyligne par coureur, les sans-point d'abord (dessous), les marquants au-dessus
-const bibsByZ = rows.map(r => r.bib).sort((a, b) => {
-  const rank = c => ({ flat: 0, score: 1, drop: 2, climb: 3 })[cls(c)];
-  return rank(a) - rank(b);
-});
-const lines = bibsByZ.map(bib => {
-  const c = cls(bib), col = LINE[c];
-  const pts = series[bib].map((rk, i) => `${x(i).toFixed(1)},${y(rk).toFixed(1)}`).join(' ');
-  const dots = series[bib].map((rk, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(rk).toFixed(1)}" r="${c === 'flat' ? 0 : 3.4}" fill="${col}"/>`).join('');
-  return `<g class="ln ${c}"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${c === 'flat' ? 1.4 : 3}" stroke-opacity="${c === 'flat' ? 0.4 : 1}" stroke-linejoin="round"/>${dots}</g>`;
-}).join('');
-
-// marqueur du tour gagné / perdu sur le dot concerné
-const marks = CK.map((e, i) => {
-  if (e.bib == null) return '';
-  const rk = series[e.bib][i], col = e.kind === 'gain' ? LINE.climb : LINE.drop;
-  return `<circle cx="${x(i).toFixed(1)}" cy="${y(rk).toFixed(1)}" r="7" fill="none" stroke="${col}" stroke-width="2"/>`;
-}).join('');
-
-// étiquettes de fin : drapeau + dossard + total, au rang final
-const endX = W - mR + 12;
-const ends = rows.map(r => {
-  const yy = y(r.rank), c = cls(r.bib), col = LINE[c];
-  const fl = flag(r.nat).replace('<svg class="flag"', `<svg class="flag" x="${endX}" y="${(yy - 8).toFixed(1)}" width="24" height="16"`);
-  const dim = c === 'flat' ? ' dim' : '';
-  return `${fl}<text x="${endX + 32}" y="${(yy + 4).toFixed(1)}" class="enm${dim}">${r.bib}</text>` +
-    `<text x="${endX + 70}" y="${(yy + 4).toFixed(1)}" class="enn${dim}">${r.name.toUpperCase()}</text>` +
-    `<text x="${(W - 10).toFixed(1)}" y="${(yy + 4).toFixed(1)}" class="ent" fill="${col}">${r.total > 0 ? '+' + r.total : r.total}</text>`;
-}).join('');
-
-const evoView = `<div class="evo" id="v-evo" hidden>
-    <div class="evleg">
-      <span class="lg"><i style="background:#2ED47A"></i>Lap gained — climbs</span>
-      <span class="lg"><i style="background:#FF5C5C"></i>Lap lost — drops</span>
-      <span class="lg"><i style="background:#E0B64A"></i>Sprint points</span>
-      <span class="lg"><i style="background:#6b7178"></i>No points yet</span>
-      <span class="lgnote">rank after each sprint and each lap gained or lost · top line leads</span>
+// Rendu client (voir le <script>) : panneau gauche = classement à l'instant + sélecteur.
+const evoView = `<div class="compare" id="v-evo" hidden>
+    <div class="side">
+      <div class="sh" id="cmp-lefth">Standings</div>
+      <div class="rlist" id="cmp-left"></div>
     </div>
-    <svg class="evsvg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Classification evolution">
-      <g class="grids">${grid.join('')}</g>
-      <g class="colsg">${cols}</g>
-      <g class="lns">${lines}</g>
-      <g class="marks">${marks}</g>
-      <g class="ends">${ends}</g>
-    </svg>
+    <div class="cmp-content">
+      <div class="cmp-top" id="cmp-head"></div>
+      <div class="cmp-body" id="cmp-body"></div>
+      <div class="cmp-note">Click a rider in the standings to follow them (up to 4). Click a moment in the race to re-rank the standings to that point. Long race: scroll the chart sideways — the scale and the names stay put.</div>
+    </div>
   </div>`;
 
 /* ===== page ============================================================== */
@@ -199,6 +137,7 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 .board-h .ex{margin-left:auto;display:flex;gap:6px}
 .exbtn{font:500 12px var(--sans);color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:5px 11px;background:#23272b;cursor:pointer;white-space:nowrap}
 
+/* ---- vue Live (table) ---- */
 .tbl{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto}
 .hd,.row{display:grid;grid-template-columns:44px 52px 30px 48px 248px 80px 14px ${NS * 58}px 14px 176px 176px 14px 124px 1fr;gap:9px;align-items:center;padding:0 10px}
 .hd{height:30px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line2)}
@@ -229,52 +168,154 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 .hdsprints{display:grid;grid-template-columns:repeat(${NS},1fr);gap:2px}
 .hdsprints span{text-align:center}
 
-/* ---- vue Evolution ---- */
-.evo{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px;overflow:hidden}
-.evleg{display:flex;align-items:center;gap:16px;flex:0 0 auto;padding:2px 4px}
-.evleg .lg{display:inline-flex;align-items:center;gap:7px;font:600 12px var(--sans);color:var(--muted)}
-.evleg .lg i{width:16px;height:4px;border-radius:2px;display:inline-block}
-.evleg .lgnote{margin-left:auto;font:500 12px var(--sans);color:var(--dim)}
-.evsvg{flex:1 1 auto;min-height:0;width:100%;height:100%}
-.evsvg .grid{stroke:#ffffff10;stroke-width:1}
-.evsvg .axn{fill:var(--dim);font:500 12px var(--mono);text-anchor:end}
-.evsvg .colg{stroke:#ffffff0d;stroke-width:1}
-.evsvg .colg.on{stroke:#ffffff1c}
-.evsvg .ckl{text-anchor:middle;font:700 14px var(--sans)}
-.evsvg .ckl.sprint{fill:var(--fg)}
-.evsvg .ckl.gain{fill:var(--good)}
-.evsvg .ckl.lose{fill:var(--crit)}
-.evsvg .ckl.start{fill:var(--dim)}
-.evsvg .cks{text-anchor:middle;fill:var(--dim);font:500 11px var(--mono)}
-.evsvg .enm{fill:var(--fg);font:700 14px var(--mono)}
-.evsvg .enn{fill:var(--muted);font:600 13px var(--sans)}
-.evsvg .enm.dim,.evsvg .enn.dim{fill:var(--dim);opacity:.7}
-.evsvg .ent{font:700 15px var(--mono);text-anchor:end;font-variant-numeric:tabular-nums}
+/* ---- panneau latéral partagé ---- */
+.side{flex:0 0 268px;display:flex;flex-direction:column;min-height:0;background:#1c1e22;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.sh{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.sh .hint{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.rlist{flex:1 1 auto;overflow:auto;padding:4px}
+
+/* ---- vue Evolution (Compare) ---- */
+.compare{flex:1 1 auto;min-height:0;display:flex;gap:14px}
+.side .at{color:var(--fg);text-transform:none;letter-spacing:0;font-weight:700;margin-left:4px}
+.lb{display:grid;grid-template-columns:22px 11px 26px 30px 1fr 36px;gap:8px;align-items:center;width:100%;background:none;border:0;border-radius:5px;padding:6px 8px;cursor:pointer;text-align:left;color:var(--dim)}
+.lb:hover{background:#24272c}
+.lb .rrk{font:700 13px var(--mono);color:var(--dim);text-align:right}
+.lb .sw{width:11px;height:11px;border-radius:3px;background:#3a4046}
+.lb.on{background:#23272e;color:var(--muted)}
+.lb.on .rrk{color:var(--muted)}.lb.on .sw{background:var(--c)}
+.lb .flagw .flag{width:24px;height:16px;border-radius:2px;display:block}
+.lb .rbib{font:600 13px var(--mono);color:var(--fg)}
+.lb .rnm{font:600 13px var(--sans);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .rtot{font:700 14px var(--mono);color:var(--fg);text-align:right}
+.cmp-content{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+.cmp-top{flex:0 0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:24px}
+.cmp-top .leg{display:inline-flex;align-items:center;gap:7px;font:600 14px var(--sans);color:var(--muted)}
+.cmp-top .leg .sw{width:12px;height:12px;border-radius:3px}
+.cmp-top .leg .flagw .flag{width:24px;height:16px;border-radius:2px;display:block}
+.cmp-top .leg b{font:700 14px var(--mono);color:var(--fg)}
+.cmp-top .gap{margin-left:auto;font:600 15px var(--sans);color:var(--muted)}
+.cmp-top .gap b{color:var(--fg);font-size:17px}
+.cmp-body{flex:1 1 auto;min-height:0;display:flex}
+.cmp-fixed{flex:0 0 auto;display:flex;flex-direction:column;z-index:2}
+.cmp-scroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;overflow-x:auto;overflow-y:hidden}
+.cyaxis,.csvg{display:block;flex:0 0 auto}
+.csvg .grid{stroke:#ffffff10}
+.cyaxis .axn{fill:var(--dim);font:600 13px var(--mono);text-anchor:end}
+.csvg .colg{stroke:#ffffff0b}.csvg .colg.on{stroke:#ffffff18}
+.csvg .cxl{text-anchor:middle;font:700 13px var(--sans)}
+.csvg .cxl.sprint{fill:var(--fg)}.csvg .cxl.gain{fill:var(--good)}.csvg .cxl.lose{fill:var(--crit)}.csvg .cxl.start{fill:var(--dim)}
+.csvg .cxs{text-anchor:middle;fill:var(--dim);font:500 11px var(--mono)}
+.csvg .ptlab{text-anchor:middle;font:700 13px var(--mono)}
+.csvg .ptlab.l{text-anchor:end}.csvg .ptlab.r{text-anchor:start}
+.csvg .gapband{fill:#ffffff10}
+.csvg .ckhit{cursor:pointer;fill:#fff;fill-opacity:0}.csvg .ckhit:hover{fill-opacity:.04}.csvg .cksel{fill:#ffffff0e}
+.csvg .enbib{font:700 14px var(--mono)}.csvg .ennm{font:600 13px var(--sans);fill:var(--muted)}
+.cmp-note{flex:0 0 auto;font:500 12px var(--sans);color:var(--dim)}
+.cmp-ltbl{display:flex;flex-direction:column;background:#1c1e22;border:1px solid var(--line);border-right:0;border-radius:6px 0 0 6px;overflow:hidden}
+.cmp-rtbl{display:grid;background:#1c1e22;border:1px solid var(--line);border-left:0;border-radius:0 6px 6px 0;overflow:hidden}
+.lh{height:28px;display:flex;align-items:center;padding-left:10px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid #2a2e33}
+.lr{height:34px;display:flex;align-items:center;gap:6px;padding-left:8px;font:600 12px var(--sans);color:var(--muted);border-bottom:1px solid #2a2e33;border-left:3px solid var(--c);white-space:nowrap;overflow:hidden}
+.lr .sw{width:10px;height:10px;border-radius:3px;background:var(--c);flex-shrink:0}
+.lg{height:28px;display:flex;align-items:center;padding-left:10px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--dim)}
+.cc{display:flex;flex-direction:column;min-width:0;border-right:1px solid #2a2e33}
+.cc[data-ck]{cursor:pointer}.cc[data-ck]:hover{background:#23262b}.cc[data-ck].on{background:#272b31}
+.cc:last-child{border-right:0}
+.cck{height:28px;display:flex;align-items:center;justify-content:center;gap:5px;font:700 12px var(--sans);color:var(--muted);border-bottom:1px solid #2a2e33}
+.cck span{font:500 10px var(--mono);color:var(--dim)}
+.ccr{height:34px;display:flex;align-items:center;justify-content:center;gap:5px;border-bottom:1px solid #2a2e33;border-left:3px solid var(--c)}
+.ccr b{font:700 15px var(--mono);color:var(--fg)}.ccr span{font:600 11px var(--mono);color:var(--dim)}
+.ccg{height:28px;display:flex;align-items:center;justify-content:center;font:700 13px var(--mono)}
 </style></head>
 <body>
 <div class="board">
   <div class="board-h"><b>Standings</b>
-    <span class="seg"><button class="on" data-view="table">Table</button><button data-view="evo">Evolution</button></span>
+    <span class="seg"><button class="on" data-view="table">Live</button><button data-view="evo">Evolution</button></span>
     <span class="hint" id="hint">overall classification · points per sprint · laps won / lost · finish order</span>
     <span class="ex"><button class="exbtn">Export PDF</button><button class="exbtn">Export CSV</button></span>
   </div>
-  ${tableView}
+  ${liveView}
   ${evoView}
 </div>
 <script>
 (function(){
   var hints={table:"overall classification · points per sprint · laps won / lost · finish order",
-             evo:"how the classification moved — climbs when a lap is taken, drops when a lap is lost"};
+             evo:"follow up to 4 riders · see how they move and how the gap changes · click a moment to re-rank"};
+  // ---- Evolution (Compare) : rendu client ----
+  var DATA=${DATA_JSON};
+  var order=DATA.order, CKc=DATA.CK, nck=CKc.length;
+  var PAL=['#2ED47A','#45B6D6','#E0B64A','#A98BE6'];
+  var MAX=4, sel=order.slice(0,2), snapAt=nck-1;
+  var colOf=function(b){var i=sel.indexOf(b);return i>=0?PAL[i]:'#565c64';};
+  var ckLab=function(i){var e=CKc[i];return (e.kind==='gain'?'+1 lap':e.kind==='lose'?'−1 lap':e.l)+(e.lap!=null?' · L'+e.lap:'');};
+  function renderLeft(){
+    document.getElementById('cmp-lefth').innerHTML='Standings <span class="at">@ '+ckLab(snapAt)+'</span>';
+    var i=snapAt, ranked=order.slice().sort(function(a,b){return DATA.riders[a].rank[i]-DATA.riders[b].rank[i];});
+    document.getElementById('cmp-left').innerHTML=ranked.map(function(b){
+      var r=DATA.riders[b],on=sel.indexOf(b)>=0;
+      return '<button class="lb'+(on?' on':'')+'" data-bib="'+b+'"'+(on?' style="--c:'+colOf(b)+'"':'')+'><span class="rrk">'+r.rank[i]+'</span><span class="sw"></span><span class="flagw">'+r.flag+'</span><span class="rbib">'+b+'</span><span class="rnm">'+r.name+'</span><span class="rtot">'+r.pts[i]+'</span></button>';
+    }).join('');
+  }
+  function renderHead(){
+    var leg=sel.map(function(b){var r=DATA.riders[b];return '<span class="leg"><span class="sw" style="background:'+colOf(b)+'"></span><span class="flagw">'+r.flag+'</span><b>'+b+'</b> '+r.name+'</span>';}).join('');
+    var gap='';
+    if(sel.length===2){var a=sel[0],b=sel[1],gv=DATA.riders[a].pts[nck-1]-DATA.riders[b].pts[nck-1],ld=gv>=0?a:b,tr=gv>=0?b:a;gap='<span class="gap">'+DATA.riders[ld].name+' leads '+DATA.riders[tr].name+' by <b>'+Math.abs(gv)+' pts</b></span>';}
+    document.getElementById('cmp-head').innerHTML=leg+gap;
+  }
+  function renderChart(){
+    renderHead();
+    var body=document.getElementById('cmp-body');
+    if(!sel.length){body.innerHTML='<div style="margin:auto;color:var(--dim);font:500 14px var(--sans)">Click a rider in the standings to start comparing.</div>';return;}
+    var labelW=190,minColW=86,endPad=156,mT=18,mB=40;
+    var availW=body.clientWidth||1000,availH=body.clientHeight||480;
+    var colW=Math.max(minColW,Math.floor((availW-labelW-endPad)/nck)),plotW=nck*colW;
+    var tableH=28+sel.length*34+(sel.length===2?28:0),H=Math.max(200,availH-tableH-2);
+    var ys=[0];sel.forEach(function(b){DATA.riders[b].pts.forEach(function(v){ys.push(v);});});
+    var yMax=Math.max.apply(null,ys),yMin=Math.min.apply(null,ys);
+    var pad=Math.max(6,(yMax-yMin)*0.12);yMax+=pad;yMin=yMin<0?yMin-pad:0;
+    var cY=function(v){return mT+(yMax-v)/(yMax-yMin)*(H-mT-mB);};
+    var cX=function(i){return (i+0.5)*colW;};
+    var step=(yMax-yMin)>50?20:10,v;
+    var ax='';for(v=Math.ceil(yMin/step)*step;v<=yMax;v+=step)ax+='<text x="'+(labelW-16)+'" y="'+(cY(v)+5).toFixed(1)+'" class="axn">'+v+'</text>';
+    var yaxis='<svg class="cyaxis" width="'+labelW+'" height="'+H+'">'+ax+'</svg>';
+    var g='';for(v=Math.ceil(yMin/step)*step;v<=yMax;v+=step)g+='<line x1="0" y1="'+cY(v).toFixed(1)+'" x2="'+plotW+'" y2="'+cY(v).toFixed(1)+'" class="grid"/>';
+    var xl='';CKc.forEach(function(e,i){var xi=cX(i).toFixed(1),cls=e.kind==='sprint'?'sprint':e.kind==='gain'?'gain':e.kind==='lose'?'lose':'start',lab=e.kind==='gain'?'+1':e.kind==='lose'?'−1':e.l;xl+='<line x1="'+xi+'" y1="'+mT+'" x2="'+xi+'" y2="'+(H-mB)+'" class="colg'+(e.kind==='sprint'?' on':'')+'"/><text x="'+xi+'" y="'+(H-22)+'" class="cxl '+cls+'">'+lab+'</text>'+(e.lap!=null?'<text x="'+xi+'" y="'+(H-7)+'" class="cxs">L'+e.lap+'</text>':'');});
+    var selrect='<rect x="'+(snapAt*colW)+'" y="'+mT+'" width="'+colW+'" height="'+(H-mT-mB)+'" class="cksel"/>';
+    var hits='';CKc.forEach(function(e,i){hits+='<rect x="'+(i*colW)+'" y="'+mT+'" width="'+colW+'" height="'+(H-mT-mB)+'" data-ck="'+i+'" class="ckhit"/>';});
+    var band='';
+    if(sel.length===2){var pa=DATA.riders[sel[0]].pts,pb=DATA.riders[sel[1]].pts,p=[],k;for(k=0;k<nck;k++)p.push(cX(k).toFixed(1)+','+cY(pa[k]).toFixed(1));for(k=nck-1;k>=0;k--)p.push(cX(k).toFixed(1)+','+cY(pb[k]).toFixed(1));band='<polygon points="'+p.join(' ')+'" class="gapband"/>';}
+    var lines='';sel.forEach(function(b){var r=DATA.riders[b],c=colOf(b),pts=r.pts.map(function(v,i){return cX(i).toFixed(1)+','+cY(v).toFixed(1);}).join(' ');lines+='<polyline points="'+pts+'" fill="none" stroke="'+c+'" stroke-width="3.5" stroke-linejoin="round"/>';r.pts.forEach(function(v,i){lines+='<circle cx="'+cX(i).toFixed(1)+'" cy="'+cY(v).toFixed(1)+'" r="4.2" fill="'+c+'"/>';});var ye=cY(r.pts[nck-1]);var fl=r.flag.replace('<svg class="flag"','<svg class="flag" x="'+(plotW+8)+'" y="'+(ye-8).toFixed(1)+'" width="22" height="15"');lines+='<g>'+fl+'<text x="'+(plotW+36)+'" y="'+(ye+5).toFixed(1)+'" class="enbib" fill="'+c+'">'+b+'</text><text x="'+(plotW+62)+'" y="'+(ye+5).toFixed(1)+'" class="ennm">'+r.name+'</text></g>';});
+    var labels='';
+    if(sel.length===2){var pa=DATA.riders[sel[0]].pts,pb=DATA.riders[sel[1]].pts,ca=colOf(sel[0]),cb=colOf(sel[1]);var L=function(x,y,c,vv,cl){return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" class="ptlab'+(cl?' '+cl:'')+'" fill="'+c+'">'+vv+'</text>';};CKc.forEach(function(e,i){var yA=cY(pa[i]),yB=cY(pb[i]),x=cX(i);if(Math.abs(yA-yB)>=24){labels+=L(x,yA-11,ca,pa[i])+L(x,yB-11,cb,pb[i]);}else if(Math.max(yA,yB)>H-mB-22){var yt=Math.min(yA,yB)-11;labels+=L(x-7,yt,ca,pa[i],'l')+L(x+7,yt,cb,pb[i],'r');}else{labels+=yA<=yB?L(x,yA-11,ca,pa[i])+L(x,yB+17,cb,pb[i]):L(x,yA+17,ca,pa[i])+L(x,yB-11,cb,pb[i]);}});}
+    var plot='<svg class="csvg" width="'+(plotW+endPad)+'" height="'+H+'">'+g+selrect+xl+band+lines+labels+hits+'</svg>';
+    var ltbl='<div class="cmp-ltbl"><div class="lh">Update</div>'+sel.map(function(b){return '<div class="lr" style="--c:'+colOf(b)+'"><span class="sw"></span><b style="font:700 13px var(--mono);color:var(--fg)">'+b+'</b> '+DATA.riders[b].name+'</div>';}).join('')+(sel.length===2?'<div class="lg">Gap</div>':'')+'</div>';
+    var cols='';CKc.forEach(function(e,i){var cell='<div class="cc'+(i===snapAt?' on':'')+'" data-ck="'+i+'"><div class="cck">'+(e.kind==='gain'?'+1':e.kind==='lose'?'−1':e.l)+(e.lap!=null?'<span>L'+e.lap+'</span>':'')+'</div>';sel.forEach(function(b){var r=DATA.riders[b];cell+='<div class="ccr" style="--c:'+colOf(b)+'"><b>'+r.pts[i]+'</b><span>P'+r.rank[i]+'</span></div>';});if(sel.length===2){var gi=DATA.riders[sel[0]].pts[i]-DATA.riders[sel[1]].pts[i],lc=gi>0?colOf(sel[0]):gi<0?colOf(sel[1]):'#6b7178';cell+='<div class="ccg" style="color:'+lc+'">'+(gi===0?'—':(gi>0?'+':'−')+Math.abs(gi))+'</div>';}cols+=cell+'</div>';});
+    var rtbl='<div class="cmp-rtbl" style="grid-template-columns:repeat('+nck+','+colW+'px);width:'+plotW+'px">'+cols+'</div>';
+    body.innerHTML='<div class="cmp-fixed" style="width:'+labelW+'px">'+yaxis+ltbl+'</div><div class="cmp-scroll">'+plot+rtbl+'</div>';
+  }
+  function renderAll(){renderLeft();renderChart();}
+  document.getElementById('cmp-left').addEventListener('click',function(e){
+    var btn=e.target.closest('.lb');if(!btn)return;
+    var bib=+btn.dataset.bib,i=sel.indexOf(bib);
+    if(i>=0)sel.splice(i,1);else{if(sel.length>=MAX)return;sel.push(bib);}
+    renderAll();
+  });
+  document.getElementById('cmp-body').addEventListener('click',function(e){
+    var t=e.target.closest('[data-ck]');if(!t)return;
+    snapAt=+t.getAttribute('data-ck');renderAll();
+  });
+  window.addEventListener('resize',function(){if(!document.getElementById('v-evo').hidden)renderChart();});
+  // ---- bascule Live / Evolution ----
   var btns=document.querySelectorAll('[data-view]');
   btns.forEach(function(btn){btn.addEventListener('click',function(){
-    var v=btn.dataset.view;
+    var vv=btn.dataset.view;
     btns.forEach(function(b){b.classList.toggle('on',b===btn);});
-    document.getElementById('v-table').hidden=(v!=='table');
-    document.getElementById('v-evo').hidden=(v!=='evo');
-    document.getElementById('hint').textContent=hints[v];
+    document.getElementById('v-table').hidden=(vv!=='table');
+    document.getElementById('v-evo').hidden=(vv!=='evo');
+    document.getElementById('hint').textContent=hints[vv];
+    if(vv==='evo') renderAll();
   });});
 })();
 </script>
 </body></html>`;
 fs.writeFileSync(`${BASE}/maquette-standings.html`, html);
-console.log('maquette standings écrite · ' + rows.length + ' coureurs, ' + NS + ' sprints, ' + CK.length + ' checkpoints');
+console.log('maquette standings écrite · Live + Evolution · ' + rows.length + ' coureurs, ' + NS + ' sprints, ' + CK.length + ' checkpoints');

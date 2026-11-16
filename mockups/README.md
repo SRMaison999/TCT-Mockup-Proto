@@ -13,11 +13,11 @@ pour montrer les anomalies. **Ces écrans ne sont pas encore codés dans le prot
 | `maquette-tous-sprints-20.html` | Même écran avec **20 sprints** — montre le défilement horizontal et les flèches. |
 | `maquette-lapbylap.html` | Écran **« Lap by lap »** (ex-onglet « Crossings »), état **avant** correction, avec alertes. **Validé.** |
 | `maquette-lapbylap-shift.html` | « Lap by lap » **après** que l'opérateur a cliqué « Shift −1 lap ». |
-| `maquette-standings.html` | Écran **« Standings »**, deux vues basculables : **Table** (classement général finalisé, en anglais : points par sprint, tours gagnés/perdus en points, Finish order, exports) et **Evolution** (bump chart de l'évolution du rang au fil de la course — un checkpoint par sprint et par tour gagné/perdu). |
+| `maquette-standings.html` | Écran **« Standings »**, une page, deux vues basculables (hand-off §9.4), **validé le 16 novembre 2026** : **Live** (le classement complet finalisé, en anglais : points par sprint, tours gagnés/perdus en points, Finish order, exports) et **Evolution** (vue « Compare » : le classement à l'instant choisi sert de sélecteur, on suit jusqu'à 4 coureurs, le graphe montre leurs points dans le temps et l'écart, clic sur un moment pour re-classer ; axe + noms figés au défilement). Rendu client (JS embarqué). |
 | `maquette-passings.html` | Écran **« Passings »** (relevé brut des capteurs) repensé, **validé le 16 novembre 2026**. Colonnes reprises de la feuille Race log : **Daytime · Race time · Lap · Type · Location · Rider · Event**. Deux familles — *Transponder* (3 boucles, trait plein) et *Timing pulse* (5 tape switches, trait tireté) ; **couleur par position** sur toute la ligne (Finish / 200 m / Pursuit B / 100 m / Pursuit A) ; anomalies (contact sans lecture / lecture sans contact) en orange ; filtres cliquables **Type** + **Location** et Loop health. |
 | `gen-tous-sprints.js` | Génère les deux maquettes de sprints depuis `sprints.json` + `flags.js`. |
 | `gen-lapbylap.js` | Génère les deux maquettes « Lap by lap » (`buildPage(false)` = avant, `buildPage(true)` = après shift). |
-| `gen-standings.js` | Génère la maquette Standings (Table + Evolution) depuis `sprints.json` + `flags.js`. |
+| `gen-standings.js` | Génère la maquette Standings (Live + Evolution/Compare) depuis `sprints.json` + `flags.js`. |
 | `gen-passings.js` | Génère la maquette Passings. Les lectures sont **illustratives** (bâties sur les coureurs réels + temps de tour réalistes + deux anomalies posées à la main) : le prototype n'expose pas de relevé brut dans un fichier. |
 | `sprints.json` | Résultats réels des 6 sprints de la course de test (palier 1), récupérés via Playwright. |
 
