@@ -2313,3 +2313,41 @@ passage n'est jugé qu'une fois.
 
 Un sprint enregistré à la main et le sprint final lisent `S.passes`, qui ne porte pas la marque :
 ces deux cas retombent sur l'inéligibilité de l'instant, comme avant. Son point 195.
+
+
+## §55 · Le classement au dessin validé, et le type de course (build 211)
+
+Première session d'intégration des maquettes (`mockups/PLAN-SESSIONS.md`, S1). Elle rebranche
+l'onglet `Standings` sur le dessin validé le 16 novembre 2026 et pose le **type de course**. Ses
+règles sont les points **204** et **205** de `regles-operateur.md` ; les mesures, `mesures.md` §66.
+
+**Le type de course.** `CFG` porte deux champs de plus : `type` (`'qualification'` ou `'final'`) et
+`advance` (le nombre de qualifiés). Ils naissent sur `final` / `10` dans `DEF`, se gardent avec les
+autres réglages (`saveSetup` / `loadSetup`, clé `tct.sim.setup`) et voyagent donc d'une course à la
+suivante comme la piste et la liste de départ. Le champ de la barre du haut est `#rtype`, bâti sur
+les classes `srcrow` / `ifk` / `srcv` / `ifstep` / `ifsb` déjà posées pour les provenances des tours
+restants ; son style vit dans le bloc `<style>` du mixed, jamais dans `styles.css`, partagé.
+
+`syncRaceType()` le tient à jour et il est appelé depuis **`render()`**, à côté de `syncArm()` — et
+non depuis `renderRail`/`syncSub` comme `Laps` et `Sprints`. La raison est mesurée : `render()`
+n'appelle `renderRail()` que si le rail du simulateur est **ouvert** (`if (railDirty &&
+!$('#rail').hidden)`), si bien qu'un champ posé dans la barre du haut, elle toujours à l'écran,
+n'aurait jamais reçu son verrou une fois le rail replié (`pitfalls.md` D31).
+
+**Le tour d'un gain ou d'une perte.** `S.refiles[bib][kind]` — le registre qui sert déjà à défaire
+un gain de tour — porte un champ `lap` de plus. `addLap(bib, kind, who, since, lap)` l'inscrit, et
+`applyLap` le transmet ; les deux actions de proposition passent `p.lap`, le tour de la **jonction**
+que la proposition porte, tandis qu'une action prise à la main sur la timeline n'a pas de tour à
+elle et retombe sur `dispLap()`. `subLap` dépile le registre, donc la liste des tours reste juste
+après une correction : il n'y a pas de second endroit à tenir.
+
+**Le modèle.** `RIDERS` passe à six champs, `[dossard, nom, nation, couleur, sombre, prénom]`, et
+le coureur de `S.riders` porte `first`. Les prénoms sont ceux de la maquette validée. `loadSetup`
+repêche le prénom par dossard pour une liste de départ gardée **avant** que le champ n'existe :
+sans cela, l'opérateur qui a déjà réglé sa liste n'en verrait aucun.
+
+**Le rendu.** `renderStandingsTab()` rend un `.sttbl` qui porte `--ns`, le nombre de sprints, d'où
+la grille tire la largeur de sa bande de sprints. Les points par sprint viennent de `spPoints(k)`
+pour les sprints ouverts, les tours de `standings()`, qui rend maintenant `gainedLaps` et
+`lostLaps`. La ligne de coupe est une ligne de plus, posée après le rang `CFG.advance`, et les
+lignes au-delà portent `elim`. Les coureurs retirés restent en bas, sans rang, comme avant.

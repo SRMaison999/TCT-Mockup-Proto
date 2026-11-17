@@ -776,3 +776,22 @@ pris contre un coureur à **126,6 m**, soit un demi-tour : l'arrondi a transform
 entiers de leur écart et regarder **ce qui reste**. C'est leur distance l'un de l'autre sur la
 piste. Si ce reste n'est pas de l'ordre de la longueur d'un groupe, les deux coureurs ne se
 suivent pas et la décision ne tient pas.
+
+
+### D31 · Un champ de la barre du haut ne peut pas se tenir à jour depuis le rail
+
+Le type de course (build 211) est un réglage de course, comme `Laps` et `Sprints` : il se bloque
+dès que la course est partie. Son verrou a d'abord été posé où ceux de `Laps` et de `Sprints` sont
+posés, dans `syncSub()`, appelé par `renderRail()`. Mesuré au palier 2 : course partie, rail du
+simulateur **replié**, le mot-clé et ses deux pas restaient cliquables — et `#cfglaps` restait
+`disabled: false` lui aussi.
+
+La cause est dans `render()` : `if (railDirty && !$('#rail').hidden) renderRail();`. Le rail replié,
+`renderRail` ne tourne pas, donc `syncSub` non plus. Pour `Laps` et `Sprints` cela ne se voit pas —
+ils sont **dans** le rail, et un contrôle qu'on ne voit pas n'a pas besoin d'être grisé. Pour un
+champ de la barre du haut, qui est toujours à l'écran, le verrou ne venait jamais.
+
+Retenu : **un contrôle rendu hors du rail se synchronise depuis `render()`**, pas depuis
+`renderRail`. Et plus généralement, quand on copie le mécanisme d'un contrôle voisin, vérifier que
+la fonction qui le tient à jour tourne aussi là où le nouveau contrôle vit. Le test qui l'a attrapé
+lisait `disabled` **le rail replié** : rail ouvert, tout paraissait juste.

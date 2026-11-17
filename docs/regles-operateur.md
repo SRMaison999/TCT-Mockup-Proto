@@ -2867,3 +2867,56 @@ filtre, aucun test logique, aucun sélecteur CSS ne s'en servait, donc aucun com
 La colonne Type, large de 72 px, est élargie à 118 px pour le libellé plus long — dans le bloc
 `<style>` propre à chaque prototype (le base n'en avait pas, il en reçoit un), jamais dans le
 `styles.css` partagé, laissé intact.
+
+
+### 204 · Le classement : prénom et nom, les points de tour avec leurs tours, « Finish order » · 15 novembre 2026
+
+Ses règles, relevées à la validation de la maquette `mockups/maquette-standings.html` et consignées
+ici au moment de l'intégration, comme `mockups/HANDOVER.md` §5 le demandait :
+
+> **Classement (Standings)** : la colonne d'arrivée s'appelle **« Finish order »** ; les colonnes
+> Lap affichent les **points** (±20 par tour) avec les tours, pas le nombre de tours ; points de
+> sprint et de tour en **pastilles** ; le classement affiche **prénom + nom** (le modèle doit
+> porter un champ prénom).
+
+> **Toute l'interface est en anglais.**
+
+**Codé au build 211** (`timeline-prototype_mixed.html`, onglet `Standings`). La ligne porte, de
+gauche à droite et serrée, le rang, le dossard, le drapeau, le code pays, le prénom et le NOM, puis
+le **total en gros** ; viennent ensuite une colonne par sprint (`S1 … F`) en pastille ambrée, les
+colonnes `Lap +` et `Lap −` avec la pastille de points (`+20` verte, `−20` rouge) suivie des tours
+où c'est arrivé (`L19, L33, L48`), le `Finish order` en ordinal, et le statut. Le vide part à
+droite. Le dessin est celui de sa maquette, les couleurs sont les tokens du prototype.
+
+Les **prénoms** sont relevés sur sa maquette validée, pas inventés : le modèle n'avait que le nom
+de famille, et sa table de départ porte désormais un sixième champ. Un coureur ajouté à la main
+n'en a pas, et sa ligne ne porte alors que son nom.
+
+Le **tour** de chaque gain et de chaque perte est celui de la **jonction**, celui que la
+proposition portait, et non celui où l'opérateur la valide — une proposition reste affichée jusqu'à
+ce qu'il la tranche (§4), et l'écart entre les deux se compte en dizaines de tours (`mesures.md`
+§66).
+
+
+### 205 · Le type de course est dans la barre du haut · 17 novembre 2026
+
+Il fallait savoir où poser le réglage qui dit si la course est une **manche de qualification**, où
+les N premiers passent au tour suivant, ou une **finale**, sans coupe ni place qualificative. La
+question lui a été posée en coureurs : seize au départ de la course de test, la coupe après le
+dixième sur sa maquette, et le champ à côté de `Laps 40` et `Sprints 4` dans le rail du simulateur.
+Sa réponse, mot pour mot :
+
+> « Dans la barre du haut »
+
+**Codé au build 211.** Le champ se place **juste après les six onglets et avant `ARM START`**. Il
+prend la forme des provenances des tours restants, qui vivent déjà dans cette barre : un mot-clé,
+une valeur, deux pas. Il lit `FINAL` — et alors ni nombre ni coupe — ou `QUALIF · TOP 10`, en
+ambre. Un clic sur le mot-clé passe de l'un à l'autre, les deux pas règlent le nombre de qualifiés.
+
+Comme `Laps` et `Sprints`, il **ne se touche plus une fois la course partie** : c'est ce qui arrive
+déjà à ses deux voisins, et le type de course se fixe avant le départ. Il se garde avec les autres
+réglages, et le classement en tire sa **ligne de coupe** : un trait tireté ambré après la place N,
+`Qualification cut · top N advance to the next round`, et les éliminés atténués en dessous.
+
+Il naît sur `FINAL`, qui est l'écran d'aujourd'hui : une course déjà réglée ne change pas tant que
+l'opérateur ne le pose pas lui-même sur `QUALIF`.

@@ -39,12 +39,64 @@
 .stage{flex:1 1 auto;min-height:0;display:flex;gap:10px}
 .bar{height:40px;gap:8px}
 .bar .logtabs{display:inline-flex;align-self:stretch;flex:0 0 auto;order:1}
-.bar #barctl{order:2}
-.bar #undo{order:3}
-.bar .sp{order:4}
-.bar .bld{order:5;font-size:13px;color:var(--muted)}
-.bar #simtransport{order:6}
-.bar #railshow{order:7}
+.bar #rtype{order:2}
+.bar #barctl{order:3}
+.bar #undo{order:4}
+.bar .sp{order:5}
+.bar .bld{order:6;font-size:13px;color:var(--muted)}
+.bar #simtransport{order:7}
+.bar #railshow{order:8}
+/* LE TYPE DE COURSE, dans la barre du haut (l'opérateur, 17 novembre 2026 : « Dans la barre du haut »), juste après
+   les onglets et avant ARM START. Sa forme est celle des provenances des tours restants, qui vivent déjà dans cette
+   barre : un mot-clé, une valeur, deux pas. En finale il n'y a ni nombre de qualifiés ni coupe, donc les pas s'en vont. */
+.bar #rtype{flex:0 0 auto;gap:6px}
+#rtype .ifk{background:0;border:0;padding:0;font:600 11px var(--sans);letter-spacing:.08em;color:var(--muted);cursor:pointer;flex:0 0 auto}
+#rtype .ifk:hover{color:var(--fg)}
+#rtype.qual .ifk{color:var(--warn)}
+#rtype .ifstep{display:none;gap:3px;align-items:center}
+#rtype.qual .ifstep{display:inline-flex}
+#rtype .ifk:disabled,#rtype .ifsb:disabled{cursor:default;opacity:.55}
+
+/* LE CLASSEMENT, AU DESSIN VALIDÉ LE 16 NOVEMBRE 2026 (mockups/maquette-standings.html, vue Live). Relevé sur la
+   maquette : bloc de gauche resserré, le total juste après le nom, une colonne par sprint en pastille ambrée, les
+   points de tour en pastille suivis des tours où c'est arrivé, Finish order en ordinal, la ligne de coupe en
+   qualification et les éliminés atténués. Les textes et les accents sont les tokens du prototype — styles.css est
+   partagé par les trois prototypes, donc tout vit ici. La largeur des colonnes est celle de la maquette : à six
+   sprints la ligne dépasse de peu un écran de 1440 px et défile latéralement, comme la maquette l'annonce. */
+.sttbl{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto}
+.sttbl .hd,.sttbl .row{display:grid;grid-template-columns:44px 52px 30px 48px 248px 80px 14px calc(var(--ns) * 58px) 14px 176px 176px 14px 124px minmax(120px,1fr);gap:9px;align-items:center;padding:0 10px}
+.sttbl .hd{height:30px;flex:0 0 auto;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line2)}
+.sttbl .hd span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sttbl .hd .r{text-align:right}
+.sttbl .hd .c{text-align:center}
+.sttbl .hd .fo{white-space:normal;line-height:1.05;text-align:center}
+.sttbl .row{min-height:44px;flex:0 0 auto;border-bottom:1px solid var(--line);font-size:14px}
+.sttbl .row:nth-child(even){background:#00000022}
+.sttbl .row.elim,.sttbl .row.wd{opacity:.46}
+.sttbl .cutrow{display:flex;align-items:center;gap:12px;height:30px;flex:0 0 auto;padding:0 12px}
+.sttbl .cutrow span{font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--warn);white-space:nowrap}
+.sttbl .cutrow::before,.sttbl .cutrow::after{content:"";height:0;border-top:2px dashed var(--warn);flex:1 1 auto}
+.sttbl .rk{font:600 15px var(--mono);color:var(--muted);text-align:right}
+.sttbl .chip{min-width:34px;height:25px;font-size:15px}
+.sttbl .flagw .flag{width:27px;height:17px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.sttbl .noc{font:600 14px var(--mono);letter-spacing:.03em;color:var(--dim)}
+.sttbl .nm{font:600 15px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sttbl .nm .fn{color:var(--dim);font-weight:500}
+.sttbl .nm b{color:var(--muted);font-weight:700}
+.sttbl .tot{font:700 21px var(--mono);color:var(--fg);text-align:right;font-variant-numeric:tabular-nums}
+.sttbl .sep{height:70%;border-left:1px solid var(--line)}
+.sttbl .sprints,.sttbl .hdsprints{display:grid;grid-template-columns:repeat(var(--ns),1fr);gap:2px}
+.sttbl .hdsprints span{text-align:center}
+.sttbl .sprints .sp{min-width:0;padding:4px 0;border-radius:4px;text-align:center;font:500 15px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
+.sttbl .sprints .sp.on{color:var(--fg);font-weight:700;background:#39311c}
+.sttbl .lap{display:flex;align-items:center;gap:7px;flex-wrap:wrap;line-height:1.3;font:500 13px var(--mono);color:var(--dim)}
+.sttbl .lpill{display:inline-block;padding:2px 9px;border-radius:5px;font:700 14px var(--mono);font-variant-numeric:tabular-nums}
+.sttbl .lpill.up{color:var(--bg);background:var(--good)}
+.sttbl .lpill.down{color:var(--muted);background:var(--crit)}
+.sttbl .lap .lp{color:var(--dim);font-size:12px}
+.sttbl .lap .z{color:var(--dim);font-size:16px;opacity:.5}
+.sttbl .fin{font:600 15px var(--mono);color:var(--muted);text-align:center}
+.sttbl .stt{font:500 12px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bar .gone{display:none}        /* gardés dans le document pour leurs écouteurs, jamais dessinés */
 .lgtab{align-self:stretch}
 #logshow,#logclose{display:none}
@@ -421,6 +473,12 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
            « Dans la barre du haut »). Les mêmes éléments, les mêmes identifiants, les mêmes
            écouteurs : seul leur endroit a changé. La paire de provenances tient sur deux lignes
            de 15 px, parce que la barre fait 36 px de haut et qu'elles en faisaient 22 chacune. -->
+      <!-- LE TYPE DE COURSE. L'opérateur, 17 novembre 2026 : « Dans la barre du haut ». Il prend la forme des
+           provenances des tours restants, déjà dans cette barre, et se bloque au départ comme Laps et Sprints. -->
+      <span class="srcrow" id="rtype">
+        <button class="ifk" id="rtypek">FINAL</button>
+        <span class="ifstep"><button class="ifsb" data-rtype="-1">&minus;</button><span class="srcv" id="rtypev">10</span><button class="ifsb" data-rtype="1">+</button></span>
+      </span>
       <span id="barctl">
         <button class="startb barb" id="startbtn">ARM START</button>
         <button class="startb finb barb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
@@ -633,8 +691,13 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '210';
-const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
+const BUILD = '211';
+// LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
+// `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
+// ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
+// `final` — c'est l'écran d'aujourd'hui, et une course déjà réglée ne change pas tant que l'opérateur ne le pose pas
+// lui-même sur `qualification`.
+const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15, type: 'final', advance: 10 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
 // The tape switches as installed: one in the middle of each of the three loops, plus the start and the intermediate
@@ -662,10 +725,14 @@ const sprintLap = k => Math.round(k * LAPS / NSPRINTS);
 const sprintNumOf = lap => { for (let k = 1; k <= NSPRINTS; k++) if (sprintLap(k) === lap) return k; return 0; };
 const nextSprintNum = lap => { for (let k = 1; k <= NSPRINTS; k++) if (sprintLap(k) >= lap) return k; return NSPRINTS; };
 const RIDERS = [
-  [52,'ROSSI','ITA','#0284c7'],[12,'HUBER','SUI','#c8102e'],[7,'BRAND','NED','#f97316',1],[61,'NAVARRO','COL','#eab308',1],
-  [18,'SANTOS','POR','#9f1239'],[3,'MOREAU','FRA','#1d4ed8'],[9,'KOVAC','SLO','#16a34a'],[1,'RIVERA','ESP','#d62828'],
-  [67,'LEHMANN','GER','#4b5563'],[58,'PETROV','KAZ','#06b6d4',1],[70,'SILVA','BRA','#22c55e',1],[46,'DE WIT','BEL','#111827'],
-  [23,'IVERSEN','DEN','#ef4444'],[11,'TANAKA','JPN','#ec4899'],[4,'WALSH','GBR','#1e3a8a'],[15,"O'NEILL",'IRL','#15803d']
+  // [dossard, nom, nation, couleur, sombre, prénom]. Les prénoms sont RELEVÉS SUR LA MAQUETTE VALIDÉE
+  // (mockups/gen-standings.js, 16 novembre 2026), pas inventés ici : le classement les affiche depuis sa règle du
+  // 15 novembre 2026, et le modèle n'avait que le nom de famille. Un coureur ajouté à la main n'en a pas, et sa ligne
+  // ne porte alors que son nom.
+  [52,'ROSSI','ITA','#0284c7',0,'Luca'],[12,'HUBER','SUI','#c8102e',0,'Marco'],[7,'BRAND','NED','#f97316',1,'Daan'],[61,'NAVARRO','COL','#eab308',1,'Juan'],
+  [18,'SANTOS','POR','#9f1239',0,'João'],[3,'MOREAU','FRA','#1d4ed8',0,'Julien'],[9,'KOVAC','SLO','#16a34a',0,'Luka'],[1,'RIVERA','ESP','#d62828',0,'Carlos'],
+  [67,'LEHMANN','GER','#4b5563',0,'Max'],[58,'PETROV','KAZ','#06b6d4',1,'Dmitriy'],[70,'SILVA','BRA','#22c55e',1,'Lucas'],[46,'DE WIT','BEL','#111827',0,'Lars'],
+  [23,'IVERSEN','DEN','#ef4444',0,'Mads'],[11,'TANAKA','JPN','#ec4899',0,'Yuki'],[4,'WALSH','GBR','#1e3a8a',0,'Tom'],[15,"O'NEILL",'IRL','#15803d',0,'Liam']
 ];
 // CE QUE L'OPÉRATEUR A RÉGLÉ LUI RESTE. Ses mots, 28 octobre 2026 : « Les paramètres du simulateur ne doivent pas se
 // remettre sur des valeurs codées en dur à chaque nouvelle course. Si un utilisateur modifie des noms, des nations,
@@ -684,7 +751,7 @@ function saveSetup() {
   }
   try {
     localStorage.setItem(SKEY, JSON.stringify({
-      cfg: { track: CFG.track, laps: CFG.laps, sprints: CFG.sprints, gap: CFG.gap, pace: CFG.pace },
+      cfg: { track: CFG.track, laps: CFG.laps, sprints: CFG.sprints, gap: CFG.gap, pace: CFG.pace, type: CFG.type, advance: CFG.advance },
       riders: RIDERS, tp: TPMAP ? Object.entries(TPMAP).map(([b, id]) => [+b, id]) : null, spare: TPSPARE
     }));
   } catch (e) { /* storage full or blocked: the settings hold for this session only */ }
@@ -692,8 +759,16 @@ function saveSetup() {
 function loadSetup() {
   let d; try { d = JSON.parse(localStorage.getItem(SKEY) || 'null'); } catch (e) { return; }
   if (!d) return;
-  if (d.cfg) for (const k of ['track', 'laps', 'sprints', 'gap', 'pace']) if (typeof d.cfg[k] === 'number') CFG[k] = d.cfg[k];
-  if (Array.isArray(d.riders) && d.riders.length >= 2) { RIDERS.length = 0; for (const r of d.riders) RIDERS.push(r); }
+  if (d.cfg) for (const k of ['track', 'laps', 'sprints', 'gap', 'pace', 'advance']) if (typeof d.cfg[k] === 'number') CFG[k] = d.cfg[k];
+  if (d.cfg && (d.cfg.type === 'qualification' || d.cfg.type === 'final')) CFG.type = d.cfg.type;
+  if (Array.isArray(d.riders) && d.riders.length >= 2) {
+    // Une liste de départ gardée AVANT que le prénom n'existe n'en porte pas. Le classement l'affiche désormais (sa
+    // règle du 15 novembre 2026), et sans ce repêchage l'opérateur qui a déjà réglé sa liste ne verrait aucun prénom.
+    // Seul le prénom est repris, par dossard, depuis la table ci-dessus ; le reste de sa ligne est gardé tel quel.
+    const first = {}; for (const r of RIDERS) if (r[5]) first[r[0]] = r[5];
+    RIDERS.length = 0;
+    for (const r of d.riders) RIDERS.push(r.length < 6 && first[r[0]] ? [r[0], r[1], r[2], r[3], r[4] || 0, first[r[0]]] : r);
+  }
   if (Array.isArray(d.tp)) { TPMAP = {}; for (const [bib, id] of d.tp) TPMAP[bib] = id; }
   if (Array.isArray(d.spare)) TPSPARE = d.spare;
 }
@@ -730,8 +805,8 @@ function reset() {
     cassureS: GROUP_GAP_S, veloM: BIKE_L }) : null;
   S = {
     t: 0, factor: 1, finished: false,
-    riders: RIDERS.map(([bib, name, nat, color, dk], i) => ({
-      bib, name, nat, color, dk: !!dk,
+    riders: RIDERS.map(([bib, name, nat, color, dk, first], i) => ({
+      bib, name, nat, color, dk: !!dk, first: first || '',
       dist: -40 + i * 2.2, offset: 16.5 - i * 2.2, lapTrue: 0, mode: 'bunch', spd: CFG.pace,
       rec: null, lastAt: [], lastRel: 0, inBunchSince: null, inBunchPrev: false,   // inBunchPrev: was he in the bunch's cluster on the previous frame? the lap event is the frame that goes false → true
     })),
@@ -1760,8 +1835,8 @@ function detect(G, M) {
           + (gaining ? 'caught BIB ' + c.avec + ', the last rider of the bunch' : 'caught by BIB ' + c.avec + ', the first rider of the bunch')
           + ' at Lap ' + lap + ' · ' + c.ecarts.map(e => e.toFixed(2) + ' s').join(', ') + ' · validate per rider or all',
         actions: [
-          ...bibs.map(b => ({ label: (gaining ? '+' : '−') + '20 pts · BIB ' + b, primary: true, bib: b, run: p => applyLap([b], p.delta, 'validated proposal', p.t) })),
-          ...(bibs.length > 1 ? [{ label: (gaining ? '+' : '−') + '20 pts · all ' + bibs.length, primary: true, run: p => applyLap([...p.bibs], p.delta, 'validated proposal', p.t) }] : []),
+          ...bibs.map(b => ({ label: (gaining ? '+' : '−') + '20 pts · BIB ' + b, primary: true, bib: b, run: p => applyLap([b], p.delta, 'validated proposal', p.t, p.lap) })),
+          ...(bibs.length > 1 ? [{ label: (gaining ? '+' : '−') + '20 pts · all ' + bibs.length, primary: true, run: p => applyLap([...p.bibs], p.delta, 'validated proposal', p.t, p.lap) }] : []),
           { label: 'Dismiss', run: p => { const key = p.key; S.dismissed[key] = true; logEvent('OP', 'Dismissed: ' + bibList(p.bibs) + (gaining ? ' gaining' : ' losing') + ' 20 points', true, () => { delete S.dismissed[key]; logEvent('OP', 'Dismissal withdrawn · the proposal may come back · reversal', true); }); } },
         ] });
     }
@@ -1832,11 +1907,18 @@ function refile(bib, delta, t0, reverse) {
   // L'inéligibilité suit le passage de tour en tour : c'est celle de la lecture, pas celle d'aujourd'hui.
   for (const c of moved) { (S.cross[c.k] = S.cross[c.k] || []).push({ bib: c.bib, t: c.t, n: c.n, mark: c.mark || null, inelig: !!c.inelig }); S.cross[c.k].sort((a, b) => a.t - b.t); }
 }
-function addLap(bib, kind, who, since) {
+function addLap(bib, kind, who, since, lap) {
   const l = lapsOf(bib), t0 = since == null ? S.t : since, delta = kind === 'gained' ? 1 : -1, from = l[kind];
   l[kind]++; syncLap(bib);
   refile(bib, delta, t0, false);
-  (S.refiles[bib] = S.refiles[bib] || { gained: [], lost: [] })[kind].push({ t0, delta });
+  // LE TOUR du gain ou de la perte, pour les colonnes `Lap +` et `Lap −` du classement : sa règle du 15 novembre 2026
+  // y veut les points ET les tours où c'est arrivé. Il s'inscrit sur le registre qui sert déjà à défaire un gain, que
+  // `subLap` dépile — la liste des tours reste donc juste après une correction, sans second endroit à tenir.
+  // Le tour inscrit est celui de la JONCTION, que la proposition porte déjà, et non celui de la validation : une
+  // proposition reste affichée jusqu'à ce que l'opérateur la tranche (§4), et mesuré sur le palier 2 la jonction du
+  // 7, du 18 et du 61 au tour 21 s'inscrivait au tour 50, celui du clic. Une action prise à la main sur la timeline
+  // n'a pas de tour à elle : c'est alors celui où l'opérateur agit.
+  (S.refiles[bib] = S.refiles[bib] || { gained: [], lost: [] })[kind].push({ t0, delta, lap: lap == null ? dispLap() : lap });
   logEvent('LAPS', 'BIB ' + bib + ' · laps ' + kind + ' ' + from + ' → ' + l[kind] + ' · effect Lap ' + dispLap() + ' · ' + who, true);
   for (const p of S.proposals) if (p.kind === 'lap') p.bibs = p.bibs.filter(b => b !== bib);
   dropProposals(p => p.kind === 'lap' && !p.bibs.length);
@@ -1848,7 +1930,7 @@ function subLap(bib, kind, who) {
   if (rf) refile(bib, -rf.delta, rf.t0, true);
   logEvent('LAPS', 'BIB ' + bib + ' · laps ' + kind + ' ' + from + ' → ' + l[kind] + ' · effect Lap ' + dispLap() + ' · ' + who, true);
 }
-function applyLap(bibs, delta, who, since) { for (const b of bibs) addLap(b, delta > 0 ? 'gained' : 'lost', who, since); }
+function applyLap(bibs, delta, who, since, lap) { for (const b of bibs) addLap(b, delta > 0 ? 'gained' : 'lost', who, since, lap); }
 
 
 function designateLeader(bib, how) {
@@ -2576,6 +2658,7 @@ function render() {
   // action (dirty), or on a hover crossing from the timeline to the oval (ovalDirty) — not on every frame at rest
   if (dirty || ovalDirty || (S.started && S.factor > 0 && !S.finished)) { renderStrip(G); renderOval(G, M); ovalDirty = false; }
   syncArm();
+  syncRaceType();
   lastG = G;   // the rail reads the blocks from here: computeGroups has side effects and must not be called again (H11)
   if (railDirty && !$('#rail').hidden) { renderRail(); railDirty = false; }
   tickRail();
@@ -2883,6 +2966,19 @@ document.body.classList.add('lay-side');
 // plus affiché en permanence (l'opérateur, 29 octobre 2026).
 function logOpen(o) { $('#log').hidden = !o; $('#logshow').classList.toggle('on', o); if (o) { dirty = true; render(); } }
 $('#logshow').addEventListener('click', () => logOpen($('#log').hidden));
+// LE TYPE DE COURSE : le mot-clé bascule qualification <-> finale, les deux pas règlent le nombre de qualifiés. Comme
+// Laps et Sprints, il ne se touche plus une fois la course partie — il se fixe avant elle.
+$('#rtype').addEventListener('click', e => {
+  if (S.started) return;
+  const step = e.target.closest('[data-rtype]');
+  if (step) {
+    const n = Math.max(1, Math.min(S.riders.length - 1, CFG.advance + (+step.dataset.rtype)));
+    if (n === CFG.advance) return;
+    CFG.advance = n;
+  } else if (e.target.closest('#rtypek')) CFG.type = CFG.type === 'qualification' ? 'final' : 'qualification';
+  else return;
+  saveSetup(); dirty = true; render();
+});
 $('#logclose').addEventListener('click', () => logOpen(false));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#log').hidden) logOpen(false); });
 $('#logtabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; logTab = b.dataset.tab; $('#logtabs').querySelectorAll('[data-tab]').forEach(x => { x.classList.toggle('on', x === b); x.classList.toggle('quiet', x !== b); }); $('#loghint').textContent = { cross: 'finish-line order of every lap · leader first · newest lap first', dec: 'facts only · newest first', sprints: 'every sprint as judged · click one to open it', stand: 'points: sprints 5-3-2-1, final ×2, laps ±20 · ties: place in the final sprint' }[logTab]; dirty = true; render(); });
@@ -3059,7 +3155,8 @@ function standings() {
     let spr = 0, wins = 0;
     for (let k = 1; k <= NSPRINTS; k++) { if (!spStarted(k)) continue; const p = spPoints(k)[r.bib] || 0; spr += p; const f = spFull(k)[0]; if (f && f.bib === r.bib && !f.held && !f.empty) wins++; }
     const l = lapsOf(r.bib), w = S.withdrawn.get(r.bib), fe = spStarted(NSPRINTS) ? spFull(NSPRINTS).find(e => e.bib === r.bib) : null;
-    return { r, spr, wins, gained: l.gained, lost: l.lost, lapPts: LAP_PTS * (l.gained - l.lost), total: spr + LAP_PTS * (l.gained - l.lost), fin: fe ? fe.place : null, wd: !!w, status: w ? w.code + ' · Lap ' + w.lap : S.noTp.has(r.bib) ? 'no transponder' : '' };
+    const rf = S.refiles[r.bib] || { gained: [], lost: [] }, rfLaps = k => (rf[k] || []).map(x => x.lap).filter(x => x != null);
+    return { r, spr, wins, gained: l.gained, lost: l.lost, gainedLaps: rfLaps('gained'), lostLaps: rfLaps('lost'), lapPts: LAP_PTS * (l.gained - l.lost), total: spr + LAP_PTS * (l.gained - l.lost), fin: fe ? fe.place : null, wd: !!w, status: w ? w.code + ' · Lap ' + w.lap : S.noTp.has(r.bib) ? 'no transponder' : '' };
   });
   rows.sort((a, b) => (a.wd - b.wd) || (b.total - a.total) || ((a.fin || 1e9) - (b.fin || 1e9)) || (a.r.bib - b.r.bib));
   return rows;
@@ -3318,12 +3415,26 @@ function renderSprintsTab() {
   if (S.outputs.length) h += '<div class="lrow"><span class="t"></span><span class="k">OUTPUTS</span><span class="m" style="color:var(--dim)">TV · scoreboard · web · newest first</span></div>' + S.outputs.slice(0, 12).map(o => `<div class="outrow"><span>${fmtT(o.t)}</span><span class="k">S${o.k} · L${o.lap}</span><span class="m">${o.kind} · ${o.text}</span></div>`).join('');
   return h;
 }
+// LE CLASSEMENT GÉNÉRAL, au dessin validé le 16 novembre 2026. Ses règles du 15 novembre 2026 : la colonne d'arrivée
+// s'appelle « Finish order », les colonnes Lap portent les POINTS (±20 par tour) suivis des tours où c'est arrivé et
+// non le nombre de tours, les points de sprint et de tour sont en pastilles, le classement affiche prénom + nom.
+// En manche de qualification, une ligne de coupe sépare les qualifiés des éliminés, atténués.
+// Les coureurs retirés restent en bas, sans rang, comme avant : rien de ce côté n'a été redemandé.
 function renderStandingsTab() {
-  const rows = standings();
-  let h = '<div class="strow sthd"><span>#</span><span>BIB</span><span></span><span>Rider</span><span>spr</span><span class="up">gain</span><span class="down">lost</span><span>laps</span><span>total</span><span>final</span><span>status</span></div>';
+  const rows = standings(), qual = CFG.type === 'qualification';
+  const sprHd = Array.from({ length: NSPRINTS }, (_, i) => `<span>${i + 1 === NSPRINTS ? 'F' : 'S' + (i + 1)}</span>`).join('');
+  const lapCell = (n, laps, cls, sign) => n
+    ? `<span class="lpill ${cls}">${sign}${n * LAP_PTS}</span> <span class="lp">${laps.length ? 'L' + laps.join(', L') : ''}</span>`
+    : '<span class="z">·</span>';
+  let h = `<div class="sttbl" style="--ns:${NSPRINTS}"><div class="hd"><span class="r">#</span><span>Bib</span><span></span><span>NOC</span><span>Rider</span><span class="r">Total</span><span></span><span class="hdsprints">${sprHd}</span><span></span><span class="c">Lap +</span><span class="c">Lap &minus;</span><span></span><span class="c fo">Finish order</span><span>Status</span></div>`;
   let rank = 0;
-  for (const x of rows) { if (!x.wd) rank++; h += `<div class="strow"><span style="color:var(--muted)">${x.wd ? '' : rank}</span>${chip(x.r)}<span class="noc" style="color:var(--muted)">${x.r.nat}</span><span class="nm">${x.r.name}</span><span>${x.spr}</span><span class="up">${x.gained || ''}</span><span class="down">${x.lost || ''}</span><span>${x.lapPts ? (x.lapPts > 0 ? '+' : '') + x.lapPts : ''}</span><span class="tot">${x.total}</span><span style="color:var(--muted)">${x.fin ? ordinal(x.fin) : ''}</span><span class="stt">${x.status}</span></div>`; }
-  return h;
+  for (const x of rows) {
+    if (!x.wd) rank++;
+    const spr = Array.from({ length: NSPRINTS }, (_, i) => { const p = spStarted(i + 1) ? (spPoints(i + 1)[x.r.bib] || 0) : 0; return `<span class="sp${p ? ' on' : ''}">${p || '·'}</span>`; }).join('');
+    h += `<div class="row${x.wd ? ' wd' : qual && rank > CFG.advance ? ' elim' : ''}"><span class="rk">${x.wd ? '' : rank}</span>${chip(x.r)}<span class="flagw">${flag(x.r.nat)}</span><span class="noc">${x.r.nat}</span><span class="nm"><span class="fn">${x.r.first || ''}</span> <b>${x.r.name}</b></span><span class="tot">${x.total}</span><span class="sep"></span><span class="sprints">${spr}</span><span class="sep"></span><span class="lap">${lapCell(x.gained, x.gainedLaps, 'up', '+')}</span><span class="lap">${lapCell(x.lost, x.lostLaps, 'down', '−')}</span><span class="sep"></span><span class="fin">${x.fin ? ordinal(x.fin) : ''}</span><span class="stt">${x.status}</span></div>`;
+    if (qual && !x.wd && rank === CFG.advance) h += `<div class="cutrow"><span>Qualification cut · top ${CFG.advance} advance to the next round</span></div>`;
+  }
+  return h + '</div>';
 }
 logrows.addEventListener('click', e => { const t = e.target.closest('[data-spopen]'); if (t) { spOpen(+t.dataset.spopen); render(); } });
 $('#xbtns').addEventListener('click', e => { const b = e.target.closest('[data-export]'); if (!b) return; ({ sprints: exportSprints, standings: exportStandings, journal: exportJournal, trace: exportTrace })[b.dataset.export](); dirty = true; render(); });
@@ -3617,6 +3728,20 @@ function syncSub() {
   if (focused !== $('#cfglaps')) $('#cfglaps').value = LAPS;
   if (focused !== $('#cfgsprints')) $('#cfgsprints').value = NSPRINTS;
   if (focused !== $('#cfgpace')) $('#cfgpace').value = CFG.pace.toFixed(1);
+}
+// LE TYPE DE COURSE se tient à jour depuis render(), et non depuis renderRail comme Laps et Sprints : il vit dans la
+// barre du haut, qui est toujours à l'écran, alors que renderRail ne tourne que le rail du simulateur ouvert. Mesuré
+// au palier 2, rail replié et course partie : son mot-clé et ses deux pas restaient cliquables.
+function syncRaceType() {
+  const qual = CFG.type === 'qualification';
+  $('#rtype').classList.toggle('qual', qual);
+  $('#rtypek').textContent = qual ? 'QUALIF' : 'FINAL';
+  $('#rtypek').title = qual
+    ? 'Qualification round: the first ' + CFG.advance + ' advance to the next round. Click for a final.'
+    : 'Final: no cut, no qualifying place. Click for a qualification round.';
+  $('#rtypev').textContent = CFG.advance;
+  $('#rtypek').disabled = S.started;
+  $('#rtype').querySelectorAll('[data-rtype]').forEach(b => b.disabled = S.started);
 }
 
 // The simulator takes the width its open tab needs, and gives the rest back to the operator's screen. Only the

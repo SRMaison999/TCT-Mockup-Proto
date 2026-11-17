@@ -65,7 +65,7 @@ Tirée de `CLAUDE.md` et `docs/regles-operateur.md` §14 :
 
 ## 3. Le prototype cible
 
-**`timeline-prototype_mixed.html`** — c'est celui que l'opérateur utilise (build **210**). Page
+**`timeline-prototype_mixed.html`** — c'est celui que l'opérateur utilise (build **211**). Page
 HTML autonome, un seul fichier, aucun outil de build.
 
 - **Un seul gros script**, enfermé dans une IIFE `(() => { … })()`. L'état, le moteur et le rendu
@@ -113,7 +113,7 @@ sprints, Race log, fil commentateurs) ; le reste suit la langue de l'écran où 
 | `maquette-lapbylap.html` | `gen-lapbylap.js` | onglet `cross` — **Lap by lap** | validé |
 | `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | validé, §9.2 |
 | `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | validé |
-| `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | validé |
+| `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **Live intégré, build 211** ; Évolution en S2 |
 | `maquette-passings.html` | `gen-passings.js` | onglet `pass` — **Passings** | validé |
 | `maquette-scenarios.html` | `gen-scenarios.js` | **nouvel écran** — Scénarios de course | validé |
 | `maquette-feed.html` | `gen-feed.js` | **nouvel écran** — Fil commentateurs (CIS/MIS) | coque validée |
@@ -220,8 +220,12 @@ Attribut **fixé avant la course** (comme le nombre de tours et de sprints).
 
 Dans les maquettes, c'est porté par `const RACE = { type, advance }` dans `gen-standings.js` (la
 ligne de coupe du Live et du panneau Évolution), par la bagarre qualificative de
-`gen-scenarios.js`, et par le badge d'en-tête de `gen-feed.js`. À l'intégration, en faire un
-**réglage de course** unique, lu par les trois écrans.
+`gen-scenarios.js`, et par le badge d'en-tête de `gen-feed.js`.
+
+**C'est fait, au build 211** : le réglage unique est `CFG.type` (`'qualification'` ou `'final'`) et
+`CFG.advance`, posé par le champ `#rtype` de la **barre du haut** (l'opérateur, 17 novembre 2026 :
+« Dans la barre du haut »), gardé avec les autres réglages de course et bloqué dès le départ. Les
+Scénarios (S9) et le fil commentateurs (S10) le lisent de là — ils n'ont pas à le redéfinir.
 
 ---
 
@@ -248,6 +252,13 @@ ligne de coupe du Live et du panneau Évolution), par la bagarre qualificative d
 - **Renommage `READ` → `TRANSPONDER`** dans le journal des deux prototypes (builds 210 / 149),
   colonne Type élargie dans l'override de chaque fichier. Consigné en **règle #203** de
   `regles-operateur.md`. Ne pas refaire.
+- **S1 — Standings (Live) et type de course**, build 211. L'onglet `stand` rend le dessin validé
+  (rang · dossard · drapeau · NOC · prénom + nom · total, points par sprint en pastilles, `Lap +` /
+  `Lap −` en points suivis des tours, `Finish order`), avec la **ligne de coupe** en qualification.
+  Le modèle porte un **champ prénom**, `S.refiles` porte le **tour** de chaque gain et de chaque
+  perte, et `CFG.type` / `CFG.advance` portent le type de course. Règles **204** et **205**,
+  `architecture.md` §55, `mesures.md` §66, `pitfalls.md` D31. Ne pas refaire.
+  La vue **Évolution** et la bascule `Live / Evolution` restent à poser : c'est S2.
 
 ---
 

@@ -3967,3 +3967,48 @@ puis une troisième ligne quand la fenêtre est trop étroite, et ne force donc 
 À l'étroit, c'est l'ovale qui cède la place (264 px de large à 1024) ; la colonne du sprint garde
 son plancher de 500 px (largeur qu'il a autorisée le 29 octobre 2026, en dessous de laquelle la
 place du nom dans l'ordre du sprint tombe à zéro), et aucun ascenseur n'apparaît.
+
+
+## §66 · Build 211 — le classement, le tour du gain, et la barre du haut à 1440
+
+Course de test **palier 2** (« deux échappées, deux lâchés »), 60 tours de 250 m, 16 coureurs,
+jouée en entier à ×16, chaque proposition de ±20 validée dès qu'elle paraît.
+
+**Le tour inscrit était celui du clic, pas celui de la jonction.** Première course : les
+propositions sont restées affichées pendant que la course avançait, et les tours inscrits au
+registre valaient tous **50** — le tour où le bouton a été pressé. Les jonctions, elles, étaient aux
+tours **19, 21, 27 et 31**, portés par les propositions elles-mêmes. L'écart se comptait donc en
+dizaines de tours, et la colonne `Lap +` aurait annoncé un tour où il ne s'était rien passé.
+Corrigé en passant `p.lap` à `addLap` : seconde course, les tours inscrits sont **19, 21, 27, 31,
+33, 42, 44, 48, 53 et 60**, chacun égal au tour de sa proposition.
+
+**Le classement à l'arrivée**, relevé à l'écran (course jouée en qualification, top 10) :
+
+| Rang | Dossard | Coureur | Total | Lap + | Lap − |
+|---|---|---|---|---|---|
+| 1 | 18 | João SANTOS | 98 | +80 · L21, L31, L42, L53 | · |
+| 2 | 61 | Juan NAVARRO | 90 | +80 · L21, L31, L42, L53 | · |
+| 3 | 7 | Daan BRAND | 68 | +60 · L21, L31, L42 | · |
+| 4 | 12 | Marco HUBER | 61 | +40 · L19, L48 | · |
+| 10 | 58 | Dmitriy PETROV | 0 | · | · |
+| 16 | 70 | Lucas SILVA | −60 | · | −60 · L27, L44, L60 |
+
+La **ligne de coupe** tombe après le rang 10, elle lit `Qualification cut · top 10 advance to the
+next round`, et les **six** lignes en dessous passent à une opacité de **0,46** quand celles du
+dessus restent à 1.
+
+**Le champ de la barre du haut**, vérifié sur la couleur calculée et non sur la classe
+(`pitfalls.md` D17) : au repos il lit `FINAL` en `rgb(255, 250, 250)` — `--muted` — et ses deux pas
+sont `display: none` ; un clic sur le mot-clé donne `QUALIF` en `rgb(242, 163, 58)` — `--warn` — et
+les pas passent en `flex`. Deux pressions sur `+` mènent le nombre de 10 à 12. Une fois la course
+partie, rail du simulateur **replié**, le mot-clé et les deux pas sont `disabled`.
+
+**Les largeurs, à 1440 px.** La ligne du classement demande **1 486 px** pour les **1 375 px** du
+panneau à six sprints : elle défile latéralement de **111 px**, comme la maquette l'annonce pour
+quinze à vingt sprints.
+
+La barre du haut, elle, **débordait déjà** : son contenu demande **1 558 px** pour les **1 205 px**
+de sa boîte, soit 353 px de trop, sans rien de ce build. Le champ du type de course en ajoute
+**138** et porte le débordement à **491 px**. Les deux gros postes sont les six onglets (491 px) et
+le transport du simulateur (543 px) ; le numéro de build, `flex: 0 0 auto`, ne se laisse toujours
+pas couper (règle 74). C'est le poste `travaux.md` §27.

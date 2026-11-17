@@ -995,3 +995,25 @@ lui dans la timeline, et qui n'est pas de son groupe, n'a pas encore franchi la 
 
 Clos à la build 203 : les deux fenêtres avaient deux causes, et aucune n'était la scission du
 peloton. `docs/mesures.md` §61.
+
+
+## 27. La barre du haut déborde à 1440 — **à trancher**
+
+**Mesuré au build 211**, écran de 1440 px, rail du simulateur replié (`mesures.md` §66).
+
+Le contenu de la barre du haut demande **1 558 px** pour les **1 205 px** de sa boîte — 353 px de
+trop — et cela **avant** ce build : six onglets (491 px), transport du simulateur (543 px),
+`ARM START` et les tours restants (310 px), `Undo` (53 px), le numéro de build (23 px) et
+`Simulator` (80 px). Le champ du type de course ajoute **138 px** et porte le débordement à 491.
+
+Aucun de ces blocs ne se laisse rétrécir (`flex: 0 0 auto`), donc ce qui dépasse sort par la droite
+au lieu de se replier. Sa règle 202 du 11 novembre 2026 dit pourtant : « Il faut tout faire
+rentrer », et sa règle 67 que l'écran doit tenir en 1440 px, la taille des ordinateurs de service.
+La règle 74 tient toujours : le numéro de build ne se coupe jamais.
+
+**À trancher par l'opérateur**, en lui montrant la barre à 1440 : ce qui cède en premier quand elle
+est pleine. Trois choses occupent les deux tiers de la place — les six onglets, le transport du
+simulateur et la paire des tours restants — et une seule d'entre elles sert pendant une course
+réelle.
+
+**Fini quand** la barre tient dans 1440 px sans que rien n'en sorte, selon ce qu'il aura dit.

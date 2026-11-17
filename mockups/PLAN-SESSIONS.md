@@ -23,8 +23,8 @@ Feuille de route pour câbler les maquettes validées (`mockups/`) au moteur ré
 ## Ordre conseillé
 
 ```
-S1 ─ Standings Live + type de course
- └─ S2 ─ Historique + Évolution
+S1 ─ Standings Live + type de course          LIVRÉ, build 211
+ └─ S2 ─ Historique + Évolution               ← la session suivante
 S3 ─ Sprints          S4 ─ Lap by lap          S5 ─ Passings
 S6 ─ Chutes & neutralisations ──┐
 S7 ─ Avant-course (indépendant) │
@@ -40,21 +40,34 @@ les plus lourds et peuvent attendre leur tour.
 
 ## Phase 1 — Les écrans dont la donnée existe déjà
 
-### S1 · Standings (Live) + type de course — *léger*
+### S1 · Standings (Live) + type de course — **livré, build 211**
 - **But.** Rebrancher l'onglet `stand` sur le dessin Live validé, et poser le **réglage type de
   course** (qualification top N / finale) avec la **ligne de coupe**.
 - **Pourquoi en premier.** Self-contained, et le type de course sert ensuite aux Scénarios et au
   fil commentateurs.
 - **Source.** Classement calculé (`architecture.md` §9), `renderStandingsTab`.
 - **Fini quand.** Le classement s'affiche au nouveau dessin, lisible ; en qualification la ligne
-  de coupe sépare qualifiés et éliminés ; le type de course est un réglage de course.
+  de coupe sépare qualifiés et éliminés ; le type de course est un réglage de course. **Fait.**
+- **Livré.** Règles **204** et **205** de `regles-operateur.md`, code dans `architecture.md` §55,
+  mesures dans `mesures.md` §66, l'erreur comprise dans `pitfalls.md` D31. Le type de course est
+  dans la **barre du haut** (ses mots du 17 novembre 2026), se bloque au départ comme `Laps` et
+  `Sprints`, et se garde d'une course à l'autre.
+- **Ce qui reste ouvert et n'est pas de cette session.** La barre du haut déborde à 1440 px —
+  elle débordait déjà avant ce build — c'est le poste `travaux.md` §27, à trancher avec lui.
+  L'export PDF de la maquette n'est pas fait : les exports CSV, journal et trace sont inchangés.
 
-### S2 · Historique du classement + Évolution — *gros*
+### S2 · Historique du classement + Évolution — *gros, la session suivante*
 - **But.** Faire que le moteur **enregistre le classement à chaque étape** (chaque sprint, chaque
   tour gagné/perdu), puis construire la vue **Évolution** (Compare) dessus.
-- **Dépend de** S1.
+- **Dépend de** S1, **livré au build 211** : l'onglet `stand` rend un `.sttbl` au dessin validé,
+  `standings()` rend en plus `gainedLaps` / `lostLaps`, et `CFG.type` / `CFG.advance` portent le
+  type de course — la bascule **Live / Evolution** de la maquette n'est pas encore posée dans
+  l'en-tête, c'est à S2 de l'y mettre.
 - **Piège.** Le graphe se dimensionne sur la largeur visible : le (re)dessiner **à l'affichage**,
   pas quand il est masqué.
+- **Un second piège, payé en S1** (`pitfalls.md` D31) : un contrôle rendu **hors** du rail du
+  simulateur se synchronise depuis `render()`, jamais depuis `renderRail`, qui ne tourne que le
+  rail ouvert.
 - **Fini quand.** On suit jusqu'à 4 coureurs, le graphe montre leurs points dans le temps et
   l'écart, et un clic sur un moment re-classe le panneau à cet instant.
 
@@ -157,7 +170,7 @@ tours manquants de Lap by lap (S4).
 
 | Session | Thème | Poids | Dépend de |
 |---|---|---|---|
-| S1 | Standings Live + type de course | léger | — |
+| S1 | Standings Live + type de course | **livré, build 211** | — |
 | S2 | Historique + Évolution | gros | S1 |
 | S3 | Sprints (All sprints) + carte | moyen | — |
 | S4 | Lap by lap | moyen | — (compléter après S6) |
