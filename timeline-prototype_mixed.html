@@ -368,6 +368,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 #ledgerbox .ledger .lgt b{min-width:20px;text-align:center;font:600 13px var(--mono)}
 #ledgerbox .ledger .lgt b.up{color:var(--good)}
 #ledgerbox .ledger .lgt b.down{color:var(--warn)}
+.lrow{grid-template-columns:62px 118px minmax(0,1fr)} /* build 210 : « READ » renommé « TRANSPONDER » au journal — colonne Type élargie pour le libellé (styles.css partagé inchangé) */
 </style>
 
 <div class="shell">
@@ -632,7 +633,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '209';
+const BUILD = '210';
 const DEF = { track: 250, laps: 40, sprints: 4, gap: 10, pace: 15 };
 let CFG = { ...DEF };
 let TRACK, LAPS, NSPRINTS, LOOPS, LOOPNAME, TAPES;
@@ -804,7 +805,7 @@ function reset() {
   // never came back. The operator, 28 October 2026, on the speeds moving by themselves: « ok ». So the reference is
   // set once, here, where the bunch starts, and from then on it simply rides the pace the operator shows.
   { const ref = S.riders.reduce((a, r) => a + r.dist, 0) / S.riders.length; S.anchor = ref; for (const r of S.riders) r.offset = round1(r.dist - ref); }
-  for (const b of NOTP) { const i = RIDERS.findIndex(x => x[0] === b); S.noTp.set(b, RIDERS[(i + 1) % RIDERS.length][0]); logEvent('READ', 'BIB ' + b + ' · no transponder · start list · carried with the group, placed by hand in the sprints', false); }
+  for (const b of NOTP) { const i = RIDERS.findIndex(x => x[0] === b); S.noTp.set(b, RIDERS[(i + 1) % RIDERS.length][0]); logEvent('TRANSPONDER', 'BIB ' + b + ' · no transponder · start list · carried with the group, placed by hand in the sprints', false); }
   S.factor = 1; dirty = true; railDirty = true;   // opens held at 0:00.0, ready to run at ×1 once Start is clicked
   lastDetect = -1; lastTl = -1;   // the render clocks start again with the race, or a restart waits for the old race time to pass
 }
@@ -1597,12 +1598,12 @@ function tapeCount() {
       g.diffs.push(lone); if (g.diffs.length > TAPE_WINDOW) g.diffs.shift();
       // Counted short is a state too, not an event: a group riding nose to tail is short on every passage it makes.
       if (short !== g.short) {
-        if (short) logEvent('READ', T.name + ' · ' + plural(n, 'contact') + ' for ' + plural(read.length, 'rider') + ' read · ' + plural(short, 'contact') + ' missing: two wheels too close to be told apart', false);
+        if (short) logEvent('TRANSPONDER', T.name + ' · ' + plural(n, 'contact') + ' for ' + plural(read.length, 'rider') + ' read · ' + plural(short, 'contact') + ' missing: two wheels too close to be told apart', false);
         g.short = short;
       }
       const stated = Math.max(0, ...g.diffs);
       if (stated !== g.stated) {
-        logEvent('READ', stated > 0
+        logEvent('TRANSPONDER', stated > 0
           ? plural(stated, 'bike') + ' without a transponder in the group of ' + plural(read.length, 'rider') + ' read · counted by the tape switch ' + T.name + (read.length && read.length <= 4 ? ' · with ' + bibList(read) : '')
           : 'as many bikes counted as transponders read in the group of ' + bibList(read.length <= 4 ? read : read.slice(0, 3)) + (read.length > 4 ? ' …' : '') + ' · no rider without a transponder left in it', false);
         g.stated = stated;
@@ -1654,8 +1655,8 @@ function tapeFix(bib, pos, t, tape, reversal) {
   const was = S.noTpRec[bib];
   S.noTpRec[bib] = { d, t, spd: S.spdOf[bib] || 0 };
   dropProposals(p => (p.kind === 'tape' || p.kind === 'alone') && p.bibs.includes(bib));
-  logEvent('READ', 'BIB ' + bib + ' · alone on the track · carried by the tape switch ' + tape + (reversal ? ' · reversal' : ' · operator'), true,
-    reversal ? null : () => { if (was) S.noTpRec[bib] = was; else delete S.noTpRec[bib]; logEvent('READ', 'BIB ' + bib + ' · carried with his group again · reversal', true); });
+  logEvent('TRANSPONDER', 'BIB ' + bib + ' · alone on the track · carried by the tape switch ' + tape + (reversal ? ' · reversal' : ' · operator'), true,
+    reversal ? null : () => { if (was) S.noTpRec[bib] = was; else delete S.noTpRec[bib]; logEvent('TRANSPONDER', 'BIB ' + bib + ' · carried with his group again · reversal', true); });
   dirty = true;
 }
 
@@ -1710,8 +1711,8 @@ function tapePlace(bib, read, reversal) {
   S.noTp.set(bib, read.find(b => !S.noTp.has(b)) || read[0]);
   delete S.noTpRec[bib];   // he is in a group again: the group carries him, not the lone contacts
   dropProposals(p => (p.kind === 'tape' || p.kind === 'alone') && p.bibs.includes(bib));
-  logEvent('READ', 'BIB ' + bib + ' · placed with ' + groupSay(read) + ' · one bike more than transponders counted there' + (reversal ? ' · reversal' : ''), true,
-    reversal ? null : () => { S.noTp.set(bib, was); if (fx) S.noTpRec[bib] = fx; logEvent('READ', 'BIB ' + bib + ' · placed back where he was · reversal', true); });
+  logEvent('TRANSPONDER', 'BIB ' + bib + ' · placed with ' + groupSay(read) + ' · one bike more than transponders counted there' + (reversal ? ' · reversal' : ''), true,
+    reversal ? null : () => { S.noTp.set(bib, was); if (fx) S.noTpRec[bib] = fx; logEvent('TRANSPONDER', 'BIB ' + bib + ' · placed back where he was · reversal', true); });
   dirty = true;
 }
 
@@ -1766,7 +1767,7 @@ function detect(G, M) {
     }
   }
   // 2. riders not read for more than a lap, grouped when they went missing together: crash, mechanical, or a silent transponder
-  for (const p of S.proposals.filter(p => p.kind === 'missing' && p.bibs.every(b => M.get(b) && M.get(b).read))) { dropProposals(q => q === p); logEvent('READ', bibList(p.bibs) + ' read again · back in the measured groups', false); }
+  for (const p of S.proposals.filter(p => p.kind === 'missing' && p.bibs.every(b => M.get(b) && M.get(b).read))) { dropProposals(q => q === p); logEvent('TRANSPONDER', bibList(p.bibs) + ' read again · back in the measured groups', false); }
   const missing = [];
   // a rider the operator has declared without a transponder is not 'not read': there is nothing to read. What is
   // open about him is where he is, which the tape switches answer (tapeAttribute), not whether his transponder works.
@@ -3339,7 +3340,7 @@ function noTpToggle(bibs, reversal) {
   // being read until now, so his group counted no bike in excess. Judge him on passages measured from here on.
   for (const g of Object.values(S.tapeGroup)) g.diffs = [];
   dropProposals(p => p.kind === 'missing' && p.bibs.some(b => bibs.includes(b)));
-  logEvent('READ', bibList(bibs) + (all ? ' · transponder back · read again from the loops' : ' · no transponder · carried with the group, placed by hand in the sprints') + (reversal ? ' · reversal' : ' · operator'), true, reversal ? null : () => noTpToggle(bibs, true));
+  logEvent('TRANSPONDER', bibList(bibs) + (all ? ' · transponder back · read again from the loops' : ' · no transponder · carried with the group, placed by hand in the sprints') + (reversal ? ' · reversal' : ' · operator'), true, reversal ? null : () => noTpToggle(bibs, true));
 }
 function rehost(bibs, allBibs) { for (const b of bibs) if (S.noTp.has(b)) { const o = allBibs.find(x => x !== b && !S.noTp.has(x)); if (o) S.noTp.set(b, o); } }
 
@@ -3508,7 +3509,7 @@ function bikeChange(bib) {
   if (spare) spare.forBib = bib;
   const rr = S.riders.find(x => x.bib === bib); if (rr) rr.tp = spare ? spare.id : null;   // the truth: his new bike carries that one
   if (!S.noTp.has(bib)) { const o = S.riders.find(x => x.bib !== bib && !S.noTp.has(x.bib) && x.mode !== 'out'); S.noTp.set(bib, o ? o.bib : bib); }
-  logEvent('READ', 'BIB ' + bib + ' · bike change · no transponder · carried with the group, placed by hand in the sprints', false);
+  logEvent('TRANSPONDER', 'BIB ' + bib + ' · bike change · no transponder · carried with the group, placed by hand in the sprints', false);
 }
 // The mix-up itself. Operator, 27 October 2026 : « effectivement le système ne peut pas le savoir. Mais l'opérateur
 // oui ! » — so this writes nothing in the journal and raises nothing. Each bike keeps rolling, the loops go on
@@ -3526,7 +3527,7 @@ function swapTp(a, b, reversal) {
   ta.bib = b; tb.bib = a;
   const ra = S.riders.find(x => x.bib === a), rb = S.riders.find(x => x.bib === b);
   if (ra && rb) { const rc = ra.rec; ra.rec = rb.rec; rb.rec = rc; }
-  logEvent('READ', 'BIB ' + a + ' and BIB ' + b + ' · transponders swapped · attribution exchanged' + (reversal ? ' · reversal' : ' · operator'), true,
+  logEvent('TRANSPONDER', 'BIB ' + a + ' and BIB ' + b + ' · transponders swapped · attribution exchanged' + (reversal ? ' · reversal' : ' · operator'), true,
     reversal ? null : () => swapTp(a, b, true));
   saveTpIfSetup();
   railDirty = true; dirty = true;
@@ -3538,7 +3539,7 @@ function assignTp(id, bib) {
   t.bib = target; t.forBib = null; t.silent = false;
   const rr = S.riders.find(x => x.bib === target); if (rr) rr.tp = t.id;
   S.noTp.delete(target);
-  logEvent('READ', 'BIB ' + target + ' · transponder ' + t.id + ' · read again from the loops', false);
+  logEvent('TRANSPONDER', 'BIB ' + target + ' · transponder ' + t.id + ' · read again from the loops', false);
   saveTpIfSetup();
 }
 function freeTp(id) {
@@ -3546,7 +3547,7 @@ function freeTp(id) {
   const bib = t.bib; t.bib = null; t.silent = false;
   const rr = S.riders.find(x => x.bib === bib); if (rr) rr.tp = null;   // the truth: nothing on his bike any more
   if (!S.noTp.has(bib)) { const o = S.riders.find(x => x.bib !== bib && !S.noTp.has(x.bib) && x.mode !== 'out'); S.noTp.set(bib, o ? o.bib : bib); }
-  logEvent('READ', 'BIB ' + bib + ' · transponder ' + t.id + ' removed · no transponder · carried with the group', false);
+  logEvent('TRANSPONDER', 'BIB ' + bib + ' · transponder ' + t.id + ' removed · no transponder · carried with the group', false);
   saveTpIfSetup();
 }
 
@@ -3936,7 +3937,7 @@ $('#simfile').addEventListener('change', e => {
       const r = JSON.parse(fr.result);
       if (!r || !r.cfg || !Array.isArray(r.acts)) throw new Error('not a race file');
       r.name = r.name || raceName(r); RACES.unshift(r); saveRaces(); railDirty = true; render();
-    } catch (err) { logEvent('READ', 'Race file not read: ' + err.message, false); railDirty = true; render(); }
+    } catch (err) { logEvent('TRANSPONDER', 'Race file not read: ' + err.message, false); railDirty = true; render(); }
   };
   fr.readAsText(f); e.target.value = '';
 });

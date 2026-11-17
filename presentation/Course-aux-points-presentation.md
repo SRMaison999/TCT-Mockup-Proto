@@ -1,21 +1,6 @@
-# Course aux points : présentation du concept
+# Course aux points — présentation du produit
 
-## Points à corriger sur le prototype — note de travail du 15 novembre 2026
-
-À la lecture des captures présentées à la partie 10, plusieurs points de lisibilité ont été relevés. Ils ne sont pas traités ici : ils sont notés pour une prochaine session de travail, afin de ne pas se perdre.
-
-**La vue par sprint.** Elle affiche trop de choses et prête à confusion : le même sprint revient plusieurs fois, avec des ordres partiels qui ressemblent à des résultats contradictoires. Il faut fixer les sprints et distinguer clairement le résultat du sprint de ce qui a été diffusé. Surtout, on n'envoie pas à chaque tour : on envoie uniquement lorsqu'il y a un sprint. La vue ne doit pas donner l'impression d'un envoi tour par tour.
-
-**La vue du classement (Standings).** Elle est trop vide, et ses colonnes de chiffres sont centrées, loin des noms. Il faut rapprocher les chiffres des noms, resserrer l'ensemble et mieux occuper l'espace.
-
-**Les vues tour par tour (Passings et ordre de passage).** Elles sont difficiles à lire et ne rendent pas assez. Il faut trouver une présentation plus claire.
-
-**Le journal des décisions (Decisions).** Plusieurs choses :
-
-- Il consigne le détail des capteurs — les comptages de contacts — mais pas la création automatique d'un groupe. Or les groupes ne se forment et ne se défont pas en permanence : seulement de temps à autre. Les consigner ne noierait donc pas le journal, et la formation d'un groupe mérite une trace.
-- Le journal doit porter des repères colorés : un groupe qui se forme reçoit un fond plus marqué que de simples contacts.
-- Il faut pouvoir trier et filtrer les entrées : par couleur, par type d'événement, par niveau d'alerte, et ainsi de suite.
-- La page devra le permettre, et le document devra le présenter.
+Ce document présente le produit à qui ne l'a jamais vu : l'idée dont il part, puis tout ce qu'il sait faire, écran par écran. C'est une évolution du logiciel de chronométrage piste, aboutie dans son dessin et en cours d'intégration.
 
 ---
 
@@ -30,8 +15,6 @@ Il affiche aussi, sur une ligne, l'ordre de passage à partir du coureur qu'il p
 Ce logiciel repose sur des bibliothèques anciennes qu'il faut remplacer, et on peut aujourd'hui faire mieux. Toute la réflexion de ce projet part pourtant de lui.
 
 En parallèle, un nouveau Timing Manager est en cours de développement pour remplacer l'ancien. Son test grandeur nature a lieu en octobre 2026, lors des Championnats du monde de Shanghai, en mode shadow — c'est-à-dire qu'il tourne à côté du logiciel officiel, sans piloter les résultats, pour comparer les deux : la nouvelle interface reçoit un coup de neuf visuel, mais la logique sous-jacente reste celle du vieux logiciel.
-
-Pendant plusieurs jours, Silvio se dit que la version testée manque surtout d'automatismes. Et puis, quand il a eu les idées claires, il a démarré ce projet de mockup.
 
 ## 2 · Le constat : la course produit des données qu'on laisse de côté
 
@@ -109,7 +92,9 @@ L'idée est que le logiciel fasse le lien tout seul. Par exemple, le 26 n'est pa
 
 Le prototype contient un simulateur. Il peut rejouer des courses déjà enregistrées, ou en créer de nouvelles. Dans une nouvelle course, tous les coureurs partent à la même vitesse, et on peut ensuite faire ce qu'on veut. Par exemple, choisir trois coureurs et leur faire gagner un tour, faire perdre un tour à un autre, ou régler la vitesse de chaque coureur à la main.
 
-## 9 · Ce qui reste à faire
+## 9 · Ce qui arrive ensuite
+
+Quelques pièces ne sont pas encore en place. Elles tiennent surtout au matériel et à la piste.
 
 **Le compteur de tours.** Le compteur de tours est branché sur l'ordinateur. Le logiciel doit suivre ce qu'il affiche, sonner la cloche quand le premier coureur de la timeline passe à 31, 21 ou 11 tours de la fin, et prendre le sprint au passage suivant. Si le compteur n'est pas disponible, le logiciel doit compter les tours lui-même, sans erreur, y compris quand un coureur gagne un tour juste avant un sprint.
 
@@ -117,19 +102,13 @@ Le prototype contient un simulateur. Il peut rejouer des courses déjà enregist
 
 **Les chutes et les ennuis mécaniques.** Un coureur qui chute ou qui a un ennui mécanique peut quitter la course pendant cinq tours au maximum, sauf dans les cinq derniers tours. Il en profite pour changer de matériel ou se faire soigner, puis il reprend sa place dans le peloton et compte de nouveau comme un membre du peloton. Dans la vue tour par tour, il lui manquera donc des tours. Le logiciel ne doit pas s'en inquiéter : l'opérateur signale la chute, indique les coureurs concernés, et le logiciel sait où ils sont, même s'ils n'ont plus de transpondeur ou ont changé de vélo.
 
-**Aider l'opérateur à savoir où regarder.** Le logiciel connaît le classement à tout moment. À l'approche d'un sprint ou de la fin de la course, il peut signaler où sont les enjeux : une lutte pour la première ou la troisième place, ou pour la dernière place qualificative dans une manche. L'opérateur sait alors sur quels coureurs garder un œil.
-
-**Signaler ce qui mérite une vérification.** Même après la validation d'un résultat, le logiciel peut prévenir l'opérateur avec des messages courts. Il peut par exemple lui signaler qu'un sprint attribué à un autre tour aurait changé le classement. Il ne tranche pas : il indique que ça vaut la peine de regarder et d'en parler avec le commissaire.
-
-C'est là tout l'intérêt du projet : le logiciel exploite des informations qui existent déjà, en tire des conclusions et les transmet à l'opérateur.
+C'est là tout l'intérêt du produit : il exploite des informations qui existent déjà, en tire des conclusions et les transmet — à l'opérateur sur l'écran de course, et jusqu'aux commentateurs.
 
 ---
 
-## 10 · À quoi ressemble le prototype
+## 10 · Le produit, écran par écran
 
-Les captures qui suivent sont tirées du prototype tel qu'il fonctionne aujourd'hui. C'est une page HTML autonome, qui tient dans un seul fichier et n'a besoin d'aucune installation. Les images montrent une course de test rejouée par le simulateur — un peloton de seize coureurs sur 60 tours et 6 sprints, avec deux échappées et deux lâchés — arrêtée au tour 19.
-
-Il faut lire ces écrans en gardant à l'esprit que rien n'y est définitif : le prototype sert à fixer les comportements avec l'opérateur avant le développement, et son dessin évolue à chaque séance de travail.
+Les captures qui suivent montrent le produit tel qu'il se présente. C'est une page HTML autonome, qui tient dans un seul fichier et n'a besoin d'aucune installation. Les images montrent une course de test rejouée par le simulateur — un peloton de seize coureurs sur 60 tours et 6 sprints, avec deux échappées et deux lâchés.
 
 ### 10.1 · L'écran de course
 
@@ -139,13 +118,13 @@ C'est l'écran principal, celui que l'opérateur a sous les yeux pendant la cour
 
 L'écran se lit en cinq zones.
 
-**La barre du haut.** À gauche, les six onglets (Race, Crossings, Decisions, Sprints, Standings, Passings) qui donnent accès aux différentes vues sans jamais quitter la course. Au centre, les commandes de lecture du simulateur : marche, pause, vitesse (×1, ×4, ×16), l'horloge de course, et les boutons pour rejouer ou ouvrir une nouvelle course. À droite, les commandes de la course : « ARM START » et « ARM FINISH » pour armer le départ et l'arrivée, la source des tours restants (l'application qui compte toute seule, ou le compteur du commissaire), le bouton « Undo », et le numéro de build.
+**La barre du haut.** À gauche, les vues de la course, qui donnent accès aux différentes lectures sans jamais quitter la course. Au centre, les commandes de lecture du simulateur : marche, pause, vitesse (×1, ×4, ×16), l'horloge de course, et les boutons pour rejouer ou ouvrir une nouvelle course. À droite, les commandes de la course : « ARM START » et « ARM FINISH » pour armer le départ et l'arrivée, la source des tours restants (l'application qui compte toute seule, ou le compteur du commissaire), le bouton « Undo », et le numéro de build.
 
 **La timeline, à gauche.** Elle montre l'ordre de la course du premier au dernier, réparti en groupes. Chaque groupe porte son numéro, son nom, le nombre de coureurs et son écart : ici « 1-Leaders » en tête (marqué « leader »), puis « 2-Bunch » le peloton à 11,9 s, « 3-Behind » à 1,0 s et « 4-Last » à 5,7 s. Chaque ligne porte le dossard, le drapeau et le code pays d'un coureur. Les coureurs réunis en groupes le sont automatiquement : dès que l'écart entre deux coureurs dépasse le seuil, une cassure crée un nouveau groupe. Les bandes « new group » permettent de poser un groupe à la main. La mention « NO PTS » marque les coureurs qui ne peuvent pas marquer au prochain sprint.
 
 **L'ovale, au centre.** Il montre où sont les coureurs sur la piste à l'instant présent. Les coureurs d'un même groupe portent la même couleur, la même que celle de leur groupe sur la timeline, et on les voit se détacher quand une échappée part. Au milieu, le panneau de course ne garde que ce qui se lit en course : l'horloge, le tour en cours (LAP 19 / 60), le leader, les tours restants (TO GO 41, en vert) et le prochain sprint. Les deux boutons « SET LEADER », placés aux deux points d'armement, servent à désigner le prochain coureur en tête quand le logiciel se trompe.
 
-**La barre d'actions et les propositions, en bas à gauche.** La barre réunit tout ce que l'opérateur peut faire sur un coureur ou un groupe sélectionné : ajouter ou retirer un tour, désigner le leader, écarter un coureur d'un sprint, signaler un changement de transpondeur, un regroupement, une chute, un ennui mécanique, un abandon. À côté, les cartes de proposition : le logiciel a déjà préparé un tour gagné pour les dossards 12 et 52, et l'opérateur n'a plus qu'à valider d'un « ✓ all », corriger ou refuser d'un « ✕ ». C'est le principe du projet : le logiciel prépare, l'opérateur tranche.
+**La barre d'actions et les propositions, en bas à gauche.** La barre réunit tout ce que l'opérateur peut faire sur un coureur ou un groupe sélectionné : ajouter ou retirer un tour, désigner le leader, écarter un coureur d'un sprint, signaler un changement de transpondeur, un regroupement, une chute, un ennui mécanique, un abandon. À côté, les cartes de proposition : le logiciel a déjà préparé un tour gagné pour les dossards 12 et 52, et l'opérateur n'a plus qu'à valider d'un « ✓ all », corriger ou refuser d'un « ✕ ». C'est le principe du produit : le logiciel prépare, l'opérateur tranche.
 
 **La colonne de sprint, à droite.** Elle n'apparaît qu'autour d'un sprint. Elle montre l'ordre du sprint, la liste de départ pour saisir un coureur à la main, et les commandes d'envoi (en direct ou sur commande), de source de l'ordre, de tour jugé et de saisie manuelle. Elle est détaillée plus bas.
 
@@ -159,39 +138,63 @@ L'ovale : les coureurs placés sur la piste, le peloton étiré, et le panneau c
 
 La barre d'actions et la carte « Lap gained? » préparée par le logiciel pour les dossards 12 et 52.
 
-### 10.2 · Les six onglets
+### 10.2 · Les vues de la course
 
-Les onglets donnent cinq façons de relire ce que le logiciel a enregistré, sans interrompre la course.
+Chaque vue donne une façon de relire ce que le logiciel a enregistré, sans interrompre la course.
 
-**Crossings — l'ordre de passage, tour par tour.** C'est le cœur du système. Pour chaque tour, on voit l'ordre dans lequel les coureurs ont franchi la ligne, du premier au dernier. Le logiciel l'a gardé pour tous les tours : il peut donc dire, pour n'importe quel tour, qui est passé dans quel ordre. Les tours de sprint sont surlignés.
+**Lap by lap — l'ordre de passage, tour par tour.** C'est le cœur du système. Pour chaque tour, l'ordre dans lequel les coureurs ont franchi la ligne, du premier au dernier. Le logiciel l'a gardé pour tous les tours : il peut donc dire, pour n'importe quel tour, qui est passé dans quel ordre. Les tours de sprint sont surlignés, et le logiciel signale ce qui mérite un œil.
 
-![L'onglet Crossings](images/06-crossings.png)
+![La vue Lap by lap](images/06-lapbylap.png)
 
-**Decisions — le journal.** Tout ce qui s'est passé y est consigné, dans l'ordre, avec l'heure de course : le départ, les lectures sur les boucles, les sprints jugés et envoyés. Ce journal sert de preuve en cas de réclamation.
+**Race log — le journal de la course.** La « boîte noire » de la course, en langage clair : chaque fait, dans l'ordre, avec l'heure du jour et le temps de course — le départ, les sprints, les tours gagnés et perdus, les regroupements, les abandons, les neutralisations. Chaque entrée porte un type coloré ; les anomalies sont présentées en Problème → Effet → Action, avec une pastille qui dit si c'est réglé, en attente ou ignoré. On trie et on filtre par type. Ce journal sert de preuve en cas de réclamation.
 
-![L'onglet Decisions](images/07-decisions.png)
+![La vue Race log](images/07-racelog.png)
 
-**Sprints — chaque sprint tel qu'il a été jugé.** Pour chaque sprint, son ordre, ses points et ce qui a été envoyé à la télévision, au tableau d'affichage et au web.
+**Sprints — tous les sprints, en entier.** Chaque sprint côte à côte, l'ordre complet des coureurs, les quatre premiers qui marquent, le final qui compte double. On fait défiler de gauche à droite.
 
-![L'onglet Sprints](images/08-sprints.png)
+![La vue Sprints](images/08-allsprints.png)
 
-**Standings — le classement en direct.** Le classement complet de la course à tout moment, avec le détail des points : ceux des sprints, ceux des tours gagnés et perdus, et le total.
+**Standings — le classement, et son évolution.** Le classement complet de la course, large et lisible : rang, dossard, drapeau, nation, nom, total, avec le détail des points — ceux des sprints, ceux des tours gagnés et perdus. Dans une manche de qualification, une ligne de coupe sépare les qualifiés des éliminés.
 
-![L'onglet Standings](images/09-standings.png)
+![Le classement en direct](images/09-standings-live.png)
 
-**Passings — toutes les lectures, boucle par boucle.** Le relevé brut de chaque passage sur chaque boucle (Finish, Pursuit A, Pursuit B) et de chaque comptage sur les bandes de contact. En haut à droite, la santé des trois boucles. Les filtres permettent de n'afficher qu'une boucle, ou les passages qui n'ont pas trouvé leur correspondance.
+Une seconde lecture montre l'**évolution** du classement : on suit jusqu'à quatre coureurs, on voit leurs points monter au fil des sprints et des tours, et l'écart se creuser ou se réduire entre eux. Un clic sur un moment de la course re-classe le tableau à cet instant.
 
-![L'onglet Passings](images/10-passings.png)
+![L'évolution du classement](images/09b-standings-evolution.png)
+
+**Passings — toutes les lectures des capteurs.** Le relevé brut de chaque passage : les trois boucles qui lisent les transpondeurs (Finish, Pursuit A, Pursuit B) et les bandes de contact qui comptent les vélos. Chaque ligne est colorée par l'endroit du passage, et les anomalies — un contact sans lecture, une lecture sans contact — ressortent. On trie et on filtre par type et par endroit, et la santé des boucles est affichée.
+
+![La vue Passings](images/10-passings.png)
 
 ### 10.3 · La carte de sprint en détail
 
-Pour chaque sprint, une carte dédiée affiche le résultat, que l'opérateur peut vérifier et corriger. Ici, le premier sprint, disputé au tour 10 : l'ordre à gauche (12, 52, 15, 4, 11), la liste de départ au milieu pour ajouter un coureur à la main, et les commandes à droite — le tour sur lequel le sprint est jugé, l'envoi en direct, la source de l'ordre, la place suivante et la saisie manuelle. La bande du haut permet de passer d'un sprint à l'autre.
+Pour chaque sprint, une carte dédiée affiche le résultat, que l'opérateur peut vérifier et corriger. Ici, le premier sprint, disputé au tour 10 : l'ordre à gauche, la liste de départ au milieu pour ajouter un coureur à la main, et les commandes à droite — le tour sur lequel le sprint est jugé, l'envoi en direct, la source de l'ordre, la place suivante et la saisie manuelle. La bande du haut permet de passer d'un sprint à l'autre.
 
 ![La carte d'un sprint jugé](images/11-sprint-result.png)
 
-### 10.4 · Le simulateur
+### 10.4 · Les scénarios de course
 
-Le prototype contient un simulateur, qui rejoue des courses enregistrées ou en crée de nouvelles. C'est l'outil qui permet d'éprouver les automatismes sur des situations choisies, des plus calmes aux plus animées. Il se range dans un panneau à droite de l'écran, à côté de la course.
+Le logiciel connaît le classement à tout instant. À l'approche de la fin, il montre ce qui est **encore possible**, en mots simples.
+
+**Ce qui est en jeu.** Pour chaque coureur, les points déjà acquis, ceux qu'il peut encore prendre aux sprints restants, le maximum qu'il peut atteindre et la fourchette de place que ce plafond permet. À côté, les bagarres encore ouvertes — la victoire, le podium, la dernière place qualificative d'une manche — chacune en une phrase.
+
+![Les scénarios — ce qui est encore possible](images/20-scenarios-overview.png)
+
+**Le projecteur « what if ».** On pose un ordre d'arrivée pour les sprints qui restent et pour le final, et le classement projeté se recalcule aussitôt — qui monte, qui descend, qui gagne.
+
+![Le projecteur « what if »](images/21-scenarios-whatif.png)
+
+### 10.5 · Le fil commentateurs
+
+Ce que la course envoie aux commentateurs : un fil **automatique**, en lecture seule, alimenté tout seul par ce que l'opérateur valide dans l'écran de course. Les commentateurs y naviguent entre les vues — la liste de départ, le classement et son évolution, les sprints en entier, les scénarios, et le journal de course en langage clair (sans les alertes matériel, qui ne regardent que l'opérateur). Il est en anglais, pour un public international ; dans une manche de qualification, il porte la ligne de coupe.
+
+![Le fil commentateurs — le classement](images/30-feed-standings.png)
+
+![Le fil commentateurs — le journal de course](images/32-feed-racelog.png)
+
+### 10.6 · Le simulateur
+
+Le produit contient un simulateur, qui rejoue des courses enregistrées ou en crée de nouvelles. C'est l'outil qui permet d'éprouver les automatismes sur des situations choisies, des plus calmes aux plus animées. Il se range dans un panneau à droite de l'écran, à côté de la course.
 
 ![L'écran de course avec le simulateur ouvert](images/16-race-with-simulator.png)
 

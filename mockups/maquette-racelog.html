@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup · Race log</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;overflow:hidden;box-shadow:0 18px 48px #000a}
+.board-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
+.board-h .close{margin-left:auto;font:500 12px var(--sans);color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:5px 13px;background:#23272b;cursor:pointer}
+
+.filt{display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex:0 0 auto}
+.filt .lbl{font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.pf{font:500 12px var(--sans);color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:4px 10px;background:#23272b;cursor:pointer}
+.pf.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.srch{margin-left:auto;font:500 12px var(--mono);color:var(--muted);background:#23272b;border:1px solid var(--line2);border-radius:4px;padding:6px 11px;width:230px}
+.srch::placeholder{color:var(--dim)}
+
+.rows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto;gap:2px}
+.ph,.rr{display:grid;grid-template-columns:90px 76px 46px 118px 236px minmax(0,1fr) 172px;gap:10px;padding:0 12px}
+.ph{flex:0 0 auto;position:sticky;top:0;z-index:1;height:26px;align-items:center;background:var(--panel);font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line2)}
+.ph .r{text-align:right}
+.rr{flex:0 0 auto;min-height:36px;align-items:center;border-left:3px solid var(--c);background:#17191c}
+.rr[style*="--bg"]{background:var(--bg)}
+.rr.anom-row{align-items:stretch;padding-top:7px;padding-bottom:7px}
+.rr .dt{font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums;align-self:center}
+.rr .rt{font:500 12px var(--mono);color:var(--muted);align-self:center}
+.rr .lp{font:600 12px var(--mono);color:var(--muted);align-self:center}
+.rr .ty{font:700 11px var(--sans);letter-spacing:.05em;align-self:center}
+.rider{display:inline-flex;align-items:center;gap:8px;align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rider .rbib{font:600 14px var(--mono);color:var(--fg)}
+.rider .rf .flag{width:24px;height:16px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.rider .rnoc{font:600 12px var(--mono);color:var(--dim)}
+.rider .rnm{font:600 13px var(--sans);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.rider .rnm .fn{color:var(--dim);font-weight:500}
+.event{align-self:center;min-width:0}
+.event .ev{font:500 13.5px var(--sans);color:var(--muted)}
+.event .ev b{color:var(--fg)}
+.anom{display:flex;flex-direction:column;gap:3px}
+.anom .al{font:500 13px var(--sans);color:var(--muted);line-height:1.35}
+.anom .al .k{display:inline-block;width:62px;font:700 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);vertical-align:1px}
+/* résultat de sprint : drapeaux inline */
+.event .pl{color:var(--dim);font-weight:600}
+.event .rf .flag{width:18px;height:12px;border-radius:1px;display:inline-block;vertical-align:-1px;margin-right:3px;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.event .rn{color:var(--dim)}
+.event .pt{color:var(--fg);font-weight:700;font-family:var(--mono)}
+.status{align-self:center;display:flex;justify-content:flex-start}
+.st{font:600 10px var(--sans);letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:999px;border:1px solid;white-space:nowrap}
+.st.good{color:var(--good);border-color:#2ED47A66;background:#2ED47A14}
+.st.warn{color:var(--warn);border-color:#F2A33A66;background:#F2A33A14}
+.st.dim{color:var(--dim);border-color:#4a515a}
+.none{padding:16px;color:var(--dim);font:500 13px var(--sans)}
+</style></head>
+<body>
+<div class="board">
+  <div class="board-h"><b>Race log</b><span class="hint">the race's black box &middot; everything that happened, in plain words</span>
+    <button class="close">Export journal</button>
+  </div>
+  <div class="filt">
+    <span class="lbl">Filter</span>
+    <button class="pf on" data-fil="all">All</button><button class="pf" data-fil="race">Race</button><button class="pf" data-fil="group">Group</button><button class="pf" data-fil="sprint">Sprint</button><button class="pf" data-fil="lap">Lap</button><button class="pf" data-fil="transponder">Transponder</button><button class="pf" data-fil="operator">Operator</button><button class="pf" data-fil="incident">Incident</button><button class="pf" data-fil="withdraw">Withdraw</button><button class="pf" data-fil="alert">Alert</button><button class="pf" data-fil="hardware">Hardware</button>
+    <input class="srch" id="srch" placeholder="search bib, rider, text…">
+  </div>
+  <div class="rows" id="rows">
+    <div class="ph"><span>Daytime</span><span>Race time</span><span>Lap</span><span>Type</span><span>Rider</span><span>Event</span><span>Status</span></div>
+    <div class="rr t-race" data-text=" classification final — results published · pdf, csv and scoreboard sent." style="--c:#8FB4FF">
+    <span class="dt">14:48:12</span>
+    <span class="rt">18:12.0</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">RACE</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Classification final — results published · PDF, CSV and scoreboard sent.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-race" data-text=" race over — 16 riders classified · winner 12 huber, 60 pts (three laps gained)." style="--c:#8FB4FF">
+    <span class="dt">14:48:08</span>
+    <span class="rt">18:08.0</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">RACE</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Race over — 16 riders classified · winner <b>12 Huber</b>, 60 pts (three laps gained).</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-race" data-text=" finish — last rider across the line · running time stopped at 18:07.4." style="--c:#8FB4FF">
+    <span class="dt">14:48:07</span>
+    <span class="rt">18:07.4</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">RACE</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Finish — last rider across the line · running time stopped at 18:07.4.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" final sprint closed — doubled points applied to the classification." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:48:06</span>
+    <span class="rt">18:06.5</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Final sprint closed — doubled points applied to the classification.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" final sprint points (×2) — 15 irl o'neill +10  ·  4 gbr walsh +6  ·  11 jpn tanaka +4  ·  23 den iversen +2." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:48:06</span>
+    <span class="rt">18:06.0</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Final sprint points (×2) — <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span> <span class="pt">+10</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span> <span class="pt">+6</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span> <span class="pt">+4</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span> <span class="pt">+2</span>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" final sprint — order at the line: 1. 15 irl o'neill  ·  2. 4 gbr walsh  ·  3. 11 jpn tanaka  ·  4. 23 den iversen  ·  5. 46 bel de wit  ·  6. 70 bra silva  ·  7. 58 kaz petrov  ·  8. 67 ger lehmann  ·  9. 1 esp rivera  ·  10. 9 slo kovac  ·  11. 3 fra moreau  ·  12. 18 por santos  ·  13. 61 col navarro  ·  14. 7 ned brand  ·  15. 12 sui huber  ·  16. 52 ita rossi." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:48:05</span>
+    <span class="rt">18:05.8</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Final sprint — order at the line: <span class="pl">1.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span>  ·  <span class="pl">2.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span>  ·  <span class="pl">3.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span>  ·  <span class="pl">4.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span>  ·  <span class="pl">5.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><b>46</b> <span class="rn">BEL DE WIT</span>  ·  <span class="pl">6.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><b>70</b> <span class="rn">BRA SILVA</span>  ·  <span class="pl">7.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><b>58</b> <span class="rn">KAZ PETROV</span>  ·  <span class="pl">8.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><b>67</b> <span class="rn">GER LEHMANN</span>  ·  <span class="pl">9.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><b>1</b> <span class="rn">ESP RIVERA</span>  ·  <span class="pl">10.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><b>9</b> <span class="rn">SLO KOVAC</span>  ·  <span class="pl">11.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><b>3</b> <span class="rn">FRA MOREAU</span>  ·  <span class="pl">12.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><b>18</b> <span class="rn">POR SANTOS</span>  ·  <span class="pl">13.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><b>61</b> <span class="rn">COL NAVARRO</span>  ·  <span class="pl">14.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><b>7</b> <span class="rn">NED BRAND</span>  ·  <span class="pl">15.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><b>12</b> <span class="rn">SUI HUBER</span>  ·  <span class="pl">16.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><b>52</b> <span class="rn">ITA ROSSI</span>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" final sprint armed — lap 60 · last lap · points doubled." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:47:49</span>
+    <span class="rt">17:49.0</span>
+    <span class="lp">L60</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Final sprint armed — lap 60 · last lap · points doubled.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 5 run and closed — 15 irl o'neill +5  ·  4 gbr walsh +3  ·  11 jpn tanaka +2  ·  23 den iversen +1 · sent to tv." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:46:00</span>
+    <span class="rt">16:00.0</span>
+    <span class="lp">L50</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 5 run and closed — <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span> <span class="pt">+5</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span> <span class="pt">+3</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span> <span class="pt">+2</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span> <span class="pt">+1</span> · sent to TV.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 4 run and closed — 15 irl o'neill +5  ·  4 gbr walsh +3  ·  11 jpn tanaka +2  ·  23 den iversen +1 · sent to tv." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:42:48</span>
+    <span class="rt">12:48.0</span>
+    <span class="lp">L40</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 4 run and closed — <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span> <span class="pt">+5</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span> <span class="pt">+3</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span> <span class="pt">+2</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span> <span class="pt">+1</span> · sent to TV.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 3 run and closed — 15 irl o'neill +5  ·  4 gbr walsh +3  ·  11 jpn tanaka +2  ·  23 den iversen +1 · sent to tv." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:39:36</span>
+    <span class="rt">9:36.0</span>
+    <span class="lp">L30</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 3 run and closed — <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span> <span class="pt">+5</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span> <span class="pt">+3</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span> <span class="pt">+2</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span> <span class="pt">+1</span> · sent to TV.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text=" 0 · race relaunched by the referee — racing resumes · 4 laps to the next sprint." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:36:55</span>
+    <span class="rt">6:55.0</span>
+    <span class="lp">L25</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev"><b>0</b> · race relaunched by the referee — racing resumes · 4 laps to the next sprint.</span></span>
+    <span class="status"><span class="st good">Relaunched</span></span>
+  </div>
+    <div class="rr t-incident" data-text="67 lehmann −1 · 1 lap to the relaunch — 67 lehmann back in his place in the bunch." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:36:38</span>
+    <span class="rt">6:38.4</span>
+    <span class="lp">L24</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">67</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rnoc">GER</span><span class="rnm"><span class="fn">Max</span> <b>LEHMANN</b></span></span>
+    <span class="event"><span class="ev"><b>−1</b> · 1 lap to the relaunch — 67 Lehmann back in his place in the bunch.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text=" −2 · 2 laps to the relaunch." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:36:21</span>
+    <span class="rt">6:21.2</span>
+    <span class="lp">L23</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev"><b>−2</b> · 2 laps to the relaunch.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text="67 lehmann −3 · 3 laps to the relaunch — 67 lehmann back on a spare bike, restarts at the back." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:36:04</span>
+    <span class="rt">6:04.0</span>
+    <span class="lp">L22</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">67</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rnoc">GER</span><span class="rnm"><span class="fn">Max</span> <b>LEHMANN</b></span></span>
+    <span class="event"><span class="ev"><b>−3</b> · 3 laps to the relaunch — 67 Lehmann back on a spare bike, restarts at the back.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text=" −4 · 4 laps to the relaunch." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:35:47</span>
+    <span class="rt">5:47.6</span>
+    <span class="lp">L21</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev"><b>−4</b> · 4 laps to the relaunch.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text=" race neutralised by the referee — countdown −5 · 5 laps to the relaunch · the next sprint is held until 0." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:35:30</span>
+    <span class="rt">5:30.1</span>
+    <span class="lp">L20</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Race <b>neutralised</b> by the referee — countdown <b>−5</b> · 5 laps to the relaunch · the next sprint is held until 0.</span></span>
+    <span class="status"><span class="st warn">Neutralised</span></span>
+  </div>
+    <div class="rr t-incident anom-row" data-text="67 lehmann fall in the fight for position — 67 lehmann and two riders down · track partly blocked. the bunch is forced to slow · racing can't continue safely." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:35:24</span>
+    <span class="rt">5:24.3</span>
+    <span class="lp">L20</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">67</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rnoc">GER</span><span class="rnm"><span class="fn">Max</span> <b>LEHMANN</b></span></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Fall in the fight for position — 67 Lehmann and two riders down · track partly blocked.</div><div class="al"><span class="k">Effect</span>The bunch is forced to slow · racing can't continue safely.</div><div class="al"><span class="k">Action</span>Referee consulted — race neutralisation called.</div></div></span>
+    <span class="status"><span class="st warn">In progress</span></span>
+  </div>
+    <div class="rr t-incident" data-text="67 lehmann crash detected on the home straight — three transponders stopped moving at once." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:35:20</span>
+    <span class="rt">5:20.0</span>
+    <span class="lp">L20</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">67</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rnoc">GER</span><span class="rnm"><span class="fn">Max</span> <b>LEHMANN</b></span></span>
+    <span class="event"><span class="ev">Crash detected on the home straight — three transponders stopped moving at once.</span></span>
+    <span class="status"><span class="st warn">In progress</span></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 2 run and closed — 15 irl o'neill +5  ·  4 gbr walsh +3  ·  11 jpn tanaka +2  ·  23 den iversen +1 · sent to tv." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:35:05</span>
+    <span class="rt">5:05.0</span>
+    <span class="lp">L20</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 2 run and closed — <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span> <span class="pt">+5</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span> <span class="pt">+3</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span> <span class="pt">+2</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span> <span class="pt">+1</span> · sent to TV.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-lap" data-text="70 silva lap lost confirmed — caught by the bunch · −20 pts." style="--c:#FF5C5C">
+    <span class="dt">14:35:00</span>
+    <span class="rt">5:00.6</span>
+    <span class="lp">L19</span>
+    <span class="ty" style="color:#FF5C5C">LAP</span>
+    <span class="rider"><span class="rbib">70</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="rnoc">BRA</span><span class="rnm"><span class="fn">Lucas</span> <b>SILVA</b></span></span>
+    <span class="event"><span class="ev" style="color:#FF5C5C">Lap lost confirmed — caught by the bunch · <b>−20 pts</b>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-hardware anom-row" data-text=" pursuit b decoder — network link lost. no transponder reads on pursuit b · half the lap went blind." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:34:43</span>
+    <span class="rt">4:43.9</span>
+    <span class="lp">L18</span>
+    <span class="ty" style="color:#FF5C5C">HARDWARE</span>
+    <span class="rider"></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Pursuit B decoder — network link lost.</div><div class="al"><span class="k">Effect</span>No transponder reads on Pursuit B · half the lap went blind.</div><div class="al"><span class="k">Action</span>Link came back after 9 s · reads resumed on Pursuit B.</div></div></span>
+    <span class="status"><span class="st good">Resolved</span></span>
+  </div>
+    <div class="rr t-lap" data-text="12 huber lap gained confirmed — rejoins the bunch · +20 pts." style="--c:#2ED47A">
+    <span class="dt">14:34:27</span>
+    <span class="rt">4:27.8</span>
+    <span class="lp">L17</span>
+    <span class="ty" style="color:#2ED47A">LAP</span>
+    <span class="rider"><span class="rbib">12</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rnoc">SUI</span><span class="rnm"><span class="fn">Marco</span> <b>HUBER</b></span></span>
+    <span class="event"><span class="ev" style="color:#2ED47A">Lap gained confirmed — rejoins the bunch · <b>+20 pts</b>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-alert anom-row" data-text="9 kovac transponder not read at lap 16. his lap came in at double time (33.7 s) — a lap could be miscounted." style="--c:#F2A33A;--bg:#231c10">
+    <span class="dt">14:34:27</span>
+    <span class="rt">4:27.2</span>
+    <span class="lp">L17</span>
+    <span class="ty" style="color:#F2A33A">ALERT</span>
+    <span class="rider"><span class="rbib">9</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="rnoc">SLO</span><span class="rnm"><span class="fn">Luka</span> <b>KOVAC</b></span></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Transponder not read at lap 16.</div><div class="al"><span class="k">Effect</span>His lap came in at double time (33.7 s) — a lap could be miscounted.</div><div class="al"><span class="k">Action</span>Lap confirmed from the pursuit loops · count left unchanged.</div></div></span>
+    <span class="status"><span class="st good">Resolved</span></span>
+  </div>
+    <div class="rr t-alert anom-row" data-text="46 de wit a bike counted on pursuit a with no transponder read. the bunch shows one bike more than it reads." style="--c:#F2A33A;--bg:#231c10">
+    <span class="dt">14:34:10</span>
+    <span class="rt">4:10.5</span>
+    <span class="lp">L16</span>
+    <span class="ty" style="color:#F2A33A">ALERT</span>
+    <span class="rider"><span class="rbib">46</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="BEL"><rect x="0.000" width="1.000" height="2" fill="#000"/><rect x="1.000" width="1.000" height="2" fill="#fae042"/><rect x="2.000" width="1.000" height="2" fill="#ed2939"/></svg></span><span class="rnoc">BEL</span><span class="rnm"><span class="fn">Lars</span> <b>DE WIT</b></span></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>A bike counted on Pursuit A with no transponder read.</div><div class="al"><span class="k">Effect</span>The bunch shows one bike more than it reads.</div><div class="al"><span class="k">Action</span>Left as is — known rider carried without a transponder.</div></div></span>
+    <span class="status"><span class="st dim">Ignored</span></span>
+  </div>
+    <div class="rr t-withdraw" data-text="1 rivera abandoned following his crash — did not rejoin inside the 5-lap window." style="--c:#F2A33A">
+    <span class="dt">14:34:02</span>
+    <span class="rt">4:02.0</span>
+    <span class="lp">L16</span>
+    <span class="ty" style="color:#F2A33A">ABD</span>
+    <span class="rider"><span class="rbib">1</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="rnoc">ESP</span><span class="rnm"><span class="fn">Carlos</span> <b>RIVERA</b></span></span>
+    <span class="event"><span class="ev">Abandoned following his crash — did not rejoin inside the 5-lap window.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-withdraw" data-text="58 petrov did not finish — pulled out by the commissaires (too slow)." style="--c:#FF5C5C">
+    <span class="dt">14:33:50</span>
+    <span class="rt">3:50.2</span>
+    <span class="lp">L15</span>
+    <span class="ty" style="color:#FF5C5C">DNF</span>
+    <span class="rider"><span class="rbib">58</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="rnoc">KAZ</span><span class="rnm"><span class="fn">Dmitriy</span> <b>PETROV</b></span></span>
+    <span class="event"><span class="ev">Did not finish — pulled out by the commissaires (too slow).</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text="11 tanaka back in the bunch on the spare bike — riding without a transponder · counted by the tape switch only." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:33:46</span>
+    <span class="rt">3:46.0</span>
+    <span class="lp">L15</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">11</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="rnoc">JPN</span><span class="rnm"><span class="fn">Yuki</span> <b>TANAKA</b></span></span>
+    <span class="event"><span class="ev">Back in the bunch on the spare bike — <b>riding without a transponder</b> · counted by the tape switch only.</span></span>
+    <span class="status"><span class="st warn">Rejoined · no transponder</span></span>
+  </div>
+    <div class="rr t-operator" data-text="12 huber operator set the race leader — at his next crossing." style="--c:#8FB4FF">
+    <span class="dt">14:33:37</span>
+    <span class="rt">3:37.8</span>
+    <span class="lp">L14</span>
+    <span class="ty" style="color:#8FB4FF">OPERATOR</span>
+    <span class="rider"><span class="rbib">12</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rnoc">SUI</span><span class="rnm"><span class="fn">Marco</span> <b>HUBER</b></span></span>
+    <span class="event"><span class="ev">Operator set the race leader — at his next crossing.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-hardware anom-row" data-text=" tape switch at 100 m — no counts since lap 12 · likely defective. bikes with no transponder can't be separated at that point." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:33:37</span>
+    <span class="rt">3:37.1</span>
+    <span class="lp">L14</span>
+    <span class="ty" style="color:#FF5C5C">HARDWARE</span>
+    <span class="rider"></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Tape switch at 100 m — no counts since lap 12 · likely defective.</div><div class="al"><span class="k">Effect</span>Bikes with no transponder can't be separated at that point.</div><div class="al"><span class="k">Action</span>Flagged to the timing crew · the other tapes cover it meanwhile.</div></div></span>
+    <span class="status"><span class="st warn">Pending</span></span>
+  </div>
+    <div class="rr t-group" data-text="70 silva group formed — dropped at the back · gap 6.0 s." style="--c:#2ED47A;--bg:#14231a">
+    <span class="dt">14:33:20</span>
+    <span class="rt">3:20.4</span>
+    <span class="lp">L13</span>
+    <span class="ty" style="color:#2ED47A">GROUP</span>
+    <span class="rider"><span class="rbib">70</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="rnoc">BRA</span><span class="rnm"><span class="fn">Lucas</span> <b>SILVA</b></span></span>
+    <span class="event"><span class="ev">Group formed — dropped at the back · gap <b>6.0 s</b>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident anom-row" data-text="1 rivera heavy crash on the back straight — a fall · 1 rivera down. did not remount · attended by the medics." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:33:14</span>
+    <span class="rt">3:14.2</span>
+    <span class="lp">L13</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">1</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="rnoc">ESP</span><span class="rnm"><span class="fn">Carlos</span> <b>RIVERA</b></span></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Heavy crash on the back straight — a fall · 1 Rivera down.</div><div class="al"><span class="k">Effect</span>Did not remount · attended by the medics.</div><div class="al"><span class="k">Action</span>5-lap window running · watching for a restart.</div></div></span>
+    <span class="status"><span class="st warn">In progress</span></span>
+  </div>
+    <div class="rr t-group" data-text="12 huber group formed — breaks clear alone at the front · gap 14.0 s." style="--c:#2ED47A;--bg:#14231a">
+    <span class="dt">14:33:03</span>
+    <span class="rt">3:03.7</span>
+    <span class="lp">L12</span>
+    <span class="ty" style="color:#2ED47A">GROUP</span>
+    <span class="rider"><span class="rbib">12</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rnoc">SUI</span><span class="rnm"><span class="fn">Marco</span> <b>HUBER</b></span></span>
+    <span class="event"><span class="ev">Group formed — breaks clear alone at the front · gap <b>14.0 s</b>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident anom-row" data-text="11 tanaka mechanical — rear puncture · 11 tanaka dropped from the bunch. stopped for a bike change · loses contact with the bunch." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:32:56</span>
+    <span class="rt">2:56.3</span>
+    <span class="lp">L11</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">11</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="rnoc">JPN</span><span class="rnm"><span class="fn">Yuki</span> <b>TANAKA</b></span></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Mechanical — rear puncture · 11 Tanaka dropped from the bunch.</div><div class="al"><span class="k">Effect</span>Stopped for a bike change · loses contact with the bunch.</div><div class="al"><span class="k">Action</span>5-lap window running · watching for a restart.</div></div></span>
+    <span class="status"><span class="st warn">In progress</span></span>
+  </div>
+    <div class="rr t-hardware anom-row" data-text=" finish loop — no reads for 9 s. crossings on the line were missed · order uncertain at this point." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:32:50</span>
+    <span class="rt">2:50.0</span>
+    <span class="lp">L10</span>
+    <span class="ty" style="color:#FF5C5C">HARDWARE</span>
+    <span class="rider"></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Finish loop — no reads for 9 s.</div><div class="al"><span class="k">Effect</span>Crossings on the line were missed · order uncertain at this point.</div><div class="al"><span class="k">Action</span>Order rebuilt from the back-straight tape · reads resumed.</div></div></span>
+    <span class="status"><span class="st good">Resolved</span></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 1 closed — points applied to the classification." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:32:48</span>
+    <span class="rt">2:48.0</span>
+    <span class="lp">L10</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 1 closed — points applied to the classification.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 1 points — 15 irl o'neill +5  ·  4 gbr walsh +3  ·  11 jpn tanaka +2  ·  23 den iversen +1." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:32:47</span>
+    <span class="rt">2:47.5</span>
+    <span class="lp">L10</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 1 points — <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span> <span class="pt">+5</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span> <span class="pt">+3</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span> <span class="pt">+2</span>  ·  <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span> <span class="pt">+1</span>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 1 sent live → tv, scoreboard, web." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:32:47</span>
+    <span class="rt">2:47.2</span>
+    <span class="lp">L10</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 1 sent live → TV, scoreboard, web.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 1 — order at the line: 1. 15 irl o'neill  ·  2. 4 gbr walsh  ·  3. 11 jpn tanaka  ·  4. 23 den iversen." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:32:46</span>
+    <span class="rt">2:46.6</span>
+    <span class="lp">L10</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 1 — order at the line: <span class="pl">1.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> <span class="rn">IRL O'NEILL</span>  ·  <span class="pl">2.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><b>4</b> <span class="rn">GBR WALSH</span>  ·  <span class="pl">3.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><b>11</b> <span class="rn">JPN TANAKA</span>  ·  <span class="pl">4.</span> <span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><b>23</b> <span class="rn">DEN IVERSEN</span>.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-sprint" data-text=" sprint 1 armed — lap 10 approaching the line." style="--c:#8FB4FF;--bg:#161b2b">
+    <span class="dt">14:32:30</span>
+    <span class="rt">2:30.0</span>
+    <span class="lp">L10</span>
+    <span class="ty" style="color:#8FB4FF">SPRINT</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Sprint 1 armed — lap 10 approaching the line.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident" data-text="23 iversen back in the bunch — rejoined within the window (3 laps)." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:32:20</span>
+    <span class="rt">2:20.1</span>
+    <span class="lp">L9</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">23</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="rnoc">DEN</span><span class="rnm"><span class="fn">Mads</span> <b>IVERSEN</b></span></span>
+    <span class="event"><span class="ev">Back in the bunch — rejoined within the window (3 laps).</span></span>
+    <span class="status"><span class="st good">Rejoined</span></span>
+  </div>
+    <div class="rr t-transponder" data-text=" pursuit a — 15 transponders read for 16 riders · 1 missing (two wheels too close to separate)." style="--c:#c1bdb4">
+    <span class="dt">14:32:13</span>
+    <span class="rt">2:13.6</span>
+    <span class="lp">L9</span>
+    <span class="ty" style="color:#c1bdb4">TRANSPONDER</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Pursuit A — 15 transponders read for 16 riders · 1 missing (two wheels too close to separate).</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-withdraw" data-text="3 moreau abandoned — stopped on his own." style="--c:#F2A33A">
+    <span class="dt">14:32:08</span>
+    <span class="rt">2:08.3</span>
+    <span class="lp">L8</span>
+    <span class="ty" style="color:#F2A33A">ABD</span>
+    <span class="rider"><span class="rbib">3</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="rnoc">FRA</span><span class="rnm"><span class="fn">Julien</span> <b>MOREAU</b></span></span>
+    <span class="event"><span class="ev">Abandoned — stopped on his own.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-incident anom-row" data-text="23 iversen crash in turn 2 — a fall · 23 iversen down, two riders held up. his transponder stopped moving · out of the race order." style="--c:#FF5C5C;--bg:#241518">
+    <span class="dt">14:31:20</span>
+    <span class="rt">1:20.4</span>
+    <span class="lp">L6</span>
+    <span class="ty" style="color:#FF5C5C">INCIDENT</span>
+    <span class="rider"><span class="rbib">23</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="rnoc">DEN</span><span class="rnm"><span class="fn">Mads</span> <b>IVERSEN</b></span></span>
+    <span class="event"><div class="anom"><div class="al"><span class="k">Problem</span>Crash in turn 2 — a fall · 23 Iversen down, two riders held up.</div><div class="al"><span class="k">Effect</span>His transponder stopped moving · out of the race order.</div><div class="al"><span class="k">Action</span>5-lap window open · watching for a restart.</div></div></span>
+    <span class="status"><span class="st warn">In progress</span></span>
+  </div>
+    <div class="rr t-transponder" data-text=" finish — 16 transponders read, all matched." style="--c:#c1bdb4">
+    <span class="dt">14:31:06</span>
+    <span class="rt">1:06.8</span>
+    <span class="lp">L5</span>
+    <span class="ty" style="color:#c1bdb4">TRANSPONDER</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Finish — 16 transponders read, all matched.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-race" data-text=" start — 16 riders · lap counter linked." style="--c:#8FB4FF">
+    <span class="dt">14:30:00</span>
+    <span class="rt">0:00.0</span>
+    <span class="lp">L1</span>
+    <span class="ty" style="color:#8FB4FF">RACE</span>
+    <span class="rider"></span>
+    <span class="event"><span class="ev">Start — 16 riders · lap counter linked.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="rr t-withdraw" data-text="61 navarro did not start — set by the operator before the race." style="--c:#F2A33A">
+    <span class="dt">14:29:52</span>
+    <span class="rt">—</span>
+    <span class="lp">—</span>
+    <span class="ty" style="color:#F2A33A">DNS</span>
+    <span class="rider"><span class="rbib">61</span><span class="rf"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="rnoc">COL</span><span class="rnm"><span class="fn">Juan</span> <b>NAVARRO</b></span></span>
+    <span class="event"><span class="ev">Did not start — set by the operator before the race.</span></span>
+    <span class="status"></span>
+  </div>
+    <div class="none" id="none" hidden>Nothing matches this filter.</div>
+  </div>
+</div>
+<script>
+(function(){
+  var fil='all', q='';
+  function sync(){
+    var n=0;
+    document.querySelectorAll('.rr').forEach(function(r){
+      var okF = fil==='all' || r.classList.contains('t-'+fil);
+      var okQ = !q || (r.getAttribute('data-text')||'').indexOf(q)>=0;
+      var show = okF && okQ; r.hidden=!show; if(show)n++;
+    });
+    document.getElementById('none').hidden = n>0;
+  }
+  document.querySelectorAll('[data-fil]').forEach(function(b){b.addEventListener('click',function(){
+    fil=b.dataset.fil;
+    document.querySelectorAll('[data-fil]').forEach(function(x){x.classList.toggle('on',x===b);});
+    sync();
+  });});
+  document.getElementById('srch').addEventListener('input',function(e){q=e.target.value.toLowerCase().trim();sync();});
+})();
+</script>
+</body></html>

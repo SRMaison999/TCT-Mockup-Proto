@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup · Possible scenarios</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:5px;overflow:hidden}
+.seg button{font:600 12px var(--sans);color:var(--dim);border:0;padding:5px 14px;background:#23272b;cursor:pointer;border-right:1px solid var(--line2)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--acc);color:#fff}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;box-shadow:0 18px 48px #000a}
+.board-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
+.togo{margin-left:auto;font:600 12px var(--mono);color:var(--fg);border:1px solid var(--line2);border-radius:999px;padding:4px 12px}
+.inplay{flex:0 0 auto;display:flex;align-items:center;gap:10px;background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:9px 13px;font:500 13px var(--sans);color:var(--muted)}
+.inplay b{color:var(--fg)}
+.inplay .k{font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-right:2px}
+.inplay .pill{font:700 12px var(--mono);border-radius:5px;padding:2px 8px;background:#39311c;color:var(--fg)}
+.inplay .lap{background:#13261a;color:var(--good)}
+
+.main{flex:1 1 auto;min-height:0;display:flex;gap:14px}
+.col{display:flex;flex-direction:column;min-height:0;background:#1c1e22;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.col.bars{flex:1.5 1 0}
+.col.fight{flex:1 1 0}
+.ch2{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.ch2 .sub{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.barswrap{flex:1 1 auto;overflow:auto;padding:4px 10px 10px;position:relative}
+.winline{position:absolute;top:34px;bottom:10px;width:0;border-left:1px dashed #2ED47A66;z-index:1}
+.winlabel{position:absolute;top:14px;font:600 10px var(--sans);color:var(--good);transform:translateX(-50%)}
+.brow{display:grid;grid-template-columns:26px 26px 30px 150px 32px 1fr 64px;gap:9px;align-items:center;min-height:34px}
+.brk{font:700 13px var(--mono);color:var(--dim);text-align:right}
+.bf .flag{width:24px;height:16px;border-radius:2px;display:block;box-shadow:0 0 0 1px #0006}
+.bbib{font:600 13px var(--mono);color:var(--fg)}
+.bnm{font:600 13px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bnm .fn{color:var(--dim);font-weight:500}
+.bpts{font:700 15px var(--mono);color:var(--fg);text-align:right}
+.bar{position:relative;display:flex;align-items:center;height:16px;background:#23262b;border-radius:4px;overflow:visible}
+.bar .fill{height:16px;background:#6b7178;border-radius:4px 0 0 4px}
+.brow.win .bar .fill{background:#C6A64A}
+.bar .reach{height:16px;background:repeating-linear-gradient(135deg,#6b717833,#6b717833 4px,transparent 4px,transparent 8px);border-right:1px solid var(--dim)}
+.brow.win .bar .reach{background:repeating-linear-gradient(135deg,#2ED47A44,#2ED47A44 4px,transparent 4px,transparent 8px);border-right-color:var(--good)}
+.bar .cap{position:absolute;left:100%;margin-left:6px;font:700 12px var(--mono);color:var(--dim);white-space:nowrap}
+.bpl{font:600 12px var(--mono);color:var(--muted);text-align:right}
+.brow.win .bpl{color:var(--good)}
+
+.fightwrap{flex:1 1 auto;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px}
+.bc{border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:6px;padding:10px 12px;background:#17191c}
+.bc.good{border-left-color:var(--good)}.bc.acc{border-left-color:#8FB4FF}.bc.warn{border-left-color:var(--warn)}
+.bch{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bct{font:700 12px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.bcp{margin-left:auto;font:700 11px var(--mono);color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:2px 9px}
+.bc.good .bcp{color:var(--good);border-color:#2ED47A66}.bc.acc .bcp{color:#8FB4FF;border-color:#8FB4FF66}.bc.warn .bcp{color:var(--warn);border-color:#F2A33A66}
+.bcr{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.ch{display:inline-flex;align-items:center;gap:6px;background:#23262b;border-radius:5px;padding:3px 8px;font:600 12px var(--sans);color:var(--muted)}
+.ch .cf .flag{width:20px;height:13px;border-radius:2px;display:block}
+.ch b{font:700 12px var(--mono);color:var(--fg)}
+.bcl{font:500 13.5px var(--sans);color:var(--dim);line-height:1.4}
+.bcl b{color:var(--muted);font-weight:600}
+.note{flex:0 0 auto;font:500 12px var(--sans);color:var(--dim)}
+
+/* ---- projecteur « what if » ---- */
+.whatif{flex:1 1 auto;min-height:0;display:flex;gap:14px}
+.wi-in{flex:0 0 400px;display:flex;flex-direction:column;gap:12px;overflow:auto}
+.wi-sprint{background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:11px 13px}
+.wi-sh{font:700 12px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.wi-sh .pts{font:600 11px var(--mono);color:var(--dim);letter-spacing:0;text-transform:none}
+.wi-slot{display:grid;grid-template-columns:66px 1fr;gap:9px;align-items:center;margin-bottom:7px}
+.wi-slot:last-child{margin-bottom:0}
+.wi-slot .pl{font:700 12px var(--mono);color:var(--fg)}
+.wi-slot select{font:500 13px var(--sans);color:var(--muted);background:#23262b;border:1px solid var(--line2);border-radius:5px;padding:7px 8px;width:100%}
+.wi-reset{font:500 12px var(--sans);color:var(--muted);background:#23262b;border:1px solid var(--line2);border-radius:5px;padding:8px 13px;cursor:pointer;align-self:flex-start}
+.wi-out{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;background:#1c1e22;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.wi-th{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.wi-th .sub{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.wi-rows{flex:1 1 auto;overflow:auto;padding:4px}
+.wir{display:grid;grid-template-columns:30px 30px 26px 34px 1fr 56px 70px;gap:9px;align-items:center;padding:6px 10px;border-radius:5px;min-height:38px}
+.wir:nth-child(even){background:#00000022}
+.wir .wrk{font:700 15px var(--mono);color:var(--muted);text-align:right}
+.wir .wdl{font:700 12px var(--mono);text-align:center}
+.wir .wdl.up{color:var(--good)}.wir .wdl.down{color:var(--crit)}.wir .wdl.same{color:#5a5f66}
+.wir .wf .flag{width:24px;height:16px;border-radius:2px;display:block;box-shadow:0 0 0 1px #0006}
+.wir .wb{font:600 13px var(--mono);color:var(--fg)}
+.wir .wn{font:600 14px var(--sans);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wir .wadd{font:600 12px var(--mono);color:var(--good);text-align:right}
+.wir .wtot{font:700 18px var(--mono);color:var(--fg);text-align:right}
+</style></head>
+<body>
+<div class="board">
+  <div class="board-h"><b>Possible scenarios</b><span class="hint">what is still possible, looking ahead</span>
+    <span class="seg"><button class="on" data-wv="overview">Overview</button><button data-wv="whatif">What if…</button></span>
+    <span class="togo">11 laps to go &middot; 2 sprints left</span>
+  </div>
+  <div class="inplay"><span class="k">Still in play</span>
+    <span class="pill">Sprint 5 · +5</span><span class="pill">Final · +10</span>
+    <b>up to 15 pts from the sprints</b> · a lap gained is worth <span class="pill lap">+20</span>
+  </div>
+  <div class="main" id="v-overview">
+    <div class="col bars">
+      <div class="ch2">Reachable points <span class="sub">solid = secured now · hatched = still in play · green = can still win</span></div>
+      <div class="barswrap">
+        <div class="brow win">
+    <span class="brk">1</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span>
+    <span class="bbib">3</span>
+    <span class="bnm"><span class="fn">Julien</span> <b>MOREAU</b></span>
+    <span class="bpts">28</span>
+    <span class="bar"><span class="fill" style="width:62.2%"></span><span class="reach" style="width:33.3%"></span><span class="cap">43</span></span>
+    <span class="bpl">P1–6</span>
+  </div>
+        <div class="brow win">
+    <span class="brk">2</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span>
+    <span class="bbib">52</span>
+    <span class="bnm"><span class="fn">Luca</span> <b>ROSSI</b></span>
+    <span class="bpts">25</span>
+    <span class="bar"><span class="fill" style="width:55.6%"></span><span class="reach" style="width:33.3%"></span><span class="cap">40</span></span>
+    <span class="bpl">P1–7</span>
+  </div>
+        <div class="brow win">
+    <span class="brk">3</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span>
+    <span class="bbib">12</span>
+    <span class="bnm"><span class="fn">Marco</span> <b>HUBER</b></span>
+    <span class="bpts">23</span>
+    <span class="bar"><span class="fill" style="width:51.1%"></span><span class="reach" style="width:33.3%"></span><span class="cap">38</span></span>
+    <span class="bpl">P1–8</span>
+  </div>
+        <div class="brow win">
+    <span class="brk">4</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span>
+    <span class="bbib">9</span>
+    <span class="bnm"><span class="fn">Luka</span> <b>KOVAC</b></span>
+    <span class="bpts">20</span>
+    <span class="bar"><span class="fill" style="width:44.4%"></span><span class="reach" style="width:33.3%"></span><span class="cap">35</span></span>
+    <span class="bpl">P1–10</span>
+  </div>
+        <div class="brow win">
+    <span class="brk">5</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span>
+    <span class="bbib">15</span>
+    <span class="bnm"><span class="fn">Liam</span> <b>O'NEILL</b></span>
+    <span class="bpts">18</span>
+    <span class="bar"><span class="fill" style="width:40.0%"></span><span class="reach" style="width:33.3%"></span><span class="cap">33</span></span>
+    <span class="bpl">P1–11</span>
+  </div>
+        <div class="brow win">
+    <span class="brk">6</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span>
+    <span class="bbib">4</span>
+    <span class="bnm"><span class="fn">Tom</span> <b>WALSH</b></span>
+    <span class="bpts">15</span>
+    <span class="bar"><span class="fill" style="width:33.3%"></span><span class="reach" style="width:33.3%"></span><span class="cap">30</span></span>
+    <span class="bpl">P1–12</span>
+  </div>
+        <div class="brow">
+    <span class="brk">7</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span>
+    <span class="bbib">11</span>
+    <span class="bnm"><span class="fn">Yuki</span> <b>TANAKA</b></span>
+    <span class="bpts">12</span>
+    <span class="bar"><span class="fill" style="width:26.7%"></span><span class="reach" style="width:33.3%"></span><span class="cap">27</span></span>
+    <span class="bpl">P2–12</span>
+  </div>
+        <div class="brow">
+    <span class="brk">8</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span>
+    <span class="bbib">23</span>
+    <span class="bnm"><span class="fn">Mads</span> <b>IVERSEN</b></span>
+    <span class="bpts">10</span>
+    <span class="bar"><span class="fill" style="width:22.2%"></span><span class="reach" style="width:33.3%"></span><span class="cap">25</span></span>
+    <span class="bpl">P2–12</span>
+  </div>
+        <div class="brow">
+    <span class="brk">9</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span>
+    <span class="bbib">70</span>
+    <span class="bnm"><span class="fn">Lucas</span> <b>SILVA</b></span>
+    <span class="bpts">8</span>
+    <span class="bar"><span class="fill" style="width:17.8%"></span><span class="reach" style="width:33.3%"></span><span class="cap">23</span></span>
+    <span class="bpl">P3–12</span>
+  </div>
+        <div class="brow">
+    <span class="brk">10</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span>
+    <span class="bbib">7</span>
+    <span class="bnm"><span class="fn">Daan</span> <b>BRAND</b></span>
+    <span class="bpts">6</span>
+    <span class="bar"><span class="fill" style="width:13.3%"></span><span class="reach" style="width:33.3%"></span><span class="cap">21</span></span>
+    <span class="bpl">P4–12</span>
+  </div>
+        <div class="brow">
+    <span class="brk">11</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span>
+    <span class="bbib">61</span>
+    <span class="bnm"><span class="fn">Juan</span> <b>NAVARRO</b></span>
+    <span class="bpts">4</span>
+    <span class="bar"><span class="fill" style="width:8.9%"></span><span class="reach" style="width:33.3%"></span><span class="cap">19</span></span>
+    <span class="bpl">P5–12</span>
+  </div>
+        <div class="brow">
+    <span class="brk">12</span>
+    <span class="bf"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span>
+    <span class="bbib">18</span>
+    <span class="bnm"><span class="fn">João</span> <b>SANTOS</b></span>
+    <span class="bpts">2</span>
+    <span class="bar"><span class="fill" style="width:4.4%"></span><span class="reach" style="width:33.3%"></span><span class="cap">17</span></span>
+    <span class="bpl">P6–12</span>
+  </div>
+      </div>
+    </div>
+    <div class="col fight">
+      <div class="ch2">The battles <span class="sub">only the places still open — one line each</span></div>
+      <div class="fightwrap">
+        <div class="bc good">
+    <div class="bch"><span class="bct">The win</span><span class="bcp">P1</span></div>
+    <div class="bcr"><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><b>3</b> MOREAU</span><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><b>52</b> ROSSI</span><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><b>12</b> HUBER</span></div>
+    <div class="bcl"><b>MOREAU</b> (28) seals the race with <b>any point</b> in Sprint 5 or the final. If he blanks both, ROSSI (25) or HUBER (23) can still win — but they must win the sprints themselves.</div>
+  </div>
+        <div class="bc acc">
+    <div class="bch"><span class="bct">The podium</span><span class="bcp">P3–P5</span></div>
+    <div class="bcr"><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><b>12</b> HUBER</span><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><b>9</b> KOVAC</span><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><b>15</b> O'NEILL</span></div>
+    <div class="bcl">Behind the top two, <b>HUBER</b> (23), <b>KOVAC</b> (20) and <b>O'NEILL</b> (18) fight for 3rd to 5th — decided on the final order.</div>
+  </div>
+        <div class="bc warn">
+    <div class="bch"><span class="bct">Last qualifying place</span><span class="bcp">P10</span></div>
+    <div class="bcr"><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><b>7</b> BRAND</span><span class="ch"><span class="cf"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><b>61</b> NAVARRO</span></div>
+    <div class="bcl"><b>BRAND</b> (10th, 6 pts) holds the last top-10 spot unless <b>NAVARRO</b> (11th, 4) finishes clearly ahead in the closing sprints.</div>
+  </div>
+      </div>
+    </div>
+  </div>
+  <div class="whatif" id="v-whatif" hidden>
+    <div class="wi-in">
+      <div class="wi-sprint" id="wi-s5"></div>
+      <div class="wi-sprint" id="wi-fin"></div>
+      <button class="wi-reset" id="wi-reset">Reset to a likely finish</button>
+    </div>
+    <div class="wi-out">
+      <div class="wi-th">Projected final classification <span class="sub">if the race finishes like this · ▲▼ vs the standings now</span></div>
+      <div class="wi-rows" id="wi-table"></div>
+    </div>
+  </div>
+  <div class="note">Reachable = current points + the most still available from the two remaining sprints (15). A lap gained adds +20. Places shown as a best → worst range.</div>
+</div>
+<script>
+(function(){
+  // mode « embed » (vue reçue dans la console commentateurs) : la vue remplit l'iframe, sans double cadre
+  if(/embed/.test(location.search)){
+    var _b=document.querySelector('.board');if(_b)_b.style.cssText+=';position:static;inset:auto;height:100%;border:0;border-radius:0;box-shadow:none;background:transparent;padding:4px 6px 8px';
+    document.documentElement.style.height='100%';document.body.style.height='100%';document.body.style.background='transparent';
+  }
+  var WI={"riders":[{"bib":3,"nat":"FRA","name":"MOREAU","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"FRA\">\u003crect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#0055a4\"/>\u003crect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fff\"/>\u003crect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ef4135\"/>\u003c/svg>","pts":28,"rank":1},{"bib":52,"nat":"ITA","name":"ROSSI","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"ITA\">\u003crect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#009246\"/>\u003crect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fff\"/>\u003crect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ce2b37\"/>\u003c/svg>","pts":25,"rank":2},{"bib":12,"nat":"SUI","name":"HUBER","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"SUI\">\u003crect width=\"3\" height=\"2\" fill=\"#d52b1e\"/>\u003crect x=\"1.3\" y=\".45\" width=\".4\" height=\"1.1\" fill=\"#fff\"/>\u003crect x=\".95\" y=\".8\" width=\"1.1\" height=\".4\" fill=\"#fff\"/>\u003c/svg>","pts":23,"rank":3},{"bib":9,"nat":"SLO","name":"KOVAC","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"SLO\">\u003crect y=\"0.000\" width=\"3\" height=\"0.667\" fill=\"#fff\"/>\u003crect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#0000ff\"/>\u003crect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#ff0000\"/>\u003c/svg>","pts":20,"rank":4},{"bib":15,"nat":"IRL","name":"O'NEILL","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"IRL\">\u003crect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#169b62\"/>\u003crect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fff\"/>\u003crect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ff883e\"/>\u003c/svg>","pts":18,"rank":5},{"bib":4,"nat":"GBR","name":"WALSH","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"GBR\">\u003crect width=\"3\" height=\"2\" fill=\"#012169\"/>\u003cpath d=\"M0 0L3 2M3 0L0 2\" stroke=\"#fff\" stroke-width=\".4\"/>\u003cpath d=\"M0 0L3 2M3 0L0 2\" stroke=\"#c8102e\" stroke-width=\".15\"/>\u003crect x=\"1.25\" width=\".5\" height=\"2\" fill=\"#fff\"/>\u003crect y=\".75\" width=\"3\" height=\".5\" fill=\"#fff\"/>\u003crect x=\"1.35\" width=\".3\" height=\"2\" fill=\"#c8102e\"/>\u003crect y=\".85\" width=\"3\" height=\".3\" fill=\"#c8102e\"/>\u003c/svg>","pts":15,"rank":6},{"bib":11,"nat":"JPN","name":"TANAKA","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"JPN\">\u003crect x=\"0.000\" width=\"3.000\" height=\"2\" fill=\"#fff\"/>\u003ccircle cx=\"1.5\" cy=\"1\" r=\"0.6\" fill=\"#bc002d\"/>\u003c/svg>","pts":12,"rank":7},{"bib":23,"nat":"DEN","name":"IVERSEN","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"DEN\">\u003crect width=\"3\" height=\"2\" fill=\"#c60c30\"/>\u003crect x=\".78\" width=\".45\" height=\"2\" fill=\"#fff\"/>\u003crect y=\".78\" width=\"3\" height=\".45\" fill=\"#fff\"/>\u003c/svg>","pts":10,"rank":8},{"bib":70,"nat":"BRA","name":"SILVA","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"BRA\">\u003crect width=\"3\" height=\"2\" fill=\"#009c3b\"/>\u003cpath d=\"M1.5 .2L2.8 1L1.5 1.8L.2 1Z\" fill=\"#ffdf00\"/>\u003ccircle cx=\"1.5\" cy=\"1\" r=\".45\" fill=\"#002776\"/>\u003c/svg>","pts":8,"rank":9},{"bib":7,"nat":"NED","name":"BRAND","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"NED\">\u003crect y=\"0.000\" width=\"3\" height=\"0.667\" fill=\"#ae1c28\"/>\u003crect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#fff\"/>\u003crect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#21468b\"/>\u003c/svg>","pts":6,"rank":10},{"bib":61,"nat":"COL","name":"NAVARRO","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"COL\">\u003crect y=\"0.000\" width=\"3\" height=\"1.000\" fill=\"#fcd116\"/>\u003crect y=\"1.000\" width=\"3\" height=\"0.500\" fill=\"#003893\"/>\u003crect y=\"1.500\" width=\"3\" height=\"0.500\" fill=\"#ce1126\"/>\u003c/svg>","pts":4,"rank":11},{"bib":18,"nat":"POR","name":"SANTOS","flag":"\u003csvg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"POR\">\u003crect width=\"3\" height=\"2\" fill=\"#f00\"/>\u003crect width=\"1.2\" height=\"2\" fill=\"#006600\"/>\u003ccircle cx=\"1.2\" cy=\"1\" r=\".38\" fill=\"#ffe000\"/>\u003c/svg>","pts":2,"rank":12}],"s5":[5,3,2,1],"fin":[10,6,4,2],"s5def":[3,52,12,9],"findef":[52,12,15,4]};
+  var riders=WI.riders, S5P=WI.s5, FP=WI.fin;
+  var s5=WI.s5def.slice(), fin=WI.findef.slice();
+  var S5L=['1st +5','2nd +3','3rd +2','4th +1'], FL=['1st +10','2nd +6','3rd +4','4th +2'];
+  function opts(sel){return '<option value="">—</option>'+riders.map(function(r){return '<option value="'+r.bib+'"'+(r.bib==sel?' selected':'')+'>'+r.bib+' '+r.name+'</option>';}).join('');}
+  function renderInputs(){
+    document.getElementById('wi-s5').innerHTML='<div class="wi-sh">Sprint 5 <span class="pts">+5 · +3 · +2 · +1</span></div>'+[0,1,2,3].map(function(i){return '<div class="wi-slot"><span class="pl">'+S5L[i]+'</span><select data-g="s5" data-i="'+i+'">'+opts(s5[i])+'</select></div>';}).join('');
+    document.getElementById('wi-fin').innerHTML='<div class="wi-sh">Final <span class="pts">doubled · +10 · +6 · +4 · +2</span></div>'+[0,1,2,3].map(function(i){return '<div class="wi-slot"><span class="pl">'+FL[i]+'</span><select data-g="fin" data-i="'+i+'">'+opts(fin[i])+'</select></div>';}).join('');
+  }
+  function project(){
+    var add={}; riders.forEach(function(r){add[r.bib]=0;});
+    s5.forEach(function(b,i){ if(b) add[b]+=S5P[i]; });
+    fin.forEach(function(b,i){ if(b) add[b]+=FP[i]; });
+    var proj=riders.map(function(r){return {bib:r.bib,name:r.name,flag:r.flag,pts:r.pts,add:add[r.bib]||0,total:r.pts+(add[r.bib]||0),now:r.rank};});
+    proj.sort(function(a,b){return b.total-a.total || a.now-b.now;});
+    proj.forEach(function(r,i){r.nw=i+1;});
+    document.getElementById('wi-table').innerHTML=proj.map(function(r){
+      var d=r.now-r.nw, cls=d>0?'up':d<0?'down':'same', arr=d>0?'▲ '+d:d<0?'▼ '+(-d):'·';
+      return '<div class="wir"><span class="wrk">'+r.nw+'</span><span class="wdl '+cls+'">'+arr+'</span><span class="wf">'+r.flag+'</span><span class="wb">'+r.bib+'</span><span class="wn">'+r.name+'</span><span class="wadd">'+(r.add?'+'+r.add:'·')+'</span><span class="wtot">'+r.total+'</span></div>';
+    }).join('');
+  }
+  document.addEventListener('change',function(e){var s=e.target.closest&&e.target.closest('select[data-g]'); if(!s)return; var g=s.getAttribute('data-g'), i=+s.getAttribute('data-i'), v=s.value?+s.value:0; (g==='s5'?s5:fin)[i]=v; project();});
+  document.getElementById('wi-reset').addEventListener('click',function(){s5=WI.s5def.slice();fin=WI.findef.slice();renderInputs();project();});
+  renderInputs(); project();
+  var wb=document.querySelectorAll('[data-wv]');
+  wb.forEach(function(b){b.addEventListener('click',function(){wb.forEach(function(x){x.classList.toggle('on',x===b);});document.getElementById('v-overview').hidden=(b.dataset.wv!=='overview');document.getElementById('v-whatif').hidden=(b.dataset.wv!=='whatif');});});
+})();
+</script>
+</body></html>

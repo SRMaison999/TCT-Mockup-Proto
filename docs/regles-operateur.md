@@ -2843,3 +2843,27 @@ dès que la course tournait.
 replie sur plusieurs lignes quand elle ne tient pas, au lieu de forcer la page plus large que la
 fenêtre. À l'étroit c'est l'ovale qui rétrécit ; la colonne du sprint garde son plancher de 500 px,
 et rien ne sort de l'écran.
+
+
+### 203 · Le journal dit « TRANSPONDER », jamais « READ » · 16 novembre 2026
+
+Ses mots :
+
+> « Propose le renommage READ → Transponder dans le prototype »
+
+Et, après la proposition, son choix de casse et de portée, mot pour mot :
+
+> « TRANSPONDER, les deux prototypes »
+
+Dans la colonne **Type** du journal (onglet Decisions / Race log), le type d'une lecture de
+transpondeur s'écrivait « READ » — un mot du matériel, pas de la course. Il se lit désormais
+**TRANSPONDER**, en majuscules comme les autres types du journal (SPRINT, RACE, LEADER, OP,
+WITHDRAW…).
+
+**Codé aux builds 210 (`timeline-prototype_mixed.html`) et 149 (`timeline-prototype.html`).** Les
+quatorze `logEvent('READ', …)` de chaque prototype deviennent `logEvent('TRANSPONDER', …)` ; le
+texte de chaque entrée est inchangé. « READ » n'était qu'une **étiquette d'affichage** : aucun
+filtre, aucun test logique, aucun sélecteur CSS ne s'en servait, donc aucun comportement ne change.
+La colonne Type, large de 72 px, est élargie à 118 px pour le libellé plus long — dans le bloc
+`<style>` propre à chaque prototype (le base n'en avait pas, il en reçoit un), jamais dans le
+`styles.css` partagé, laissé intact.
