@@ -220,6 +220,11 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 </div>
 <script>
 (function(){
+  // mode « embed » (vue reçue dans la console commentateurs) : la vue remplit l'iframe, sans double cadre
+  if(/embed/.test(location.search)){
+    var _b=document.querySelector('.board');if(_b)_b.style.cssText+=';position:static;inset:auto;height:100%;border:0;border-radius:0;box-shadow:none;background:transparent;padding:4px 6px 8px';
+    document.documentElement.style.height='100%';document.body.style.height='100%';document.body.style.background='transparent';
+  }
   var WI=${WIDATA_JSON};
   var riders=WI.riders, S5P=WI.s5, FP=WI.fin;
   var s5=WI.s5def.slice(), fin=WI.findef.slice();

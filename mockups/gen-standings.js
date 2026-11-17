@@ -38,6 +38,10 @@ const fIdx = b => { const i = finalOrder.indexOf(+b); return i < 0 ? 99 : i; };
 rows.forEach(r => r.fin = fIdx(r.bib) + 1);
 rows.sort((a, b) => (b.total - a.total) || (a.fin - b.fin) || (a.bib - b.bib));
 rows.forEach((r, i) => r.rank = i + 1);
+// Type de course : qualification (les N premiers passent au tour suivant) ou finale.
+// Fixé avant la course (comme les tours et les sprints). En qualification, une ligne de
+// coupe sépare qualifiés et éliminés ; en finale, pas de coupe.
+const RACE = { type: 'qualification', advance: 10 };
 
 const ord = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - n % 10 == 10) ? 0 : (n % 10 < 4 ? n % 10 : 0)] || 'th');
 const sprHd = D.sprints.map((s, i) => `<span class="sp">${s.final ? 'F' : 'S' + (i + 1)}</span>`).join('');
@@ -47,7 +51,7 @@ const rowHtml = r => {
   const spr = D.sprints.map((s, i) => { const p = sprintPts[r.bib][i] || 0; return `<span class="sp${p ? ' on' : ''}">${p || '·'}</span>`; }).join('');
   const gained = r.ev.gained.length ? `<span class="lpill up">+${r.ev.gained.length * LAP_PTS}</span> <span class="lp">L${r.ev.gained.join(', L')}</span>` : '<span class="z">·</span>';
   const lost = r.ev.lost.length ? `<span class="lpill down">−${r.ev.lost.length * LAP_PTS}</span> <span class="lp">L${r.ev.lost.join(', L')}</span>` : '<span class="z">·</span>';
-  return `<div class="row">
+  return `<div class="row${RACE.type === 'qualification' && r.rank > RACE.advance ? ' elim' : ''}">
     <span class="rk">${r.rank}</span>
     <span class="chip">${r.bib}</span>
     <span class="flagw">${flag(r.nat)}</span>
@@ -69,7 +73,7 @@ const liveView = `<div class="tbl" id="v-table">
       <span></span><span class="hdsprints">${sprHd}</span><span></span>
       <span class="c">Lap +</span><span class="c">Lap −</span><span></span><span class="c fo">Finish order</span>
     </div>
-    ${rows.map(rowHtml).join('\n    ')}
+    ${rows.map(r => rowHtml(r) + (RACE.type === 'qualification' && r.rank === RACE.advance ? `\n    <div class="cutrow"><span>Qualification cut &middot; top ${RACE.advance} advance to the next round</span></div>` : '')).join('\n    ')}
   </div>`;
 
 /* ===== vue Evolution (Compare) ============================================ */
@@ -145,6 +149,11 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 .hd .r{text-align:right}.hd .c{text-align:center}
 .row{min-height:44px;border-bottom:1px solid #23262a;font-size:14px}
 .row:nth-child(even){background:#00000022}
+.row.elim{opacity:.46}
+.cutrow{display:flex;align-items:center;gap:12px;height:30px;padding:0 12px}
+.cutrow span{font:700 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--warn);white-space:nowrap}
+.cutrow::before,.cutrow::after{content:"";height:0;border-top:2px dashed var(--warn);flex:1 1 auto}
+.cutlb{font:700 9px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--warn);text-align:center;padding:4px 0;border-top:2px dashed var(--warn);margin:3px 6px 1px}
 .rk{font:600 15px var(--mono);color:var(--muted);text-align:right}
 .chip{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:25px;font:600 15px var(--mono);color:var(--fg)}
 .flagw .flag{width:27px;height:17px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
@@ -238,6 +247,14 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 </div>
 <script>
 (function(){
+  // mode « embed » (vue reçue dans la console commentateurs) : on masque les exports opérateur
+  // et on neutralise le cadre interne pour que la vue remplisse l'iframe (pas de double cadre)
+  if(/embed/.test(location.search)){
+    var _ex=document.querySelector('.ex');if(_ex)_ex.style.display='none';
+    var _b=document.querySelector('.board');if(_b)_b.style.cssText+=';position:static;inset:auto;height:100%;border:0;border-radius:0;box-shadow:none;background:transparent;padding:4px 6px 8px';
+    document.documentElement.style.height='100%';document.body.style.height='100%';document.body.style.background='transparent';
+  }
+  var CUT=${RACE.type === 'qualification' ? RACE.advance : 0};   // ligne de coupe (0 = finale, pas de coupe)
   var hints={table:"overall classification · points per sprint · laps won / lost · finish order",
              evo:"follow up to 4 riders · see how they move and how the gap changes · click a moment to re-rank"};
   // ---- Evolution (Compare) : rendu client ----
@@ -252,7 +269,8 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
     var i=snapAt, ranked=order.slice().sort(function(a,b){return DATA.riders[a].rank[i]-DATA.riders[b].rank[i];});
     document.getElementById('cmp-left').innerHTML=ranked.map(function(b){
       var r=DATA.riders[b],on=sel.indexOf(b)>=0;
-      return '<button class="lb'+(on?' on':'')+'" data-bib="'+b+'"'+(on?' style="--c:'+colOf(b)+'"':'')+'><span class="rrk">'+r.rank[i]+'</span><span class="sw"></span><span class="flagw">'+r.flag+'</span><span class="rbib">'+b+'</span><span class="rnm">'+r.name+'</span><span class="rtot">'+r.pts[i]+'</span></button>';
+      var row='<button class="lb'+(on?' on':'')+'" data-bib="'+b+'"'+(on?' style="--c:'+colOf(b)+'"':'')+'><span class="rrk">'+r.rank[i]+'</span><span class="sw"></span><span class="flagw">'+r.flag+'</span><span class="rbib">'+b+'</span><span class="rnm">'+r.name+'</span><span class="rtot">'+r.pts[i]+'</span></button>';
+      return row+(CUT&&r.rank[i]===CUT?'<div class="cutlb">top '+CUT+' advance</div>':'');
     }).join('');
   }
   function renderHead(){
