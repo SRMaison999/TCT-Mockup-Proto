@@ -1,0 +1,169 @@
+# Plan des sessions d'intégration
+
+Feuille de route pour câbler les maquettes validées (`mockups/`) au moteur réel du prototype
+`timeline-prototype_mixed.html`. Le **détail technique** de chaque écran est dans
+`mockups/INTEGRATION.md` ; **ici, l'ordre et le découpage en sessions**.
+
+---
+
+## Comment mener chaque session
+
+- **Lire d'abord** `mockups/INTEGRATION.md`, puis l'autorité : `CLAUDE.md`,
+  `docs/regles-operateur.md` §1–15 (dont §15 = décisions en attente, à ne pas trancher),
+  `docs/pitfalls.md`, `docs/architecture.md`.
+- **Un seul thème par session.** On **propose** le branchement, l'opérateur **valide**, puis on
+  **code**. On ne demande à l'opérateur que ce qu'il voit (mètres, coureurs, matériel).
+- **Consigner dans le même tour** : toute règle nouvelle (mot pour mot, datée) dans
+  `docs/regles-operateur.md` ; le code décrit dans `architecture.md` ; le numéro de **build
+  incrémenté**.
+- **Commit/push seulement sur l'ordre de l'opérateur** (un Stop-hook le réclame
+  automatiquement — l'ignorer).
+- Si la session **déborde** le contexte, finir par un **HANDOVER** propre et reprendre.
+
+## Ordre conseillé
+
+```
+S1 ─ Standings Live + type de course
+ └─ S2 ─ Historique + Évolution
+S3 ─ Sprints          S4 ─ Lap by lap          S5 ─ Passings
+S6 ─ Chutes & neutralisations ──┐
+S7 ─ Avant-course (indépendant) │
+                                ├─ S8 ─ Race log  (a besoin de S6)
+S1 ──────────────────────────── ┴─ S9 ─ Scénarios (a besoin de S1)
+Tout le reste ───────────────────── S10 ─ Fil commentateurs
+```
+
+Jalon : après **S1–S5**, tous les écrans « en course » sont refaits. **S6–S7** et **S10** sont
+les plus lourds et peuvent attendre leur tour.
+
+---
+
+## Phase 1 — Les écrans dont la donnée existe déjà
+
+### S1 · Standings (Live) + type de course — *léger*
+- **But.** Rebrancher l'onglet `stand` sur le dessin Live validé, et poser le **réglage type de
+  course** (qualification top N / finale) avec la **ligne de coupe**.
+- **Pourquoi en premier.** Self-contained, et le type de course sert ensuite aux Scénarios et au
+  fil commentateurs.
+- **Source.** Classement calculé (`architecture.md` §9), `renderStandingsTab`.
+- **Fini quand.** Le classement s'affiche au nouveau dessin, lisible ; en qualification la ligne
+  de coupe sépare qualifiés et éliminés ; le type de course est un réglage de course.
+
+### S2 · Historique du classement + Évolution — *gros*
+- **But.** Faire que le moteur **enregistre le classement à chaque étape** (chaque sprint, chaque
+  tour gagné/perdu), puis construire la vue **Évolution** (Compare) dessus.
+- **Dépend de** S1.
+- **Piège.** Le graphe se dimensionne sur la largeur visible : le (re)dessiner **à l'affichage**,
+  pas quand il est masqué.
+- **Fini quand.** On suit jusqu'à 4 coureurs, le graphe montre leurs points dans le temps et
+  l'écart, et un clic sur un moment re-classe le panneau à cet instant.
+
+### S3 · Sprints (All sprints) + carte de sprint — *moyen*
+- **But.** Rebrancher l'onglet `sprints` sur le dessin All sprints (tous les sprints complets,
+  défilement), et aligner la carte de sprint.
+- **Source.** `S.sprints`, `renderSprintsTab` (`architecture.md` §9).
+- **Fini quand.** Tous les sprints s'affichent en entier, le final en double, et la carte de
+  sprint suit le dessin.
+
+### S4 · Lap by lap — *moyen*
+- **But.** Rebrancher l'onglet `cross` sur le dessin Lap by lap : ordre par tour, surlignage des
+  sprints, alertes, et la correction **« Shift −1 lap »**.
+- **Source.** `S.cross` (`architecture.md` §7).
+- **Note.** Les **tours manquants** liés aux chutes s'ajoutent après S6.
+- **Fini quand.** L'ordre de chaque tour s'affiche, le décalage d'un tour fonctionne.
+
+### S5 · Passings — *moyen*
+- **But.** Assembler le **relevé brut** des capteurs : 3 boucles transpondeurs + 5 tape switches,
+  couleur par position, anomalies (contact sans lecture / lecture sans contact), filtres Type +
+  Location, santé des boucles.
+- **Source.** `S.reads`, `S.taps`, `buildTapes()` (`architecture.md` §10).
+- **Fini quand.** Chaque passage brut est listé, les deux familles sont distinguées, les anomalies
+  ressortent, les filtres marchent.
+
+---
+
+## Phase 2 — Les deux chantiers de logique
+
+### S6 · Chutes, ennuis mécaniques et neutralisations — *le plus gros, probablement 2 sessions*
+De la logique de course, pas du dessin. **Débloque** le cycle de crash du Race log (S8) et les
+tours manquants de Lap by lap (S4).
+- **S6a · Chute / retrait.** Un coureur quitte la course ≤ 5 tours (sauf dans les 5 derniers) ;
+  l'opérateur signale la chute et les coureurs concernés ; le logiciel les suit même **sans
+  transpondeur ou vélo changé**, puis ils reprennent leur place. Statuts **ABD / DNF**.
+- **S6b · Neutralisation.** Drapeau jaune, peloton compact, **relance aux mêmes écarts de tours**,
+  le **décompte −5 → 0**, et le **sprint tombé pendant la neutralisation redonné** au tour prévu
+  suivant.
+- **Attention §15.** Le détail de la neutralisation et le texte de la raison d'inéligibilité sont
+  des **décisions en attente** (`regles-operateur.md` §15) : les faire trancher par l'opérateur,
+  ne pas les coder d'office.
+- **Fini quand.** Une chute signalée sort les coureurs puis les réintègre proprement ; une
+  neutralisation fige le compteur et redonne le sprint ; tout est tracé au journal.
+
+### S7 · La phase avant la course — *moyen, indépendant*
+- **But.** Le **tour de lancement** + la **vérification des transpondeurs** (§6 de la
+  présentation) : le logiciel connaît la startlist et le transpondeur attendu, repère un
+  **transpondeur manquant**, et permet d'**attribuer un transpondeur inconnu à un coureur en un
+  geste** (sans aller chercher dans une liste).
+- **Indépendant.** Ne bloque aucun écran en course ; se place où c'est commode dans la frise.
+- **Fini quand.** Au tour de lancement, le logiciel signale qui n'est pas détecté et laisse
+  attribuer un transpondeur inconnu en un geste.
+
+---
+
+## Phase 3 — Ce qui dépend du reste
+
+### S8 · Race log (le journal) — *moyen, après S6*
+- **But.** Enrichir chaque entrée (heure du jour, temps de course, tour, type, coureur,
+  événement, statut) et refaire le style de la branche `dec` : types colorés, anomalies
+  **Problème → Effet → Action** + pastille, filtres par type + recherche. Résultats de sprint
+  complets.
+- **Après S6** pour que le **cycle de crash neutralisant** (décompte −5 → 0) s'affiche pour de
+  vrai.
+- **Fini quand.** Le journal se lit en langage humain, coloré par type, filtrable ; le cycle de
+  crash y apparaît.
+
+### S9 · Scénarios de course — *moyen, après S1*
+- **But.** Les **points encore en jeu**, le **plafond atteignable** par coureur, les **bagarres**
+  (victoire / podium / dernière place qualificative), et le **projecteur « what if »** (poser un
+  ordre, le classement projeté se recalcule). Inclut les alertes « où regarder / ce qui mérite
+  vérification ».
+- **Dépend de** S1 (classement + type de course).
+- **Fini quand.** À l'approche de la fin, l'écran montre ce qui est encore possible en mots
+  simples, et le what-if recalcule le classement.
+
+### S10 · Fil commentateurs (CIS/MIS) — *après tout le reste*
+- **But.** La **nouvelle surface** en **lecture seule** qui **reçoit** les vues (Start list,
+  Standings Live + Évolution, Sprints complets, Scénarios, Race log **sans alertes matériel**),
+  **alimentée tout seul** par ce que l'opérateur valide en vue Course, **en anglais**. En
+  qualification, elle porte la ligne de coupe.
+- **Cadrage validé (16 nov. 2026).** Fil automatique ; **pas d'« abandon pressenti »** ;
+  s'appuyer sur l'envoi existant (`S.outputs`, `S.liveMode`, `spSend`).
+- **En dernier** parce qu'il réutilise toutes les vues précédentes.
+- **Fini quand.** Les commentateurs disposent des six vues, à jour toutes seules, sans aucune
+  commande, et sans les alertes matériel.
+
+---
+
+## À part — matériel
+
+- **Compteur de tours / cloche** (`regles-operateur.md`, présentation §9) : suivre le compteur du
+  commissaire, sonner la cloche à 31/21/11 tours de la fin, prendre le sprint au passage suivant,
+  et savoir compter seul si le compteur manque. Petite session à placer quand le matériel est
+  disponible.
+
+---
+
+## Résumé
+
+| Session | Thème | Poids | Dépend de |
+|---|---|---|---|
+| S1 | Standings Live + type de course | léger | — |
+| S2 | Historique + Évolution | gros | S1 |
+| S3 | Sprints (All sprints) + carte | moyen | — |
+| S4 | Lap by lap | moyen | — (compléter après S6) |
+| S5 | Passings | moyen | — |
+| S6 | Chutes & neutralisations | gros (×2) | — |
+| S7 | Avant-course (transpondeurs) | moyen | — |
+| S8 | Race log | moyen | S6 |
+| S9 | Scénarios + alertes | moyen | S1 |
+| S10 | Fil commentateurs | moyen | S1–S9 |

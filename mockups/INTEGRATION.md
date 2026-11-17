@@ -4,6 +4,10 @@ Ce document s'adresse à **un autre Claude** chargé d'intégrer les maquettes v
 **vrai prototype**. Il dit quoi lire, comment travailler, où chaque écran se branche, et les
 pièges connus. Il ne remplace aucune des sources ci-dessous : il y renvoie.
 
+Pour **l'ordre et le découpage en sessions** de l'intégration, voir
+**`mockups/PLAN-SESSIONS.md`** : ce document-ci donne le *quoi* et le *comment* par écran, le plan
+donne le *quand* (quelle session fait quoi, dans quel ordre, avec quelles dépendances).
+
 ---
 
 ## 0. En une phrase
