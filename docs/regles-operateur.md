@@ -3386,3 +3386,23 @@ la ligne de départ au build 234 (point 228). Il ne commande plus rien et ne se 
 
 Sa règle du 28 octobre 2026 tient toujours : un tri posé dans la vue SIMULATION se reporte sur la
 vue START LIST, et prime alors sur l'ordre de la grille.
+
+
+### 232 · On mesure des temps, jamais des distances · 18 novembre 2026
+
+> « il y a une chose importante que tu dois savoir : Il ne faut pas mesurer des distances ! Il faut
+> mesurer des temps ! La règle le dit : une cassure intervient si il y a plus d'une seconde d'écart
+> entre deux coureurs, elle ne parle jamais de distance »
+
+Dit en interrompant un relevé qui comparait les coureurs en mètres, avec un seuil de 20,25 m obtenu
+en convertissant sa seconde à 18,6 m/s. **Ce seuil-là n'est pas le sien** : il sort d'une conversion,
+il bouge avec la vitesse, et le vérifier ne vérifie que la conversion.
+
+**Comment une vérification se fait donc.** On prend les heures de passage des deux coureurs sur la
+**même boucle**, on les soustrait, on retire le temps que coûte une longueur de vélo au coureur qui
+suit, et on compare à 1,000 s. Le compte rendu est en **secondes**.
+
+C'est son point 223 appliqué au contrôle et non plus seulement au calcul : « tu ne dois utiliser que
+les heures de passage ». Ses points 188 et 189 disaient déjà la même chose du vocabulaire.
+
+Les mètres ne servent qu'à l'**ovale**, qui doit bien dessiner quelque chose.

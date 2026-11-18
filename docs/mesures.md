@@ -4468,3 +4468,41 @@ montrent tous deux `24, 1, 2, 3…`. Le nom modifié sur la **première ligne** 
 
 **Avec un tri posé dans la vue SIMULATION** — un clic sur l'en-tête `Name` — `Riders` affiche
 `ASHBY, AWANG, BARDEN, BRAND…` : sa règle du 28 octobre 2026 prime, comme avant.
+
+---
+
+## §85 · Les blocs qui séparent des coureurs à roue · build 238
+
+**La mesure est en secondes**, lue sur les heures de passage des transpondeurs, sur la même boucle,
+moins le temps d'une longueur de vélo pour le coureur qui suit (son point 232). Seuil : 1,000 s.
+
+**Deux courses, sa liste de 24 coureurs, piste de 250 m, 40 tours, 18,6 m/s.**
+
+**1. La course où personne ne reçoit d'ordre.** 425 relevés sur les 540,7 s. **Un seul bloc, tout du
+long.** Aucun saut d'écart. Rien à redire.
+
+**2. La course animée** — le BIB 1 et le BIB 2 partent au tour 5 à 19,6 m/s, le BIB 23 et le BIB 24
+sont lâchés au tour 12 à 17,7 m/s. Aucun autre ordre. 179 relevés.
+
+**Quatre séparations fausses**, c'est-à-dire quatre fois où la timeline a mis deux coureurs dans
+deux blocs différents alors que leurs passages sur la même boucle sont séparés de moins d'une
+seconde :
+
+| à | le bloc du dessus finit par | le bloc du dessous commence par | leurs deux passages | après la longueur de vélo |
+|---|---|---|---|---|
+| 335,4 s | BIB 1 | BIB 2 | 0,112 s | **0,028 s** |
+| 444,6 s | BIB 15 | BIB 16 | 0,118 s | **0,030 s** |
+| 469,1 s | BIB 13 | BIB 24 | 0,088 s | **−0,005 s** |
+| 542,2 s | BIB 2 | BIB 14 | 0,100 s | **0,012 s** |
+
+Ces coureurs sont à roue. C'est le défaut que l'opérateur a signalé le 18 novembre 2026 : « des
+groupes qui se forment et séparent des coureurs, alors qu'il y a moins de 1 seconde d'écart entre
+eux ».
+
+**Et d'où vient la décision.** Sur les 179 relevés, **73 — soit 41 %** — portent sur une frontière
+dont les deux coureurs **n'ont aucune boucle en commun** : aucune boucle ne les a lus tous les deux
+depuis le dernier passage de celui de derrière. Dans ces cas-là, `pairCass()` retombe sur
+`metres / spd`, c'est-à-dire sur une conversion de distance. **Deux décisions de bloc sur cinq ne
+sont donc pas prises sur des heures de passage** — ce que son point 223 interdit.
+
+**L'en-tête des blocs** a sauté **81 fois** d'une seconde au moins sur cette course.
