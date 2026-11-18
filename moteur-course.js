@@ -102,6 +102,7 @@
                               //   Noté à la séparation, effacé au retour, jamais recalculé (E14).
       colle: false,           // était-il, à l'image d'avant, au contact du coureur qu'il rejoint ?
       credite: null,          // quand son dernier ±20 a été constaté
+      etaitDedans: true,      // était-il dans le peloton à l'examen d'avant ? le bout ne se note qu'en sortant
     });
 
     /* ------------------------------------------------------------------ 1. une détection */
@@ -278,6 +279,31 @@
         if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null }; gs.push(g); }
         g.coureurs.push(x.c.bib);
       }
+      // LA CHAÎNE EST UN ANNEAU : ON LA REFERME. La timeline est une liste, donc il faut bien la
+      // couper quelque part, et on la coupe sur le coureur de tête. Mais la piste n'a pas de bout :
+      // quand le dernier de la liste roule à moins d'une seconde du premier, les deux sont DANS LE
+      // MÊME GROUPE, et la coupure de la liste ne doit pas les séparer.
+      //
+      // E16. NE JAMAIS LAISSER LA COUPURE DE LA LISTE CASSER UN GROUPE. Cela arrive dès que des
+      //      coureurs prennent un tour : le peloton et eux occupent alors tout le tour, et la
+      //      coupure tombe forcément dedans. Mesuré à la build 243, à 264,2 s, sur la course de
+      //      24 coureurs : le BIB 19 roulait à 0,70 s du BIB 1 et la liste les mettait aux deux
+      //      bouts ; le peloton sortait en deux morceaux, `1,20,2` d'un côté et `3…19` de l'autre,
+      //      et le 20 se retrouvait « sorti du peloton » sans avoir rien fait.
+      //      L'opérateur : « Mais le peloton c'est toujours le peloton ! »
+      if (gs.length > 1) {
+        const prem = ch[0], der = ch[ch.length - 1], T = tourS(prem.c) || tourS(der.c);
+        if (T) {
+          const v = vitesse(prem.c);
+          let z = T - der.anneau + prem.anneau;          // le pas qui referme l'anneau
+          if (v) z -= R.veloM / v;
+          if (z <= R.cassureS) {
+            const queue = gs.pop();
+            gs[0].coureurs = queue.coureurs.concat(gs[0].coureurs);
+            gs[0].ecartS = null;
+          }
+        }
+      }
       return gs;
     }
 
@@ -348,8 +374,18 @@
       const ch = chaine();
       const entree = new Map(ch.map(x => [x.c.bib, x]));
       const dans = new Set(pel.coureurs);
-      const premier = entree.get(pel.coureurs[0]);                       // le premier du peloton
-      const dernier = entree.get(pel.coureurs[pel.coureurs.length - 1]); // le dernier du peloton
+      // LE PREMIER ET LE DERNIER DU PELOTON, pris parmi CEUX QUI N'EN SONT PAS SORTIS. Quand un
+      // échappé revient, il touche le peloton et le groupe se referme sur lui : s'il comptait, le
+      // dernier du peloton deviendrait l'échappé lui-même, et il n'y aurait plus personne à
+      // rattraper. Ceux qui portent un bout, et ceux qu'on vient de créditer, sont donc mis de côté
+      // le temps du constat — ce sont justement ceux dont le tour est en jeu.
+      const noyau = pel.coureurs.filter(b => {
+        const o = coureurs.get(b);
+        return o && !o.sorti && !(o.credite != null && maintenant - o.credite <= R.cassureS);
+      });
+      if (noyau.length < 2) return;
+      const premier = entree.get(noyau[0]);                   // le premier du peloton
+      const dernier = entree.get(noyau[noyau.length - 1]);    // le dernier du peloton
       if (!premier || !dernier) return;
 
       for (const c of coureurs.values()) {
@@ -357,14 +393,24 @@
         const x = entree.get(c.bib);
         if (!x) continue;
 
-        // 1. IL EST DANS LE PELOTON. Il n'a aucun bout, et il n'en reçoit un qu'en sortant.
-        if (dans.has(c.bib)) { c.sorti = null; c.colle = false; continue; }
+        // 1. IL EST DANS LE PELOTON ET IL N'EN EST JAMAIS SORTI. Rien à faire. Celui qui en EST
+        //    sorti garde son bout même quand le groupe se referme sur lui : c'est exactement
+        //    l'instant du rattrapage, et c'est là que le constat se fait.
+        if (dans.has(c.bib) && !c.sorti) { c.colle = false; c.etaitDedans = true; continue; }
 
         // 2. IL VIENT D'EN SORTIR : on note le bout, maintenant, pendant qu'on le voit. Il est
         //    juste devant le premier du peloton, ou juste derrière le dernier — c'est l'un ou
         //    l'autre, et la lecture des boucles le dit sans ambiguïté puisqu'il est encore tout
         //    près. On prend le plus petit des deux écarts.
         if (!c.sorti) {
+          // ET SEULEMENT À CETTE IMAGE-LÀ. Il faut qu'il ait été dans le peloton juste avant :
+          // c'est le seul instant où le bout se voit, les deux groupes étant encore à une seconde
+          // l'un de l'autre. Un coureur déjà loin ne dit plus rien — à un demi-tour, « devant » et
+          // « derrière » sont la même lecture. Mesuré à la build 244 : sans cette condition, les
+          // BIB 23 et 24, lâchés et crédités de −20 à 363,3 s, étaient aussitôt remarqués « sortis
+          // par l'avant » et recevaient +20 à 436,9 s alors qu'ils continuaient de perdre du terrain.
+          if (!c.etaitDedans) continue;
+          c.etaitDedans = false;
           const devantLePeloton = -decalageS(premier.c, c);   // positif : il est devant le premier
           const derriereLePeloton = decalageS(dernier.c, c);  // positif : il est derrière le dernier
           if (devantLePeloton == null || derriereLePeloton == null) continue;

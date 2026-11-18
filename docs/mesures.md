@@ -4892,3 +4892,49 @@ le constat part.
 deux coureurs ont pris un tour et roulent au milieu du peloton, qu'est-ce que le peloton ?
 
 **Un petit défaut noté au passage** : à 544,8 s le BIB 6 paraît deux fois dans le même constat.
+
+
+## §96 · La chaîne refermée sur elle-même — build 244, 18 novembre 2026
+
+Même course de test, remesurée proprement après l'incident de réglage (pitfalls D35) : 24 coureurs,
+dossards 1 à 24, 40 tours, **18 m/s** — un tour dure 13,89 s. Les BIB 1 et 2 accélèrent au tour 5,
+les BIB 23 et 24 sont lâchés au tour 12.
+
+**Ce qui a changé.** Trois choses, toutes dans `moteur-course.js`.
+
+1. **La chaîne se referme.** La timeline est une liste, donc elle se coupe sur le coureur de tête ;
+   la piste, elle, n'a pas de bout. Quand le dernier de la liste roule à moins d'une seconde du
+   premier, les deux sont dans le même groupe et la coupure ne les sépare plus (E16).
+2. **Le premier et le dernier du peloton se prennent parmi ceux qui n'en sont pas sortis.** Sans
+   quoi, au moment où un échappé revient, le groupe se referme sur lui et c'est lui-même qui
+   devient le dernier du peloton : il n'y aurait plus personne à rattraper.
+3. **Le bout ne se note qu'à l'image où le coureur quitte le peloton**, et plus jamais ensuite. À un
+   demi-tour, « devant » et « derrière » sont la même lecture : un coureur déjà loin ne dit plus
+   rien.
+
+**Les constats, avant et après :**
+
+| | build 243 | build 244 |
+|---|---|---|
+| constats | 8 | **6** |
+| justes | 4 | **5** |
+| faux | 4 | **1** |
+
+| heure | | dossards | avec | |
+|---|---|---|---|---|
+| 243,0 s | +20 | 1 | le 22 | juste |
+| 244,1 s | +20 | 2 | le 1 | juste, mais le compagnon nommé est faux |
+| 363,3 s | −20 | 23, 24 | le 3 | juste |
+| 436,9 s | +20 | 23, 24 | le 22 | **faux** |
+| 491,6 s | +20 | 1 | le 22 | juste |
+| 493,0 s | +20 | 2 | le 1 | juste, même réserve sur le compagnon |
+
+**La timeline ne bouge pas d'un chiffre** : 2,93 % d'inversions entre coureurs à roue, avant comme
+après. La fermeture ne touche qu'aux groupes, pas à l'ordre.
+
+**Ce qui reste.** Le BIB 23 et le BIB 24, crédités de −20 à 363,3 s, repartent du peloton et
+reçoivent +20 à 436,9 s alors qu'ils continuent de perdre du terrain : à cet instant ils sont à
+38,1 s du BIB 1, soit près de trois tours. Le bout qu'on leur note en sortant est « avant » alors
+qu'ils sortent par l'arrière. Et le compagnon nommé pour le BIB 2 est le BIB 1, son propre
+compagnon d'échappée, au lieu du dernier du peloton : le BIB 1 vient d'être crédité et il est
+ressorti de la mise à l'écart une seconde trop tôt.
