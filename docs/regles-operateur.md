@@ -3534,3 +3534,36 @@ négative, alors qu'une installation réelle lirait bien ces transpondeurs.
 
 **Le simulateur produit ces lectures. Le moteur de course les ignore.** Les deux paramètres sont
 une question posée, pas une règle : elle est ouverte au §15.
+
+### 241 · Le tour gagné se lit sur les groupes, pas sur les coureurs · 18 novembre 2026
+
+> « Un coureur qui cherche à gagner un tour sur le peloton, peut tout-à-fait avoir fait moins de
+> tours que le peloton, il peut déjà avoir perdu deux tours précédemment.
+>
+> Mais enfin je ne comprends pas toutes ces complications, qui me semblent totalement inutiles et
+> visiblement non fonctionnelles !
+>
+> C'est pourtant simple :
+>
+> Au début nous avons un peloton groupé.
+> Par exemple deux coureurs s'en extirpent par l'avant en créant un gap de plus d'une seconde entre
+> eux et le premier du peloton.
+> Nous avons maintenant LEADERS et BUNCH.
+> SI LEADERS rattrapent les derniers coureurs de BUNCH > proposition de tour gagné que l'opérateur
+> doit valider !
+>
+> Qu'y a t'il de compliqué là-dedans ? »
+
+Dit après une proposition qui lisait le nombre de passages d'un coureur, et après celle, plus
+ancienne, d'un coureur de repère pour le peloton. Les deux sont mortes ici.
+
+**Le tour gagné est une histoire de GROUPES, pas de coureurs.** Un groupe sort du peloton **par un
+bout** — l'avant ou l'arrière —, et c'est à ce moment-là, et à ce moment-là seulement, que ce bout
+se voit : les deux groupes sont encore à une seconde l'un de l'autre. Ce bout est un **fait**, qui
+se note une fois et se garde avec le groupe.
+
+**Le groupe sorti par l'avant qui rattrape les derniers coureurs du peloton a gagné un tour.** La
+proposition part là, et l'opérateur la valide.
+
+**Le nombre de passages d'un coureur ne dit rien à lui seul** : celui qui cherche à prendre un tour
+peut en avoir perdu deux avant.
