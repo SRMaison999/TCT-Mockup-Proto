@@ -846,3 +846,102 @@ Retenu : un contrôle qui se cache par `hidden` a besoin de **sa propre règle**
 dès que sa classe lui pose un `display` — c'est la convention écrite dans `mockups/INTEGRATION.md` §7,
 que `.pfilt` et `.spnav` suivent déjà. Et pour vérifier qu'une chose est cachée, **mesurer sa boîte**
 plutôt que lire son attribut : `hidden: true` et 104 px de large coexistaient très bien.
+
+
+### D35 · Un nom qui porte un rang ne reconnaît rien
+
+Les colonnes de Lap by lap groupent les coureurs par bloc. Le bloc était reconnu par son **nom**,
+`1-Bunch`, `2-Chase` — celui que `groupName()` affiche. Mesuré au palier 3, tour 24 : le peloton
+était coupé en **cinq boîtes**, séparées par de faux écarts de 20 à 25 s. La raison : le nom porte
+le **rang** du bloc, et le rang change pendant que les seize coureurs franchissent la ligne — un
+bloc de tête qui se forme le temps de deux lectures fait passer le peloton de `1-Bunch` à `2-Bunch`.
+La couleur ne vaut pas mieux : elle se calcule, elle aussi, sur le rang et sur le nombre de blocs.
+
+Retenu : pour reconnaître une chose d'une lecture à l'autre, graver ce qui ne bouge pas avec
+l'affichage — ici `blkid`, le plus petit dossard du bloc. Le nom et la couleur restent ce qu'ils
+sont, de l'affichage, pris sur le premier passage de la boîte.
+
+**Et l'ordre d'une liste n'est pas celui d'un tableau de boîtes.** La même colonne rangeait d'abord
+par rang de timeline, comme l'ancienne rangée de pastilles le faisait. Des boîtes demandent que les
+coureurs d'un même bloc se suivent, donc l'ordre de la **ligne**, à l'heure du passage : sans lui,
+les boîtes se fragmentent et les écarts affichés ne veulent rien dire.
+
+
+### D36 · Une pastille qui se colore est plus large qu'une pastille qui ne l'est pas
+
+La colonne des tours faits de Lap by lap était dimensionnée sur le nombre : 22 px, assez pour deux
+chiffres. Mais la pastille ne porte sa bordure et ses marges **que lorsqu'elle se colore** — verte
+pour un tour gagné, rouge pour un tour perdu — et elle passe alors à 32 px. Tant qu'aucun tour
+n'était crédité, rien ne se voyait ; dès le premier tour gagné, elle débordait sur le temps au tour
+et le tronquait en « 16. ». C'est l'opérateur qui l'a vu, sur sa capture.
+
+Retenu : dimensionner une colonne sur **l'état le plus large** de ce qu'elle contient, pas sur son
+état au repos. Et un essai qui ne produit jamais l'état coloré ne prouve rien de cette colonne — ce
+build-là avait été livré en disant que les pastilles n'étaient pas mesurées, ce qui était exact et
+n'a pas suffi.
+
+
+### D37 · Corriger le chemin qu'on sait reproduire, pas celui que l'opérateur emprunte
+
+Le second passage d'un coureur qui vient de prendre un tour portait le mauvais bloc. La correction du
+build 219 a été écrite — et **vérifiée** — sur le seul chemin que l'essai produisait : un tour validé
+**après** le franchissement, où `refile()` déplace des passages déjà enregistrés. L'essai passait.
+L'opérateur, lui, valide **avant** le franchissement : là `refile()` ne déplace rien, le tour attend
+dans `markPending`, et le second passage est **enregistré** après coup, par un tout autre chemin. Le
+défaut était donc entier chez lui et réparé chez moi.
+
+Deux choses retenues. La première : quand une correction dépend d'un geste de l'opérateur, **refaire
+son geste**, au moment où il le fait — ici valider la proposition dès qu'elle paraît, et non une fois
+la ligne franchie. La seconde : un même fait peut être écrit par deux chemins (`refile()` à la
+validation, l'enregistrement du passage ensuite) ; corriger l'un ne dit rien de l'autre, et les deux
+se cherchent avant de livrer.
+
+
+### D38 · Ranger le passé avec le classement du présent
+
+La colonne d'un tour était rangée par `S.tlRank`, le rang de la timeline **maintenant**. Un tour
+regardé à l'arrivée s'y retrouvait rangé avec un classement vieux de vingt tours de trop : le 12,
+seul en tête au tour 19, paraissait au milieu du peloton parce qu'il y était rentré depuis. Le bloc
+gravé sur chaque passage ne vaut pas mieux dans l'autre sens : il est juste à l'instant du passage,
+mais un tour dure une demi-minute et la timeline renumérote ses blocs pendant ce temps, si bien que
+la colonne additionne seize vérités d'instants différents.
+
+Ce qu'il fallait : **un relevé, une fois, daté du tour** — l'ordre des blocs pris à l'ouverture du
+tour, rangé avec le tour et plus jamais recalculé. Un affichage qui raconte un moment passé garde
+le relevé de ce moment ; il ne le reconstruit ni avec l'état d'aujourd'hui, ni morceau par morceau.
+
+
+### D39 · `el.click()` ne valide rien : la carte écoute `pointerup`
+
+Les propositions se valident sur `pointerup`, par `pressed(e)` — pas sur `click`. Un `el.click()`
+lancé depuis un essai automatique ne déclenche donc **rien**, et il ne lève aucune erreur : la carte
+reste à l'écran, l'essai croit avoir validé. Plusieurs comptes rendus de cette session ont annoncé
+« validé » alors que `S.lapStatus` valait toujours 0 ; ce qui se voyait ensuite était le merge
+automatique du §3, pas une validation. Il faut envoyer un vrai `pointerdown` puis `pointerup`
+(`PointerEvent`, `button: 0`, `bubbles: true`), **et vérifier que la carte a disparu** avant d'écrire
+qu'un tour a été validé. Plus généralement : un essai qui pilote l'écran prouve son geste par son
+effet dans l'état, jamais par le fait d'avoir appelé une fonction.
+
+### D40 · Un repère de peloton pris sur un coureur qui n'y était pas encore
+
+Le tour du peloton se lit sur son premier coureur (§5), et le code écartait du repère ceux qui
+tiennent un tour retranché. Mais ce tour est relevé **à la détection** et gardé entre deux passages :
+un coureur qui vient d'entrer dans l'amas porte encore le relevé d'avant, où il n'en faisait pas
+partie, donc zéro. Le 46, à un tour de retard, est ainsi devenu le repère à 296,25 s ; `bunchRaw` a
+reculé d'un tour et cinq coureurs du peloton se sont retrouvés dans le bloc de tête. Le relevé garde
+maintenant **où il a été pris** (`dedans`), et le repère n'accepte qu'un coureur dont le dernier
+relevé a été fait à l'intérieur du paquet. Une valeur mise en cache doit dire dans quelles conditions
+elle a été prise, sinon elle se relit dans un contexte où elle ne veut plus rien dire.
+
+
+### D41 · Un fait validé ne se remesure pas sur une position
+
+Le tour retranché à un coureur était calculé `dedans ? Math.round((lu - bunchRaw) / TRACK) : 0` : tant
+qu'il roule dans l'amas on compte les tours qui le séparent du peloton, sinon **zéro**. Or l'opérateur
+a validé ce tour : c'est un fait posé, qui ne dépend plus d'où le coureur se trouve. Un coureur qui
+rattrape le peloton et prend aussitôt une longueur d'avance sortait de l'amas, perdait son
+retranchement et remontait d'un tour entier — en tête de la timeline, un tour devant le peloton qu'il
+venait de rejoindre. Hors de l'amas, c'est le compte validé qui tient.
+
+La leçon dépasse ce cas : **une valeur que l'opérateur a validée ne se recalcule pas à partir d'une
+mesure**. La mesure sert à la proposer ; une fois tranchée, elle vit dans le compte qu'il a posé.

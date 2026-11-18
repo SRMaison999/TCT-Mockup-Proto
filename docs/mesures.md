@@ -4117,3 +4117,140 @@ Standings, où le passage Live -> Evolution -> Live fonctionne comme avant.
 atteindre, et la course à vingt sprints n'a pas pu être mise en place dans cette session
 (`pitfalls.md` D33). La densité à vingt sprints reste donc celle que montre
 `mockups/maquette-tous-sprints-20.html`, pas une mesure du prototype.
+
+
+## §70 · Lap by lap en colonnes, palier 3 joué en entier (build 217)
+
+**La course.** Palier 3, 250 m, **60 tours**, **16 coureurs**, jouée du départ à l'arrivée à ×16,
+écran de **1 440 × 900**. Aucune erreur de console.
+
+**La place.** La zone de l'onglet fait **1 390 × 784 px**. Une colonne fait **196 px** de large et
+une ligne de coureur **23 px** : **six tours** tiennent à l'écran, et les **soixante** colonnes de la
+course défilent. **Aucune colonne ne défile sur elle-même** : la plus chargée, seize coureurs en
+trois boîtes, mesure moins de la moitié de la hauteur disponible.
+
+**Le défilement suit le direct.** Resté au bout droit, l'écran montre toujours le tour qui se joue —
+relevé à la fin : position 10 914 sur 10 914, flèche gauche visible, flèche droite cachée. Les
+badges sont là : `SPRINT 1` au tour 10, `SPRINT 2` au tour 20, `FINAL` au tour 60, et la colonne du
+tour en cours est bordée de vert avec « riders still crossing… ».
+
+**Les blocs, et l'erreur corrigée en chemin.** Premier jet : la boîte changeait dès que le **nom**
+du bloc changeait, et le peloton se retrouvait coupé en **cinq ou six boîtes** au même tour, avec de
+faux écarts de 20 à 25 s entre elles (relevé au tour 24). Le nom porte le **rang** du bloc, et le
+rang bouge pendant que les coureurs franchissent la ligne. Corrigé en gravant `blkid`, le plus petit
+dossard du bloc : après correction, **quatre boîtes au maximum** par colonne sur toute la course, et
+les écarts affichés sont de vrais écarts — **+25,8 s** entre le bloc de tête et le peloton au
+tour 26, **+1,6 s** au tour 22 quand ils se recollent.
+
+**Une chose qui se voit et qui est juste.** Aux derniers tours, la boîte `2-Chase` est **au-dessus**
+de `1-Leaders` : les hommes de tête ont un tour d'avance et franchissent la ligne **après** eux. La
+colonne est l'ordre de la ligne, pas l'ordre de la course, et les numéros des blocs restent ceux de
+la timeline.
+
+**Au build 218, après sa critique.** L'onglet s'appelle **Lap by lap** dans la barre du haut (règle
+214). Et les deux dernières colonnes ne se chevauchent plus (règle 215) : un tour a cette fois été
+crédité pendant l'essai — **BIB 12, laps gained 0 → 1, effet au tour 46** — ce qui a produit
+**33 pastilles vertes**, l'alerte « gained a lap — appears twice » au tour 18 et la colonne bordée
+d'ambre qui l'annonce. Mesuré sur ces pastilles : largeur **30 px**, et **4 px** de dégagement entre
+la fin du temps au tour et le bord de la pastille. Les alertes et les pastilles de tour sont donc
+vues, pas seulement codées. La pastille rouge d'un tour **perdu** reste, elle, non produite.
+
+
+## §71 · Le second passage d'un tour gagné (build 219)
+
+**La course.** Palier 3, 60 tours, 16 coureurs, à ×16, écran de 1 440 × 900. Un tour validé pendant
+l'essai : **BIB 12, tours gagnés 0 → 1, effet au tour 27**.
+
+**Avant.** Le second passage du coureur qui venait de prendre un tour tombait dans une boîte
+`2-Behind` : le bloc gravé à la lecture, à la seconde où le tour n'était pas encore validé.
+
+**Après.** Le tour 18 est le seul à porter deux fois le même dossard, le **12**, et son second
+passage est **dans la boîte du peloton** — `2-Bunch`, avec les 15, 4, 11, 23, 58, 67, 1, 9 et 3.
+La colonne porte son alerte « gained a lap — appears twice ». Aucune erreur de console.
+
+**Ce qui reste bancal et n'a pas été touché.** Les numéros des boîtes d'une même colonne peuvent se
+répéter : au tour 18, `2-Chase` et `2-Bunch` voisinent, et au tour 42 la boîte de tête s'appelle
+`1-Behind`. Le numéro et le rôle sont ceux que la timeline portait **à l'instant de chaque lecture**,
+et deux lectures d'un même tour ne tombent pas au même instant. Renuméroter les boîtes dans la
+colonne serait inventer un nom que l'opérateur n'a pas donné : rien n'a été changé, c'est à lui de
+dire ce qu'il veut y lire.
+
+
+## §72 · Le tour validé AVANT le franchissement (build 220)
+
+**Le geste refait comme il le fait.** Palier 3, 60 tours, 16 coureurs. La proposition « Lap gained? »
+est validée **dès qu'elle paraît**, et non une fois la ligne franchie : au journal, `BIB 12 · laps
+gained 0 → 1 · effect Lap 19 · validated proposal`, le tour même de la proposition. C'est le chemin
+de l'opérateur, et c'est celui que le build 219 ne corrigeait pas.
+
+**Avant (build 219).** Le second passage tombait dans une boîte `2-Behind`, séparée du peloton par
+**0,1 s** — un écart très inférieur à ce qui fait une cassure, ce qu'il a relevé lui-même.
+
+**Après (build 220).** Le tour 18 est le seul à porter deux fois le même dossard, le **12**, et son
+second passage est dans la boîte **2-Bunch** — 15, 4, 11, 23, 58, 67, 1, **12**, 9, 3 — avec sa
+pastille verte `19`. Plus de boîte `Behind`, donc plus d'écart de 0,1 s à afficher. La colonne porte
+son alerte « gained a lap — appears twice ». Aucune erreur de console.
+
+**Ce qui restait comme au §71** — les numéros des boîtes se répétaient dans une colonne, `2-Chase`
+et `2-Bunch` y voisinaient — **est corrigé au build 222** (§73).
+
+
+## §73 · L'ordre de la colonne, build 222
+
+**La course :** celle avec un lâché inéligible sur la ligne du sprint, 60 tours, lancée à ×16 sans
+aucun geste de l'opérateur — ni tour validé, ni bloc posé à la main.
+
+**Ce qu'on voit, tours 15 à 21.** Tour 15 : `1-Leaders → 12 52`, puis `2-Bunch → 15 4 11 23 58 67
+1 9 3 18 61 7`, puis `3-Last → 46 70`. Même chose au 16. Aux tours 17, 18 et 19, le 12 et le 52
+sont repris : une seule boîte, `1-Bunch`, les seize coureurs, le 12 et le 52 en tête. Au tour 20 ils
+repartent : `1-Leaders → 12 52` au-dessus du peloton. **Une boîte par bloc, jamais deux du même, et
+le coureur de tête en haut de chaque colonne.** Avant le build 222, le même tour 17 montrait six
+boîtes — `2-Chase`, `3-Bunch`, `1-Leaders`, `3-Bunch`, `1-Leaders`, `4-Last` — avec le 12 au milieu
+du peloton.
+
+**Pas mesuré.** Le second passage d'un coureur qui vient de prendre un tour — sa règle 216, qui le
+range dans la boîte du peloton. Aucun des essais de cette session n'en a produit un : la validation
+de la proposition « Lap gained? » au tour 17, puis un `+1 lap` posé à la main sur le 46, n'ont
+donné aucune colonne à doublon. Ce chemin est **codé, pas vu, au build 222**.
+
+
+## §74 · Le merge qui attend la validation, build 223
+
+**La course :** celle avec un lâché inéligible sur la ligne du sprint, lancée à ×16. Le 12 et le 52
+s'échappent, prennent un tour au peloton et le rejoignent vers 4:46.
+
+**Sans rien valider.** De 4:45,7 jusqu'à la fin de l'essai, la timeline montre `1-Leaders [12, 52]`,
+`2-Bunch [15, 4, 11, 23, 58, 67, 1, 9, 3, 18, 61, 7]`, `3-Last [46, 70]` : le bloc de tête tient à
+travers la jonction, et **le mot `Behind` n'apparaît plus une seule fois** sur les 87 changements
+relevés. Au build 222, le même essai donnait `1-Bunch` à 4:45,8 — les deux absorbés — puis
+`2-Behind [12, 52]` à 4:48,1, et la bascule se répétait.
+
+**En validant.** Proposition validée à **4:46,4** (`✓ all`, le 12 et le 52) : à la même seconde la
+timeline affiche `1-Bunch [15, 4, 11, 23, 58, 67, 1, 9, 3, 18, 61, 7, 12, 52]`. Le merge se fait au
+clic, pas au passage suivant. À 4:48,2 les deux ressortent trois secondes en `2-Behind`, à 1,2 s du
+peloton : ils y sont alors des coureurs ordinaires, validés, et 1,2 s est une vraie cassure (§1).
+
+**Le repère du paquet.** Premier essai du build 223 : le 15, le 4, le 11, le 67 et le 1 se
+retrouvaient dans le bloc de tête avec le 12 et le 52. Le repère du peloton était tombé sur le 46,
+qui a un tour de retard, et tout le peloton se lisait alors un tour trop bas. Corrigé dans le même
+build (`pitfalls.md` D40).
+
+
+## §75 · Le tour perdu, et le tour validé qui tient · builds 224 et 225
+
+**La course :** celle avec deux échappées et deux lâchés, lancée à ×16. Le 12 et le 52 s'échappent et
+reprennent un tour au peloton ; le 46 et le 70 en perdent un.
+
+**Le tour perdu, sans rien valider (build 224).** Sur les 111 changements relevés, le 46 et le 70
+restent `3-Last`, leur bloc à eux, derrière le peloton, de la minute 4 jusqu'à la fin de l'essai. Ils
+ne paraissent dans la boîte du peloton qu'avant d'être doublés, jusqu'à 1:23,5 — là ils sont encore
+dans le même tour que lui. **Validé** (`✓ all`, 46 et 70, tour 27), leurs passages sont rangés sur le
+tour du peloton : à la colonne `LAP 27` ils figurent avec la pastille `26`, un tour de moins, et non
+plus une colonne en arrière.
+
+**Le tour gagné validé, qui ne tient plus (build 224) puis qui tient (build 225).** Validé à 5:30,7
+pour le 12 et le 52, tour 19. Au build 224, les colonnes `LAP 19`, `LAP 20` et `LAP 21` les montraient
+`1-Leaders`, pastille `20`, `21`, `22` — un tour devant un peloton qu'ils venaient de rejoindre. Au
+build 225, `LAP 19` donne `2-Bunch → 15:19 12:20 4:19 52:20 11:19 …` et `LAP 20` donne
+`2-Bunch → 12:21 52:21 15:20 …` : ils sont dans le peloton. Ils en ressortent `1-Leaders` au `LAP 21`
+— c'est une seconde échappée, et au `LAP 22` le 18, le 61 et le 7 sont repassés devant eux.

@@ -25,7 +25,7 @@ Feuille de route pour câbler les maquettes validées (`mockups/`) au moteur ré
 ```
 S1 ─ Standings Live + type de course          LIVRÉ, build 211
  └─ S2 ─ Historique + Évolution               LIVRÉ, build 213
-S3 ─ Sprints  LIVRÉ, build 214   S4 ─ Lap by lap ← la suivante   S5 ─ Passings
+S3 ─ Sprints  LIVRÉ 214   S4 ─ Lap by lap  LIVRÉ 217   S5 ─ Passings ← la suivante
 S6 ─ Chutes & neutralisations ──┐
 S7 ─ Avant-course (indépendant) │
                                 ├─ S8 ─ Race log  (a besoin de S6)
@@ -94,12 +94,30 @@ les plus lourds et peuvent attendre leur tour.
   flèches ne sont pas mesurés : à six sprints il n'y a rien à atteindre, et la course à vingt
   sprints n'a pas pu être montée. L'export PDF reste non fait, comme après S1.
 
-### S4 · Lap by lap — *moyen*
+### S4 · Lap by lap — **livré, builds 217 à 222**
 - **But.** Rebrancher l'onglet `cross` sur le dessin Lap by lap : ordre par tour, surlignage des
   sprints, alertes, et la correction **« Shift −1 lap »**.
 - **Source.** `S.cross` (`architecture.md` §7).
 - **Note.** Les **tours manquants** liés aux chutes s'ajoutent après S6.
-- **Fini quand.** L'ordre de chaque tour s'affiche, le décalage d'un tour fonctionne.
+- **Fini quand.** L'ordre de chaque tour s'affiche, le décalage d'un tour fonctionne. **Partiel.**
+- **Livré.** Une colonne par tour, le plus récent à droite, l'ordre de la ligne découpé en boîtes de
+  blocs, l'écart entre les boîtes, le temps au tour, les tours faits, les badges de sprint et la
+  colonne `live`. Les blocs sont ceux du **moment du passage** (règle **213**). Code dans
+  `architecture.md` §58, mesures dans `mesures.md` §70, l'erreur comprise dans `pitfalls.md` D35.
+- **Ce qui reste ouvert.** **`Shift −1 lap`** et son alerte « double lap time » ne sont pas codés :
+  ils corrigent une détection manquée sans rien créditer, ce que le décalage existant ne sait pas
+  faire. C'est de la logique de course, à proposer à part. Les alertes « tour gagné » et « doublé,
+  pas de passage » sont codées, et l'alerte du tour gagné a été vue au build 218 ; la pastille rouge
+  d'un tour **perdu** n'a pas encore été produite.
+- **Sa critique du 18 novembre, codée au build 218.** L'onglet s'appelle **Lap by lap** (règle 214),
+  et les colonnes du temps au tour et des tours faits ne se chevauchent plus (règle 215). Au
+  **build 219**, le **second** passage d'un coureur qui vient de prendre un tour est rangé dans la
+  boîte du **peloton**, et non derrière lui (règle **216**) — complété au **build 220**, qui corrige
+  le chemin que l'opérateur emprunte vraiment, celui du tour validé **avant** le franchissement
+  (règle **217**, `pitfalls.md` D37).
+- **Corrigé au build 222** (règle **218**). La colonne est rangée dans l'ordre de la **course** : les
+  blocs de la timeline, le bloc de tête en haut, relevés une fois à l'ouverture du tour. Les boîtes ne
+  se répètent plus dans une colonne (`mesures.md` §73, `pitfalls.md` D38).
 
 ### S5 · Passings — *moyen*
 - **But.** Assembler le **relevé brut** des capteurs : 3 boucles transpondeurs + 5 tape switches,
@@ -189,7 +207,7 @@ tours manquants de Lap by lap (S4).
 | S1 | Standings Live + type de course | **livré, build 211** | — |
 | S2 | Historique + Évolution | **livré, build 213** | S1 |
 | S3 | Sprints (All sprints) + carte | **livré, builds 214-215** | — |
-| S4 | Lap by lap | moyen | — (compléter après S6) |
+| S4 | Lap by lap | **livré, builds 217-222** | — (compléter après S6) |
 | S5 | Passings | moyen | — |
 | S6 | Chutes & neutralisations | gros (×2) | — |
 | S7 | Avant-course (transpondeurs) | moyen | — |

@@ -108,7 +108,7 @@ sprints, Race log, fil commentateurs) ; le reste suit la langue de l'écran où 
 
 | Maquette | Générateur | Où ça se branche | État |
 |---|---|---|---|
-| `maquette-lapbylap.html` | `gen-lapbylap.js` | onglet `cross` — **Lap by lap** | validé |
+| `maquette-lapbylap.html` | `gen-lapbylap.js` | onglet `cross` — **Lap by lap** | **intégré, build 217** |
 | `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | validé, §9.2 |
 | `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | **intégré, build 214** |
 | `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **intégré, build 213** (Live et Évolution) |
@@ -126,7 +126,7 @@ Sans/Mono) et drapeaux (`flag()` de `flags.js`) sont repris tels quels d'une maq
 
 Pour chacun : ce qu'il montre, l'état réel qui l'alimente, et les pièges.
 
-### 5.1 Lap by lap (onglet `cross`)
+### 5.1 Lap by lap (onglet `cross`) — **fait, builds 217 à 222 · ne pas refaire**
 L'ordre de franchissement de la ligne, tour par tour, du premier au dernier. **Source** :
 `S.cross[lap]` (`architecture.md` §7). La maquette ajoute des **alertes** et la correction
 **« Shift −1 lap »** (décaler un tour quand le logiciel s'est trompé de tour). Brancher le rendu
@@ -280,6 +280,21 @@ Scénarios (S9) et le fil commentateurs (S10) le lisent de là — ils n'ont pas
   et l'onglet `Sprints` est **remplacé** par un bouton `ALL` à la suite de la bande des sprints de la
   carte (règle **211**) — le retour se fait par l'onglet `Race`.
   `architecture.md` §57, `mesures.md` §69, `pitfalls.md` D33. Ne pas refaire.
+
+- **S4 — Lap by lap**, build 217. L'onglet `cross` rend une **colonne par tour**, le plus récent à
+  droite, l'ordre de la **ligne** découpé en boîtes de blocs, avec l'écart entre les boîtes, le temps
+  au tour, les tours faits, les badges de sprint et la colonne `live`. Le bloc est **gravé sur le
+  passage** et reconnu par `blkid` (règle **213**) : les tours courus avant ce build n'en portent
+  aucun. **`Shift −1 lap` et l'alerte « double lap time » ne sont pas codés** — logique de course, à
+  proposer. Au **build 218**, sur sa critique : l'onglet s'appelle **Lap by lap** dans la barre du
+  haut (règle **214**) et les colonnes du temps au tour et des tours faits ne se chevauchent plus
+  (règle **215**). Au **build 219**, le second passage d'un tour gagné est rangé dans la boîte du
+  **peloton** (règles **216** et **217**), par les deux chemins. Au **build 222**, la colonne est
+  rangée dans l'ordre de la **course** — les blocs de la timeline relevés à l'ouverture du tour, le
+  bloc de tête en haut (règle **218**) : ne pas revenir au rang du moment ni au bloc gravé passage par
+  passage, les deux ont été essayés et ratés (`pitfalls.md` D38). `architecture.md` §58, `mesures.md`
+  §70 à §73, `pitfalls.md` D35, D37, D38 et
+  D36. Ne pas refaire.
 
 ---
 

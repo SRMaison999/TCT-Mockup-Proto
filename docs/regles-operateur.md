@@ -172,6 +172,10 @@ sont arrivés à moins de 15,65 m du dernier coureur de la queue — pas de son 
 > consécutifs à la frontière des deux groupes), et le fait que le merge n'attend aucune
 > validation.
 
+> **Phrase remplacée le 18 novembre 2026, dans les deux sens.** « Et ceci même si le gain du tour, ou
+> la perte du tour, n'a pas été validé par l'opérateur » ne vaut plus : le merge attend maintenant la
+> validation, pour le tour gagné (point **219**) comme pour le tour perdu (point **220**).
+
 **28 octobre 2026.** L'opérateur a repris le point de lui-même :
 
 > Un coureur qui a gagné ou perdu un tour, lorsque ce gain ou cette perte est validé(e)
@@ -3020,3 +3024,151 @@ réponse :
 **Corrigé au build 216.** Une règle de style dans le prototype, `.log .hd .seg[hidden]`, rend à
 l'attribut `hidden` le pouvoir que le `display:flex` de `.seg` lui prenait (`pitfalls.md` D34). Elle
 ne se voit plus que sur Standings, où ses deux vues marchent comme avant.
+
+
+### 213 · « La colonne garde les blocs tels qu'ils étaient au moment du passage » · 18 novembre 2026
+
+L'écran **Lap by lap** découpe chaque tour en blocs de la timeline. La question lui a été posée avec
+ses coureurs : sur le palier 3, au tour 20, le 12 SUI et le 52 ITA sont en tête, le 18 POR, le
+61 COL et le 7 NED en chasse ; à l'arrivée tout le monde est regroupé. Que doit montrer la colonne
+du tour 20 quand on y revient à la fin de la course ? Sa réponse :
+
+> « La colonne garde les blocs tels qu'ils étaient au moment du passage. »
+
+**Codé au build 217.** Le bloc est **gravé sur le passage** à l'instant où il est lu, comme
+l'inéligibilité l'est depuis sa règle du 1er novembre 2026. Les blocs d'aujourd'hui ne sont jamais
+relus pour un tour ancien. Conséquence annoncée avant de coder : les tours courus **avant** ce build
+n'en portent aucun, et leurs colonnes montrent les coureurs sans boîte de bloc.
+
+
+### 214 · « L'onglet doit être renommé "Lap by lap" » · 18 novembre 2026
+
+Ses mots, sur la capture du build 217 :
+
+> « Tout d'abord, l'onglet doit être renommé "Lap by lap". »
+
+**Fait au build 218.** La barre du haut se lit `Race · Lap by lap · Decisions · Standings ·
+Passings`. Le nom interne de l'onglet, `cross`, ne change pas : il n'est écrit nulle part à l'écran.
+
+
+### 215 · « Les champs Lap Time et Laps Done se chevauchent » · 18 novembre 2026
+
+Sa capture du build 217 montre, aux tours 20 à 23, le temps au tour tronqué en « 16. » avec la
+pastille verte des tours faits posée par-dessus. Ses mots :
+
+> « regarde la capture, tu verras que les champs Lap Time et Laps Done se chevauchent »
+
+**Corrigé au build 218.** La pastille est plus large que sa colonne dès qu'elle se colore — 22 px
+de colonne pour 32 px d'encre, bordure et marges comprises — et elle débordait sur le temps au tour.
+Chaque colonne porte maintenant sa propre largeur : 34 px pour le temps, 30 px pour la pastille.
+Mesuré après correction : **4 px** séparent la fin du temps au tour du bord de la pastille.
+
+
+### 216 · Un coureur qui paraît deux fois sur un tour est dans le peloton · 18 novembre 2026
+
+Sa capture du build 218 encadre, au tour 13, le **second** passage du 61 COL et du 7 NED : leur
+boîte portait le libellé `2-Behind`. Ses mots :
+
+> « il y a une petite incohérence, tu vois sur la capture j'ai encadré le 2ème passage sur le lap 13
+> des coureurs 61 et 7. Ils sont dans un groupe dont le label est "Behind". Or, Behind n'est pas
+> correct parce que si ils apparaissent 2 fois sur un tour, c'est parce qu'ils ont rattrapé le
+> peloton, ce qui signifie qu'ils ne sont pas "Behind" mais bien membres du peloton.
+>
+> Il y a un cas possible où ils pourraient être "Behind", c'est le cas où les coureurs auraient été
+> relâchés par le peloton après l'avoir rattrapé, et cela avant le passage sur la boucle Finish.
+> Mais j'ai fait plusieurs test, et les coureurs apparaissant 2 fois sur un tour sont
+> systématiquement "Behind". On peut donc raisonnablement conclure que c'est un bug »
+
+**Corrigé au build 220, et pas au 219.** Le bloc était celui de la lecture — sa règle 213 — et à
+cette seconde-là le tour n'était pas encore validé : le coureur était encore un bloc derrière le
+peloton. Mais le build 219 n'a corrigé qu'**un** des deux chemins, celui où le tour est validé
+**après** le franchissement : les passages déjà enregistrés sont alors déplacés, et ce sont eux qui
+prenaient le bloc du peloton. Or l'opérateur valide **avant** le franchissement — il l'a dit, et il a
+raison de le dire : « si je ne l'avais pas fait ils ne devraient pas être deux fois affichés dans un
+tour ». Dans ce chemin-là, rien n'est déplacé ; le second passage est **enregistré** une fois le tour
+déjà crédité, et c'est à l'enregistrement qu'il fallait graver le bloc du peloton. C'est ce que fait
+le build 220. Le build 219 reste en place pour l'autre chemin. Un tour **perdu** ne change rien de ce
+côté — le coureur y perd un passage, il n'en gagne pas.
+
+
+### 217 · « Le gap entre le bunch et behind est de 0,1 s » · 18 novembre 2026
+
+Sa seconde capture, le même jour, sur le même tour. Ses mots :
+
+> « et de plus si tu regardes le gap entre le bunch et behind il est de 0.1 ce qui est inférieur au
+> seuil pour les cassures. Il n'y a donc aucune raison de les afficher en Behind »
+
+**Pris en compte au build 220.** Le constat vaut preuve : deux boîtes séparées de **0,1 s** ne sont
+pas deux blocs. Le défaut n'était pas dans l'écart affiché — qui est une vraie différence d'heures de
+passage — mais dans le bloc gravé sur le second passage (règle 216). Une fois ce passage rangé avec
+le peloton, il n'y a plus de seconde boîte, donc plus d'écart de 0,1 s à afficher.
+
+
+### 218 · « Le leader de la timeline est TOUJOURS le premier dans un lap » · 18 novembre 2026
+
+Trois lectures de travers de ma part avant qu'il le dise ainsi. Ses mots, dans l'ordre :
+
+> « écoute ça ne va pas du tout ! Si c'est le coureur 12 qui est en tête, alors c'est lui qui doit
+> être tout en haut de la liste du tour ! et il apparaitra une deuxième fois quand il repassera.
+> Dans ce cas là il sera seul LEADER, suivi des autres groupes. »
+
+> « bien sûr que si que la timeline compte !!!! le leader de la timeline est TOUJOURS le premier
+> dans un lap !!!!!!!!!!!!!!!!!!!!!!! »
+
+**Codé au build 222.** La colonne d'un tour est rangée dans l'ordre de la **course**, pas dans
+celui de la ligne : les blocs de la timeline, le bloc de tête en haut, puis les suivants ; à
+l'intérieur d'un bloc, les coureurs dans l'ordre où ils ont franchi la ligne. Cet ordre est
+**relevé une fois**, au moment où le premier coureur ouvre le tour, et ne bouge plus.
+
+Deux façons de s'y prendre ont été essayées et ne tiennent pas. Le bloc gravé passage par passage
+(sa règle 213) donne seize noms pris à seize instants, pendant qu'un tour dure une demi-minute et
+que la timeline renumérote ses blocs : la colonne se coupait en morceaux qui se contredisaient. Le
+rang d'aujourd'hui range les tours passés avec le classement de maintenant : le 12, parti en tête
+au tour 19, s'y retrouvait au milieu du peloton une fois rentré dans le rang.
+
+
+### 219 · Le merge d'un tour gagné attend la validation · 18 novembre 2026
+
+Il a d'abord relevé le défaut :
+
+> « le cas du deuxième passage de coureurs dont on n'a pas encore validé le tour gagné mais qui ont
+> déjà rattrapé le peloton : en effet ils sont placés en tête du tour suivant (ce qui est correct car
+> pas encore validé le tour gagné) mais ils apparaissent Behind. »
+
+> « Rappel : Même si des coureurs ont effectivement rattrapé le peloton sur l'ovale, ils doivent
+> continuer d'être leaders (donc un groupe distinct du peloton) TANT QUE L'OPERATEUR N'A PAS VALIDE LE
+> TOUR GAGNE »
+
+Puis, sur la phrase du §3 qui disait l'inverse, il a dicté celle qui la remplace :
+
+> « Cette phrase n'est plus valable. Il faut la transformer en "au moment où un ou plusieurs coureurs
+> échappés à l'avant de la course rattrapent le peloton sur l'ovale, ils demeurent dans leur groupe de
+> leader jusqu'à ce que l'opérateur valide le gain du tour. Dès que le tour est validé par l'opérateur
+> ils sont mergés dans le groupe du peloton" »
+
+**Codé au build 223.** Le tour **perdu** n'est pas touché : il n'en a rien dit, et le §3 continue de
+s'y appliquer — un coureur rattrapé par le peloton prend son tour à la jonction, sans validation.
+
+
+### 220 · Le tour perdu attend lui aussi · 18 novembre 2026
+
+> « pour le tour perdu il faut faire pareil, attendre la validation de l'opérateur et ensuite les
+> merger dans le peloton »
+
+**Codé au build 224.** Un coureur que le peloton vient de reprendre garde son bloc **derrière** le
+peloton jusqu'au clic ; dès la validation, il est rangé dans le tour du peloton. La phrase du §3 est
+donc remplacée dans les deux sens, et le point 219 vaut maintenant pour le gain comme pour la perte.
+
+### 221 · « Ils viennent tout juste de rattraper le peloton » · 18 novembre 2026
+
+Sa capture de l'onglet Lap by lap, et ses mots :
+
+> « j'ai trouvé un bug […] au lap 14 les coureurs 61 et 7 sont leaders mais c'est incorrect car ils
+> viennent tout juste de rattraper le peloton »
+
+**Corrigé au build 225.** Le tour retranché à un coureur ne se mesurait que tant qu'il roulait **dans**
+l'amas du peloton. Dès qu'il en sortait d'une longueur — ce qui arrive à la seconde d'après, puisqu'il
+arrive plus vite que lui —, le retranchement tombait à zéro et le coureur remontait d'un tour entier
+dans la timeline : il s'affichait en tête, un tour devant le peloton qu'il venait de rejoindre. Hors de
+l'amas, c'est maintenant le compte **validé** qui tient, et lui ne dépend d'aucune position. Le défaut
+est antérieur aux points 219 et 220 : il existait déjà quand le merge ne demandait aucune validation.

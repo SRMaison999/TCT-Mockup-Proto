@@ -2440,3 +2440,82 @@ s'écrivent dans ce même geste.
 marquent sur fond vert (`spPoints`), un trait sous la quatrième, et la pastille rouge `NO PTS` là où
 la ligne grisée disait « no points » en texte. Les trois colonnes, la bande des sprints, les
 commandes de droite et le glisser-déposer sont intacts.
+
+
+## §58 · Lap by lap, en colonnes (build 217)
+
+L'onglet `Crossings` rendait **une ligne par tour**, du plus récent au plus ancien, avec une rangée
+de pastilles. Il rend le dessin de `mockups/maquette-lapbylap.html` : **une colonne par tour, le plus
+récent à droite**, et la bande s'ouvre défilée à droite.
+
+`renderCrossTab()` ne calcule rien de neuf. Chaque colonne se lit de `S.cross[k]` :
+
+| Ce qu'on voit | D'où ça vient |
+|---|---|
+| L'ordre, numéroté de 1 au dernier | `S.cross[k]` rangé **par l'heure du passage** |
+| Les boîtes de blocs, avec leur couleur | `blk`, `blkc`, `blkid` gravés sur le passage (règle 213) |
+| L'écart entre deux boîtes | la différence des heures de passage, de part et d'autre |
+| Le temps au tour | l'écart avec le **passage précédent du même coureur**, tous tours confondus |
+| La pastille des tours faits, verte ou rouge | `c.n`, son compte réel de passages, comparé au tour de la colonne |
+| `SPRINT 4` en bleu | `sprintNumOf(k)` |
+| La colonne verte `live` | le dernier tour tant que la course avance |
+| Les alertes | `c.mark > 0` (tour gagné) et `S.holes[k]` (doublé, pas de passage) |
+
+**Un tour gagné reclasse le bloc avec le passage** (builds 219 et 220, règles 216 et 217). Deux
+chemins y mènent, et il a fallu les deux. **Quand le tour est validé avant le franchissement** — ce
+que fait l'opérateur — rien n'est déplacé : le tour attend dans `S.markPending`, et le premier passage
+qui suit est enregistré avec la marque `pm > 0`. C'est **ce passage-là** qui retombe sur un tour où le
+coureur figure déjà, et c'est à l'enregistrement qu'il prend le bloc du **peloton** (build 220). Les
+passages suivants reprennent le bloc lu : s'il repart seul, il redevient un bloc de tête. **Quand le
+tour est validé après le franchissement** (build 219), `refile()` déplace les
+passages d'un coureur crédité d'un tour ; ceux-là prennent le bloc du **peloton**, celui sur le tour
+duquel ils viennent d'être reclassés, et non le bloc qu'ils portaient à la lecture — où le tour
+n'était pas encore validé et où le coureur était encore un bloc derrière. Le bloc d'origine est gardé
+dans `blk0` / `blkc0` / `blkid0` : reprendre le tour le rend. Un tour **perdu** ne touche à rien de ce
+côté, le coureur y perd un passage au lieu d'en gagner un.
+
+**Ce qui identifie un bloc, c'est `blkid`** — le plus petit dossard du bloc à la lecture — et non son
+nom ni sa couleur. Les deux portent son **rang** (`1-Bunch`, `2-Bunch`), et ce rang change pendant
+que les coureurs franchissent la ligne : le peloton se retrouvait coupé en cinq boîtes au même tour.
+Le nom et la couleur affichés sont ceux du **premier** passage de la boîte.
+
+**L'ordre dans la colonne est celui de la ligne**, à l'heure du passage. L'ancienne liste rangeait
+par rang de timeline (`S.tlRank`) : bon pour une rangée de pastilles, faux pour des boîtes, où les
+coureurs d'un même bloc doivent se suivre et où l'écart affiché doit être un vrai écart de temps.
+
+**Le défilement suit le direct.** `crScroll` garde la position et `crAtEnd` dit si l'opérateur est
+resté au bout droit : tant qu'il y est, la bande suit le tour qui se joue ; dès qu'il remonte vers
+les tours anciens, elle ne bouge plus sous lui. La classe `lbl` sur `#logrows` se pose dans le
+dernier maillon de la chaîne de `renderLog`, comme `spr` (§57).
+
+**Le merge attend la validation, dans les deux sens** (builds 223 à 225, règles 219, 220 et 221). `impliedOf()` garde deux
+valeurs côte à côte dans `S.took` : `v0`, le nombre de tours que les boucles donnent au coureur sur le
+paquet, et `v`, celui qu'on lui retranche vraiment — borné par `S.lapStatus`, le compte validé. Avant
+validation `v` vaut 0 : le coureur reste où les boucles l'ont lu, un tour devant pour un gain, un tour
+derrière pour une perte. **Hors de l'amas du peloton, `v0` vaut le compte validé** et non zéro (build
+225, règle 221) : un tour validé ne se remesure pas sur une position, sinon le coureur qui prend une
+longueur d'avance sur le peloton qu'il vient de rejoindre remonte d'un tour entier (`pitfalls.md` D41). Leur différence est
+`avanceOf()`, l'avance non validée ; elle passe devant tout le reste dans `cmpRead` et force une coupe
+entre deux coureurs qui ne la portent pas pareil, si bien que le bloc de tête ne se mélange pas au
+peloton. `S.lapStatus` entre dans la clé du cache, pour que le merge se fasse au clic et non à la
+détection suivante. Le repère du paquet, lui, n'accepte qu'un
+coureur dont le dernier relevé a été pris **à l'intérieur** du paquet (`dedans`, `pitfalls.md` D40).
+
+**L'ordre de la colonne vient d'un relevé du tour** (build 222, règle 218). `S.crossG[k]` garde, pour
+chaque tour, les blocs de la timeline dans leur ordre — `{ n: nom, c: couleur, b: dossards }` — pris à
+l'ouverture du tour, sur le premier passage enregistré, et jamais recalculés. `renderCrossTab()` monte
+ses boîtes dessus : un bloc du relevé, une boîte, dans l'ordre du relevé ; dedans, les passages du
+tour rangés par l'heure. Le second passage d'un tour gagné (`mark > 0`) descend dans la boîte du
+peloton (règle 216), un coureur absent du relevé finit dans une dernière boîte sans nom, et une course
+enregistrée avant le build 222, qui n'a pas de relevé, retombe sur le bloc gravé passage par passage.
+`S.crossG` entre dans le cliché d'annulation avec `S.cross`.
+
+**Les largeurs de la ligne de coureur** (build 218, règle 215) : 24 px le dossard, 18 px le drapeau,
+le pays au reste, **34 px** le temps au tour et **30 px** la pastille des tours faits. Cette dernière
+ne porte sa bordure et ses marges que lorsqu'elle se colore, et passait alors devant le temps au
+tour (`pitfalls.md` D36).
+
+**Ce qui n'est pas codé.** Le bouton **`Shift −1 lap`** de la maquette et son alerte « double lap
+time » : ils corrigent une détection manquée sans rien créditer, ce que le décalage existant — celui
+de `refile()`, qui accompagne un tour crédité — ne sait pas faire. C'est de la logique de course et
+elle attend sa propre proposition.
