@@ -4690,3 +4690,27 @@ pas au départ passe le champ en orange.
 **L'arrêt.** Hold relevé à 3:10,600 ; cinq secondes plus tard la liste n'avait pas bougé — première
 ligne toujours `3:10.577 · Finish · BIB 19 · L14` — et le bandeau annonçait **22 lectures depuis,
 pas encore montrées**. Les boucles n'ont pas cessé de lire : c'est l'affichage qui s'arrête.
+
+
+## §91 · Le tour d'une détection, remis à l'endroit — build 241, 18 novembre 2026
+
+Son point 239. Relevé sur la course du §88, les quarante-cinq premières secondes, sans aucun ordre
+de simulateur.
+
+| | BIB 1 | BIB 20 |
+|---|---|---|
+| Finish | 0:00.324 · **aucun tour** | 0:02.560 · **aucun tour** |
+| Pursuit B | 0:06.482 · L1 | 0:08.724 · L1 |
+| Pursuit A | 0:13.190 · L1 | 0:15.435 · L1 |
+| Finish | 0:13.727 · L1 | 0:15.972 · L1 |
+| Pursuit B | 0:19.905 · L2 | 0:22.151 · L2 |
+
+Le passage du départ ne porte plus rien, le tour 1 va bien du premier passage sur la ligne au
+second, et il se lit de haut en bas **Pursuit B, Pursuit A, Finish**. Un tri sur la colonne POINT
+rend le même ordre : `ord` porte la position de la boucle sur la piste, la ligne prenant la
+longueur du tour — elle ferme, donc elle vient en dernier.
+
+**Un fait relevé en passant, pas corrigé.** Pursuit A est à 240 m, soit 10 m avant la ligne : sur la
+grille, tout coureur placé au-delà de −10 m roule dessus au coup de pistolet. Le simulateur ne le
+lit pas — `detect` ignore toute boucle tant que la distance du coureur est négative. Une
+installation réelle, elle, lirait ces transpondeurs. Rien n'est changé : ce n'est pas demandé.

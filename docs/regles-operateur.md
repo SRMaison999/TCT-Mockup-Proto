@@ -3493,3 +3493,26 @@ Dit sur la maquette de la passing list, qui n'avait que le tri des titres de col
 
 **Deux filtres, un par dossard, un par tour.** Ils ne rangent pas, ils **retiennent** : le tri des
 titres continue de travailler sur ce qui reste. Distinct du point 236, qui est le tri.
+
+### 239 · Un tour se lit Pursuit B, Pursuit A, Finish — et le passage du départ n'est pas le tour 1 · 18 novembre 2026
+
+> « oh mais regarde ! les détecttions se font dans l'ordre sur pursuit A puis Pursuit B puis
+> Finish ! C'est faux »
+>
+> « mais ce que je ne m'en fous pas c'est que les tours se lisent :
+>
+> 1. Pursuit B
+> 2. Pursuit A
+> 3. Finish.
+>
+> Et le tout premier passage sur les boucles Pursuit A et Finish au moment du départ ne doit pas
+> compter comme Lap 1. Le lap 1 débute après le passage de la boucle Finish après le start »
+
+Dit sur la maquette de la passing list, qui nommait les deux boucles à l'envers.
+
+**Un tour se lit dans cet ordre : Pursuit B, Pursuit A, Finish.** La ligne **ferme** le tour, elle
+ne l'ouvre pas.
+
+**Le tour 1 débute après le passage sur la boucle Finish qui suit le start.** Ce qui est lu avant ce
+passage — la ligne elle-même au moment du départ, et Pursuit A pour les coureurs placés au-delà
+d'elle sur la grille — ne porte **aucun tour**.

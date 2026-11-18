@@ -167,8 +167,12 @@ const READS = [];
           // LE TOUR EST CELUI DU COUREUR : ses passages sur la ligne d'arrivée, plus un.
           // Ce n'est pas la distance divisée par la piste — la grille les place avant la ligne,
           // et le lâché n'est pas dans le même tour que l'échappé au même instant.
-          if (li === 0) r.lap++;
-          READS.push({ t: tt, loop: li, bib: r.bib, nat: r.nat, lap: Math.max(1, r.lap + (li === 0 ? 0 : 1)) });
+          // Le tour 1 commence APRES le passage sur la ligne qui suit le depart : le n-ieme passage
+          // sur la ligne ferme le tour n-1, et les autres boucles portent le tour ouvert par le dernier
+          // passage sur la ligne. Ce qui precede le premier passage ne porte aucun tour.
+          if (li === 0) r.fin = (r.fin || 0) + 1;
+          const nt = (li === 0 ? (r.fin || 0) - 1 : (r.fin || 0));
+          READS.push({ t: tt, loop: li, bib: r.bib, nat: r.nat, lap: nt >= 1 ? nt : null });
           r.next[li] += TRACK;
         }
       }
@@ -193,7 +197,7 @@ let horloge = 0, hold = false, vu = 0, derniere = null;
 let fBib = null, fLap = null;
 const VITESSE = 8;                       // la maquette joue la course huit fois plus vite
 
-const VAL = { t: r => r.t, point: r => r.loop, bib: r => r.bib, lap: r => r.lap };
+const VAL = { t: r => r.t, point: r => (LOOPS[r.loop] === 0 ? TRACK : LOOPS[r.loop]), bib: r => r.bib, lap: r => (r.lap == null ? 1e9 : r.lap) };
 const T3 = s => { const m = Math.floor(s / 60), x = s - m * 60; return m + ':' + (x < 10 ? '0' : '') + x.toFixed(3); };
 
 function sortKey(r) { return VAL[k1.col](r); }
@@ -231,7 +235,7 @@ function build() {
     return `<div class="prow${sep}"><span class="t">${T3(r.t)}</span>` +
       `<span class="lo ${lcls}">${LOOPNAME[r.loop]}</span>` +
       `<span><i class="bib">${r.bib}</i></span><span class="noc">${r.nat}</span>` +
-      `<span class="lp">L${r.lap}</span><span class="sig">read</span><span class="mk"></span></div>`;
+      `<span class="lp">${r.lap != null ? "L" + r.lap : ""}</span><span class="sig">read</span><span class="mk"></span></div>`;
   }).join('');
 
   document.getElementById('rows').innerHTML = `<div class="ph">${ph}</div>` + body;

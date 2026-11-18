@@ -700,7 +700,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">240</span>
+      <span class="bld" id="buildno">241</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '240';
+const BUILD = '241';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -5277,17 +5277,29 @@ function renderPassingsTab() {
   // un — il roule son tour suivant —, tours validés retranchés : c'est son point 233, « il faut se
   // méfier du nombre de passages sur la ligne ». Sans cela, les trente détections d'un coureur
   // portaient toutes le même numéro de tour, et le filtre par tour n'aurait rien filtré.
+  // LES PASSAGES SE COMPTENT SUR LA BOUCLE D'ARRIVÉE ELLE-MÊME, `S.reads[0]`, et non sur `S.passes` :
+  // celui-là laisse déjà le passage du départ dehors (`ka > 0`), et c'est justement ce passage-là
+  // qu'il faut voir ici pour savoir où le tour 1 commence.
   const finAt = {};
-  for (const p of S.passes) (finAt[p.bib] = finAt[p.bib] || []).push(p.t);
-  // UN PASSAGE SUR LA LIGNE PORTE LE TOUR QU'IL FERME, les autres boucles le tour qu'on est en
-  // train de courir. Le coureur part DERRIÈRE la ligne : son premier franchissement ferme le tour 1,
-  // et les boucles franchies après lui sont dans le tour 2. C'est le même classement que la colonne
-  // Lap by lap, qui range un franchissement sur `ka − lapStatus`.
+  for (const x of (S.reads[0] || [])) (finAt[x.bib] = finAt[x.bib] || []).push(x.t);
+  for (const l of Object.values(finAt)) l.sort((a, b) => a - b);
+  // LE TOUR 1 COMMENCE APRÈS LE PASSAGE SUR LA LIGNE QUI SUIT LE DÉPART. Ses mots, 18 novembre
+  // 2026 : « le tout premier passage sur les boucles Pursuit A et Finish au moment du départ ne
+  // doit pas compter comme Lap 1. Le lap 1 débute après le passage de la boucle Finish après le
+  // start ». La grille est collée à la ligne et déborde en amont : un coureur placé au-delà de
+  // −10 m roule sur la boucle Pursuit A — qui est à 10 m de la ligne — dès que le starter le
+  // lâche. Cette détection est vraie, la boucle l'a bien lu ; elle n'appartient à aucun tour.
+  //
+  // DONC : le n-ième passage sur la ligne FERME le tour n−1, et les autres boucles portent le tour
+  // ouvert par le dernier passage sur la ligne. Tout ce qui précède le premier passage ne porte
+  // aucun tour, et la colonne reste vide. C'est le même classement que Lap by lap, qui range un
+  // franchissement sur `ka − lapStatus` et laisse le passage du départ dehors (`ka > 0`).
   const lapAt = (bib, t, surLaLigne) => {
     const l = finAt[bib] || [];
     let lo = 0, hi = l.length;                       // combien de ses passages sont déjà derrière lui
     while (lo < hi) { const m = (lo + hi) >> 1; if (l[m] <= t + 1e-9) lo = m + 1; else hi = m; }
-    return Math.max(1, (surLaLigne ? lo : lo + 1) - (S.lapStatus[bib] | 0));
+    const n = (surLaLigne ? lo - 1 : lo) - (S.lapStatus[bib] | 0);
+    return n >= 1 ? n : null;
   };
 
   const out = [];
@@ -5295,7 +5307,11 @@ function renderPassingsTab() {
     const only = passSrc.startsWith('loop') ? +passSrc.slice(4) : null;
     S.reads.forEach((list, li) => {
       if (only != null && li !== only) return;
-      for (const x of list.slice(-400)) out.push({ t: x.t, point: LOOPNAME[LOOPS[li]], ord: LOOPS[li],
+      // UN TOUR SE LIT PURSUIT B, PURSUIT A, FINISH. Ses mots, 18 novembre 2026. C'est l'ordre dans
+      // lequel un coureur les rencontre à l'intérieur d'un tour : Pursuit B est à 115 m, Pursuit A
+      // à 240 m, et la ligne FERME le tour — elle vient donc en dernier, et non en premier.
+      const ord = LOOPS[li] === 0 ? TRACK : LOOPS[li];
+      for (const x of list.slice(-400)) out.push({ t: x.t, point: LOOPNAME[LOOPS[li]], ord,
         bib: x.bib, lap: lapAt(x.bib, x.t, li === 0), sig: 'read', mark: '' });
     });
   }
@@ -5346,7 +5362,10 @@ function renderPassingsTab() {
   return `<div class="ph">${ph}</div>` + bandeau +
     (rows.length ? rows.map(r => {
       const rd = r.bib != null ? S.riders.find(x => x.bib === r.bib) : null;
-      const lap = r.lap != null ? r.lap : (rd && rd.rec ? Math.floor(rd.rec.d / TRACK) + 1 : null);
+      // RIEN DANS LA COLONNE quand la détection ne tombe dans aucun tour — celles du départ. Elle
+      // portait jusqu'ici le tour où le coureur en est MAINTENANT, faute de mieux : un numéro qui
+      // ne disait rien de la ligne qu'on lisait.
+      const lap = r.lap;
       // un trait à chaque changement du PREMIER critère, pour qu'on voie où une boucle finit et où
       // la suivante commence — il n'a de sens que s'il y a un second critère pour remplir le bloc
       const g = passK2 ? String(VAL[passK1.col](r)) : null;
