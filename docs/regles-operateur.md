@@ -785,6 +785,12 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   permet de la réordonner, et l'ordre de la liste de départ n'est pas visible quand le panneau est
   trié. À trancher : où ce réordonnancement se fait, et ce qu'il devient d'une course à l'autre.
 
+- **Un temps de tour minimum, au départ et ensuite** (point 240). Ses mots : « On pourrait par
+  exemple créer des paramètres "Minimum lap time after start" et aussi "Minimum lap time" pour les
+  autres laps. Qu'en penses-tu ? » Au build 242 les lectures d'avant la ligne sont écartées par sa
+  règle 239 — un coureur n'existe pour le moteur qu'à partir de son premier passage sur la ligne —
+  et aucun seuil n'est posé. À trancher : s'il veut en plus un temps de tour minimum, et pour quoi.
+
 ### Cinq points tranchés le 29 octobre 2026
 
 Ses réponses, mot pour mot, et ce qu'elles ferment :
@@ -3516,3 +3522,15 @@ ne l'ouvre pas.
 **Le tour 1 débute après le passage sur la boucle Finish qui suit le start.** Ce qui est lu avant ce
 passage — la ligne elle-même au moment du départ, et Pursuit A pour les coureurs placés au-delà
 d'elle sur la grille — ne porte **aucun tour**.
+
+### 240 · Le simulateur produit les passages d'avant la ligne, le moteur les ignore · 18 novembre 2026
+
+> « Oui le simulateur doit les produire, mais le moteur doit les ignorer. On pourrait par exemple
+> créer des paramètres "Minimum lap time after start" et aussi "Minimum lap time" pour les autres
+> laps. Qu'en penses-tu ? »
+
+Dit après le constat que le simulateur ne lisait rien tant que la distance d'un coureur était
+négative, alors qu'une installation réelle lirait bien ces transpondeurs.
+
+**Le simulateur produit ces lectures. Le moteur de course les ignore.** Les deux paramètres sont
+une question posée, pas une règle : elle est ouverte au §15.

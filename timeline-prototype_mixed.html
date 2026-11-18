@@ -700,7 +700,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">241</span>
+      <span class="bld" id="buildno">242</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '241';
+const BUILD = '242';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1257,7 +1257,12 @@ function step(dt) {
     if (S.noTp.has(r.bib)) continue;               // no transponder: the loops never see him
     for (const [li, L] of LOOPS.entries()) {       // loop crossings → readings, the only thing the software measures
       const kb = Math.floor((before - L) / TRACK), ka = Math.floor((r.dist - L) / TRACK);
-      if (ka > kb && r.dist >= 0) {
+      // LA BOUCLE LIT CE QUI ROULE DESSUS, MÊME AVANT LA LIGNE. Son point 240, 18 novembre 2026 :
+      // « Oui le simulateur doit les produire, mais le moteur doit les ignorer ». Pursuit A est à
+      // 10 m de la ligne, et la grille déborde bien au-delà : au coup de pistolet, tout coureur
+      // placé derrière −10 m roule sur cette boucle. La lecture est vraie, une installation réelle
+      // la produit, et le simulateur la produit donc aussi. Elle était refusée ici par `r.dist >= 0`.
+      if (ka > kb) {
         const tp = tpById(r.tp);
         if ((SILENT[r.bib] && lap >= SILENT[r.bib]) || (tp && tp.silent)) continue;
         // the decoder reads a transponder, not a rider: the NAME is the one the table gives it, which is the rider

@@ -2645,3 +2645,25 @@ qu'on tape.
 devient `passK1`, l'ancienne descend en `passK2`. Les deux lectures de son point 236 se défendaient ;
 la question lui a été posée le 18 novembre 2026 et il a répondu « je m'en fous ». Le choix est donc
 de moi, il est celui-ci, et il n'y a rien à rouvrir.
+
+
+## §61 · Les lectures d'avant la ligne (build 242)
+
+Son point 240. Deux endroits, et un seul mot de règle entre les deux.
+
+**`detect`** ne refuse plus une lecture de boucle quand la distance du coureur est négative : le
+`&& r.dist >= 0` est retiré du test de franchissement. Les contacts de ruban gardent le leur — il
+n'en a pas parlé. Un coureur placé derrière −10 m sur la grille produit donc une lecture de
+Pursuit A au coup de pistolet, et elle entre dans `S.reads[2]` comme n'importe quelle autre.
+
+**`moteur-course.js`, `detection()`** refuse un dossard qu'il ne connaît pas encore quand la
+détection n'est pas sur `R.arrivee` : `{ refus: 'pas encore passé la ligne de départ' }`. Un
+coureur naît donc dans le moteur à son premier passage sur la ligne, et pas avant. C'est sa règle
+239 écrite dans le moteur, et **ce n'est pas un seuil** — c'est la ligne de départ, qu'aucun
+coureur ne franchit deux fois.
+
+Sans ce refus, ces lectures auraient désigné la tête : l'ancre est le **premier coureur détecté**
+(E9), et le premier détecté serait devenu le BIB 3, lu à 0:00,025 — un coureur du fond de la
+grille, et de surcroît lu sur une boucle que les autres n'ont pas encore passée.
+
+La colonne Lap de l'onglet Passings les laisse vides (§60) : elles n'appartiennent à aucun tour.

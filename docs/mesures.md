@@ -4714,3 +4714,37 @@ longueur du tour — elle ferme, donc elle vient en dernier.
 grille, tout coureur placé au-delà de −10 m roule dessus au coup de pistolet. Le simulateur ne le
 lit pas — `detect` ignore toute boucle tant que la distance du coureur est négative. Une
 installation réelle, elle, lirait ces transpondeurs. Rien n'est changé : ce n'est pas demandé.
+
+
+## §92 · Les passages d'avant la ligne, produits et ignorés — build 242, 18 novembre 2026
+
+Son point 240. `detect` refusait toute lecture de boucle tant que la distance d'un coureur était
+négative ; le garde est retiré, et le moteur de course refuse désormais un coureur tant qu'il ne
+l'a pas vu sur la boucle d'arrivée.
+
+**Ce que le simulateur produit maintenant**, les vingt premières secondes de la course du §88,
+rangées de la plus ancienne à la plus récente :
+
+| heure | boucle | dossard | tour |
+|---|---|---|---|
+| 0:00.025 | Pursuit A | 3 | — |
+| 0:00.142 | Pursuit A | 4 | — |
+| 0:00.260 | Pursuit A | 5 | — |
+| 0:00.324 | Finish | 1 | — |
+| 0:00.378 | Pursuit A | 6 | — |
+| 0:00.442 | Finish | 2 | — |
+
+Les BIB 1 et 2 n'ont aucune lecture de Pursuit A au départ : la grille les place à −7 et −9,2 m,
+donc **au-delà** de la boucle, qui est à −10 m. Les BIB 3 à 24, eux, roulent dessus au coup de
+pistolet. Aucune de ces lectures ne porte de tour (point 239).
+
+**Ce que le moteur en fait : rien.** La course rejouée en entier donne exactement les mêmes
+chiffres qu'au §88 — tête BIB 1, 24 coureurs dans la chaîne, 2,27 blocs affichés en moyenne pour
+2,57 réels, 6 410 inversions sur 228 259 paires à roue, soit 2,81 %, la plus grosse à 0,59 s.
+Aucun chiffre ne bouge d'une unité.
+
+**Pourquoi aucun seuil n'a été posé.** Un « temps de tour minimum » n'aurait rien attrapé ici : ces
+lectures sont les **premières** de ces coureurs sur cette boucle, il n'y a pas d'intervalle à
+mesurer. Ce qui les sépare de la course n'est pas une durée, c'est la ligne de départ. Le point
+reste ouvert au §15 pour ce qu'un temps de tour minimum attraperait vraiment : une double lecture
+du même transpondeur sur la même boucle, qu'aucune mesure n'a encore montrée ici.

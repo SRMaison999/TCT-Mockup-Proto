@@ -103,10 +103,22 @@
     });
 
     /* ------------------------------------------------------------------ 1. une détection */
+    // UN COUREUR N'EXISTE POUR LE MOTEUR QU'À PARTIR DE SON PREMIER PASSAGE SUR LA LIGNE.
+    // Son point 239 : « Le lap 1 débute après le passage de la boucle Finish après le start », et
+    // son point 240 : « le simulateur doit les produire, mais le moteur doit les ignorer ».
+    // La grille est collée à la ligne et déborde en amont ; la boucle Pursuit A est à 10 m de la
+    // ligne. Au coup de pistolet, les coureurs placés derrière −10 m roulent donc dessus, et la
+    // boucle les lit vraiment. Mais ces lectures sont d'AVANT la course : elles diraient que ces
+    // coureurs sont presque un tour devant ceux qui n'ont pas encore été lus, et c'est elles qui
+    // auraient désigné la tête, puisque l'ancre est le premier coureur détecté (E9).
+    // Ce n'est pas un seuil : c'est la ligne de départ, qu'aucun coureur ne franchit deux fois.
     function detection(d) {
       if (!RANG.has(d.boucle)) return { refus: 'boucle inconnue', boucle: d.boucle };
       let c = coureurs.get(d.bib);
-      if (!c) { c = neuf(d.bib); coureurs.set(d.bib, c); }
+      if (!c) {
+        if (d.boucle !== R.arrivee) return { refus: 'pas encore passé la ligne de départ', bib: d.bib, boucle: d.boucle };
+        c = neuf(d.bib); coureurs.set(d.bib, c);
+      }
       if (c.boucle != null) {
         let pas = ((d.boucle - c.boucle) + R.piste) % R.piste;
         if (pas === 0) pas = R.piste;               // deux fois la même boucle : un tour entier
