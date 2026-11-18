@@ -3406,3 +3406,18 @@ C'est son point 223 appliqué au contrôle et non plus seulement au calcul : « 
 les heures de passage ». Ses points 188 et 189 disaient déjà la même chose du vocabulaire.
 
 Les mètres ne servent qu'à l'**ovale**, qui doit bien dessiner quelque chose.
+
+
+### 233 · Le nombre de passages ne dit pas à lui seul où en est un coureur · 18 novembre 2026
+
+> « attention : il faut se méfier du nombre de passages sur la ligne ! Car lorsqu'un coureur gagne
+> un tour, il est crédité de 20 points, amis redeviens aussitôt un membre du peloton au même titre
+> que les autres. Il aura donc un tour de plus mais dans la timeline sera avec les autres. On le
+> verra se démarquer au classement général où là il aura 20 points de plus. »
+
+Dit en voyant un relevé qui se servait du nombre de passages sur la ligne pour décider si deux
+coureurs couraient au même point de la course.
+
+**Un tour gagné laisse un passage de plus sur la ligne et ne laisse rien dans la timeline.** Le
+coureur y revient avec les autres ; ce qui le distingue est ailleurs, au classement général, où il
+porte ses 20 points. Un compte de passages se lit donc toujours **tours validés retranchés**.

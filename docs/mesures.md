@@ -4506,3 +4506,43 @@ depuis le dernier passage de celui de derrière. Dans ces cas-là, `pairCass()` 
 sont donc pas prises sur des heures de passage** — ce que son point 223 interdit.
 
 **L'en-tête des blocs** a sauté **81 fois** d'une seconde au moins sur cette course.
+
+---
+
+## §86 · Les blocs qui coupent le peloton, relevé au bon critère · build 238
+
+Le §85 était faux deux fois, et c'est l'opérateur qui l'a relevé : il comparait les coureurs en
+**mètres** (son point 232), puis il a trié les cas sur le **nombre de passages** sans retrancher les
+tours validés (son point 233).
+
+**Le critère retenu.** Deux coureurs sont séparés à tort si, à la frontière de deux blocs :
+leurs deux passages sur la **même boucle** sont séparés de **moins de 1,000 s**, longueur de vélo
+retirée **et** leurs comptes de passages, **tours validés retranchés**, sont égaux.
+
+**La course** : sa liste de 24 coureurs, 250 m, 40 tours, 18,6 m/s ; le BIB 1 et le BIB 2 partent au
+tour 5 à 19,6 m/s, le BIB 23 et le BIB 24 sont lâchés au tour 12 à 17,7 m/s. Aucun autre ordre.
+316 relevés.
+
+**Trois séparations fausses :**
+
+| à | fin du bloc du dessus | début du bloc du dessous | leur écart lu | l'écart que la timeline affiche |
+|---|---|---|---|---|
+| 439,9 s | BIB 15 | BIB 16 | **0,030 s** | **14,15 s** |
+| 449,6 s | BIB 1 | BIB 2 | 0,028 s | 0,03 s |
+| 500,7 s | BIB 1 | BIB 2 | 0,028 s | 1,40 s |
+
+Le premier est le plus net : deux coureurs à trois centièmes de seconde, et un écart de **quatorze
+secondes** affiché entre leurs deux blocs. À l'arrivée, le peloton est montré coupé en trois —
+`13,14,15`, `16…22`, `3…12` — alors que tous sont à roue.
+
+**Où cela se décide.** Pas dans `computeGroups` : à 445,75 s, `S.cass['17|16']` valait `false`, le
+calcul de cassure disait donc qu'il n'y avait **pas** de cassure, et les deux coureurs étaient quand
+même dans deux blocs. Les blocs de la timeline viennent de `MC.groupes()`, dans `moteur-course.js`,
+qui coupe sur `ecartEntre()`, c'est-à-dire sur la différence des **`place`** et non des lectures.
+`place` est la lecture repliée sur un demi-tour, puis déroulée par la dérive
+(`placeS(c, retard, T) = Math.round((c.derive − retard) / T) × T + retard`). Un tour entier ajouté
+d'un côté et pas de l'autre fait sauter l'écart de deux voisins ; T vaut ici 13,44 s, et les écarts
+faux relevés — 14,15 s — en sont de l'ordre.
+
+**Enfin**, 175 relevés sur 316 — **55 %** — portent sur une frontière dont les deux coureurs n'ont
+**aucune boucle en commun**. Aucune heure de passage ne les relie, et la décision se prend ailleurs.
