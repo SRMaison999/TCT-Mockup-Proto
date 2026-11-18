@@ -816,3 +816,33 @@ ne permettait d'aller voir dessous — un bloc qui ne défile pas verticalement 
 sans rien dire. Elle se mesure comme le reste, `offsetHeight - clientHeight`, et se réserve. Après
 correction, le tableau finit **15 px au-dessus** du bord, à quatre coureurs comme à deux, à 1440
 comme à 1920.
+
+
+### D33 · Une fenêtre dont on n'a pas vérifié la taille ne mesure rien
+
+Pour voir si la bande des sprints défile bien quand les colonnes ne tiennent plus, la fenêtre a été
+réduite à **700 px** de large, et la mesure a répondu : bande large de 1 571 px, aucune flèche, donc
+rien ne défile. Conclusion tirée dans la foulée : le tableau pousse le panneau au lieu de défiler.
+
+**C'était faux.** `innerWidth` valait **1 621 px** : la réduction n'avait pas pris. Les six colonnes
+— 948 px — tenaient donc largement, et l'absence de flèches était le comportement voulu, pas une
+panne. Un correctif a été écrit contre un défaut qui n'existait pas.
+
+Retenu : **lire `innerWidth` dans le même relevé que ce qu'on mesure**, et comparer. Une mesure de
+largeur sans la largeur de la fenêtre qui l'a produite ne prouve rien. Et pour juger un
+débordement, mieux vaut la vraie course qui déborde — ici une course à **vingt sprints** — qu'une
+fenêtre qu'on croit avoir rétrécie.
+
+
+### D34 · `hidden` ne cache rien contre un `display` qui le précède
+
+La bascule `Live / Evolution` du classement se posait bien son attribut `hidden` sur tous les autres
+onglets — c'est ce que le code faisait, et ce que le relevé confirmait : `hidden` valait `true`.
+Elle restait pourtant **visible**, large de 104 px, sur Crossings, Decisions, Passings et sur le
+tableau de tous les sprints. `.seg` lui donne un `display:flex`, et un `display` explicite passe
+devant le `display:none` que le navigateur attache à `[hidden]`.
+
+Retenu : un contrôle qui se cache par `hidden` a besoin de **sa propre règle** `[hidden]{display:none}`
+dès que sa classe lui pose un `display` — c'est la convention écrite dans `mockups/INTEGRATION.md` §7,
+que `.pfilt` et `.spnav` suivent déjà. Et pour vérifier qu'une chose est cachée, **mesurer sa boîte**
+plutôt que lire son attribut : `hidden: true` et 104 px de large coexistaient très bien.

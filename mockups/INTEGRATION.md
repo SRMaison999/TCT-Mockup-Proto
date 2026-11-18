@@ -110,7 +110,7 @@ sprints, Race log, fil commentateurs) ; le reste suit la langue de l'écran où 
 |---|---|---|---|
 | `maquette-lapbylap.html` | `gen-lapbylap.js` | onglet `cross` — **Lap by lap** | validé |
 | `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | validé, §9.2 |
-| `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | validé |
+| `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | **intégré, build 214** |
 | `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **intégré, build 213** (Live et Évolution) |
 | `maquette-passings.html` | `gen-passings.js` | onglet `pass` — **Passings** | validé |
 | `maquette-scenarios.html` | `gen-scenarios.js` | **nouvel écran** — Scénarios de course | validé |
@@ -146,7 +146,7 @@ Rider · Event · Status**. **Source** : `S.log` (`logEvent`). À faire :
 - Le **cycle de crash neutralisant** (décompte −5 → 0) dépend de la gestion des chutes, **pas
   encore dans le proto** (voir §9 de la présentation, « ce qui arrive ensuite »).
 
-### 5.3 Sprints (onglet `sprints`) + carte de sprint
+### 5.3 Sprints (onglet `sprints`) + carte de sprint — **fait, builds 214 et 215 · ne pas refaire**
 **All sprints** : tous les sprints côte à côte, l'ordre **complet** des coureurs, les quatre
 premiers qui marquent, le final en double, défilement horizontal. **Source** : `S.sprints` /
 `renderSprintsTab` (≈ 3309) et l'ordre d'un sprint (`architecture.md` §9). La **carte de sprint**
@@ -269,6 +269,17 @@ Scénarios (S9) et le fil commentateurs (S10) le lisent de là — ils n'ont pas
   course. Jusqu'à quatre coureurs suivis, le panneau de gauche classe à l'instant choisi, et l'écran
   revenu en arrière ne suit plus la course (règle 206). Règles **206** et **207**,
   `architecture.md` §56, `mesures.md` §67, `pitfalls.md` D32. Ne pas refaire.
+
+- **S3 — Tous les sprints**, build 214. L'onglet `sprints` rend une **colonne par sprint**, de
+  gauche à droite, avec l'**ordre complet** de chaque sprint, le final bordé et doublé. Une colonne
+  n'existe que pour un sprint **couru** (règle **209**). Les passages lus pendant une inéligibilité
+  restent à leur place de lecture, sans numéro, avec la pastille `NO PTS`. La liste `OUTPUTS` et
+  `Export sprints` n'ont pas bougé. La carte de sprint reprend trois traits du même dessin : les
+  quatre places qui marquent en vert, le trait sous la quatrième, la pastille `NO PTS`.
+  Au **build 215**, sur sa critique : la liste `OUTPUTS` est **sortie** de cette vue (règle **210**),
+  et l'onglet `Sprints` est **remplacé** par un bouton `ALL` à la suite de la bande des sprints de la
+  carte (règle **211**) — le retour se fait par l'onglet `Race`.
+  `architecture.md` §57, `mesures.md` §69, `pitfalls.md` D33. Ne pas refaire.
 
 ---
 

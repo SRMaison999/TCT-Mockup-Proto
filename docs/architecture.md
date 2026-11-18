@@ -2385,3 +2385,58 @@ fait 152 px — l'échelle des points et les noms des coureurs suivis y tiennent
 (`pitfalls.md` D32). Le dessin et ses classes viennent de la maquette, préfixés `ev-` parce que ses
 noms — `.side`, `.lb`, `.cc`, `.leg` — sont des mots courts que `styles.css`, partagé par les trois
 prototypes, pourrait déjà porter.
+
+**La bascule se cache par une règle à elle** (build 216, règle 212). `renderLog` lui pose bien son
+attribut `hidden` hors de Standings, mais le `display:flex` de `.seg` passait devant : elle se
+voyait sur tous les onglets. `.log .hd .seg[hidden]{display:none}`, dans le `<style>` du mixed, lui
+rend l'effet attendu (`pitfalls.md` D34).
+
+
+## §57 · Tous les sprints, en colonnes (build 214)
+
+L'onglet `Sprints` rendait **une ligne par sprint**, du dernier au premier, et de chaque sprint
+seulement les **quatre premiers**. Il rend maintenant le dessin de
+`mockups/maquette-tous-sprints.html` : **une colonne par sprint, de gauche à droite**, et dans
+chaque colonne l'**ordre complet**.
+
+`renderSprintsTab()` ne calcule rien. Chaque colonne se lit de l'état réel :
+
+| Ce qu'on voit | D'où ça vient |
+|---|---|
+| L'ordre, place par place | `spOrder(k).seq` — déjà l'ordre entier, pas seulement les quatre premiers |
+| Les lignes rouges `NO PTS`, sans place | `spOrder(k).greyed` — les passages **lus pendant une inéligibilité** |
+| Les points `+5 +3 +2 +1`, doublés à la finale | `spPoints(k)` |
+| La pastille `live` / `sent` / `not sent` | `spSendState(k)`, avec les mêmes mots qu'avant |
+| `LAP 30` | `sp(k).lap` — un sprint décalé d'un tour change donc de tour ici aussi |
+| La colonne existe ou non | `spStarted(k)`, **sa règle 209** |
+
+Les lignes grisées s'**entrelacent par l'heure de lecture**, exactement comme la carte de sprint le
+fait déjà : un coureur lu pendant son inéligibilité reste entre les deux coureurs entre lesquels il
+est passé. Les deux écrans racontent ainsi la même chose du même sprint.
+
+**Le défilement se garde.** La bande se reconstruit à chaque rendu, comme tout le reste de l'onglet.
+Son `scrollLeft` est donc gardé dans `spScroll` et reposé après coup, sinon le tableau reviendrait
+au premier sprint à chaque image. Les deux flèches `‹ ›` se montrent uniquement quand il y a quelque
+chose à atteindre (`scrollWidth > clientWidth`) : à six sprints, jamais.
+
+**Où le branchement vit.** La classe `spr` sur `#logrows` — qui fait de lui une bande horizontale —
+se pose dans le **dernier** maillon de la chaîne de `renderLog`, le seul qui tourne pour tous les
+onglets ; les maillons des Passings et de l'Évolution rendent la main avant pour les onglets qui ne
+sont pas les leurs. Les noms de classes portent le préfixe `sp` : `styles.css` est partagé par les
+trois prototypes, donc tout le dessin vit dans le `<style>` du mixed.
+
+**La liste `OUTPUTS` est sortie de cette vue au build 215** (sa règle 210) : le tableau ne montre que
+les colonnes. Les envois restent au journal et dans `Export sprints`, inchangés. Un clic sur une
+colonne ouvre la carte de ce sprint par `data-spopen`, le mécanisme qui existait déjà.
+
+**Par où on y entre, depuis le build 215** (sa règle 211) : l'onglet `Sprints` n'existe plus dans la
+barre du haut. Le bouton **`ALL`**, à la suite de la bande `Sprint 1 2 3 … F` de la carte, pose
+`logTab = 'sprints'` et ouvre le panneau. Le retour se fait par l'onglet `Race`, comme pour les
+autres vues : le panneau couvre la carte, donc le bouton n'est plus atteignable une fois le tableau
+ouvert. L'onglet n'étant plus dans la barre, l'indice du panneau et le bouton `Export sprints`
+s'écrivent dans ce même geste.
+
+**La carte de sprint** reprend trois traits du même dessin, et rien d'autre : les quatre places qui
+marquent sur fond vert (`spPoints`), un trait sous la quatrième, et la pastille rouge `NO PTS` là où
+la ligne grisée disait « no points » en texte. Les trois colonnes, la bande des sprints, les
+commandes de droite et le glisser-déposer sont intacts.

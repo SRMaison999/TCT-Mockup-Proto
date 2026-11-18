@@ -98,6 +98,47 @@
 .sttbl .fin{font:600 15px var(--mono);color:var(--muted);text-align:center}
 .sttbl .stt{font:500 12px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+/* S3 · TOUS LES SPRINTS (mockups/maquette-tous-sprints.html, validée). Une colonne par sprint, de gauche à droite,
+   l'ordre COMPLET dans chaque colonne. Mesuré à 1440x900 : la zone de l'onglet fait 1390 x 852 px, une colonne
+   150 px et une ligne 25 px — 24 coureurs tiennent dans la hauteur, 8 sprints dans la largeur ; au-delà la bande
+   défile et les deux flèches apparaissent. Les noms de classes portent le préfixe `sp` : styles.css est partagé
+   par les trois prototypes, donc tout vit ici. */
+.rows.spr{position:relative;flex:1 1 auto;min-height:0;min-width:0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.spwrap{flex:1 1 auto;min-height:0;min-width:0;display:flex;align-items:flex-start;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px}
+.spnav{position:absolute;top:44%;transform:translateY(-50%);width:32px;height:54px;border-radius:6px;border:1px solid var(--line2);
+  background:#23272bf0;color:var(--muted);font:400 22px var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:0 2px 10px #0008}
+.spnav.l{left:2px}.spnav.r{right:2px}
+.spnav:hover{border-color:var(--muted)}
+.spnav[hidden]{display:none}
+.spcol{flex:0 0 150px;max-height:100%;display:flex;flex-direction:column;background:#17191c;border:1px solid var(--line2);border-radius:4px;overflow:hidden;cursor:pointer}
+.spcol.fin{border-color:var(--fg)}
+.spcol.op{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.spcol-h{padding:6px 8px 7px;border-bottom:1px solid var(--line);background:#1b1d20;flex:0 0 auto}
+.spcol.fin .spcol-h{background:#241f14}
+.spcol-t{font:700 12.5px var(--sans);letter-spacing:.03em;color:var(--muted);display:flex;align-items:center;gap:6px}
+.spcol-t .x2{font:700 10px var(--sans);color:var(--bg);background:var(--fg);border-radius:3px;padding:1px 5px;letter-spacing:.04em}
+.spcol-s{margin-top:3px;font:500 11px var(--sans);color:var(--dim);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.spcol-b{flex:1 1 auto;min-height:0;overflow-y:auto}
+.sprk{display:grid;grid-template-columns:16px 30px 20px 1fr 30px;gap:4px;align-items:center;height:25px;padding:0 6px}
+.sprk + .sprk{border-top:1px solid #23262a}
+.sprk.score{background:#1d2a22}
+.sprk.sep4{box-shadow:inset 0 -2px 0 var(--line2)}
+.sprk.ne{background:#3a1515}
+.sprk .pl{font:600 12px var(--mono);color:var(--dim);text-align:right}
+.sprk.score .pl{color:var(--muted)}
+.sprk .chip{min-width:28px;height:21px;padding:0 4px;font:600 13px var(--mono)}
+.sprk .flagw .flag{width:20px;height:13px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.sprk .noc{font:600 12px var(--mono);letter-spacing:.03em;color:var(--dim);overflow:hidden;text-overflow:ellipsis}
+.sprk.score .noc{color:var(--muted)}
+.sprk.ne .noc{display:none}
+.sprk .pts{font:700 12px var(--mono);color:var(--good);text-align:right}
+.npts{display:inline-block;font:700 9px var(--sans);letter-spacing:.04em;color:#2a0d0d;background:var(--crit);border-radius:3px;padding:1px 5px;white-space:nowrap}
+.spempty{color:var(--dim);font:500 13px var(--sans);padding:10px 2px}
+/* La carte de sprint alignée sur le même dessin : les quatre places qui marquent sur fond vert, un trait sous la
+   quatrième, et la pastille NO PTS là où la ligne grisée disait « no points » en texte. Rien d'autre ne bouge. */
+.srow.score{background:#1d2a22}
+.srow.sep4{box-shadow:inset 0 -2px 0 var(--line2)}
+
 /* LA VUE ÉVOLUTION DU CLASSEMENT (mockups/maquette-standings.html, vue Evolution, validée le 16 novembre 2026),
    moins la phrase d'écart, sortie le 18 (règle 207). Les noms de classes portent tous le préfixe `ev-` : les noms
    de la maquette — .side, .lb, .cc, .leg — sont des mots courts que styles.css, partagé par les trois prototypes,
@@ -168,6 +209,9 @@
 .sptab{flex:0 0 auto;min-width:26px;padding:4px 7px;font:500 12px var(--sans);background:0;border:0;border-radius:6px;color:var(--muted);cursor:pointer;white-space:nowrap}
 .sptab:hover{color:var(--fg)}
 .sptab.on{font-weight:600;color:var(--fg);box-shadow:inset 0 -2px 0 var(--acc)}
+.sptab.all{margin-left:8px;border:1px solid var(--line2);font:600 11px var(--sans);letter-spacing:.06em;border-radius:4px;color:var(--dim)}
+.sptab.all:hover{color:var(--fg);border-color:var(--muted)}
+.sptab.all.on{color:var(--fg);border-color:var(--acc);box-shadow:none}
 
 /* ---- les onglets reprennent le dessin de la page de course (15 novembre 2026) ----
    L'opérateur veut que Standings, Crossings, Decisions, Sprints et Passings
@@ -185,6 +229,9 @@
 .pfilt{display:flex;align-items:center;gap:7px;flex:0 0 auto;padding:6px 2px 4px}
 .pfilt .hint{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
 .pfilt[hidden]{display:none}
+/* La bascule Live / Evolution du classement se posait `hidden` sur les autres onglets, et se voyait quand même :
+   le `display:flex` de `.seg` passe devant l'attribut. Elle se cache ici, comme `.pfilt` juste au-dessus. */
+.log .hd .seg[hidden]{display:none}
 .pf{padding:5px 11px;background:#23272b;border:1px solid var(--line2);border-radius:4px;
   font:500 12px var(--sans);color:var(--fg);cursor:pointer;white-space:nowrap}
 .pf:hover{border-color:var(--muted)}
@@ -503,7 +550,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
          sont plus — le sous-titre est descendu à l'intérieur de l'ovale, où il porte en plus les
          tours, les sprints et la longueur de piste. Le numéro de build est seul, à droite. -->
     <div class="bar">
-      <span class="logtabs" id="logtabs"><button class="lgtab on" data-tab="race">Race</button><button class="lgtab" data-tab="cross">Crossings</button><button class="lgtab" data-tab="dec">Decisions</button><button class="lgtab" data-tab="sprints">Sprints</button><button class="lgtab" data-tab="stand">Standings</button><button class="lgtab" data-tab="pass">Passings</button></span>
+      <span class="logtabs" id="logtabs"><button class="lgtab on" data-tab="race">Race</button><button class="lgtab" data-tab="cross">Crossings</button><button class="lgtab" data-tab="dec">Decisions</button><button class="lgtab" data-tab="stand">Standings</button><button class="lgtab" data-tab="pass">Passings</button></span>
       <div id="simtransport">
           <div class="sh" style="justify-content:center">
             <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -749,7 +796,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '213';
+const BUILD = '216';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -3311,6 +3358,9 @@ function renderCard() {
   // numéro — F pour la finale — pour tenir les courses à vingt sprints, et la bande défile au-delà.
   let strip = '<div class="sprow"><span class="lbl">Sprint</span>';
   for (let j = 1; j <= NSPRINTS; j++) strip += `<button class="sptab${j === k ? ' on' : ''}" data-spjump="${j}" title="${spLabel(j)}${S.sprints[j] && S.sprints[j].closed ? ' · closed' : ''}">${isFinal(j) ? 'F' : j}</button>`;
+  // Ses mots du 18 novembre 2026 : « il faut supprimer l'onglet Sprint et à sa place, il faut un bouton ALL à
+  // côté de la liste des sprints ». Le tableau de tous les sprints s'ouvre donc d'ici, à la suite de la bande.
+  strip += `<button class="sptab all${logTab === 'sprints' ? ' on' : ''}" data-spall="1" title="Every sprint, side by side">ALL</button>`;
   strip += '</div>';
   let h = strip + `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>
     <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
@@ -3321,7 +3371,7 @@ function renderCard() {
   // 27 px qu'il demande sont pris sur l'écart, qui en réservait 62 pour 43 d'encre, et sur le NOC, qui en réservait
   // 38 pour 23. Une colonne de plus dans l'en-tête comme dans les lignes, pour que les deux restent alignés.
   h += `<div class="shd"><span></span><span>BIB</span><span>NOC</span><span style="text-align:right">gap</span><span></span><span></span></div><div class="srows">`;
-  const tgt = spTarget(k);
+  const tgt = spTarget(k), cpts = spPoints(k);
   // the crossings read while the rider was not eligible: kept where they were read, greyed, with no place
   const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
   for (let i = 0; i < N; i++) {
@@ -3332,13 +3382,13 @@ function renderCard() {
   for (const g of grey) rows.push({ g });
   for (const row of rows) {
     if (row.g) { const gr = S.riders.find(x => x.bib === row.g.bib);
-      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}">no points</span><span class="ic"></span><span class="ic"></span></div>`;
+      h += `<div class="srow grey"><span class="pl"></span>${chip(gr)}<span class="noc">${gr.nat}</span><span class="why" title="${gr.name}"><span class="npts">NO PTS</span></span><span class="ic"></span><span class="ic"></span></div>`;
       continue; }
     const e = row.e, place = row.place;
-    if (!e || e.empty) { h += `<div class="srow empty" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
+    if (!e || e.empty) { h += `<div class="srow empty${place === 4 ? ' sep4' : ''}" data-place="${place}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span><span></span><span></span><span class="gp">—</span><span></span><span></span></div>`; continue; }
     const r = S.riders.find(x => x.bib === e.bib), cls = e.held ? 'held' : e.photo ? 'cam' : e.sent ? 'sent' : '';
     const mark = e.held ? 'held' : e.manual ? 'manual' : e.gap != null ? (e.gap >= 0 ? '+' : '') + e.gap.toFixed(3) : '';
-    h += `<div class="srow ${cls}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span>
+    h += `<div class="srow ${cls}${cpts[e.bib] ? ' score' : ''}${place === 4 ? ' sep4' : ''}" data-bib="${e.bib}" data-place="${place}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl${tgt === place ? ' tgt' : ''}" data-sact="target:${place}" title="Next rider typed or double-clicked goes here">${tgt === place ? '▸' : ''}${place}</span>${chip(r, e.held ? 'notp' : '')}<span class="noc">${r.nat}</span>
       <span class="gp">${mark}</span>
       <span class="ic">${e.photo ? '<span data-sact="photo:' + e.bib + '" title="Photo finish: confirm" style="cursor:pointer;display:flex">' + CAM + '</span>' : e.held ? '<button class="btn xs primary" data-sact="sendheld:' + e.bib + '" title="He has passed: send this place now">↑</button>' : ''}</span>
       <span class="ic"><button class="btn xs quiet" data-sact="remove:${e.bib}" title="Out of this order">×</button></span></div>`;
@@ -3415,6 +3465,17 @@ scard.addEventListener('click', e => {
 });
 // La bande des sprints : un clic ouvre la carte du sprint, fermé compris, par le mécanisme qui existe déjà (spOpen).
 scard.addEventListener('click', e => { const t = e.target.closest('[data-spjump]'); if (!t) return; spOpen(+t.dataset.spjump); dirty = true; render(); });
+// ALL : le tableau de tous les sprints, qui n'a plus d'onglet. Le retour se fait par l'onglet `Race`, comme pour
+// les autres vues — le panneau couvre la carte, donc le bouton n'est plus atteignable une fois le tableau ouvert.
+// L'onglet `sprints` n'étant plus dans la barre, son indice et son bouton d'export s'écrivent ici.
+scard.addEventListener('click', e => {
+  if (!e.target.closest('[data-spall]')) return;
+  if (logTab === 'sprints') { $('#logtabs [data-tab="race"]').click(); return; }
+  logTab = 'sprints';
+  $('#logtabs').querySelectorAll('[data-tab]').forEach(x => { x.classList.remove('on'); x.classList.add('quiet'); });
+  $('#loghint').textContent = 'every sprint as judged · click one to open it';
+  dirty = true; render();
+});
 scard.addEventListener('dblclick', e => { const row = e.target.closest('.slrow'); const k = sprintShown(); if (!row || k == null || k > NSPRINTS) return; const bib = +row.dataset.sl; if (S.withdrawn.has(bib)) return; pushUndo(spLabel(k) + ' place BIB ' + bib); spInsert(k, bib, spTarget(k), 'double-click'); dirty = true; render(); });
 scard.addEventListener('input', e => { if (e.target.id === 'sinp') { const k = S.sprintOpen; if (k != null) sp(k).manualText = e.target.value; e.target.classList.remove('err'); } });
 scard.addEventListener('keydown', e => {
@@ -3461,16 +3522,43 @@ async function download(name, text, type) {   // in the claude.ai viewer the pag
 function exportSprints() { const out = []; for (let k = 1; k <= NSPRINTS; k++) { if (!spStarted(k)) continue; const s = sp(k), O = spOrder(k), pts = spPoints(k); out.push({ sprint: k, final: isFinal(k), lap: s.lap, order: O.seq.filter(e => !e.empty).map(e => ({ place: e.place, bib: e.bib, t: e.t, gap: e.gap, points: pts[e.bib] || 0, photo: !!e.photo, held: !!e.held, manual: !!e.manual, sent: e.sent })), notEligible: O.notEligible.map(e => ({ bib: e.bib, crossed: e.raw, why: e.why })), sentAt: s.sentAt, live: s.live }); } download('sprints.json', JSON.stringify({ race: "Men's Points Race", laps: LAPS, sprints: out, outputs: [...S.outputs].reverse() }, null, 1), 'application/json'); logEvent('EXPORT', 'Sprints exported · ' + out.length + ' sprints', true); }
 function exportStandings() { const rows = standings(), head = 'rank,bib,name,noc,sprint_points,sprint_wins,laps_gained,laps_lost,lap_points,total,final_sprint_place,status'; download('standings.csv', [head, ...rows.map((x, i) => [x.wd ? '' : i + 1, x.r.bib, x.r.name, x.r.nat, x.spr, x.wins, x.gained, x.lost, x.lapPts, x.total, x.fin || '', x.status].join(','))].join('\n'), 'text/csv'); logEvent('EXPORT', 'Standings exported · ' + rows.length + ' riders', true); }
 function exportJournal() { download('journal.json', JSON.stringify([...S.log].reverse().map(e => ({ t: e.t, kind: e.k, text: e.m.replace(/<[^>]+>/g, ''), operator: !!e.op, corrected: e.reversed })), null, 1), 'application/json'); logEvent('EXPORT', 'Journal exported · ' + S.log.length + ' lines', true); }
+// S3 · TOUS LES SPRINTS, au dessin de mockups/maquette-tous-sprints.html. Une colonne par sprint, de gauche à
+// droite, et dans chaque colonne l'ordre COMPLET — plus seulement les quatre premiers. Sa règle du 18 novembre
+// 2026 : « Seulement les sprints courus : 3 colonnes au sprint 3. » Rien n'est recalculé ici : spOrder(k) donne
+// l'ordre, sa liste `greyed` les passages lus pendant une inéligibilité, spPoints(k) les points, spSendState(k)
+// la pastille d'envoi et sp(k).lap le tour jugé — donc un sprint décalé d'un tour change de tour ici aussi.
+let spScroll = 0;
 function renderSprintsTab() {
-  let h = '';
-  for (let k = NSPRINTS; k >= 1; k--) {
+  let cols = '';
+  for (let k = 1; k <= NSPRINTS; k++) {
     if (!spStarted(k)) continue;
-    const s = sp(k), O = spOrder(k), seq = O.seq, st = spSendState(k), fin = isFinal(k), top = seq.slice(0, fin ? seq.length : SEND_PLACES);
+    const s = sp(k), O = spOrder(k), fin = isFinal(k), st = spSendState(k), pts = spPoints(k);
     const pill = s.live ? (st.cls === 'sentok' ? '<span class="pill good">live · sent</span>' : '<span class="pill acc">live</span>') : s.sentAt == null ? '<span class="pill warn">not sent</span>' : st.cls === 'send' ? '<span class="pill warn">correction pending</span>' : '<span class="pill good">sent · ' + fmtT(s.sentAt) + '</span>';
-    h += `<div class="lrow spr${S.sprintOpen === k ? ' op' : ''}" data-spopen="${k}" title="Open this sprint"><span class="t">${O.read.length ? fmtT(O.read[0].t) : ''}</span><span class="k">${fin ? 'FINAL<br>SPRINT' : 'SPRINT ' + k}<br><span style="color:var(--dim)">LAP ${s.lap}</span></span><span class="m">${top.map((e, i) => (i === 4 ? '<span class="sepv"></span>' : '') + (e.empty ? '<span class="chip" style="background:none;border:1px dashed var(--line2)">·</span>' : chip(S.riders.find(r => r.bib === e.bib), e.held ? 'notp' : ''))).join('')}${top.some(e => e.photo) ? '<span class="pill crit">photo</span>' : ''}${O.notEligible.length ? '<span class="lbl" style="color:var(--dim)">not eligible ' + O.notEligible.map(e => e.bib).join(', ') + '</span>' : ''}<span class="st">${pill}</span></span></div>`;
+    // Un passage lu pendant l'inéligibilité de son coureur reste là où il a été lu, sans place : le même
+    // entrelacement par l'heure de lecture que la carte de sprint, pour que les deux racontent la même chose.
+    const grey = [...O.greyed].sort((a, b) => a.t - b.t), rows = [];
+    for (const e of O.seq) { while (grey.length && e.t != null && grey[0].t < e.t) rows.push({ g: grey.shift() }); rows.push({ e }); }
+    for (const g of grey) rows.push({ g });
+    let body = '';
+    for (const row of rows) {
+      if (row.g) {
+        const gr = S.riders.find(x => x.bib === row.g.bib); if (!gr) continue;
+        body += `<div class="sprk ne" title="${gr.name} · no points · not eligible when he crossed"><span class="pl"></span>${chip(gr)}<span class="flagw">${flag(gr.nat)}</span><span class="noc">${gr.nat}</span><span class="pts"><span class="npts">NO PTS</span></span></div>`;
+        continue;
+      }
+      const e = row.e, sep = e.place === 4 ? ' sep4' : '';
+      if (e.empty) { body += `<div class="sprk${sep}"><span class="pl">${e.place}</span><span></span><span></span><span class="noc">—</span><span class="pts"></span></div>`; continue; }
+      const r = S.riders.find(x => x.bib === e.bib); if (!r) continue;
+      const p = pts[e.bib] || 0;
+      body += `<div class="sprk${p ? ' score' : ''}${sep}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl">${e.place}</span>${chip(r, e.held ? 'notp' : '')}<span class="flagw">${flag(r.nat)}</span><span class="noc">${r.nat}</span><span class="pts">${p ? '+' + p : ''}</span></div>`;
+    }
+    cols += `<div class="spcol${fin ? ' fin' : ''}${S.sprintOpen === k ? ' op' : ''}" data-spopen="${k}" title="Open this sprint">
+      <div class="spcol-h"><div class="spcol-t">${fin ? 'FINAL<span class="x2">×2</span>' : 'SPRINT ' + k}</div><div class="spcol-s">LAP ${s.lap} · ${pill}</div></div>
+      <div class="spcol-b">${body}</div></div>`;
   }
-  if (!h) h = '<div class="lrow"><span class="t"></span><span class="k">SPRINTS</span><span class="m" style="color:var(--dim)">laps ' + Array.from({ length: NSPRINTS }, (_, i) => sprintLap(i + 1)).join(', ') + ' · the last one counts double · the card opens on the sprint lap</span></div>';
-  if (S.outputs.length) h += '<div class="lrow"><span class="t"></span><span class="k">OUTPUTS</span><span class="m" style="color:var(--dim)">TV · scoreboard · web · newest first</span></div>' + S.outputs.slice(0, 12).map(o => `<div class="outrow"><span>${fmtT(o.t)}</span><span class="k">S${o.k} · L${o.lap}</span><span class="m">${o.kind} · ${o.text}</span></div>`).join('');
+  let h = cols
+    ? `<button class="spnav l" data-spnav="-1" title="Previous sprints">‹</button><button class="spnav r" data-spnav="1" title="Next sprints">›</button><div class="spwrap">${cols}</div>`
+    : '<div class="spempty">laps ' + Array.from({ length: NSPRINTS }, (_, i) => sprintLap(i + 1)).join(', ') + ' · the last one counts double · the card opens on the sprint lap</div>';
   return h;
 }
 // LE CLASSEMENT GÉNÉRAL, au dessin validé le 16 novembre 2026. Ses règles du 15 novembre 2026 : la colonne d'arrivée
@@ -4935,6 +5023,34 @@ renderLog = function () {
   }
   $('#loghint').textContent = EVOHINT;
 };
+
+/* ===== S3 · TOUS LES SPRINTS ========================================================================
+   La bande des colonnes se reconstruit à chaque rendu, comme le reste de l'onglet : son défilement se
+   garde et se repose après coup, sinon le tableau revient au premier sprint à chaque image. Les deux
+   flèches ne se montrent que lorsqu'il y a quelque chose à atteindre — à six sprints, jamais. */
+const sprRenderLog = renderLog;
+renderLog = function () {
+  logrows.classList.toggle('spr', logTab === 'sprints');
+  sprRenderLog();
+  if (logTab !== 'sprints' || $('#log').hidden) return;
+  const w = logrows.querySelector('.spwrap');
+  if (!w) return;
+  w.scrollLeft = spScroll;
+  w.addEventListener('scroll', () => { spScroll = w.scrollLeft; spNavSync(); });
+  spNavSync();
+};
+function spNavSync() {
+  const w = logrows.querySelector('.spwrap'), L = logrows.querySelector('.spnav.l'), R = logrows.querySelector('.spnav.r');
+  if (!w || !L || !R) return;
+  const max = w.scrollWidth - w.clientWidth;
+  L.hidden = max <= 2 || w.scrollLeft <= 2;
+  R.hidden = max <= 2 || w.scrollLeft >= max - 2;
+}
+logrows.addEventListener('click', e => {
+  const b = e.target.closest('[data-spnav]'); if (!b) return;
+  const w = logrows.querySelector('.spwrap'); if (!w) return;
+  w.scrollBy({ left: +b.dataset.spnav * Math.max(158, w.clientWidth * 0.8), behavior: 'smooth' });
+});
 
 // L'écran s'ouvre sur la course, pas sur le journal : le moteur pose 'cross', le
 // balisage pose Race, et c'est le balisage qui a raison.

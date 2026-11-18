@@ -4066,3 +4066,54 @@ suivis passe de 190 à **152 px** : le graphe commence à 461 px du bord au lieu
 écran, les **seize moments** de la course tiennent tous à l'écran — 1 376 px de colonnes pour les
 1 434 px visibles — et les 98 px qui défilent encore ne sont que les noms posés au bout des courbes.
 À 1440, la course longue défile toujours latéralement, comme la maquette l'annonce.
+
+
+## §69 · Tous les sprints en colonnes, palier 3 joué en entier (build 214)
+
+**La course.** Palier 3 — « un lâché inéligible sur la ligne du sprint » — 250 m, **60 tours**,
+**6 sprints**, **16 coureurs**, jouée du départ à l'arrivée à ×16. Écran de **1 440 × 900**.
+
+**La place.** La zone de l'onglet fait **1 390 × 784 px**. La bande `OUTPUTS`, inchangée, en prend
+**103** ; il reste **674 px** aux colonnes. Une colonne fait **152 px** de large, son en-tête
+**64 px**, et chaque ligne de coureur **25 px** : les 16 coureurs du palier 3 donnent une colonne de
+**464 px**, et **aucune colonne ne défile sur elle-même**. La limite est de **24 coureurs** par
+colonne avant qu'elle se mette à défiler. Les six colonnes occupent **948 px** des 1 390
+disponibles, donc les deux flèches restent cachées — ce qui est leur règle.
+
+**Ce que les colonnes montrent.** Les six sprints, de gauche à droite, le dernier marqué `FINAL`
+avec son badge `×2` et sa bordure ambrée. Chaque colonne porte l'ordre **complet** des 16 coureurs,
+pas les quatre premiers. Les points de la finale sont bien doublés : **+10, +6, +4, +2**.
+
+**Les lignes rouges.** Le lâché du palier 3 donne **deux** lignes `NO PTS` aux sprints 4 et 5, et
+**deux** à la finale. À la finale elles tombent **entre la 2ᵉ et la 3ᵉ place** : les coureurs lus
+pendant leur inéligibilité restent là où ils ont été lus, sans numéro, et les places continuent de
+se compter sans eux. C'est ce que le moteur faisait déjà ; l'ancienne liste, qui s'arrêtait aux
+quatre premiers, ne le montrait pas.
+
+**Le compte des colonnes, sa règle 209.** Relevé pendant la course et non à la fin : **1 colonne**
+au sprint 1, **4** au sprint 4, **5** au sprint 5, **6** une fois la finale courue. Aucune colonne
+vide pour un sprint à venir.
+
+**La carte de sprint.** Un clic sur la colonne du sprint 4 ouvre sa carte — la colonne passe au
+bleu, la carte titre `SPRINT 4`. Elle compte **4** lignes vertes, **1** trait sous la quatrième
+place, et **2** lignes grisées portant chacune la pastille `NO PTS`.
+
+**Au build 215, après sa critique.** Même course, même écran. La bande `OUTPUTS` n'est plus dans la
+vue : zéro ligne d'envoi sous les colonnes (règle 210). L'onglet `Sprints` n'est plus dans la barre
+du haut — il reste **Race, Crossings, Decisions, Standings, Passings** — et la bande de la carte se
+lit `Sprint 1 2 3 4 5 F ALL` (règle 211). Un clic sur `ALL` ouvre les **6 colonnes** ; l'onglet
+`Race` ramène à la course et `ALL` s'éteint. La carte de la finale compte toujours **4** lignes
+vertes, **1** trait sous la quatrième place.
+
+**Un défaut vu en passant, qui n'est pas de cette session.** La bascule `Live / Evolution` du
+classement s'affiche sur **tous** les onglets du panneau — Crossings, Decisions, Passings et le
+tableau des sprints — alors que son attribut `hidden` est bien posé. La règle `.log .hd .seg` de
+`styles.css` lui rend un `display:flex` qui passe devant `[hidden]`. Elle est arrivée avec la vue
+Évolution, au build 213. **Corrigé au build 216** sur sa demande (règle 212) : la bascule mesure
+**0 px** sur Crossings, Decisions, Passings et sur le tableau des sprints, et **104 px** sur
+Standings, où le passage Live -> Evolution -> Live fonctionne comme avant.
+
+**Pas mesuré.** Le **défilement latéral** et les deux flèches : à six sprints il n'y a rien à
+atteindre, et la course à vingt sprints n'a pas pu être mise en place dans cette session
+(`pitfalls.md` D33). La densité à vingt sprints reste donc celle que montre
+`mockups/maquette-tous-sprints-20.html`, pas une mesure du prototype.

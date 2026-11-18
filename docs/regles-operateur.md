@@ -2963,3 +2963,60 @@ horizontale** du graphe, haute de 15 px, qui se prend sur la place du tableau : 
 réservée. La colonne de gauche du graphe — celle qui porte l'échelle des points et les noms des
 coureurs suivis — passe de 190 à 152 px, et le graphe gagne d'autant vers la gauche. Sur son écran,
 les seize moments d'une course de soixante tours tiennent alors **tous** à l'écran.
+
+
+### 209 · « Seulement les sprints courus : 3 colonnes au sprint 3 » · 18 novembre 2026
+
+L'écran **All sprints** de `mockups/maquette-tous-sprints.html` montre six colonnes parce que ses
+données sont celles d'une course terminée. La question lui a été posée sur ce qu'on voit **pendant**
+la course : au sprint 3 d'une course de six, le tableau montre-t-il 3 colonnes, ou 6, les sprints 4,
+5 et 6 en colonnes vides portant leur tour. Sa réponse :
+
+> « Seulement les sprints courus : 3 colonnes au sprint 3. »
+
+**Codé au build 214.** Une colonne n'apparaît que pour un sprint **commencé** — `spStarted(k)`, qui
+est déjà ce qui décidait de la liste d'avant. Tant qu'aucun sprint n'a eu lieu, le tableau garde la
+phrase qu'il affichait déjà : les tours des sprints à venir, et que le dernier compte double.
+
+
+### 210 · « Je ne les veux pas » — la liste des outputs sort de la vue des sprints · 18 novembre 2026
+
+Au build 214, le tableau de tous les sprints gardait sous lui la bande `OUTPUTS` — ce qui est parti
+vers la TV, le tableau d'affichage et le web — parce qu'elle était déjà dans l'ancienne liste de
+l'onglet et qu'on n'avait pas voulu la supprimer sans le lui demander. Sa capture l'entoure en
+rouge. Ses mots :
+
+> « pourquoi y a t'il ces outputs ? Je ne les veux pas ! »
+
+**Retirée au build 215.** Le tableau ne montre plus que les colonnes des sprints. Les envois
+continuent d'exister et de se tracer : ils restent au journal et dans `Export sprints`, qui ne
+changent pas.
+
+
+### 211 · « Un bouton ALL à côté de la liste des sprints » · 18 novembre 2026
+
+Ses mots, le même jour :
+
+> « Il faut supprimer l'onglet Sprint et à sa place, il faut un bouton "ALL" à côté de la liste des
+> sprints »
+
+Sa capture montre l'endroit : la bande `Sprint 1 2 3 F` de la carte, et le cadre rouge **juste
+après le F**.
+
+**Fait au build 215.** L'onglet `Sprints` n'est plus dans la barre du haut ; le bouton `ALL` est à
+la suite de la bande, et c'est lui qui ouvre le tableau de tous les sprints. Le retour se fait par
+l'onglet `Race`, comme pour les autres vues : le panneau couvre la carte, donc le bouton n'est plus
+atteignable une fois le tableau ouvert.
+
+
+### 212 · « Corrige-la » — la bascule du classement ne se montre que sur le classement · 18 novembre 2026
+
+La bascule `Live / Evolution` s'affichait en haut à gauche du panneau sur **tous** les onglets, pas
+seulement sur Standings. Le défaut lui a été signalé, avec ce qu'il voit et ce que ça coûte. Sa
+réponse :
+
+> « Corrige-la »
+
+**Corrigé au build 216.** Une règle de style dans le prototype, `.log .hd .seg[hidden]`, rend à
+l'attribut `hidden` le pouvoir que le `display:flex` de `.seg` lui prenait (`pitfalls.md` D34). Elle
+ne se voit plus que sur Standings, où ses deux vues marchent comme avant.

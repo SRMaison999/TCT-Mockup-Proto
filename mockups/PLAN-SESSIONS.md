@@ -25,7 +25,7 @@ Feuille de route pour câbler les maquettes validées (`mockups/`) au moteur ré
 ```
 S1 ─ Standings Live + type de course          LIVRÉ, build 211
  └─ S2 ─ Historique + Évolution               LIVRÉ, build 213
-S3 ─ Sprints ← la suivante   S4 ─ Lap by lap          S5 ─ Passings
+S3 ─ Sprints  LIVRÉ, build 214   S4 ─ Lap by lap ← la suivante   S5 ─ Passings
 S6 ─ Chutes & neutralisations ──┐
 S7 ─ Avant-course (indépendant) │
                                 ├─ S8 ─ Race log  (a besoin de S6)
@@ -76,12 +76,23 @@ les plus lourds et peuvent attendre leur tour.
   depuis le départ, donc une correction remonte toute la course (`architecture.md` §56). Règles
   **206** et **207**, mesures dans `mesures.md` §67, l'erreur comprise dans `pitfalls.md` D32.
 
-### S3 · Sprints (All sprints) + carte de sprint — *moyen, la session suivante*
+### S3 · Sprints (All sprints) + carte de sprint — **livré, builds 214 et 215**
 - **But.** Rebrancher l'onglet `sprints` sur le dessin All sprints (tous les sprints complets,
   défilement), et aligner la carte de sprint.
 - **Source.** `S.sprints`, `renderSprintsTab` (`architecture.md` §9).
 - **Fini quand.** Tous les sprints s'affichent en entier, le final en double, et la carte de
-  sprint suit le dessin.
+  sprint suit le dessin. **Fait.**
+- **Livré.** Une colonne par sprint, de gauche à droite, l'ordre **complet** dans chaque colonne, le
+  final bordé avec son badge `×2`. Une colonne n'existe que pour un sprint **couru** : sa règle
+  **209**, tranchée le 18 novembre 2026. Les lignes rouges `NO PTS` restent à l'endroit où le
+  passage a été lu. Code dans `architecture.md` §57, mesures dans `mesures.md` §69, l'erreur
+  comprise dans `pitfalls.md` D33.
+- **Sa critique du 18 novembre, codée au build 215.** La bande `OUTPUTS` est **sortie** de la vue
+  (règle **210**), et l'onglet `Sprints` est **remplacé** par un bouton `ALL` à la suite de la bande
+  des sprints de la carte (règle **211**).
+- **Ce qui reste ouvert et n'est pas de cette session.** Le **défilement latéral** et les deux
+  flèches ne sont pas mesurés : à six sprints il n'y a rien à atteindre, et la course à vingt
+  sprints n'a pas pu être montée. L'export PDF reste non fait, comme après S1.
 
 ### S4 · Lap by lap — *moyen*
 - **But.** Rebrancher l'onglet `cross` sur le dessin Lap by lap : ordre par tour, surlignage des
@@ -177,7 +188,7 @@ tours manquants de Lap by lap (S4).
 |---|---|---|---|
 | S1 | Standings Live + type de course | **livré, build 211** | — |
 | S2 | Historique + Évolution | **livré, build 213** | S1 |
-| S3 | Sprints (All sprints) + carte | moyen | — |
+| S3 | Sprints (All sprints) + carte | **livré, builds 214-215** | — |
 | S4 | Lap by lap | moyen | — (compléter après S6) |
 | S5 | Passings | moyen | — |
 | S6 | Chutes & neutralisations | gros (×2) | — |
