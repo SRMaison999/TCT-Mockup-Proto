@@ -54,6 +54,12 @@ h1{font:600 15px var(--sans);letter-spacing:.02em;margin:0 0 2px}
 .mk{text-align:right;font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
 .foot{font:500 11px var(--sans);color:var(--dim);padding:10px 2px 0}
 .pf.hold.on{background:var(--warn);border-color:var(--warn);color:#1a1204}
+.pin{width:58px;height:28px;padding:0 8px;background:#17191c;border:1px solid var(--line2);
+  border-radius:4px;font:600 12px var(--mono);color:var(--fg);text-align:center}
+.pin::placeholder{font:400 11px var(--sans);color:var(--dim)}
+.pin:focus{outline:0;border-color:var(--acc)}
+.pin.set{border-color:var(--acc);background:#15202c}
+.pin.bad{border-color:var(--warn);color:var(--warn)}
 .held{display:flex;align-items:center;gap:8px;margin:0 0 -1px;padding:6px 10px;
   background:#2a2209;border:1px solid #4a3a0c;border-bottom:0;border-radius:4px 4px 0 0;
   font:600 11px var(--sans);letter-spacing:.04em;color:var(--warn)}
@@ -86,6 +92,12 @@ kbd{background:#23272b;border:1px solid var(--line2);border-radius:3px;padding:1
     <button class="pf" data-src="1">Pursuit A</button>
     <button class="pf" data-src="2">Pursuit B</button>
     <span class="pfsep"></span>
+    <span class="lab">Bib</span>
+    <input class="pin" id="fbib" inputmode="numeric" placeholder="tous" autocomplete="off">
+    <span class="lab">Lap</span>
+    <input class="pin" id="flap" inputmode="numeric" placeholder="tous" autocomplete="off">
+    <button class="pf" id="clear">Tout</button>
+    <span class="pfsep"></span>
     <button class="pf" id="hold">Hold</button>
     <button class="pf" id="reset">Remettre à l'heure</button>
     <span class="hint" id="hint"></span>
@@ -107,6 +119,12 @@ kbd{background:#23272b;border:1px solid var(--line2);border-radius:3px;padding:1
     <p>Un trait sépare chaque bloc du second critère, pour qu'on voie où une boucle finit et où la
        suivante commence. <b>Remettre à l'heure</b> revient à la liste d'aujourd'hui : tout, la
        détection la plus récente en haut.</p>
+    <p><b>Les deux champs Bib et Lap sont des filtres</b>, pas des tris : ils retiennent des lignes,
+       et le tri des titres continue de travailler sur ce qui reste. Vides, tout passe. On tape
+       <kbd>22</kbd> dans Bib et on n'a plus que la course du 22 ; on ajoute <kbd>16</kbd> dans Lap
+       et on n'a plus que ses trois détections du tour 16. <b>Tout</b> vide les deux. Un dossard qui
+       n'est pas au départ passe le champ en orange, pour qu'on voie que c'est la saisie et non la
+       course qui est vide.</p>
     <p><b>Hold</b> arrête le défilement : les détections continuent d'être lues, mais la liste ne
        bouge plus sous les yeux. Un bandeau dit l'heure à laquelle elle est arrêtée et combien de
        détections attendent. <b>Reprendre</b> les fait toutes entrer d'un coup. Le mot « Hold » est
@@ -170,6 +188,9 @@ let src = 'all';
    détections déjà lues sont dans la liste. `hold` arrête de les y verser — la course, elle,
    continue. Ce qui est arrivé pendant l'arrêt est compté et entre d'un coup au relâchement. */
 let horloge = 0, hold = false, vu = 0, derniere = null;
+/* LES DEUX CHAMPS. Un dossard, un tour. Vide = tous. Ils ne rangent pas, ils RETIENNENT :
+   le tri des titres continue de faire son travail sur ce qui reste. */
+let fBib = null, fLap = null;
 const VITESSE = 8;                       // la maquette joue la course huit fois plus vite
 
 const VAL = { t: r => r.t, point: r => r.loop, bib: r => r.bib, lap: r => r.lap };
@@ -179,7 +200,8 @@ function sortKey(r) { return VAL[k1.col](r); }
 
 function build() {
   const coupe = hold ? vu : horloge;     // Hold : la liste s'arrête à l'heure du clic
-  const base = READS.filter(r => r.t <= coupe && (src === 'all' || r.loop === +src));
+  const base = READS.filter(r => r.t <= coupe && (src === 'all' || r.loop === +src)
+    && (fBib == null || r.bib === fBib) && (fLap == null || r.lap === fLap));
   const rows = base.slice().sort((a, b) => {
     const d1 = (VAL[k1.col](a) - VAL[k1.col](b)) * k1.dir;
     if (d1) return d1;
@@ -216,8 +238,10 @@ function build() {
   const nom = { t: 'TIME', point: 'POINT', bib: 'BIB', lap: 'LAP' };
   document.getElementById('hint').innerHTML =
     'rangé sur <b>' + nom[k1.col] + '</b>' + (k2 ? ', puis sur <b>' + nom[k2.col] + '</b>' : '');
+  const quoi = [fBib != null ? 'BIB ' + fBib : null, fLap != null ? 'Lap ' + fLap : null].filter(Boolean).join(' · ');
   document.getElementById('foot').textContent =
-    base.length.toLocaleString('fr-FR') + ' détections · ' + rows.length + ' affichées';
+    base.length.toLocaleString('fr-FR') + ' détection' + (base.length > 1 ? 's' : '') +
+    (quoi ? ' pour ' + quoi : '') + ' · ' + rows.length + ' affichée' + (rows.length > 1 ? 's' : '');
 
   // le bandeau de l'arrêt : ce que la liste ne montre pas encore
   const bandeau = document.getElementById('held');
@@ -245,8 +269,27 @@ document.querySelector('.pfilt').addEventListener('click', e => {
     e.target.textContent = hold ? 'Reprendre' : 'Hold';
     build(); return;
   }
+  if (e.target.id === 'clear') {
+    fBib = fLap = null;
+    for (const id of ['fbib', 'flap']) { const el = document.getElementById(id); el.value = ''; el.className = 'pin'; }
+    build(); return;
+  }
   if (e.target.id === 'reset') { k1 = { col: 't', dir: -1 }; k2 = null; build(); }
 });
+
+/* LES DEUX FILTRES. On tape, la liste se resserre — pas de bouton à presser. Un dossard qui
+   n'est pas au départ, ou un tour qui n'existe pas, laisse le champ en orange et la liste vide :
+   l'écran dit qu'il n'a rien, et non qu'il n'y a rien. */
+for (const [id, max] of [['fbib', 24], ['flap', 40]]) {
+  document.getElementById(id).addEventListener('input', e => {
+    const v = e.target.value.replace(/[^0-9]/g, '');
+    if (e.target.value !== v) e.target.value = v;
+    const n = v === '' ? null : +v;
+    if (id === 'fbib') fBib = n; else fLap = n;
+    e.target.className = 'pin' + (n == null ? '' : (n >= 1 && n <= max ? ' set' : ' bad'));
+    build();
+  });
+}
 
 /* L'HORLOGE. La course avance, les détections entrent dans la liste au fur et à mesure, et
    Hold arrête de les y verser. On ne redessine que quand quelque chose a changé. */

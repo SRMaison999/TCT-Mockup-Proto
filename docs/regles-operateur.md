@@ -3482,3 +3482,14 @@ Dit sur la maquette de la passing list.
 
 **Un bouton arrête le défilement des événements**, pour qu'on puisse lire la liste. Les détections
 continuent d'arriver pendant ce temps : c'est leur affichage qui s'arrête, pas la lecture.
+
+### 238 · Des filtres par dossard et par tour · 18 novembre 2026
+
+> « mais il n'y a pas de champ pour trier par Lap ou BIB ? ce serait vachement utile »
+>
+> « je voulais dire qu'il faudrait des filtres »
+
+Dit sur la maquette de la passing list, qui n'avait que le tri des titres de colonnes (point 236).
+
+**Deux filtres, un par dossard, un par tour.** Ils ne rangent pas, ils **retiennent** : le tri des
+titres continue de travailler sur ce qui reste. Distinct du point 236, qui est le tri.
