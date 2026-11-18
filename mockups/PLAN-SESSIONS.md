@@ -94,7 +94,7 @@ les plus lourds et peuvent attendre leur tour.
   flèches ne sont pas mesurés : à six sprints il n'y a rien à atteindre, et la course à vingt
   sprints n'a pas pu être montée. L'export PDF reste non fait, comme après S1.
 
-### S4 · Lap by lap — **livré, builds 217 à 222**
+### S4 · Lap by lap — **livré, builds 217 à 234**
 - **But.** Rebrancher l'onglet `cross` sur le dessin Lap by lap : ordre par tour, surlignage des
   sprints, alertes, et la correction **« Shift −1 lap »**.
 - **Source.** `S.cross` (`architecture.md` §7).
@@ -115,6 +115,20 @@ les plus lourds et peuvent attendre leur tour.
   boîte du **peloton**, et non derrière lui (règle **216**) — complété au **build 220**, qui corrige
   le chemin que l'opérateur emprunte vraiment, celui du tour validé **avant** le franchissement
   (règle **217**, `pitfalls.md` D37).
+- **Ses essais du 18 novembre ont ouvert la logique de course, builds 223 à 234.** Ce qu'il a vu dans
+  la colonne venait presque toujours d'ailleurs. Dans l'ordre : le **merge attend sa validation**,
+  pour le tour gagné comme pour le tour perdu (règles **219** et **220**, la phrase du §3 est
+  remplacée) ; un tour validé **tient** quand le coureur ressort du peloton (règle **221**) ; un
+  passage **déplacé** par un tour crédité est rangé avec le peloton (règle **222**) ; l'écart en tours
+  se lit sur les **passages de la boucle d'arrivée**, jamais sur des mètres (règle **223**) ; les noms
+  des boîtes se **refont** sur celles qui s'affichent (règle **224**) ; un tour pris non validé passe
+  devant le **leader désigné** (règle **225**) ; une **carte qui attend** vaut un tour d'écart et son
+  bloc ouvre la timeline (règle **226**) ; un **écart négatif** ne s'affiche plus, l'en-tête porte
+  `leader`, l'écart, ou `—` (règle **227**).
+- **À ne pas refaire, et à ne pas défaire.** Deux chemins ont été essayés et ratés pour l'ordre de la
+  colonne — le rang du moment et le bloc gravé passage par passage (`pitfalls.md` D38) — et deux
+  autres pour l'écart en tours : le calcul en mètres hors de l'amas (D42) et la recherche d'une faute
+  de moteur là où elle était dans l'affichage (D43). Mesures dans `mesures.md` §73 à §80.
 - **Corrigé au build 222** (règle **218**). La colonne est rangée dans l'ordre de la **course** : les
   blocs de la timeline, le bloc de tête en haut, relevés une fois à l'ouverture du tour. Les boîtes ne
   se répètent plus dans une colonne (`mesures.md` §73, `pitfalls.md` D38).
@@ -207,7 +221,7 @@ tours manquants de Lap by lap (S4).
 | S1 | Standings Live + type de course | **livré, build 211** | — |
 | S2 | Historique + Évolution | **livré, build 213** | S1 |
 | S3 | Sprints (All sprints) + carte | **livré, builds 214-215** | — |
-| S4 | Lap by lap | **livré, builds 217-222** | — (compléter après S6) |
+| S4 | Lap by lap | **livré, builds 217-234** | — (compléter après S6) |
 | S5 | Passings | moyen | — |
 | S6 | Chutes & neutralisations | gros (×2) | — |
 | S7 | Avant-course (transpondeurs) | moyen | — |

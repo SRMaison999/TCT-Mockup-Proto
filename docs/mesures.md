@@ -4254,3 +4254,94 @@ pour le 12 et le 52, tour 19. Au build 224, les colonnes `LAP 19`, `LAP 20` et `
 build 225, `LAP 19` donne `2-Bunch → 15:19 12:20 4:19 52:20 11:19 …` et `LAP 20` donne
 `2-Bunch → 12:21 52:21 15:20 …` : ils sont dans le peloton. Ils en ressortent `1-Leaders` au `LAP 21`
 — c'est une seconde échappée, et au `LAP 22` le 18, le 61 et le 7 sont repassés devant eux.
+
+
+## §76 · Le tour qui suit la validation · builds 226 à 229
+
+**La course :** celle avec deux échappées et deux lâchés, lancée à ×16. Tour gagné du 12 et du 52
+validé à 5:29,8, pendant le tour 18.
+
+**Aux builds 227 et 228, toujours faux.** `LAP 21` donnait encore
+`1-Leaders → 12:21 52:21 18:22 61:22 7:22` : les coureurs dont le tour venait d'être validé restaient
+en tête. Deux builds passés à chercher dans le moteur ce qui était dans la colonne.
+
+**Au build 229.** `LAP 18` montre le double passage — `1-Leaders → 12:18 52:18` en haut et
+`3-Bunch → … 12:19 52:19` plus bas — et les six tours suivants les rangent dans le peloton, sans une
+exception : `LAP 19` à `LAP 24` donnent tous `2-Bunch → 15 4 11 23 58 67 1 9 3 12 52`, le 12 et le 52
+en fin de boîte avec leur pastille d'un tour en avance. Avant validation, au `LAP 17`, ils sont encore
+`1-Leaders` — ce qui est juste.
+
+**Sans rien valider, les deux sens tiennent.** Sur 132 changements relevés : le 12 et le 52 ne
+paraissent dans la boîte du peloton que jusqu'à 2:04,1, avant leur échappée ; le 46 et le 70, que
+jusqu'à 4:10,7, avant d'être doublés. Ni avant ni après la jonction ils ne s'y mélangent.
+
+**Ce qui n'est pas réglé, et qui ne date pas d'aujourd'hui.** Les en-têtes de blocs affichent des
+écarts **négatifs** quand un coureur tient un tour non validé : 151 images sur 421 au build 225 — le
+build commité — et 247 sur 599 au build 228. L'ordre des blocs vient de l'écart non validé, les
+écarts affichés viennent d'ailleurs : les deux ne disent plus la même chose. C'est le prix des
+points 219 et 220, et c'est l'erreur E11 que la timeline avait déjà payée une fois.
+
+
+## §77 · Les noms de boîtes refaits, et le leader désigné · build 230
+
+**Les noms.** Course avec deux échappées, 21 colonnes relevées après un tour validé : **les 21**
+commencent par une boîte `1-…`. Avant le build 230, une colonne dont le bloc de tête s'était vidé
+commençait par `2-Chase`.
+
+**Le leader désigné, et les coureurs qui attendent leur validation.** Même course, carte « Lap
+gained? » du 18, du 61 et du 7 affichée, rien de validé. Sans leader désigné, la timeline les met en
+tête : `1-Leaders 18 61 7`, puis `2-Chase 15,6 s 12 52`, puis le peloton. Le **52 désigné leader** à
+la seconde suivante, la timeline devient `1-Leaders · manual · 12 52`, puis `2-Chase −19,8 s 18 61 7`,
+puis le peloton : les trois coureurs qui viennent de rattraper passent **derrière** le leader
+désigné, avec un écart négatif. C'est exactement ce que sa capture du 18 novembre montre. Son
+point 183 — la tête de la timeline est celle qu'il désigne — et ses points 219 et 220 — un coureur
+qui rattrape reste en tête jusqu'à validation — se contredisent dans ce cas, et **rien n'est codé**
+tant qu'il n'a pas tranché (`pitfalls.md` A12).
+
+
+## §78 · Le tour pris devant le leader désigné · build 231
+
+**La course :** celle avec deux échappées, à ×16. Le 18, le 61 et le 7 viennent de rattraper, leur
+carte « Lap gained? » est affichée, rien n'est validé.
+
+**Le leader désigné ne les fait plus descendre.** Avant de désigner : `1-Leaders 18 61 7`, puis
+`2-Chase 13,8 s 12 52`. Le **52 désigné leader** : la tête reste `1-Leaders 18 61 7`, et le 52 passe
+en `2-Chase`. Au build 230, la même manœuvre renvoyait le 18, le 61 et le 7 en `2-Chase` à −19,8 s.
+
+**La validation les merge sur-le-champ.** Carte du 12 et du 52 validée à **5:29,8**. Juste avant :
+`1-Leaders 18 61 7` | `2-Chase 14,8 s 12 52` | `3-Bunch 9 riders` | `4-Last 46 70`. Sept dixièmes
+plus tard : `1-Leaders 18 61 7` | `2-Bunch 11 riders 15 4 11 23 …` | `3-Last 46 70`. Le bloc du 12 et
+du 52 a disparu, le peloton est passé de 9 à 11 coureurs, et le 18, le 61 et le 7 — toujours en
+attente — sont restés en tête.
+
+
+## §79 · La carte qui attend, et la fenêtre d'un tour · builds 232 et 233
+
+**La course :** celle avec deux échappées, à ×16. Carte « Lap gained? » du 12 et du 52, tour 19,
+affichée et non validée ; le 18, le 61 et le 7 tiennent eux aussi un tour pris non validé, plus
+ancien.
+
+**Au build 231**, à 5:30,6 : `1-Leaders 18 61 7` | `2-Chase 14,8 s 12 52` | `3-Bunch 9 coureurs` |
+`4-Last 46 70`. Le bloc dont la carte attend est en deuxième position — le défaut de sa capture.
+
+**Au build 233**, même seconde : `1-Leaders 12 52` | `2-Chase 18 61 7` | `3-Bunch 9 coureurs` |
+`4-Last 46 70`. Le bloc dont la carte attend ouvre la timeline.
+
+**Ce que le build 232 a ajouté, et pourquoi.** Entre la jonction — qui arrive n'importe où sur la
+piste — et le passage suivant sur la ligne, la boucle d'arrivée n'a pas encore vu le coureur une fois
+de plus que le peloton : l'écart lu valait **zéro pendant presque un tour entier**, celui-là même que
+l'opérateur regarde en décidant. La carte comble cette fenêtre.
+
+**Toujours pas réglé.** Les écarts négatifs en en-tête : `2-Chase −15,4 s` sur la mesure ci-dessus.
+L'ordre des blocs vient de l'écart non validé, les écarts affichés viennent de la piste.
+
+
+## §80 · Plus aucun écart négatif · build 234
+
+**La course :** celle avec deux échappées, à ×16, jusqu'à 13:45 — **432 images relevées**, écart par
+écart, dans les en-têtes de blocs.
+
+**Zéro écart négatif.** Au build 233 la même course en donnait 247 sur 599. Le tiret `—` prend leur
+place **145 fois** : par exemple à 5:26,7, `1-Leaders 18 61 7` porte `leader`, `2-Chase 12 52` porte
+`13,1 s`, et `3-Bunch` porte `—` ; à 5:30,7, la carte du 12 et du 52 ayant pris la tête, c'est
+`2-Chase 18 61 7` qui porte `—` et le peloton qui retrouve `12,7 s`.

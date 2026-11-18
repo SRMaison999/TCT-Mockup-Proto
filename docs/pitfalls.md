@@ -945,3 +945,58 @@ venait de rejoindre. Hors de l'amas, c'est le compte validé qui tient.
 
 La leçon dépasse ce cas : **une valeur que l'opérateur a validée ne se recalcule pas à partir d'une
 mesure**. La mesure sert à la proposer ; une fois tranchée, elle vit dans le compte qu'il a posé.
+
+
+### D42 · Un arrondi qui ne décidait de rien, et qui s'est mis à décider
+
+L'écart en tours entre un coureur et le peloton se calculait `Math.round((lu - bunchRaw) / TRACK)`,
+et c'était exact **parce qu'on ne le calculait que dans l'amas** : les deux coureurs sont alors au même
+endroit de la piste, la différence est à quelques mètres d'un tour entier, et l'arrondi ne décide de
+rien. En sortant ce calcul de l'amas (build 226) l'arrondi s'est mis à décider : un coureur à 130 m du
+peloton était compté un tour en dessous, le peloton se cassait en six blocs et leurs en-têtes
+affichaient des écarts négatifs. Le build 227 lui a rendu la marge d'un quart de tour, et le build 228 a
+retiré les mètres pour de bon : l'écart se lit sur les passages comptés et datés par la boucle
+d'arrivée (règle 223), et il n'y a plus d'arrondi à régler.
+
+La leçon : **un arrondi n'est anodin que dans les conditions où il a été écrit.** Déplacer le calcul
+hors de ces conditions, c'est changer ce que l'arrondi décide, même si la ligne ne bouge pas.
+
+
+### D43 · Chercher dans le moteur une faute qui est dans l'affichage
+
+L'opérateur montrait un coureur affiché « leader » au tour qui suivait sa validation. J'ai cherché
+trois builds durant dans `computeGroups` — l'écart en tours, le repère du peloton, l'arrondi — et j'ai
+cassé la timeline en chemin. Sa troisième capture donnait la réponse : **la timeline, elle, était
+juste** ; elle montrait le coureur en dernière position du peloton. Seule la colonne se trompait.
+
+Deux choses à en garder. La première : quand deux vues du même fait se contredisent, **celle qui est
+juste désigne l'autre** — il n'y a rien à corriger du côté qui dit vrai. La seconde : un affichage qui
+fige un relevé doit dire ce qu'il advient des faits qui changent **après**. Ici le relevé d'un tour est
+pris à son ouverture (règle 218), et une validation faite plus tard déplace les passages sans toucher
+au relevé : il fallait reconnaître ces passages déplacés — leur pastille ne vaut plus le tour de la
+colonne — et les ranger avec le peloton.
+
+
+### D44 · Un rang figé dans un relevé n'est plus le rang de ce qu'on affiche
+
+Le relevé d'un tour garde les blocs **tels qu'ils étaient** à son ouverture, nom compris — et le nom
+porte le rang (`1-Leaders`, `2-Chase`). Quand un bloc du relevé ne s'affiche pas, parce qu'aucun de
+ses coureurs n'a de passage sur ce tour-là, les rangs des suivants deviennent faux : le premier bloc
+affiché s'annonce `2-Chase` alors qu'il est en tête.
+
+Ce qu'il faut garder d'un relevé, c'est ce qui ne se recalcule pas — **l'ordre** —, et refaire sur
+ce qui reste ce qui se déduit de l'ordre : le rang et le rôle. Un identifiant qui contient un rang
+ne survit pas à un filtrage.
+
+
+### D45 · La fenêtre entre la jonction et le passage suivant sur la ligne
+
+L'écart en tours se lit sur les passages de la boucle d'arrivée (règle 223), et c'est juste. Mais la
+jonction, elle, se produit **n'importe où sur la piste** (§3) : entre le moment où un coureur rattrape
+le peloton et son passage suivant sur la ligne, la boucle ne l'a pas encore vu une fois de plus que
+lui. L'écart lu vaut donc zéro pendant presque un tour entier — et c'est exactement le tour pendant
+lequel l'opérateur regarde sa carte et décide.
+
+Une mesure prise à des instants discrets a toujours une fenêtre où elle ne sait pas encore. Quand un
+affichage doit dire la vérité **pendant** cette fenêtre, il lui faut une autre source : ici la carte
+en attente, qui est précisément ce que l'opérateur a sous les yeux.

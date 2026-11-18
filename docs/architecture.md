@@ -2492,9 +2492,33 @@ dernier maillon de la chaîne de `renderLog`, comme `spr` (§57).
 valeurs côte à côte dans `S.took` : `v0`, le nombre de tours que les boucles donnent au coureur sur le
 paquet, et `v`, celui qu'on lui retranche vraiment — borné par `S.lapStatus`, le compte validé. Avant
 validation `v` vaut 0 : le coureur reste où les boucles l'ont lu, un tour devant pour un gain, un tour
-derrière pour une perte. **Hors de l'amas du peloton, `v0` vaut le compte validé** et non zéro (build
-225, règle 221) : un tour validé ne se remesure pas sur une position, sinon le coureur qui prend une
-longueur d'avance sur le peloton qu'il vient de rejoindre remonte d'un tour entier (`pitfalls.md` D41). Leur différence est
+derrière pour une perte. **L'écart en tours se lit sur les passages de la boucle
+d'arrivée** (build 228, règle 223) : `finN`, combien de fois elle a vu le coureur, et `finAt`, quand
+elle l'a vu la dernière fois, avec `finPrev` pour sa durée de tour. `Math.round((finN − finN du repère)
+− (finAt − finAt du repère) / T)`. Aucune distance n'y entre, et un tour validé ne se remesure pas sur
+une position (`pitfalls.md` D41 et D42).
+
+**L'en-tête d'un bloc a trois états** (build 234, règle 227) : `leader` pour le premier, l'écart en
+secondes quand il est mesuré, `—` quand il ne l'est pas encore. `g.gap` à `null` avec `g.gapNone`
+distingue le second cas du premier. Un écart négatif n'est jamais affiché.
+
+**Une carte de tour en attente vaut un tour d'écart** (build 232, règle 226) : `ecEff()` est l'écart lu
+sur les passages, ou, à défaut, le `delta` de la proposition en attente — elle comble la fenêtre d'un
+tour entre la jonction et le passage suivant sur la ligne (`pitfalls.md` D45). Parmi les blocs en
+avance, **celui dont la carte attend passe devant** (build 233).
+
+**Un bloc qui tient un tour pris non validé est mis en tête de la timeline** (build 231, règle 225),
+après le rangement à la main : c'est lui, et non le bloc du leader désigné, qui ouvre la timeline. À la
+validation l'écart tombe à zéro, le bloc redescend de lui-même et le suivant devient la tête.
+
+**Les noms des boîtes se refont sur celles qui s'affichent** (build 230, règle 224) : le relevé donne
+l'ordre, le rang et le rôle se déduisent des boîtes non vides, comme `groupName()` les déduit sur la
+timeline (`pitfalls.md` D44).
+
+**Un passage déplacé par un tour crédité est rangé avec le peloton** (build 229, règle 222). Le relevé
+d'un tour est pris à son ouverture et ne connaît pas les validations faites après ; `renderCrossTab()`
+reconnaît ces passages à leur compte — `c.n !== k` — et les met dans la boîte du peloton, celle où le
+coureur est l'égal des autres (`pitfalls.md` D43). Leur différence est
 `avanceOf()`, l'avance non validée ; elle passe devant tout le reste dans `cmpRead` et force une coupe
 entre deux coureurs qui ne la portent pas pareil, si bien que le bloc de tête ne se mélange pas au
 peloton. `S.lapStatus` entre dans la clé du cache, pour que le merge se fasse au clic et non à la

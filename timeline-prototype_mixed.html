@@ -851,7 +851,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '225';
+const BUILD = '234';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1174,6 +1174,11 @@ function step(dt) {
         rec.spd = o.rec ? (d - o.rec.d) / (rec.t - o.rec.t) : r.spd;
         o.rec = rec;
         (o.lastAt || (o.lastAt = []))[li] = rec.t;   // son dernier temps de passage SUR CETTE BOUCLE : le z du §1
+        // LES PASSAGES SUR LA LIGNE, COMPTÉS ET DATÉS. C'est tout ce qu'il faut pour savoir si deux coureurs sont
+        // dans le même tour, et c'est tout ce que l'opérateur veut qu'on utilise (1er novembre 2026 : « Ce qui nous
+        // intéresse, ce sont les écarts en temps entre les coureurs »). `finN` est le nombre de fois que la boucle
+        // d'arrivée l'a vu, `finAt` la dernière, `finPrev` l'avant-dernière — leur différence est SA durée de tour.
+        if (L === 0) { o.finPrev = o.finAt; o.finAt = rec.t; o.finN = (o.finN || 0) + 1; }
         S.reads[li].push({ bib: nb, t: rec.t });   // the loop's own passage log: the count that names the bikes
         if (MC) MC.detection({ bib: nb, boucle: L, t: rec.t });   // la seule entrée du moteur de course
         // crossings log: line N = lap N of the race as judged. A rider's crossing is filed on his own count brought back by
@@ -1432,7 +1437,7 @@ function computeGroupsVraiment(M) {
   // le repère ne peut pas non plus être un coureur qui tient une avance NON VALIDÉE (build 223) : lui aussi est à
   // un tour du tour du paquet, et le prendre pour repère retranchait un tour à tout le peloton — mesuré au build 223,
   // le 15, le 4, le 11, le 67 et le 1 se retrouvaient dans le bloc de tête avec le 12 et le 52.
-  const bunchFront = rev.find(x => { const st = S.took[x.r.bib]; return x.r.inBunchPrev && st && st.dedans && !st.v0 && !st.v; }) || rev.find(x => x.r.inBunchPrev) || bunchSeq[bunchSeq.length - 1];
+  const bunchFront = rev.find(x => { const st = S.took[x.r.bib]; return x.r.inBunchPrev && st && !st.v0 && !st.v; }) || rev.find(x => x.r.inBunchPrev) || bunchSeq[bunchSeq.length - 1];
   // la distance du paquet est elle aussi celle que les boucles ont LUE (point 177), pour que les deux termes de la
   // soustraction ci-dessous viennent du même endroit.
   const bunchRaw = bunchFront ? (bunchFront.r.rec ? bunchFront.r.rec.d : bunchFront.m.pos) : null;
@@ -1475,18 +1480,27 @@ function computeGroupsVraiment(M) {
     if (st && st.at === at && st.ls === ls) return st.v;   // rien de neuf n'a été lu, rien n'a été validé : rien ne change
     const dedans = bunchRaw != null && inBunchCluster.has(r.bib);
     const lu = r.rec ? r.rec.d : M.get(r.bib).pos;
-    // UN TOUR VALIDÉ NE SE PERD PLUS QUAND LE COUREUR RESSORT DU PAQUET. Sa capture du 18 novembre 2026 : « au
-    // lap 14 les coureurs 61 et 7 sont leaders mais c'est incorrect car ils viennent tout juste de rattraper le
-    // peloton. » Le tour retranché ne se mesurait que tant que le coureur roulait DANS l'amas ; dès qu'il en
-    // sortait d'une longueur, le retranchement tombait à zéro et le coureur remontait d'un tour entier dans la
-    // timeline — en tête, un tour devant un peloton qu'il venait de rejoindre. Hors de l'amas, c'est donc le
-    // compte VALIDÉ qui tient : il ne dépend d'aucune position, et l'opérateur l'a posé lui-même.
-    const brut = dedans ? Math.round((lu - bunchRaw) / TRACK) : null;
-    const v0 = brut == null ? ls : brut;
+    // L'ÉCART EN TOURS SE LIT SUR LES PASSAGES, PAS SUR DES MÈTRES. L'opérateur, 18 novembre 2026 : « pourquoi tu
+    // utilises des mètres ????? tu ne dois utiliser que les heures de passage des transpondeurs sur les boucles ».
+    // C'est sa règle du 1er novembre, et les builds 226 et 227 l'avaient enfreinte.
+    //   Deux nombres suffisent, les deux lus sur la boucle d'arrivée : combien de fois elle a vu le coureur, et
+    // quand elle l'a vu la dernière fois. `finN` et `finAt`. Si le coureur a été vu une fois de plus que le repère
+    // du paquet ET qu'ils sont passés à quelques secondes l'un de l'autre, il a un tour d'avance. S'il a été vu une
+    // fois de moins parce qu'il n'a pas encore franchi la ligne ce tour-ci, son dernier passage date d'un tour
+    // entier — et le terme en `/ T` l'annule. C'est le §4 écrit avec des heures : « la différence entre leurs deux
+    // comptes de passages vaut 0, +1 ou −1 ».
+    //   T est SA durée de tour, l'écart entre ses deux derniers passages sur la ligne. Aucune distance n'entre ici,
+    // et il n'y a plus d'arrondi à régler : la quantité arrondie est à un centième d'un nombre entier.
+    const fr = r.finN != null && r.finAt != null ? r : null;
+    const ff = bunchFront && bunchFront.r.finN != null && bunchFront.r.finAt != null ? bunchFront.r : null;
+    const tour = x => x && x.finPrev != null && x.finAt != null ? x.finAt - x.finPrev : null;
+    const T = tour(fr) || tour(ff);
+    const brut = !fr || !ff || fr === ff || !T ? 0 : Math.round((fr.finN - ff.finN) - (fr.finAt - ff.finAt) / T);
+    const v0 = brut;
     let v = v0;
     if (v > 0) v = Math.min(v, Math.max(0, ls));   // un tour d'avance ne se reprend qu'une fois validé
     if (v < 0) v = Math.max(v, Math.min(0, ls));   // un tour de retard non plus
-    S.took[r.bib] = { at, ls, v, v0, dedans };
+    S.took[r.bib] = { at, ls, v, v0 };
     if (st && st.v !== v)
       dbg('TOUR', v ? 'BIB ' + r.bib + ' : ' + v + ' tour(s) retranché(s) sur le paquet' : 'BIB ' + r.bib + ' : plus de tour retranché',
         { bib: r.bib, tours: v, avant: st.v, lu: +lu.toFixed(1), paquet: +bunchRaw.toFixed(1),
@@ -1502,6 +1516,18 @@ function computeGroupsVraiment(M) {
   // un bloc à lui. Sans lui, le moteur de course le range à sa place sur l'anneau — il vient de rejoindre
   // l'arrière du peloton, donc derrière — et il s'affichait « Behind » alors qu'il a un tour d'avance.
   const ecartOf = r => { impliedOf(r); const st = S.took[r.bib]; return st ? (st.v0 | 0) - (st.v | 0) : 0; };
+  // UNE PROPOSITION QUI ATTEND VAUT UN TOUR D'ÉCART, ELLE AUSSI. Sa capture du 18 novembre 2026, build 231 : le 7
+  // et le 61 viennent de rattraper au tour 14, leur carte « Lap gained? » est affichée, et ils sont pourtant
+  // affichés `2-CHASE` sous le 52.
+  //   La raison : l'écart se lit sur les passages de la boucle d'arrivée, et entre la jonction — qui se produit
+  // n'importe où sur la piste (§3, « peu importe à quel endroit ») — et leur passage suivant sur la ligne, la
+  // boucle ne les a pas encore vus une fois de plus que le peloton. L'écart valait donc zéro pendant presque un
+  // tour entier, celui-là même que l'opérateur regarde en décidant.
+  //   Or ce qu'il dit, c'est « TANT QUE L'OPERATEUR N'A PAS VALIDE » : l'état qui compte est celui de la carte.
+  // Une carte qui attend vaut donc un tour d'écart, dans le sens qu'elle porte — devant pour un tour gagné,
+  // derrière pour un tour perdu — jusqu'à ce qu'il la tranche.
+  const pendingOf = b => { const p = S.proposals.find(p => p.kind === 'lap' && p.bibs.includes(b) && !(S.snoozed[p.key] && S.t < S.snoozed[p.key])); return p ? p.delta : 0; };
+  const ecEff = r => ecartOf(r) || pendingOf(r.bib);
   // The merge, as the operator wrote it: as soon as there is no break left between him and the bunch, a rider
   // takes the bunch lap in the timeline, waiting for no validation at all. The operator validation now decides
   // the +/-20 points and nothing else. Laps gained and laps lost alike.
@@ -1528,7 +1554,7 @@ function computeGroupsVraiment(M) {
     MC.groupes().forEach((g, i) => g.coureurs.forEach(b => mcBloc.set(b, i)));
   }
   const cmpRead = (a, b) => {
-    const ea = ecartOf(a.r), eb = ecartOf(b.r);
+    const ea = ecEff(a.r), eb = ecEff(b.r);
     if (ea !== eb) return eb - ea;        // un tour d'écart non validé passe devant, ou derrière, tout le reste
     const ra = mcRang.get(a.r.bib), rb = mcRang.get(b.r.bib);
     if (ra != null && rb != null) return (ra - rb) || (a.r.bib - b.r.bib);
@@ -1589,7 +1615,6 @@ function computeGroupsVraiment(M) {
   // 2. display blocks: a physical cluster whose members are a lap apart in the race is shown as several blocks,
   //    each at its own distance from the leader; the block then says who it rides with on the track.
   const opOf = new Map(); for (const g of S.groups) for (const b of g.bibs) opOf.set(b, g);
-  const pendingOf = b => { const p = S.proposals.find(p => p.kind === 'lap' && p.bibs.includes(b) && !(S.snoozed[p.key] && S.t < S.snoozed[p.key])); return p ? p.delta : 0; };
   // LES GROUPES SE CRÉENT SUR LA TIMELINE. Son point 185, le 1er novembre 2026 : « MAIS EVIDEMMENT QUE
   // C'EST COMME CA QUE SE CREENT LES GROUPES !! CE N'EST PAS L'OVALE ! FORCEMENT ! L'OVALE C'EST UNE
   // AIDE VISUELLE A L'UTILISATEUR ! » On descend donc la timeline, du premier coureur au dernier, et on
@@ -1615,7 +1640,7 @@ function computeGroupsVraiment(M) {
       let coupe = !g;
       if (prec) {
         const ba = mcBloc.get(prec.r.bib), bb = mcBloc.get(x.r.bib);
-        coupe = ecartOf(prec.r) !== ecartOf(x.r) ? true            // un écart non validé ne se mélange pas au peloton
+        coupe = ecEff(prec.r) !== ecEff(x.r) ? true                // un écart non validé ne se mélange pas au peloton
               : (ba != null && bb != null) ? ba !== bb
               : pairCass(prec, x, Math.max(0, x.behindRead - prec.behindRead));
       }
@@ -1656,6 +1681,27 @@ function computeGroupsVraiment(M) {
     if (j < 0 && !h.below) j = groups.length;                                        // posé tout en bas
     if (j < 0 && h.above) { const k = groups.findIndex(x => handKey(x) === h.above); if (k >= 0) j = k + 1; }
     groups.splice(j < 0 ? i : j, 0, g);
+  }
+  // LES COUREURS QUI VIENNENT DE PRENDRE UN TOUR SONT EN TÊTE, MÊME DEVANT LE LEADER DÉSIGNÉ. Ses mots du
+  // 18 novembre 2026 : « dans la timeline, si je n'ai pas validé les deux coureurs qui ont gagné un tour […]
+  // sont les leaders. au moment où je valide, ils sont instantanément mergés dans le peloton et ceux qui
+  // étaient CHASE avant la validation sont instantanément transformés en LEADER au moment de la validation. »
+  //   Ce passage vient APRÈS le rangement à la main, et c'est tout l'objet : le bloc du leader désigné y est
+  // replacé en tête, ce qui renvoyait derrière lui les coureurs qui venaient de rattraper. Mesuré au build 230 :
+  // le 52 désigné leader faisait passer le 18, le 61 et le 7 en `2-Chase`, à −19,8 s. Son point 183 — la tête
+  // est celle qu'il désigne — ne vaut donc pas sur un tour pris qu'il n'a pas encore tranché.
+  //   Rien à défaire à la validation : le tour cesse d'être « en avance », le bloc redescend de lui-même et le
+  // bloc suivant devient la tête.
+  // ET PARMI EUX, CEUX DONT LA CARTE EST AFFICHÉE PASSENT DEVANT. Sa capture du 18 novembre 2026 : le 7 et le
+  // 61 viennent de rattraper, leur carte attend, et ils étaient rangés sous le 52 — qui tient lui aussi un tour
+  // non validé, mais pris depuis longtemps. Ses mots : « ce sont les 61 et 7 qui doivent être leaders puisque
+  // comme tu peux le voir la validation est toujours en attente ». Le critère est celui qu il a sous les yeux :
+  // la carte.
+  const enAvance = groups.filter(g => !g.incident && g.rows.some(x => ecEff(x.r) > 0));
+  enAvance.sort((g1, g2) => (g2.rows.some(x => pendingOf(x.r.bib) > 0) ? 1 : 0) - (g1.rows.some(x => pendingOf(x.r.bib) > 0) ? 1 : 0));
+  if (enAvance.length && enAvance.length < groups.length) {
+    for (const g of enAvance) groups.splice(groups.indexOf(g), 1);
+    groups.unshift(...enAvance);
   }
   // AUCUN GROUPE N'EST DEVANT LE GROUPE 1. L'opérateur, 1er novembre 2026 (point 164) : « c'est le groupe 2 qui
   // doit être pointé à x mètres du groupe 1 des leaders. Et le groupe 3 doit être pointé à x mètres du groupe 2,
@@ -1701,6 +1747,13 @@ function computeGroupsVraiment(M) {
     g.gapM = d;
     g.gap = (rA != null && rB != null) ? rB - rA - BIKE_L / spdOfRow(follower)
           : ahead && follower ? pairGap(ahead, follower, d) : d / CFG.pace;
+    // UN ÉCART NÉGATIF N'EXISTE PAS. L'opérateur, 18 novembre 2026 : « Il ne peut pas y avoir d'écart négatif !!
+    // C'est impossible ! Le leader est le leader il a 0 gap de retard sur personne ! Mais il est possible de ne
+    // pas encore avoir de gap entre lui et ses poursuivants, ça oui. » Quand la mesure sort négative, c'est
+    // qu'elle n'a pas encore vu l'écart : les deux coureurs de la paire n'ont pas été lus sur la même boucle, ou
+    // le bloc est en tête parce qu'une carte de tour attend (point 226) pendant que la piste dit le contraire.
+    // On n'affiche alors AUCUN écart — et surtout pas un nombre qui se lirait à l'envers.
+    if (g.gap != null && g.gap < 0) { g.gap = null; g.gapNone = true; }
     prevG = g;
   }
   // LE RANG DE CHAQUE COUREUR DANS LA TIMELINE. L'opérateur, 1er novembre 2026 (point 170) : « Puisque tu as
@@ -2477,7 +2530,7 @@ function renderTimeline(G) {
     html += `<div class="tgrp${isLead ? ' lead' : ''}${g.pending ? ' pending' : ''}${g.op && !g.incident ? ' pinned' : ''}${g.incident ? ' incident' : ' hascol'}" data-gi="${gi}"${gcol}>
       <div class="gh" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')} · click to select the whole group">
         <span class="ghl"><span class="gn">${name}</span>${g.op ? '<button class="btn xs quiet gx" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span>
-        <span class="ghl"><span class="gi">${info}</span>${g.incident ? '' : '<span class="ggap">' + (g.gap == null ? 'leader' : g.gap.toFixed(1) + ' s') + '</span>'}</span>
+        <span class="ghl"><span class="gi">${info}</span>${g.incident ? '' : '<span class="ggap">' + (g.gap != null ? g.gap.toFixed(1) + ' s' : g.gapNone ? '—' : 'leader') + '</span>'}</span>
         ${g.op && g.op.hand ? '<span class="pill warn hand">manual</span>' : ''}
         ${allOut ? '<span class="pill warn">out of sprint ' + sprintN + '</span>' : someOut ? '<span class="pill warn">part out of sprint ' + sprintN + '</span>' : ''}</div>`;
     for (const x of g.rows) {
@@ -3678,9 +3731,17 @@ function renderCrossTab() {
     // connaît pas finit dans une dernière boîte sans nom.
     const seq = [...S.cross[k]].sort((a, b) => a.t - b.t), snap = S.crossG[k], boxes = [];
     if (snap && snap.length) {
-      const dup = seq.filter(c => c.mark > 0), placed = new Set(), bi = snap.findIndex(g => /Bunch$/.test(g.n));
+      // TOUT PASSAGE QUE LES TOURS CRÉDITÉS ONT DÉPLACÉ EST RANGÉ AVEC LE PELOTON. Le relevé du tour est pris à
+      // son ouverture et ne bouge plus (règle 218) : il ne sait rien d'une validation faite APRÈS. Or `addLap`
+      // déplace tous les passages du coureur depuis la jonction, pas seulement le premier — et les suivants
+      // retombaient dans la boîte que le relevé lui donnait alors, « Leaders ». Sa capture du 18 novembre 2026 :
+      // « au lap 14 les coureurs 61 et 7 sont leaders mais c'est incorrect car ils viennent tout juste de
+      // rattraper le peloton. » Un passage déplacé se reconnaît à sa pastille : son compte de passages ne vaut
+      // plus le tour de la colonne. Ces passages-là vont dans la boîte du PELOTON, où le coureur est l'égal des
+      // autres (§3). Un tour gagné NON validé ne déplace rien : sa pastille vaut le tour, et il reste en tête.
+      const dup = seq.filter(c => c.n !== k), placed = new Set(), bi = snap.findIndex(g => /Bunch$/.test(g.n));
       snap.forEach((g, i) => {
-        const mine = seq.filter(c => !(c.mark > 0) && g.b.includes(c.bib)), extra = i === bi ? dup : [];
+        const mine = seq.filter(c => c.n === k && g.b.includes(c.bib)), extra = i === bi ? dup : [];
         for (const c of mine.concat(extra)) placed.add(c);
         if (mine.length + extra.length) boxes.push({ n: g.n, c: g.c, rows: mine.concat(extra) });
       });
@@ -3705,12 +3766,28 @@ function renderCrossTab() {
     // L'écart affiché entre deux boîtes reste un écart d'heures de passage, et il ne paraît que lorsque la boîte
     // du dessous a franchi la ligne APRÈS celle du dessus : dans l'ordre de la course, un bloc de tête peut être
     // passé avant un bloc qui le suit au classement, et il n'y a alors pas d'écart à montrer.
+    // LE NOM D'UNE BOÎTE SE REFAIT SUR LES BOÎTES QUI RESTENT. Sa remarque du 18 novembre 2026 : « il y a encore
+    // une erreur au lap 14 : le coureur 52 qui est justement en tête ne doit pas être affiché comme CHASE mais
+    // comme LEADER. » Le relevé du tour garde tous les blocs de la timeline, mais un bloc dont aucun coureur n'a
+    // de passage sur ce tour-là ne s'affiche pas — ses coureurs ont été rangés ailleurs par un tour crédité
+    // (règle 222). Le premier bloc qui reste héritait alors du numéro et du rôle qu'il avait DERRIÈRE le bloc
+    // disparu. Le numéro et le rôle sont donc refaits sur les boîtes affichées, exactement comme `groupName()`
+    // les fait sur la timeline : le premier est en tête, ceux d'avant le peloton poursuivent, ceux d'après sont
+    // derrière, et le dernier est le dernier. L'ORDRE, lui, ne bouge pas : il vient du relevé (règle 218).
+    const vus = boxes.map(b => ({ b, shown: b.rows.filter(c => S.riders.find(x => x.bib === c.bib)) })).filter(x => x.shown.length);
+    const bj = vus.findIndex(x => /Bunch$/.test(x.b.n));
+    vus.forEach((x, i) => {
+      if (!/^\d+-/.test(x.b.n)) return;          // CRASH, MECHANICAL, « Riders » : pas de rang à refaire
+      const role = i === bj ? 'Bunch'
+        : (bj < 0 || i < bj) ? (i === 0 ? (x.shown.length > 1 ? 'Leaders' : 'Leader') : 'Chase')
+        : (i === vus.length - 1 ? 'Last' : 'Behind');
+      x.nom = (i + 1) + '-' + role;
+    });
     let body = '', rank = 0, lastT = null;
-    for (const b of boxes) {
-      const shown = b.rows.filter(c => S.riders.find(x => x.bib === c.bib));
-      if (!shown.length) continue;
+    for (const x of vus) {
+      const b = x.b, shown = x.shown;
       if (lastT != null && shown[0].t > lastT) body += `<div class="lbgap"><span>+${(shown[0].t - lastT).toFixed(1)} s</span></div>`;
-      body += `<div class="lbgrp" style="--gc:${b.c || 'var(--line2)'}"><div class="lbgrp-h">${b.n}</div>`;
+      body += `<div class="lbgrp" style="--gc:${b.c || 'var(--line2)'}"><div class="lbgrp-h">${x.nom || b.n}</div>`;
       for (const c of shown) {
         const r = S.riders.find(x => x.bib === c.bib);
         const d = dt.get(c.bib + '|' + c.t), nd = c.n - k;

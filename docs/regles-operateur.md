@@ -3172,3 +3172,128 @@ arrive plus vite que lui —, le retranchement tombait à zéro et le coureur re
 dans la timeline : il s'affichait en tête, un tour devant le peloton qu'il venait de rejoindre. Hors de
 l'amas, c'est maintenant le compte **validé** qui tient, et lui ne dépend d'aucune position. Le défaut
 est antérieur aux points 219 et 220 : il existait déjà quand le merge ne demandait aucune validation.
+
+
+### 222 · « Le 52 est affiché leader, or il est à l'arrière du peloton » · 18 novembre 2026
+
+Deux captures jointes : l'onglet Lap by lap et l'ovale, à la même seconde. Ses mots :
+
+> « regarde cette capture de lap by lap au lap 16 le coureur 52 est affiché leader, sans gap avec les
+> autres, or c'est faux : il était bien leader au lap 15. je joins aussi la capture de l'ovale qui
+> montre que le 52 est à l'arrière du peloton »
+
+> « le même problème apparait au lap 14 avec les coureurs 61 et 7 qui sont de façon incorrecte placés
+> en tête »
+
+> « pour compléter, on voit bien dans la timeline que le coureur 52 est en dernière position »
+
+**Corrigé au build 229**, et les builds 226 à 228 n'y étaient pour rien : ils cherchaient dans le
+moteur une faute qui était dans la colonne.
+
+Sa troisième phrase est la clé : la **timeline avait raison** — elle montrait `1-BUNCH 15 RIDERS` avec
+le 52 en dernière position — et c'est la colonne du tour qui portait le mot faux. Le relevé d'un tour
+est pris à son ouverture et ne bouge plus (règle 218) : il ne sait rien d'une validation faite **après**.
+Or valider un tour gagné déplace **tous** les passages du coureur depuis la jonction, pas seulement le
+premier ; les suivants retombaient dans la boîte que le relevé lui donnait alors — « Leaders ».
+
+Un passage déplacé se reconnaît à sa pastille : son compte de passages ne vaut plus le tour de la
+colonne. Ces passages-là vont maintenant dans la boîte du **peloton**, où le coureur est l'égal des
+autres (§3). Un tour gagné **non validé** ne déplace rien : sa pastille vaut le tour de la colonne, et
+le coureur reste en tête, comme ses points 219 et 220 le demandent.
+
+
+### 223 · « Tu ne dois utiliser que les heures de passage » · 18 novembre 2026
+
+Sur le build 227, qui lisait l'écart en tours sur des mètres :
+
+> « rien compris !! pourquoi tu utilises des mètres ????? tu ne dois utiliser que les heures de
+> passage des transpondeurs sur les boucles »
+
+C'est sa règle du 1er novembre 2026, §1 : « Nous n'avons pas besoin de faire un calcul spécial afin
+de connaitre le nombre de mètres séparant les coureurs et les groupes. Ce qui nous intéresse, ce sont
+les écarts en temps entre les coureurs. » Les builds 226 et 227 l'avaient enfreinte.
+
+**Codé au build 228.** L'écart en tours entre un coureur et le repère du peloton se lit sur deux
+nombres, tous deux donnés par la boucle d'arrivée : **combien de fois** elle a vu le coureur, et
+**quand** elle l'a vu la dernière fois. S'il a été vu une fois de plus que le repère et qu'ils sont
+passés à quelques secondes l'un de l'autre, il a un tour d'avance ; s'il a été vu une fois de moins
+parce qu'il n'a pas encore franchi la ligne ce tour-ci, son dernier passage date d'un tour entier et
+cela s'annule. C'est son §4 écrit avec des heures : « la différence entre leurs deux comptes de
+passages vaut 0, +1 ou −1 ». Aucune distance n'entre plus dans ce calcul.
+
+
+### 224 · « Le coureur qui est en tête ne doit pas être affiché comme CHASE » · 18 novembre 2026
+
+> « cette fois lap by lap est presque correct : il y a encore une erreur au lap 14 : le coureur 52 qui
+> est justement en tête ne doit pas être affiché comme CHASE mais comme LEADER. »
+
+**Corrigé au build 230.** Le relevé d'un tour garde tous les blocs de la timeline, mais un bloc dont
+aucun coureur n'a de passage sur ce tour-là ne s'affiche pas : ses coureurs ont été rangés avec le
+peloton par un tour crédité (point 222). Le premier bloc qui restait gardait alors le numéro et le
+rôle qu'il avait **derrière** le bloc disparu. Le numéro et le rôle sont maintenant refaits sur les
+boîtes affichées — le premier est en tête, ceux d'avant le peloton poursuivent, ceux d'après sont
+derrière, le dernier est le dernier. L'ordre, lui, ne bouge pas : il vient du relevé (point 218).
+
+
+### 225 · Le tour pris passe devant le leader désigné · 18 novembre 2026
+
+Sur le cas mesuré au point 224 — le 52 désigné leader, le 61 et le 7 venant de rattraper, rien de
+validé :
+
+> « non dans la timeline, si je n'ai pas validé les deux coureurs qui ont gagné un tour (qui sont le
+> 61 et le 7, tu peux revérifier la capture) sont les leaders. au moment où je valide, ils sont
+> instantanément mergés dans le peloton et ceux qui était CHASE avant la validation sont
+> instantanément transformés en LEADER au moment de la validation »
+
+> « ce sont les 61 et 7 qui doivent être leaders puisque comme tu peux le voir la validation est
+> toujours en attente »
+
+**Codé au build 231.** Un bloc dont un coureur tient un tour pris non validé est placé **en tête de
+la timeline**, après tout le reste du rangement — donc devant le bloc du leader désigné. Son
+point 183, « la tête de la timeline est celle que je désigne », ne vaut donc pas sur un tour pris
+qu'il n'a pas encore tranché. À la validation, le tour cesse d'être en avance, le bloc redescend de
+lui-même dans le peloton et le bloc suivant devient la tête : rien n'est défait à la main.
+
+
+### 226 · La carte qui attend fait la tête de la timeline · 18 novembre 2026
+
+Sa capture du build 231 : le 7 et le 61 viennent de rattraper le peloton au tour 14, leur carte
+« Lap gained? » est affichée, et ils sont pourtant rangés `2-CHASE` sous le 52.
+
+> « je m'en fous de tes 10,8 secondes ! cette capture là est toujours incorrecte »
+
+Et, sur ce que devient l'ordre à la validation, sa confirmation mot pour mot de ce que je lui avais
+relu :
+
+> « le 61 et le 7 entrent dans le peloton, ils y sont des coureurs comme les autres ; le bloc qui
+> était juste en dessous d'eux — le 12 et le 52, affichés CHASE — devient LEADERS ; et tout le reste
+> remonte d'un rang : le BUNCH derrière eux, puis les autres. Autrement dit, les nouveaux leaders ne
+> se cherchent pas sur la piste : c'est le groupe suivant qui prend la tête, par simple décalage. »
+> « OUI !!! »
+
+Et sur l'écart que la piste montrait encore entre eux et le peloton au moment de la validation :
+
+> « Mais ils ne sont pas à 10 secondes puisque je viens de valider qu'ils ont rattrapé le peloton ! »
+
+**Codé aux builds 232 et 233.** Une carte qui attend vaut **un tour d'écart**, dans le sens qu'elle
+porte, jusqu'à ce qu'il la tranche — et le bloc qui en porte une passe **devant** les autres blocs en
+avance. Valider, c'est déclarer la jonction faite : le coureur prend le tour du peloton à cette
+seconde-là, quoi que montre la piste.
+
+**Il n'a désigné aucun leader** dans cette course : le `leader` de sa capture est celui que le moteur
+trouve. Le point 225 reste vrai — un tour pris non validé passe aussi devant un leader désigné — mais
+ce n'était pas son cas.
+
+
+### 227 · Un écart négatif n'existe pas · 18 novembre 2026
+
+> « Il ne peut pas y avoir d'écart négatif !! C'est impossible ! Le leader est le leader il a 0 gap
+> de retard sur personne ! Mais il est possible de ne pas encore avoir de gap entre lui et ses
+> poursuivants, ça oui »
+
+**Codé au build 234.** Trois états, et pas un de plus, dans l'en-tête d'un bloc : le premier porte
+`leader`, un bloc dont l'écart est mesuré porte son écart en secondes, et un bloc dont l'écart n'est
+pas encore vu porte **`—`**. Un nombre négatif ne s'affiche plus. Il sortait quand les deux coureurs
+de la paire n'avaient pas été lus sur la même boucle, ou quand le bloc est en tête parce qu'une carte
+de tour attend (point 226) pendant que la piste dit encore le contraire. Le cas continue d'être
+inscrit au journal du code, sous `ECART-NEGATIF`.

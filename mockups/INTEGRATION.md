@@ -126,11 +126,26 @@ Sans/Mono) et drapeaux (`flag()` de `flags.js`) sont repris tels quels d'une maq
 
 Pour chacun : ce qu'il montre, l'état réel qui l'alimente, et les pièges.
 
-### 5.1 Lap by lap (onglet `cross`) — **fait, builds 217 à 222 · ne pas refaire**
+### 5.1 Lap by lap (onglet `cross`) — **fait, builds 217 à 234 · ne pas refaire**
 L'ordre de franchissement de la ligne, tour par tour, du premier au dernier. **Source** :
 `S.cross[lap]` (`architecture.md` §7). La maquette ajoute des **alertes** et la correction
-**« Shift −1 lap »** (décaler un tour quand le logiciel s'est trompé de tour). Brancher le rendu
-sur `S.cross`, garder l'action de décalage.
+**« Shift −1 lap »** (décaler un tour quand le logiciel s'est trompé de tour) — **seule chose encore
+non codée** de cet onglet, avec son alerte « double lap time » : c'est de la logique de course, à
+proposer à part.
+
+**Ce qui est fait, et qu'il ne faut pas défaire.** La colonne est rangée dans l'ordre de la **course**,
+sur un relevé de la timeline pris **une fois** à l'ouverture du tour (règle **218**) — ni le rang du
+moment, ni le bloc gravé passage par passage, les deux ont été essayés et ratés (`pitfalls.md` D38).
+Les noms des boîtes se **refont** sur celles qui s'affichent (règle **224**, D44), et un passage que
+les tours crédités ont **déplacé** est rangé avec le peloton (règle **222**, D43).
+
+**Et la logique de course que ses essais ont ouverte, builds 223 à 234** : le merge attend sa
+validation dans les deux sens (règles **219** et **220** — la phrase du §3 de `regles-operateur.md`
+est remplacée) ; un tour validé tient hors du peloton (**221**) ; l'écart en tours se lit sur les
+passages de la boucle d'arrivée et jamais sur des mètres (**223**, D42) ; un tour pris non validé
+passe devant le leader désigné (**225**) ; une carte en attente vaut un tour d'écart et son bloc ouvre
+la timeline (**226**, D45) ; un écart négatif ne s'affiche plus (**227**). `architecture.md` §58 et la
+section des groupes, `mesures.md` §70 à §80, `pitfalls.md` D35 à D45.
 
 ### 5.2 Race log (onglet `dec`)
 La **boîte noire** de la course, en langage humain. Colonnes **Daytime · Race time · Lap · Type ·
