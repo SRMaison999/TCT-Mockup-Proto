@@ -24,8 +24,8 @@ Feuille de route pour câbler les maquettes validées (`mockups/`) au moteur ré
 
 ```
 S1 ─ Standings Live + type de course          LIVRÉ, build 211
- └─ S2 ─ Historique + Évolution               ← la session suivante
-S3 ─ Sprints          S4 ─ Lap by lap          S5 ─ Passings
+ └─ S2 ─ Historique + Évolution               LIVRÉ, build 213
+S3 ─ Sprints ← la suivante   S4 ─ Lap by lap          S5 ─ Passings
 S6 ─ Chutes & neutralisations ──┐
 S7 ─ Avant-course (indépendant) │
                                 ├─ S8 ─ Race log  (a besoin de S6)
@@ -56,7 +56,7 @@ les plus lourds et peuvent attendre leur tour.
   elle débordait déjà avant ce build — c'est le poste `travaux.md` §27, à trancher avec lui.
   L'export PDF de la maquette n'est pas fait : les exports CSV, journal et trace sont inchangés.
 
-### S2 · Historique du classement + Évolution — *gros, la session suivante*
+### S2 · Historique du classement + Évolution — **livré, build 213**
 - **But.** Faire que le moteur **enregistre le classement à chaque étape** (chaque sprint, chaque
   tour gagné/perdu), puis construire la vue **Évolution** (Compare) dessus.
 - **Dépend de** S1, **livré au build 211** : l'onglet `stand` rend un `.sttbl` au dessin validé,
@@ -69,9 +69,13 @@ les plus lourds et peuvent attendre leur tour.
   simulateur se synchronise depuis `render()`, jamais depuis `renderRail`, qui ne tourne que le
   rail ouvert.
 - **Fini quand.** On suit jusqu'à 4 coureurs, le graphe montre leurs points dans le temps et
-  l'écart, et un clic sur un moment re-classe le panneau à cet instant.
+  l'écart, et un clic sur un moment re-classe le panneau à cet instant. **Fait.**
+- **Livré.** La bascule `Live / Evolution` est dans l'en-tête du panneau. **Rien n'est enregistré** :
+  les moments se relisent des sprints et de `S.refiles` à chaque rendu et les points se rejouent
+  depuis le départ, donc une correction remonte toute la course (`architecture.md` §56). Règles
+  **206** et **207**, mesures dans `mesures.md` §67, l'erreur comprise dans `pitfalls.md` D32.
 
-### S3 · Sprints (All sprints) + carte de sprint — *moyen*
+### S3 · Sprints (All sprints) + carte de sprint — *moyen, la session suivante*
 - **But.** Rebrancher l'onglet `sprints` sur le dessin All sprints (tous les sprints complets,
   défilement), et aligner la carte de sprint.
 - **Source.** `S.sprints`, `renderSprintsTab` (`architecture.md` §9).
@@ -171,7 +175,7 @@ tours manquants de Lap by lap (S4).
 | Session | Thème | Poids | Dépend de |
 |---|---|---|---|
 | S1 | Standings Live + type de course | **livré, build 211** | — |
-| S2 | Historique + Évolution | gros | S1 |
+| S2 | Historique + Évolution | **livré, build 213** | S1 |
 | S3 | Sprints (All sprints) + carte | moyen | — |
 | S4 | Lap by lap | moyen | — (compléter après S6) |
 | S5 | Passings | moyen | — |

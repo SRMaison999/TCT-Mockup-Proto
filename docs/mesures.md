@@ -4012,3 +4012,60 @@ de sa boîte, soit 353 px de trop, sans rien de ce build. Le champ du type de co
 **138** et porte le débordement à **491 px**. Les deux gros postes sont les six onglets (491 px) et
 le transport du simulateur (543 px) ; le numéro de build, `flex: 0 0 auto`, ne se laisse toujours
 pas couper (règle 74). C'est le poste `travaux.md` §27.
+
+
+## §67 · La vue Évolution au palier 2 (build 212)
+
+**La course.** Palier 2 — soixante tours de 250 m, seize coureurs, deux échappées et deux lâchés —
+chargée depuis l'onglet Files, réglée en **qualification top 10**, jouée **en entier** à ×16, toutes
+les propositions de tour acceptées. Écran de 1440 px.
+
+**Les moments.** Seize colonnes : le départ, les six sprints, et neuf tours gagnés ou perdus —
+`+1 L19` (le 12 et le 52), `+1 L21` (le 7, le 18 et le 61), `−1 L27`, `+1 L31`, `+1 L42`, `−1 L44`,
+`+1 L48`, `+1 L53`, `−1 L60`. Les deux coureurs qui prennent leur tour au tour 19 font bien **une**
+colonne.
+
+**Le dernier moment est le classement Live.** Comparés ligne à ligne, rang, dossard et total : les
+**seize lignes identiques**. 1 · 18 SANTOS 98 · 2 · 61 NAVARRO 90 · 3 · 7 BRAND 68 · 4 · 12 HUBER 61
+· 5 · 52 ROSSI 52 · … · 15 · 46 DE WIT −60 · 16 · 70 SILVA −60.
+
+**Sa règle 206.** Panneau ramené au sprint 2 (`Standings @ S2 · L20`) pendant que la course
+tournait. Douze colonnes au moment du clic, **quatorze** douze secondes plus tard — la course était
+passée du tour 45 au tour 57 — et le panneau n'avait pas bougé : même titre, même tête de
+classement (12 HUBER 26, 52 ROSSI 23, 18 SANTOS 5). Un clic sur la dernière colonne l'a remis sur
+`@ now`.
+
+**Une correction remonte la course.** `Undo` sur la dernière décision de tour (−20 pts au 46 et au
+70) : la colonne `−1 L60` **disparaît**, seize colonnes passent à quinze, et les deux coureurs
+remontent de −60 à −40. Rien n'est à corriger derrière, puisque rien n'est gardé.
+
+**Quatre coureurs au plus.** Un cinquième clic est refusé : les suivis restent le 18, le 61, le 7 et
+le 52. La ligne `Gap` du tableau ne paraît qu'à **deux** coureurs suivis, comme la maquette.
+
+**Les largeurs.** Le graphe dispose de 1 106 px dans un panneau de 1 390. À seize moments, il
+**défile latéralement de 616 px** — onze colonnes à l'écran sur seize — ce que la maquette annonce
+pour une course longue. Le tableau du bas finit 15 px au-dessus du bord du panneau, à quatre
+coureurs suivis ; avant la mesure de la place il passait dessous (`pitfalls.md` D32).
+
+**Aucune erreur de console**, rail ouvert comme rail replié.
+
+
+## §68 · La vue Évolution sur son écran de 1920 × 1080 (build 213)
+
+Même course — palier 2, soixante tours, seize coureurs, jouée en entier — regardée dans un écran de
+**1920 × 1080**, celui qu'il a dit être le sien, avec **quatre** coureurs suivis.
+
+**Ce qui dépassait.** Au build 212, la dernière ligne du tableau du bas passait sous le bord du
+panneau, sans rien pour aller la chercher. La cause n'était pas le dessin : la **barre de
+défilement horizontale** du graphe, haute de **15 px**, se prend sur la hauteur du bloc, et le
+calcul ne la comptait pas (`pitfalls.md` D32).
+
+**Après correction.** Le tableau finit **15 px au-dessus** du bord du panneau, ses quatre lignes
+entières, et la dernière colonne porte bien quatre valeurs. Mesuré aussi à **1440 × 900** avec trois
+coureurs suivis : 15 px également, rien n'est coupé.
+
+**La place gagnée à gauche.** La colonne qui porte l'échelle des points et les noms des coureurs
+suivis passe de 190 à **152 px** : le graphe commence à 461 px du bord au lieu de 499. Sur son
+écran, les **seize moments** de la course tiennent tous à l'écran — 1 376 px de colonnes pour les
+1 434 px visibles — et les 98 px qui défilent encore ne sont que les noms posés au bout des courbes.
+À 1440, la course longue défile toujours latéralement, comme la maquette l'annonce.

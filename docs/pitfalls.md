@@ -795,3 +795,24 @@ Retenu : **un contrôle rendu hors du rail se synchronise depuis `render()`**, p
 `renderRail`. Et plus généralement, quand on copie le mécanisme d'un contrôle voisin, vérifier que
 la fonction qui le tient à jour tourne aussi là où le nouveau contrôle vit. Le test qui l'a attrapé
 lisait `disabled` **le rail replié** : rail ouvert, tout paraissait juste.
+
+
+### D32 · Une place visible se mesure, elle ne s'estime pas
+
+Le graphe de la vue Évolution se dimensionne sur la place que le panneau lui laisse. Au premier jet,
+cette place était **calculée** : largeur du panneau moins le panneau latéral, moins les gouttières ;
+hauteur du panneau moins l'en-tête, la légende et la note. Mesuré au palier 2 avec **quatre**
+coureurs suivis : la dernière ligne du tableau du bas passait **sous le bord** du panneau. L'erreur
+était de quelques dizaines de pixels, et elle ne se voyait pas à deux coureurs.
+
+Retenu : poser le bloc, **lire sa boîte** (`clientWidth`, `clientHeight`), et refaire le rendu une
+fois — et une seule — quand la place lue n'est pas celle qu'on avait prise. Un second passage coûte
+un rendu ; une addition de marges se trompe à chaque changement de contenu.
+
+**Et la barre de défilement est de la place en moins** (build 213, son écran de 1920 × 1080). La
+boîte lue ne suffisait pas : le graphe défile latéralement, et sa barre de défilement, haute de
+15 px, se prend **sur** la hauteur du bloc. Le tableau débordait donc encore de ces 15 px, et rien
+ne permettait d'aller voir dessous — un bloc qui ne défile pas verticalement coupe ce qui dépasse,
+sans rien dire. Elle se mesure comme le reste, `offsetHeight - clientHeight`, et se réserve. Après
+correction, le tableau finit **15 px au-dessus** du bord, à quatre coureurs comme à deux, à 1440
+comme à 1920.

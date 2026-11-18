@@ -97,6 +97,64 @@
 .sttbl .lap .z{color:var(--dim);font-size:16px;opacity:.5}
 .sttbl .fin{font:600 15px var(--mono);color:var(--muted);text-align:center}
 .sttbl .stt{font:500 12px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* LA VUE ÉVOLUTION DU CLASSEMENT (mockups/maquette-standings.html, vue Evolution, validée le 16 novembre 2026),
+   moins la phrase d'écart, sortie le 18 (règle 207). Les noms de classes portent tous le préfixe `ev-` : les noms
+   de la maquette — .side, .lb, .cc, .leg — sont des mots courts que styles.css, partagé par les trois prototypes,
+   pourrait déjà porter. Le graphe se dimensionne sur la largeur visible du panneau, mesurée au rendu. */
+.evtbl{flex:1 1 auto;min-height:0;display:flex;gap:14px;overflow:hidden}
+.ev-side{flex:0 0 268px;display:flex;flex-direction:column;min-height:0;background:#1c1e22;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.ev-sh{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.ev-sh .at{color:var(--fg);text-transform:none;letter-spacing:0;font-weight:700;margin-left:4px}
+.ev-list{flex:1 1 auto;overflow:auto;padding:4px}
+.ev-lb{display:grid;grid-template-columns:22px 11px 26px 30px 1fr 36px;gap:8px;align-items:center;width:100%;background:none;border:0;border-radius:5px;padding:6px 8px;cursor:pointer;text-align:left;color:var(--dim)}
+.ev-lb:hover{background:#24272c}
+.ev-lb .rrk{font:700 13px var(--mono);color:var(--dim);text-align:right}
+.ev-lb .sw{width:11px;height:11px;border-radius:3px;background:#3a4046}
+.ev-lb.on{background:#23272e;color:var(--muted)}
+.ev-lb.on .rrk{color:var(--muted)}.ev-lb.on .sw{background:var(--c)}
+.ev-lb .flagw .flag{width:24px;height:16px;border-radius:2px;display:block}
+.ev-lb .rbib{font:600 13px var(--mono);color:var(--fg)}
+.ev-lb .rnm{font:600 13px var(--sans);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-lb .rtot{font:700 14px var(--mono);color:var(--fg);text-align:right}
+.ev-cut{display:flex;align-items:center;gap:8px;padding:3px 8px;font:700 9px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--warn);white-space:nowrap}
+.ev-cut::before,.ev-cut::after{content:"";height:0;border-top:2px dashed var(--warn);flex:1 1 auto}
+.ev-content{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+.ev-top{flex:0 0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-height:24px}
+.ev-top .leg{display:inline-flex;align-items:center;gap:7px;font:600 14px var(--sans);color:var(--muted)}
+.ev-top .leg .sw{width:12px;height:12px;border-radius:3px}
+.ev-top .leg .flagw .flag{width:24px;height:16px;border-radius:2px;display:block}
+.ev-top .leg b{font:700 14px var(--mono);color:var(--fg)}
+.ev-body{flex:1 1 auto;min-height:0;display:flex}
+.ev-fixed{flex:0 0 auto;display:flex;flex-direction:column;z-index:2}
+.ev-scroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;overflow-x:auto;overflow-y:hidden}
+.ev-yaxis,.ev-svg{display:block;flex:0 0 auto}
+.ev-svg .grid{stroke:#ffffff10}
+.ev-yaxis .axn{fill:var(--dim);font:600 13px var(--mono);text-anchor:end}
+.ev-svg .colg{stroke:#ffffff0b}.ev-svg .colg.on{stroke:#ffffff18}
+.ev-svg .cxl{text-anchor:middle;font:700 13px var(--sans)}
+.ev-svg .cxl.sprint{fill:var(--fg)}.ev-svg .cxl.gain{fill:var(--good)}.ev-svg .cxl.lose{fill:var(--crit)}.ev-svg .cxl.start{fill:var(--dim)}
+.ev-svg .cxs{text-anchor:middle;fill:var(--dim);font:500 11px var(--mono)}
+.ev-svg .ptlab{text-anchor:middle;font:700 13px var(--mono)}
+.ev-svg .ptlab.l{text-anchor:end}.ev-svg .ptlab.r{text-anchor:start}
+.ev-svg .gapband{fill:#ffffff10}
+.ev-svg .ckhit{cursor:pointer;fill:#fff;fill-opacity:0}.ev-svg .ckhit:hover{fill-opacity:.04}.ev-svg .cksel{fill:#ffffff0e}
+.ev-svg .enbib{font:700 14px var(--mono)}.ev-svg .ennm{font:600 13px var(--sans);fill:var(--muted)}
+.ev-note{flex:0 0 auto;font:500 12px var(--sans);color:var(--dim)}
+.ev-ltbl{display:flex;flex-direction:column;background:#1c1e22;border:1px solid var(--line);border-right:0;border-radius:6px 0 0 6px;overflow:hidden}
+.ev-rtbl{display:grid;background:#1c1e22;border:1px solid var(--line);border-left:0;border-radius:0 6px 6px 0;overflow:hidden}
+.ev-lh{height:28px;display:flex;align-items:center;padding-left:10px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid #2a2e33}
+.ev-lr{height:34px;display:flex;align-items:center;gap:6px;padding-left:8px;font:600 12px var(--sans);color:var(--muted);border-bottom:1px solid #2a2e33;border-left:3px solid var(--c);white-space:nowrap;overflow:hidden}
+.ev-lr .sw{width:10px;height:10px;border-radius:3px;background:var(--c);flex-shrink:0}
+.ev-lg{height:28px;display:flex;align-items:center;padding-left:10px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--dim)}
+.ev-cc{display:flex;flex-direction:column;min-width:0;border-right:1px solid #2a2e33}
+.ev-cc[data-ck]{cursor:pointer}.ev-cc[data-ck]:hover{background:#23262b}.ev-cc[data-ck].on{background:#272b31}
+.ev-cc:last-child{border-right:0}
+.ev-cck{height:28px;display:flex;align-items:center;justify-content:center;gap:5px;font:700 12px var(--sans);color:var(--muted);border-bottom:1px solid #2a2e33}
+.ev-cck span{font:500 10px var(--mono);color:var(--dim)}
+.ev-ccr{height:34px;display:flex;align-items:center;justify-content:center;gap:5px;border-bottom:1px solid #2a2e33;border-left:3px solid var(--c)}
+.ev-ccr b{font:700 15px var(--mono);color:var(--fg)}.ev-ccr span{font:600 11px var(--mono);color:var(--dim)}
+.ev-ccg{height:28px;display:flex;align-items:center;justify-content:center;font:700 13px var(--mono)}
 .bar .gone{display:none}        /* gardés dans le document pour leurs écouteurs, jamais dessinés */
 .lgtab{align-self:stretch}
 #logshow,#logclose{display:none}
@@ -598,7 +656,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
      retirés de la page le 29 octobre 2026 et demandé qu'on aille les chercher dans un menu de la barre du haut. Le
      panneau s'ouvre par-dessus l'écran de course et se referme. -->
 <div class="log" id="log" hidden>
-  <div class="hd"><span class="loghint" id="loghint">finish-line order of every lap · leader first · newest lap first</span><span class="xb" id="xbtns"></span><button class="btn xs quiet" id="logclose" title="Back to the race screen">Close</button></div>
+  <div class="hd"><span class="seg" id="stview" hidden><button class="btn xs on" data-sview="live">Live</button><button class="btn xs quiet" data-sview="evo">Evolution</button></span><span class="loghint" id="loghint">finish-line order of every lap · leader first · newest lap first</span><span class="xb" id="xbtns"></span><button class="btn xs quiet" id="logclose" title="Back to the race screen">Close</button></div>
   <!-- Les filtres de l'onglet Passings : la page 3d de TCT Points Race - mockups.html. Ils ne paraissent
        que sur cet onglet. -->
   <div class="pfilt" id="pfilt" hidden>
@@ -691,7 +749,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '211';
+const BUILD = '213';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -4685,6 +4743,198 @@ $('#logtabs').addEventListener('click', e => {
   if (!e.target.closest('[data-tab]')) return;
   if (HINT[logTab] != null) $('#loghint').textContent = HINT[logTab];
 });
+
+
+/* ===== S2 · LE CLASSEMENT DANS LE TEMPS =============================================================
+   La vue Evolution de mockups/maquette-standings.html, validée le 16 novembre 2026, moins la phrase
+   d'écart, sortie le 18 (règle 207).
+   RIEN N'EST GARDÉ EN MÉMOIRE : les moments de la course se relisent des sprints et de S.refiles à
+   chaque rendu, et les totaux se rejouent depuis le départ. C'est ce qui fait qu'une correction —
+   un tour annulé, un sprint rejugé, un Undo — remonte TOUTE la course d'un coup au lieu de ne
+   corriger que le présent. Des instantanés figés auraient gardé l'erreur dans le passé.
+   L'écran revenu en arrière ne suit pas la course tant que l'opérateur ne le ramène pas lui-même
+   (règle 206) : un clic sur la DERNIÈRE colonne le remet au présent, puisque c'est là qu'il est. */
+let standView = 'live', evoSel = null, evoAt = null;   // evoAt null : l'écran suit le présent
+// La place que le graphe a réellement sous les yeux, mesurée APRÈS un premier rendu : tant qu'on ne l'a pas
+// mesurée, elle est estimée du panneau, et l'estimation se trompait de quelques dizaines de pixels — avec
+// quatre coureurs suivis, la dernière ligne du tableau passait sous le bord du panneau.
+// `evoSb` est la hauteur de la barre de défilement horizontale, mesurée elle aussi : elle se prend SUR la
+// place du graphe, et sans elle la dernière ligne du tableau du bas passait sous le bord (son écran de
+// 1920 × 1080, quatre coureurs suivis, 18 novembre 2026).
+let evoW = 0, evoH = 0, evoSb = 0;
+const EVOPAL = ['#2ED47A', '#45B6D6', '#E0B64A', '#A98BE6'], EVOMAX = 4;
+const EVOHINT = 'follow up to 4 riders · see how they move and how the gap changes · click a moment to re-rank';
+const STHINT = 'points: sprints 5-3-2-1, final ×2, laps ±20 · ties: place in the final sprint';
+
+// Les moments de la course, dans l'ordre : le départ, chaque sprint commencé, chaque tour gagné ou perdu.
+// Deux coureurs qui prennent un tour au même tour de piste font UNE colonne : c'est un seul fait de course.
+function evoMoments() {
+  const ms = [], lapM = {};
+  for (let k = 1; k <= NSPRINTS; k++) if (spStarted(k)) {
+    const e0 = spFull(k).find(e => e.t != null);
+    ms.push({ kind: 'sprint', k, lap: sp(k).lap, t: e0 ? e0.t : null, l: isFinal(k) ? 'F' : 'S' + k });
+  }
+  for (const b of Object.keys(S.refiles)) for (const kind of ['gained', 'lost']) for (const x of (S.refiles[b][kind] || [])) {
+    // Une course enregistrée avant le build 211 n'a pas de tour sur ses gains : elle en garde le compte juste,
+    // et la colonne se range au départ, sans tour écrit.
+    const key = kind + ':' + (x.lap == null ? 0 : x.lap);
+    const m = lapM[key] || (lapM[key] = { kind: kind === 'gained' ? 'gain' : 'lose', lap: x.lap == null ? null : x.lap, t: x.t0, bibs: [], l: kind === 'gained' ? '+1' : '\22121' });
+    m.bibs.push(+b);
+    if (x.t0 != null && (m.t == null || x.t0 < m.t)) m.t = x.t0;
+  }
+  for (const key in lapM) ms.push(lapM[key]);
+  const byLap = m => m.lap == null ? -1 : m.lap, byT = m => m.t == null ? 1e9 : m.t;
+  ms.sort((a, b) => (byLap(a) - byLap(b)) || (byT(a) - byT(b)));
+  ms.unshift({ kind: 'start', lap: null, t: null, l: 'Start' });
+  return ms;
+}
+// Les points et le rang de chaque coureur à chaque moment, rejoués depuis le départ. Le rang se range comme
+// celui du classement Live : les retirés en dernier et sans numéro, puis les points, puis la place à l'arrivée.
+function evoHistory() {
+  const ms = evoMoments(), rows = standings(), meta = {}, run = {}, pts = {}, rank = {};
+  for (const x of rows) meta[x.r.bib] = x;
+  for (const r of S.riders) { run[r.bib] = 0; pts[r.bib] = []; rank[r.bib] = []; }
+  const bibs = S.riders.map(r => r.bib);
+  const cmp = (a, c) => ((meta[a].wd ? 1 : 0) - (meta[c].wd ? 1 : 0)) || (run[c] - run[a]) || ((meta[a].fin || 1e9) - (meta[c].fin || 1e9)) || (a - c);
+  for (const m of ms) {
+    if (m.kind === 'sprint') { const p = spPoints(m.k); for (const b in p) if (run[b] != null) run[b] += p[b]; }
+    else if (m.bibs) for (const b of m.bibs) if (run[b] != null) run[b] += (m.kind === 'gain' ? LAP_PTS : -LAP_PTS);
+    let rk = 0;
+    for (const b of bibs.slice().sort(cmp)) rank[b].push(meta[b].wd ? null : ++rk);
+    for (const b of bibs) pts[b].push(run[b]);
+  }
+  return { ms, pts, rank, rows, bibs };
+}
+const evoLab = m => (m.kind === 'gain' ? '+1 lap' : m.kind === 'lose' ? '\u22121 lap' : m.l) + (m.lap != null ? ' \u00b7 L' + m.lap : '');
+
+function renderEvoTab() {
+  const H = evoHistory(), ms = H.ms, n = ms.length, qual = CFG.type === 'qualification';
+  if (evoSel) evoSel = evoSel.filter(b => H.bibs.includes(b));
+  if (!evoSel || !evoSel.length) evoSel = H.rows.slice(0, 2).map(x => x.r.bib);
+  const at = (evoAt == null || evoAt >= n) ? n - 1 : evoAt, sel = evoSel;
+  const col = b => { const i = sel.indexOf(b); return i >= 0 ? EVOPAL[i] : '#565c64'; };
+  const rof = b => S.riders.find(r => r.bib === b) || { name: 'BIB ' + b, nat: '' };
+
+  // ---- le panneau de gauche : le classement À L'INSTANT CHOISI, et le sélecteur des coureurs suivis
+  const ranked = H.bibs.slice().sort((a, c) => (H.rank[a][at] == null ? 1e9 : H.rank[a][at]) - (H.rank[c][at] == null ? 1e9 : H.rank[c][at]) || (a - c));
+  let left = '';
+  for (const b of ranked) {
+    const r = rof(b), on = sel.includes(b), rk = H.rank[b][at];
+    left += '<button class="ev-lb' + (on ? ' on' : '') + '" data-evbib="' + b + '"' + (on ? ' style="--c:' + col(b) + '"' : '') + '><span class="rrk">' + (rk == null ? '' : rk) + '</span><span class="sw"></span><span class="flagw">' + flag(r.nat) + '</span><span class="rbib">' + b + '</span><span class="rnm">' + r.name + '</span><span class="rtot">' + H.pts[b][at] + '</span></button>';
+    if (qual && rk === CFG.advance) left += '<div class="ev-cut"><span>top ' + CFG.advance + ' advance</span></div>';
+  }
+  const head = sel.map(b => { const r = rof(b); return '<span class="leg"><span class="sw" style="background:' + col(b) + '"></span><span class="flagw">' + flag(r.nat) + '</span><b>' + b + '</b> ' + r.name + '</span>'; }).join('');
+
+  // ---- le graphe : il se dimensionne sur la place visible du panneau, mesurée ici (piège de S2)
+  // La colonne de gauche tient l'échelle des points ET les noms des coureurs suivis : 152 px suffisent aux
+  // deux, et le graphe gagne d'autant vers la gauche (l'opérateur, 18 novembre 2026 : « on peut aussi
+  // éventuellement occuper un peu plus la page sur la gauche »).
+  const labelW = 152, minColW = 86, endPad = 156, mT = 18, mB = 40;
+  const avW = Math.max(360, evoW || ((logrows.clientWidth || 1100) - 268 - 14 - 4));
+  const avH = Math.max(260, evoH || ((logrows.clientHeight || 520) - 24 - 18 - 16));
+  const colW = Math.max(minColW, Math.floor((avW - labelW - endPad) / n)), plotW = n * colW;
+  const tableH = 28 + sel.length * 34 + (sel.length === 2 ? 28 : 0), CH = Math.max(200, avH - tableH - 2 - evoSb);
+  let ys = [0]; for (const b of sel) ys = ys.concat(H.pts[b]);
+  let yMax = Math.max.apply(null, ys), yMin = Math.min.apply(null, ys);
+  const pad = Math.max(6, (yMax - yMin) * 0.12); yMax += pad; yMin = yMin < 0 ? yMin - pad : 0;
+  const cY = v => mT + (yMax - v) / (yMax - yMin) * (CH - mT - mB), cX = i => (i + 0.5) * colW;
+  const step = (yMax - yMin) > 50 ? 20 : 10;
+  let ax = '', grid = '', v;
+  for (v = Math.ceil(yMin / step) * step; v <= yMax; v += step) {
+    ax += '<text x="' + (labelW - 16) + '" y="' + (cY(v) + 5).toFixed(1) + '" class="axn">' + v + '</text>';
+    grid += '<line x1="0" y1="' + cY(v).toFixed(1) + '" x2="' + plotW + '" y2="' + cY(v).toFixed(1) + '" class="grid"/>';
+  }
+  let xl = '', hits = '';
+  ms.forEach((m, i) => {
+    const xi = cX(i).toFixed(1), cls = m.kind === 'sprint' ? 'sprint' : m.kind === 'gain' ? 'gain' : m.kind === 'lose' ? 'lose' : 'start';
+    const lab = m.kind === 'gain' ? '+1' : m.kind === 'lose' ? '\u22121' : m.l;
+    xl += '<line x1="' + xi + '" y1="' + mT + '" x2="' + xi + '" y2="' + (CH - mB) + '" class="colg' + (m.kind === 'sprint' ? ' on' : '') + '"/><text x="' + xi + '" y="' + (CH - 22) + '" class="cxl ' + cls + '">' + lab + '</text>' + (m.lap != null ? '<text x="' + xi + '" y="' + (CH - 7) + '" class="cxs">L' + m.lap + '</text>' : '');
+    hits += '<rect x="' + (i * colW) + '" y="' + mT + '" width="' + colW + '" height="' + (CH - mT - mB) + '" data-ck="' + i + '" class="ckhit"/>';
+  });
+  const selrect = '<rect x="' + (at * colW) + '" y="' + mT + '" width="' + colW + '" height="' + (CH - mT - mB) + '" class="cksel"/>';
+  let band = '';
+  if (sel.length === 2) {
+    const pa = H.pts[sel[0]], pb = H.pts[sel[1]], p = [];
+    for (let k = 0; k < n; k++) p.push(cX(k).toFixed(1) + ',' + cY(pa[k]).toFixed(1));
+    for (let k = n - 1; k >= 0; k--) p.push(cX(k).toFixed(1) + ',' + cY(pb[k]).toFixed(1));
+    band = '<polygon points="' + p.join(' ') + '" class="gapband"/>';
+  }
+  let lines = '';
+  for (const b of sel) {
+    const r = rof(b), c = col(b), pp = H.pts[b];
+    lines += '<polyline points="' + pp.map((v2, i) => cX(i).toFixed(1) + ',' + cY(v2).toFixed(1)).join(' ') + '" fill="none" stroke="' + c + '" stroke-width="3.5" stroke-linejoin="round"/>';
+    pp.forEach((v2, i) => { lines += '<circle cx="' + cX(i).toFixed(1) + '" cy="' + cY(v2).toFixed(1) + '" r="4.2" fill="' + c + '"/>'; });
+    const ye = cY(pp[n - 1]);
+    const fl = flag(r.nat).replace('<svg class="flag"', '<svg class="flag" x="' + (plotW + 8) + '" y="' + (ye - 8).toFixed(1) + '" width="22" height="15"');
+    lines += '<g>' + fl + '<text x="' + (plotW + 36) + '" y="' + (ye + 5).toFixed(1) + '" class="enbib" fill="' + c + '">' + b + '</text><text x="' + (plotW + 62) + '" y="' + (ye + 5).toFixed(1) + '" class="ennm">' + r.name + '</text></g>';
+  }
+  let labels = '';
+  if (sel.length === 2) {
+    const pa = H.pts[sel[0]], pb = H.pts[sel[1]], ca = col(sel[0]), cb = col(sel[1]);
+    const L = (x, y, c, vv, cl) => '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" class="ptlab' + (cl ? ' ' + cl : '') + '" fill="' + c + '">' + vv + '</text>';
+    ms.forEach((m, i) => {
+      const yA = cY(pa[i]), yB = cY(pb[i]), x = cX(i);
+      if (Math.abs(yA - yB) >= 24) labels += L(x, yA - 11, ca, pa[i]) + L(x, yB - 11, cb, pb[i]);
+      else if (Math.max(yA, yB) > CH - mB - 22) { const yt = Math.min(yA, yB) - 11; labels += L(x - 7, yt, ca, pa[i], 'l') + L(x + 7, yt, cb, pb[i], 'r'); }
+      else labels += yA <= yB ? L(x, yA - 11, ca, pa[i]) + L(x, yB + 17, cb, pb[i]) : L(x, yA + 17, ca, pa[i]) + L(x, yB - 11, cb, pb[i]);
+    });
+  }
+  const plot = '<svg class="ev-svg" width="' + (plotW + endPad) + '" height="' + CH + '">' + grid + selrect + xl + band + lines + labels + hits + '</svg>';
+  const yaxis = '<svg class="ev-yaxis" width="' + labelW + '" height="' + CH + '">' + ax + '</svg>';
+
+  // ---- le tableau du bas : les points et la place à chaque moment, et l'écart quand ils sont deux
+  const ltbl = '<div class="ev-ltbl"><div class="ev-lh">Update</div>' + sel.map(b => '<div class="ev-lr" style="--c:' + col(b) + '"><span class="sw"></span><b style="font:700 13px var(--mono);color:var(--fg)">' + b + '</b> ' + rof(b).name + '</div>').join('') + (sel.length === 2 ? '<div class="ev-lg">Gap</div>' : '') + '</div>';
+  let cols = '';
+  ms.forEach((m, i) => {
+    let cell = '<div class="ev-cc' + (i === at ? ' on' : '') + '" data-ck="' + i + '"><div class="ev-cck">' + (m.kind === 'gain' ? '+1' : m.kind === 'lose' ? '\u22121' : m.l) + (m.lap != null ? '<span>L' + m.lap + '</span>' : '') + '</div>';
+    for (const b of sel) cell += '<div class="ev-ccr" style="--c:' + col(b) + '"><b>' + H.pts[b][i] + '</b><span>' + (H.rank[b][i] == null ? '\u00b7' : 'P' + H.rank[b][i]) + '</span></div>';
+    if (sel.length === 2) { const gi = H.pts[sel[0]][i] - H.pts[sel[1]][i], lc = gi > 0 ? col(sel[0]) : gi < 0 ? col(sel[1]) : '#6b7178'; cell += '<div class="ev-ccg" style="color:' + lc + '">' + (gi === 0 ? '\u2014' : (gi > 0 ? '+' : '\u2212') + Math.abs(gi)) + '</div>'; }
+    cols += cell + '</div>';
+  });
+  const rtbl = '<div class="ev-rtbl" style="grid-template-columns:repeat(' + n + ',' + colW + 'px);width:' + plotW + 'px">' + cols + '</div>';
+
+  return '<div class="evtbl"><div class="ev-side"><div class="ev-sh">Standings <span class="at">@ ' + (evoAt == null ? 'now' : evoLab(ms[at])) + '</span></div><div class="ev-list">' + left + '</div></div>' +
+    '<div class="ev-content"><div class="ev-top">' + head + '</div><div class="ev-body">' +
+    '<div class="ev-fixed" style="width:' + labelW + 'px">' + yaxis + ltbl + '</div><div class="ev-scroll">' + plot + rtbl + '</div></div>' +
+    '<div class="ev-note">Click a rider in the standings to follow them (up to 4). Click a moment in the race to re-rank the standings to that point. Click the last moment to follow the race again.</div></div></div>';
+}
+
+// Un clic sur un coureur le prend en suivi ou le lâche ; un clic sur un moment y ramène le panneau, et
+// un clic sur le DERNIER moment remet l'écran au présent (règle 206).
+logrows.addEventListener('click', e => {
+  if (logTab !== 'stand' || standView !== 'evo') return;
+  const r = e.target.closest('[data-evbib]');
+  if (r) {
+    const b = +r.dataset.evbib, i = evoSel.indexOf(b);
+    if (i >= 0) evoSel.splice(i, 1); else { if (evoSel.length >= EVOMAX) return; evoSel.push(b); }
+    dirty = true; render(); return;
+  }
+  const c = e.target.closest('[data-ck]');
+  if (c) { const i = +c.getAttribute('data-ck'); evoAt = (i === evoMoments().length - 1) ? null : i; dirty = true; render(); }
+});
+$('#stview').addEventListener('click', e => { const b = e.target.closest('[data-sview]'); if (!b) return; standView = b.dataset.sview; dirty = true; render(); });
+// Le graphe se dimensionne sur la largeur visible : il se refait quand l'écran change de taille.
+addEventListener('resize', () => { if (logTab === 'stand' && standView === 'evo') { dirty = true; render(); } });
+
+// La bascule vit dans l'en-tête du panneau, hors du rail : elle se synchronise au rendu (pitfall D31).
+const evoRenderLog = renderLog;
+renderLog = function () {
+  const on = logTab === 'stand';
+  if ($('#stview').hidden !== !on) $('#stview').hidden = !on;
+  if (on) $('#stview').querySelectorAll('[data-sview]').forEach(b => { const now = b.dataset.sview === standView; b.classList.toggle('on', now); b.classList.toggle('quiet', !now); });
+  evoRenderLog();
+  if (!on || standView !== 'evo') return;
+  logrows.innerHTML = renderEvoTab();
+  // Second passage : le graphe se dimensionne sur la place VISIBLE, et on ne la connaît qu'une fois le bloc
+  // posé. Il se refait une fois, et une seule, quand la place mesurée n'est pas celle qu'on avait estimée.
+  const body = logrows.querySelector('.ev-body'), sc = logrows.querySelector('.ev-scroll');
+  const sb = sc ? sc.offsetHeight - sc.clientHeight : 0;
+  if (body && (Math.abs(body.clientWidth - evoW) > 2 || Math.abs(body.clientHeight - evoH) > 2 || Math.abs(sb - evoSb) > 1)) {
+    evoW = body.clientWidth; evoH = body.clientHeight; evoSb = sb;
+    logrows.innerHTML = renderEvoTab();
+  }
+  $('#loghint').textContent = EVOHINT;
+};
 
 // L'écran s'ouvre sur la course, pas sur le journal : le moteur pose 'cross', le
 // balisage pose Race, et c'est le balisage qui a raison.

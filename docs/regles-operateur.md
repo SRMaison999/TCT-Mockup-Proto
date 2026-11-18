@@ -2920,3 +2920,46 @@ réglages, et le classement en tire sa **ligne de coupe** : un trait tireté amb
 
 Il naît sur `FINAL`, qui est l'écran d'aujourd'hui : une course déjà réglée ne change pas tant que
 l'opérateur ne le pose pas lui-même sur `QUALIF`.
+
+
+### 206 · Le classement revu en arrière ne suit pas la course · 18 novembre 2026
+
+La vue **Évolution** du classement laisse revenir à un moment de la course : un clic sur une
+colonne, et le panneau de gauche reclasse les coureurs tels qu'ils étaient à cet instant. La
+course, elle, continue. La question lui a été posée en sprints : il est revenu au sprint 2, le
+sprint 3 tombe. Sa réponse, mot pour mot :
+
+> « Il reste au sprint 2 : l'écran ne bouge pas tant que je ne le ramène pas moi-même. »
+
+L'écran ouvert sur le présent le suit ; dès qu'il est parti en arrière, il y reste, et c'est à lui
+de revenir au présent. Rien n'est codé.
+
+
+### 207 · Pas de phrase d'écart au-dessus du graphe · 18 novembre 2026
+
+La maquette Évolution portait, en haut à droite du graphe, une phrase qui nommait l'écart entre
+les deux coureurs suivis : `HUBER leads O'NEILL by 25 pts`. Ses mots, mot pour mot :
+
+> « supprime "HUBER leads O'NEILL by 25 pts", c'est redondant »
+
+L'écart se lit déjà au tableau du bas, à la ligne `Gap`, chiffré **à chaque moment** de la course,
+et la bande claire entre les deux courbes le montre à l'œil. La phrase est **sortie de la
+maquette** le jour même, avec son style. La légende des coureurs suivis reste en haut à gauche.
+
+
+### 208 · Son écran fait 1920 × 1080, et tout doit y tenir en hauteur · 18 novembre 2026
+
+Il a regardé la vue Évolution du build 212 sur son écran, quatre coureurs suivis, et envoyé la
+capture : la dernière ligne du tableau du bas passait sous le bord du panneau. Ses mots :
+
+> « mon écran fait 1920x1080
+> Ici l'image est légèrement tronquée et sans possibilité de scroll. Fais en sorte de réduire un peu
+> la hauteur pour qu'elle tienne sur la hauteur.
+> On peut aussi éventuellement occuper un peu plus la page sur la gauche de l'écran ce qui ferait
+> gagner un peu de place horizontalement »
+
+**Corrigé au build 213.** Ce qui dépassait n'était pas le dessin mais la **barre de défilement
+horizontale** du graphe, haute de 15 px, qui se prend sur la place du tableau : elle est mesurée et
+réservée. La colonne de gauche du graphe — celle qui porte l'échelle des points et les noms des
+coureurs suivis — passe de 190 à 152 px, et le graphe gagne d'autant vers la gauche. Sur son écran,
+les seize moments d'une course de soixante tours tiennent alors **tous** à l'écran.

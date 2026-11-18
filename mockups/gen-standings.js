@@ -202,8 +202,6 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 .cmp-top .leg .sw{width:12px;height:12px;border-radius:3px}
 .cmp-top .leg .flagw .flag{width:24px;height:16px;border-radius:2px;display:block}
 .cmp-top .leg b{font:700 14px var(--mono);color:var(--fg)}
-.cmp-top .gap{margin-left:auto;font:600 15px var(--sans);color:var(--muted)}
-.cmp-top .gap b{color:var(--fg);font-size:17px}
 .cmp-body{flex:1 1 auto;min-height:0;display:flex}
 .cmp-fixed{flex:0 0 auto;display:flex;flex-direction:column;z-index:2}
 .cmp-scroll{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;overflow-x:auto;overflow-y:hidden}
@@ -275,9 +273,10 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
   }
   function renderHead(){
     var leg=sel.map(function(b){var r=DATA.riders[b];return '<span class="leg"><span class="sw" style="background:'+colOf(b)+'"></span><span class="flagw">'+r.flag+'</span><b>'+b+'</b> '+r.name+'</span>';}).join('');
-    var gap='';
-    if(sel.length===2){var a=sel[0],b=sel[1],gv=DATA.riders[a].pts[nck-1]-DATA.riders[b].pts[nck-1],ld=gv>=0?a:b,tr=gv>=0?b:a;gap='<span class="gap">'+DATA.riders[ld].name+' leads '+DATA.riders[tr].name+' by <b>'+Math.abs(gv)+' pts</b></span>';}
-    document.getElementById('cmp-head').innerHTML=leg+gap;
+    // La phrase d'ecart est sortie le 18 novembre 2026. L'operateur : « supprime
+    // "HUBER leads O'NEILL by 25 pts", c'est redondant ». L'ecart se lit deja a la
+    // ligne Gap du tableau du bas, chiffre a chaque moment de la course.
+    document.getElementById('cmp-head').innerHTML=leg;
   }
   function renderChart(){
     renderHead();

@@ -65,7 +65,7 @@ Tirée de `CLAUDE.md` et `docs/regles-operateur.md` §14 :
 
 ## 3. Le prototype cible
 
-**`timeline-prototype_mixed.html`** — c'est celui que l'opérateur utilise (build **211**). Page
+**`timeline-prototype_mixed.html`** — c'est celui que l'opérateur utilise (build **213**). Page
 HTML autonome, un seul fichier, aucun outil de build.
 
 - **Un seul gros script**, enfermé dans une IIFE `(() => { … })()`. L'état, le moteur et le rendu
@@ -113,7 +113,7 @@ sprints, Race log, fil commentateurs) ; le reste suit la langue de l'écran où 
 | `maquette-lapbylap.html` | `gen-lapbylap.js` | onglet `cross` — **Lap by lap** | validé |
 | `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | validé, §9.2 |
 | `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | validé |
-| `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **Live intégré, build 211** ; Évolution en S2 |
+| `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **intégré, build 213** (Live et Évolution) |
 | `maquette-passings.html` | `gen-passings.js` | onglet `pass` — **Passings** | validé |
 | `maquette-scenarios.html` | `gen-scenarios.js` | **nouvel écran** — Scénarios de course | validé |
 | `maquette-feed.html` | `gen-feed.js` | **nouvel écran** — Fil commentateurs (CIS/MIS) | coque validée |
@@ -168,6 +168,9 @@ lectures, bascule dans l'en-tête :
   calcule depuis l'historique réel.
 - **Piège** : le graphe Évolution se dimensionne sur la largeur visible. S'il est rendu pendant
   qu'il est masqué (`display:none`), largeur = 0 → cassé. Rendre/redimensionner **à l'affichage**.
+- **Ses deux mots du 18 novembre 2026**, à tenir en S2 : l'écran revenu en arrière **ne suit pas la
+  course** tant qu'il ne le ramène pas lui-même (**règle 206**), et il n'y a **pas de phrase
+  d'écart** au-dessus du graphe — elle est sortie de la maquette le jour même (**règle 207**).
 
 ### 5.5 Passings (onglet `pass`)
 Le relevé **brut** des capteurs. **Source** : `S.reads` (3 boucles) et `S.taps` (tape switches) —
@@ -258,7 +261,12 @@ Scénarios (S9) et le fil commentateurs (S10) le lisent de là — ils n'ont pas
   Le modèle porte un **champ prénom**, `S.refiles` porte le **tour** de chaque gain et de chaque
   perte, et `CFG.type` / `CFG.advance` portent le type de course. Règles **204** et **205**,
   `architecture.md` §55, `mesures.md` §66, `pitfalls.md` D31. Ne pas refaire.
-  La vue **Évolution** et la bascule `Live / Evolution` restent à poser : c'est S2.
+- **S2 — la vue Évolution**, build 213. La bascule `Live / Evolution` est dans l'en-tête du panneau.
+  Les moments de la course se relisent des sprints et de `S.refiles` à chaque rendu — **rien n'est
+  enregistré** — et les points se rejouent depuis le départ, donc une correction remonte toute la
+  course. Jusqu'à quatre coureurs suivis, le panneau de gauche classe à l'instant choisi, et l'écran
+  revenu en arrière ne suit plus la course (règle 206). Règles **206** et **207**,
+  `architecture.md` §56, `mesures.md` §67, `pitfalls.md` D32. Ne pas refaire.
 
 ---
 

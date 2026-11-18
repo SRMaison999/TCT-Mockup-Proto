@@ -2351,3 +2351,37 @@ la grille tire la largeur de sa bande de sprints. Les points par sprint viennent
 pour les sprints ouverts, les tours de `standings()`, qui rend maintenant `gainedLaps` et
 `lostLaps`. La ligne de coupe est une ligne de plus, posée après le rang `CFG.advance`, et les
 lignes au-delà portent `elim`. Les coureurs retirés restent en bas, sans rang, comme avant.
+
+
+## §56 · La vue Évolution du classement (build 212)
+
+`standView` dit laquelle des deux lectures de l'onglet `stand` est à l'écran, `'live'` ou `'evo'`. La
+bascule est le `#stview` de l'en-tête du panneau, à gauche de la ligne d'indice ; elle ne paraît que
+sur cet onglet et se synchronise depuis `renderLog`, jamais depuis le rail (`pitfalls.md` D31).
+
+**Rien n'est gardé en mémoire.** `evoMoments()` relit les moments de la course à chaque rendu : le
+départ, chaque sprint commencé (`spStarted`), et chaque tour gagné ou perdu, pris de `S.refiles`.
+Deux coureurs qui prennent un tour au même tour de piste font **une seule colonne** : c'est un seul
+fait de course. L'ordre est celui des tours, puis celui du temps quand deux moments tombent au même
+tour. `evoHistory()` rejoue ensuite les points **depuis le départ** et range les coureurs à chaque
+moment avec la comparaison du classement Live — les retirés en dernier et sans numéro, puis les
+points, puis la place à l'arrivée, puis le dossard.
+
+Ce choix est la raison d'être de la vue : une correction — un tour annulé, un sprint rejugé, un
+`Undo` — **remonte toute la course d'un coup**, parce qu'il n'y a pas de passé figé à corriger. Des
+instantanés enregistrés auraient gardé l'erreur derrière eux et n'auraient réparé que le présent.
+`subLap` dépile déjà l'entrée de `S.refiles`, donc le moment disparaît avec elle.
+
+`evoAt` porte le moment regardé : `null` veut dire que l'écran **suit le présent**. Un clic sur une
+colonne le pose, un clic sur la **dernière** le remet à `null` (règle 206). `evoSel` porte les
+coureurs suivis, quatre au plus, et se garnit des deux premiers du classement tant que l'opérateur
+n'a rien choisi.
+
+Le graphe se dimensionne sur la place **mesurée**, pas estimée : `renderLog` pose la vue, lit le
+`.ev-body` qui vient d'être posé **et la barre de défilement du `.ev-scroll`** (`offsetHeight -
+clientHeight`, 15 px, qui se prend sur la hauteur), et refait le rendu **une fois** si l'une des
+trois n'est pas celle qu'on avait prise (`evoW`, `evoH`, `evoSb`). La colonne de gauche du graphe
+fait 152 px — l'échelle des points et les noms des coureurs suivis y tiennent tous les deux. C'est ce second passage qui tient le tableau du bas dans le panneau
+(`pitfalls.md` D32). Le dessin et ses classes viennent de la maquette, préfixés `ev-` parce que ses
+noms — `.side`, `.lb`, `.cc`, `.leg` — sont des mots courts que `styles.css`, partagé par les trois
+prototypes, pourrait déjà porter.
