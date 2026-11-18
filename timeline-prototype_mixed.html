@@ -313,6 +313,30 @@
 .rows.pass .mk{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
 .rows.pass .none{font:500 12px var(--sans);color:var(--dim);padding:14px 8px}
 .rows.pass .foot{font:500 11px var(--sans);color:var(--dim);padding:10px 8px 2px}
+/* Son point 236 : les titres de colonnes se cliquent. Celui qui range porte la couleur d'accent ;
+   celui d'avant, devenu le second critere, porte le petit 2. Son point 238 : les deux filtres. */
+.rows.pass .ph span.s{cursor:pointer;user-select:none;display:flex;align-items:center;gap:4px;height:100%}
+.rows.pass .ph span.s:hover{color:var(--fg)}
+.rows.pass .ph span.k1{color:var(--acc)}
+.rows.pass .ph span.k2{color:#8FB4FF}
+.rows.pass .ph .ar{font:600 10px var(--mono);font-style:normal}
+.rows.pass .ph .n2{font:600 9px var(--mono);font-style:normal;color:#8FB4FF;
+  border:1px solid #39506f;border-radius:2px;padding:0 2px}
+.rows.pass .prow.sep{border-top:1px solid #2f3942}
+.pin{width:54px;height:26px;padding:0 7px;background:#17191c;border:1px solid var(--line2);
+  border-radius:4px;font:600 12px var(--mono);color:var(--fg);text-align:center}
+.pin::placeholder{font:400 11px var(--sans);color:var(--dim)}
+.pin:focus{outline:0;border-color:var(--acc)}
+.pin.set{border-color:var(--acc);background:#15202c}
+.pin.bad{border-color:var(--warn);color:var(--warn)}
+/* Son point 237 : arretee, la liste le DIT — l'heure a laquelle elle s'est arretee, et ce qui
+   attend derriere. Un ecran qui ne bouge plus sans rien dire se lit comme un ecran mort. */
+.pf.hold.on{background:var(--warn);border-color:var(--warn);color:#1a1204;font-weight:600}
+.rows.pass .held{position:sticky;top:24px;z-index:1;display:flex;align-items:center;gap:8px;
+  padding:5px 8px;background:#2a2209;border-left:3px solid var(--warn);
+  font:600 11px var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--warn)}
+.rows.pass .held i{font:500 12px var(--mono);font-style:normal;color:var(--fg);
+  font-variant-numeric:tabular-nums;text-transform:none;letter-spacing:0}
 
 /* ---- les quatre poignées (l'opérateur, 31 octobre 2026) ------------------
    Chaque zone garde exactement sa place : la poignée ne fait que poser une
@@ -676,7 +700,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">239</span>
+      <span class="bld" id="buildno">240</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -787,6 +811,16 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
     <button class="pf" data-psrc="loop1">Pursuit B</button>
     <button class="pf" data-psrc="tape">Tape switches</button>
     <span class="pfsep"></span>
+    <!-- Son point 238 : deux FILTRES, un par dossard, un par tour. Ils retiennent des lignes ;
+         le tri des titres de colonnes (point 236) continue de travailler sur ce qui reste. -->
+    <span class="lbl">Bib</span>
+    <input class="pin" id="pfbib" inputmode="numeric" placeholder="all" autocomplete="off">
+    <span class="lbl">Lap</span>
+    <input class="pin" id="pflap" inputmode="numeric" placeholder="all" autocomplete="off">
+    <button class="pf" data-pclear="1">Clear</button>
+    <span class="pfsep"></span>
+    <!-- Son point 237 : un bouton qui arrete le defilement des evenements, pour qu'on puisse lire. -->
+    <button class="pf hold" data-phold="1">Hold</button>
     <button class="pf warn" data-podd="1" title="Les passages ou le ruban et la boucle ne sont pas tombes d'accord">Unmatched only</button>
     <span class="lbl hint" style="color:var(--dim);text-transform:none;letter-spacing:0;font-weight:500">a contact with no read is a bike without a transponder &middot; a read with no contact is a wheel the tape could not separate</span>
     <span class="phealth" id="phealth"><b>LOOP HEALTH</b></span>
@@ -869,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '239';
+const BUILD = '240';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -5195,35 +5229,94 @@ for (const k in ZCSS) syncZone(k);
    la colonne Time porte le TEMPS DE COURSE à la milliseconde et la colonne
    Signal porte ce qui existe vraiment : les comptages. */
 let passSrc = 'all', passOdd = false;
+// SON POINT 236 : la liste se range sur un titre de colonne, et celui d'avant devient le SECOND
+// critère. Ses mots : « En triant par boucle on pourrait voir tous les passages sur cette boucle
+// puis trier par lap pour voir si tout est ok. et pareil par dossard et par lap ». Deux critères,
+// jamais trois : le troisième clic pousse le plus ancien dehors.
+let passK1 = { col: 't', dir: -1 }, passK2 = null;
+// SON POINT 238 : deux FILTRES. « je voulais dire qu'il faudrait des filtres ». Ils retiennent des
+// lignes ; le tri ci-dessus continue de travailler sur ce qui reste.
+let passBib = null, passLap = null;
+// SON POINT 237 : « un bouton qui permet de stopper le défilement des événements pour le bas, cela
+// permet de lire plus facilement la passing list ». Les boucles continuent de lire pendant ce
+// temps — c'est l'AFFICHAGE qui s'arrête, et la liste le dit, avec ce qui attend derrière.
+let passHold = false, passHoldAt = 0;
 const pfilt = $('#pfilt'), phealth = $('#phealth');
 const pT3 = s => { s = Math.max(0, s); const m = Math.floor(s / 60), r = s - m * 60; return m + ':' + (r < 10 ? '0' : '') + r.toFixed(3); };
 pfilt.addEventListener('click', e => {
-  const b = e.target.closest('[data-psrc],[data-podd]'); if (!b) return;
-  if (b.dataset.psrc) passSrc = b.dataset.psrc; else passOdd = !passOdd;
+  const b = e.target.closest('[data-psrc],[data-podd],[data-pclear],[data-phold]'); if (!b) return;
+  if (b.dataset.psrc) passSrc = b.dataset.psrc;
+  else if (b.dataset.podd) passOdd = !passOdd;
+  else if (b.dataset.phold) { passHold = !passHold; if (passHold) passHoldAt = S.t; }
+  else { passBib = passLap = null; for (const id of ['#pfbib', '#pflap']) { $(id).value = ''; $(id).className = 'pin'; } }
   dirty = true; render();
 });
+// On tape, la liste se resserre : pas de bouton à presser. Un dossard qui n'est pas au départ, ou
+// un tour qui n'existe pas, laisse le champ en orange — l'écran dit alors qu'IL n'a rien, et non
+// qu'il n'y a rien, ce qui n'est pas la même chose devant une liste vide.
+for (const [sel, max] of [['#pfbib', null], ['#pflap', () => LAPS]]) {
+  $(sel).addEventListener('input', e => {
+    const v = e.target.value.replace(/[^0-9]/g, '');
+    if (e.target.value !== v) e.target.value = v;
+    const n = v === '' ? null : +v;
+    if (sel === '#pfbib') passBib = n; else passLap = n;
+    const ok = n == null || (sel === '#pfbib' ? S.riders.some(r => r.bib === n) : (n >= 1 && n <= max()));
+    e.target.className = 'pin' + (n == null ? '' : ok ? ' set' : ' bad');
+    dirty = true; render();
+  });
+}
 function renderPassingsTab() {
   pfilt.querySelectorAll('[data-psrc]').forEach(b => b.classList.toggle('on', b.dataset.psrc === passSrc));
   pfilt.querySelectorAll('[data-podd]').forEach(b => b.classList.toggle('on', passOdd));
+  pfilt.querySelectorAll('[data-phold]').forEach(b => { b.classList.toggle('on', passHold); b.textContent = passHold ? 'Resume' : 'Hold'; });
   phealth.innerHTML = '<b>LOOP HEALTH</b>' + LOOPS.map((L, i) =>
     `<span class="${S.reads[i].length ? '' : 'q'}">${LOOPNAME[L] === 'Finish' ? 'F' : LOOPNAME[L].slice(-1)} ${S.reads[i].length ? '✓ ' + S.reads[i].length : '—'}</span>`).join('');
+
+  // LE TOUR D'UNE DÉTECTION EST CELUI OÙ LE COUREUR ÉTAIT À CET INSTANT-LÀ, et non celui où il en
+  // est maintenant. Il se compte sur ses passages de la boucle d'arrivée AVANT cette heure, plus
+  // un — il roule son tour suivant —, tours validés retranchés : c'est son point 233, « il faut se
+  // méfier du nombre de passages sur la ligne ». Sans cela, les trente détections d'un coureur
+  // portaient toutes le même numéro de tour, et le filtre par tour n'aurait rien filtré.
+  const finAt = {};
+  for (const p of S.passes) (finAt[p.bib] = finAt[p.bib] || []).push(p.t);
+  // UN PASSAGE SUR LA LIGNE PORTE LE TOUR QU'IL FERME, les autres boucles le tour qu'on est en
+  // train de courir. Le coureur part DERRIÈRE la ligne : son premier franchissement ferme le tour 1,
+  // et les boucles franchies après lui sont dans le tour 2. C'est le même classement que la colonne
+  // Lap by lap, qui range un franchissement sur `ka − lapStatus`.
+  const lapAt = (bib, t, surLaLigne) => {
+    const l = finAt[bib] || [];
+    let lo = 0, hi = l.length;                       // combien de ses passages sont déjà derrière lui
+    while (lo < hi) { const m = (lo + hi) >> 1; if (l[m] <= t + 1e-9) lo = m + 1; else hi = m; }
+    return Math.max(1, (surLaLigne ? lo : lo + 1) - (S.lapStatus[bib] | 0));
+  };
 
   const out = [];
   if (passSrc === 'all' || passSrc.startsWith('loop')) {
     const only = passSrc.startsWith('loop') ? +passSrc.slice(4) : null;
     S.reads.forEach((list, li) => {
       if (only != null && li !== only) return;
-      for (const x of list.slice(-400)) out.push({ t: x.t, point: LOOPNAME[LOOPS[li]], bib: x.bib, sig: 'read', mark: '' });
+      for (const x of list.slice(-400)) out.push({ t: x.t, point: LOOPNAME[LOOPS[li]], ord: LOOPS[li],
+        bib: x.bib, lap: lapAt(x.bib, x.t, li === 0), sig: 'read', mark: '' });
     });
   }
   if (passSrc === 'all' || passSrc === 'tape') {
     for (const p of S.tapePass.slice(-200)) out.push({
-      t: p.t0, point: TAPES[p.tape].name, bib: null, lap: p.lap,
+      t: p.t0, point: TAPES[p.tape].name, ord: 1000 + TAPES[p.tape].pos, bib: null, lap: p.lap,
       sig: plural(p.n, 'contact') + ' / ' + plural(p.read.length, 'read'),
       mark: p.lone ? p.lone + ' with no read' : p.short ? p.short + ' with no contact' : '',
       odd: !!(p.lone || p.short) });
   }
-  const rows = out.filter(r => !passOdd || r.odd).sort((a, b) => b.t - a.t).slice(0, 300);
+  // L'arrêt coupe à l'heure du clic ; les deux filtres retiennent ce qui reste. Un contact de ruban
+  // ne porte aucun dossard : un filtre par dossard le retient donc forcément dehors.
+  const coupe = passHold ? passHoldAt : Infinity;
+  const base = out.filter(r => r.t <= coupe && (!passOdd || r.odd)
+    && (passBib == null || r.bib === passBib) && (passLap == null || r.lap === passLap));
+  const VAL = { t: r => r.t, point: r => r.ord, bib: r => (r.bib == null ? 1e9 : r.bib), lap: r => (r.lap == null ? 1e9 : r.lap) };
+  const rows = base.sort((a, b) => {
+    const d1 = (VAL[passK1.col](a) - VAL[passK1.col](b)) * passK1.dir; if (d1) return d1;
+    if (passK2) { const d2 = (VAL[passK2.col](a) - VAL[passK2.col](b)) * passK2.dir; if (d2) return d2; }
+    return a.t - b.t;
+  }).slice(0, 300);
 
   // le pied de liste : la dernière passage où le ruban et la boucle ne sont pas tombés d'accord
   const odd = S.tapePass.filter(p => p.lone || p.short), last = odd[odd.length - 1];
@@ -5232,18 +5325,48 @@ function renderPassingsTab() {
       + ' — ' + (last.lone ? plural(last.lone, 'bike') + ' more than the loop named' : plural(last.short, 'read') + ' the tape could not separate')
     : 'every contact answered a read, and every read a contact';
 
-  return '<div class="ph"><span>Time</span><span>Point</span><span>Bib</span><span>Noc</span><span>Lap</span>' +
-    '<span>Signal / count</span><span class="r">Note</span></div>' +
+  // L'EN-TÊTE SE CLIQUE. Celle qui range porte la couleur d'accent et sa flèche ; celle d'avant,
+  // devenue le second critère, porte le petit 2 (son point 236).
+  const ph = [['t', 'Time'], ['point', 'Point'], ['bib', 'Bib'], [null, 'Noc'], ['lap', 'Lap'],
+              [null, 'Signal / count'], [null, 'Note']].map(([col, lab], i) => {
+    if (!col) return `<span${i === 6 ? ' class="r"' : ''}>${lab}</span>`;
+    const un = passK1.col === col, deux = passK2 && passK2.col === col;
+    const fl = un ? `<i class="ar">${passK1.dir > 0 ? '▲' : '▼'}</i>`
+             : deux ? `<i class="ar">${passK2.dir > 0 ? '▲' : '▼'}</i><i class="n2">2</i>` : '';
+    return `<span class="s${un ? ' k1' : deux ? ' k2' : ''}" data-pcol="${col}">${lab}${fl}</span>`;
+  }).join('');
+
+  // ARRÊTÉE, LA LISTE LE DIT : l'heure du clic, et ce que les boucles ont lu depuis.
+  const retenu = passHold ? out.filter(r => r.t > passHoldAt).length : 0;
+  const bandeau = passHold
+    ? `<div class="held">Held at <i>${pT3(passHoldAt)}</i> · ${retenu ? plural(retenu, 'reading') + ' since, not shown yet' : 'nothing read since'}</div>`
+    : '';
+
+  let prec = null;
+  return `<div class="ph">${ph}</div>` + bandeau +
     (rows.length ? rows.map(r => {
       const rd = r.bib != null ? S.riders.find(x => x.bib === r.bib) : null;
       const lap = r.lap != null ? r.lap : (rd && rd.rec ? Math.floor(rd.rec.d / TRACK) + 1 : null);
-      return `<div class="prow${r.odd ? ' odd' : ''}"><span class="t">${pT3(r.t)}</span><span class="lo">${r.point}</span>` +
+      // un trait à chaque changement du PREMIER critère, pour qu'on voie où une boucle finit et où
+      // la suivante commence — il n'a de sens que s'il y a un second critère pour remplir le bloc
+      const g = passK2 ? String(VAL[passK1.col](r)) : null;
+      const sep = passK2 && prec !== null && g !== prec ? ' sep' : ''; prec = g;
+      return `<div class="prow${r.odd ? ' odd' : ''}${sep}"><span class="t">${pT3(r.t)}</span><span class="lo">${r.point}</span>` +
         `${rd ? chip(rd) : '<span class="nobib">—</span>'}<span class="noc">${rd ? rd.nat : ''}</span>` +
         `<span class="lp">${lap != null ? 'L' + lap : ''}</span><span class="sig">${r.sig}</span>` +
         `<span class="mk">${r.mark}</span></div>`;
     }).join('') : '<div class="none">Nothing read yet for this filter.</div>') +
     '<div class="foot">' + foot + '</div>';
 }
+// Un clic sur un titre range la liste sur cette colonne ; le même titre deux fois inverse le sens ;
+// un autre titre pousse l'ancien au second rang (son point 236).
+logrows.addEventListener('click', e => {
+  const s = e.target.closest('[data-pcol]'); if (!s || logTab !== 'pass') return;
+  const col = s.dataset.pcol;
+  if (passK1.col === col) passK1.dir = -passK1.dir;
+  else { passK2 = passK1; passK1 = { col, dir: col === 't' ? -1 : 1 }; }
+  dirty = true; render();
+});
 
 /* ---- 3. les six onglets, et le journal qu'ils commandent -----------------
    La barre d'onglets est le #logtabs du moteur, sorti de l'en-tête du journal

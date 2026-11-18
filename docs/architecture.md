@@ -2609,3 +2609,34 @@ la même lecture.
 sur `ecEff` — le tour d'écart non validé, proposition en attente comprise — et coupe un bloc dès que
 deux voisins n'ont pas le même. C'est elle, et non l'ordre, qui met le BIB 22 seul dans un bloc du
 tour 16 au tour 40 sur la course du §88 (mesures.md §89).
+
+
+## §60 · L'onglet Passings : tri, filtres, arrêt (build 240)
+
+Ses points 236, 237 et 238. Tout tient dans `renderPassingsTab()` et la barre `#pfilt`.
+
+**Quatre variables d'état.** `passK1` / `passK2` — la colonne qui range et celle d'avant, chacune
+avec son sens ; `passBib` / `passLap` — les deux filtres, `null` = tout passe ; `passHold` /
+`passHoldAt` — l'arrêt et l'heure de course à laquelle il a été demandé.
+
+**Le tour d'une détection, `lapAt(bib, t, surLaLigne)`.** Les heures des passages de la boucle
+d'arrivée sont relevées une fois par rendu depuis `S.passes`, par dossard ; une recherche
+dichotomique donne combien sont derrière l'heure demandée. Un passage **sur la ligne** porte ce
+nombre — le tour qu'il ferme ; les autres boucles portent ce nombre **plus un** — le tour en cours.
+Et `S.lapStatus` est retranché dans les deux cas, son point 233. C'est le même classement que la
+colonne Lap by lap, qui range un franchissement sur `ka − lapStatus`.
+
+**Le rangement.** `ord` porte la position de la boucle **sur la piste** (0, 115, 240), et non son
+rang dans `LOOPS` : un tri sur POINT suit donc l'ordre dans lequel un coureur les rencontre. Les
+contacts de ruban prennent `1000 + leur position`, pour rester groupés après les boucles. Un
+contact n'a pas de dossard : `VAL.bib` lui donne `1e9`, il part en fin de tri, et un filtre par
+dossard le retient forcément dehors.
+
+**L'arrêt ne touche à rien d'autre que l'affichage.** `coupe = passHoldAt` enlève de la liste ce qui
+a été lu après ; `S.reads` continue de se remplir, le moteur de course continue de recevoir ses
+détections, et le bandeau compte ce qui attend. Le bouton dit `Resume` tant que l'arrêt tient.
+
+Le clic sur un titre est posé sur `#logrows`, et il ne fait quelque chose que sur l'onglet `pass` :
+le journal réécrit son contenu à chaque rendu, donc rien ne peut être attaché aux titres eux-mêmes.
+Les deux champs, eux, sont dans `#pfilt`, qui n'est pas réécrit — ils gardent le curseur pendant
+qu'on tape.

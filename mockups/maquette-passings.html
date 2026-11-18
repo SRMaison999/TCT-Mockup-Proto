@@ -139,7 +139,7 @@ kbd{background:#23272b;border:1px solid var(--line2);border-radius:3px;padding:1
    à 0, 115 et 240 m. Rien n'est inventé : on avance les coureurs et on note
    l'heure à laquelle chacun franchit chaque boucle. */
 const TRACK = 250, PACE = 18.6, LOOPS = [0, 115, 240];
-const LOOPNAME = ['Finish', 'Pursuit A', 'Pursuit B'];
+const LOOPNAME = ['Finish', 'Pursuit B', 'Pursuit A'];   // 115 m = Pursuit B, 240 m = Pursuit A : depuis la ligne on rencontre B avant A
 const NOM = ['RIVERA','ROSSI','MOREAU','WALSH','BRAND','NAVARRO','SANTOS','KOVAC','LEHMANN','PETROV',
              'SILVA','DE WIT','IVERSEN','TANAKA','OBRIEN','ONEILL','SMITH','JONES','NOWAK','NOVAK',
              'SHEVCHENKO','GOMEZ','WEBER','KLEIN'];
@@ -227,7 +227,7 @@ function build() {
     const g = k2 ? VAL[k1.col](r) : null;
     const sep = k2 && prev !== null && g !== prev ? ' sep' : '';
     prev = g;
-    const lcls = ['f', 'a', 'b'][r.loop];
+    const lcls = ['f', 'b', 'a'][r.loop];
     return `<div class="prow${sep}"><span class="t">${T3(r.t)}</span>` +
       `<span class="lo ${lcls}">${LOOPNAME[r.loop]}</span>` +
       `<span><i class="bib">${r.bib}</i></span><span class="noc">${r.nat}</span>` +

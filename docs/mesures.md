@@ -4659,3 +4659,34 @@ un tour **perdu** parce que les BIB 1 et 2 leur ont pris un tour. Son point 181 
 tour pris donne 20 points à celui qui le prend, et ne retire rien à ceux qu'il dépasse.
 
 Les deux vivent dans la timeline, pas dans le moteur de course, et aucune n'est touchée ici.
+
+
+## §90 · La passing list : tri, filtres, arrêt — build 240, 18 novembre 2026
+
+Ses points 236, 237 et 238, codés dans l'onglet Passings. Essayé sur la course du §88.
+
+**Le tour d'une détection.** Il se compte sur les passages du coureur sur la boucle d'arrivée
+**avant cette heure-là**, tours validés retranchés (son point 233). Un passage sur la ligne porte le
+tour qu'il **ferme** ; les autres boucles portent le tour qu'on est en train de courir. Relevé pour
+le BIB 1, tour 3 : Pursuit B à 0:33,342 · Pursuit A à 0:40,062 · Finish à 0:40,599. Le tour 3 va
+bien de 0:27,3 à 0:40,6, et ses trois détections y sont. Sans ce calcul, les trente détections d'un
+coureur portaient toutes le tour où il en est **maintenant**, et le filtre par tour n'aurait rien
+filtré.
+
+**L'ordre des boucles sur un tour est Finish, Pursuit B, Pursuit A**, et c'est la géométrie posée :
+Pursuit A est à `piste − gap`, soit 240 m, donc 10 m avant la ligne ; Pursuit B lui fait face, à
+115 m. Depuis la ligne on rencontre donc **B avant A**. La première maquette les nommait à
+l'envers, et l'opérateur l'a vu tout de suite : « les détections se font dans l'ordre sur pursuit A
+puis Pursuit B puis Finish ! C'est faux ». Le nom était faux, pas l'ordre.
+
+**Le tri.** Un clic range sur la colonne, un second sur le même titre inverse le sens, et le titre
+d'avant devient le **second critère** et porte un `2`. Relevé : clic sur POINT puis sur LAP → LAP
+range, POINT suit ; la liste sort `L1 / Finish` pour les 24 dossards, dans l'ordre de passage, puis
+le bloc suivant, un trait entre les deux.
+
+**Les filtres.** `Bib 1` + `Lap 3` → 3 lignes, les trois détections ci-dessus. Un dossard qui n'est
+pas au départ passe le champ en orange.
+
+**L'arrêt.** Hold relevé à 3:10,600 ; cinq secondes plus tard la liste n'avait pas bougé — première
+ligne toujours `3:10.577 · Finish · BIB 19 · L14` — et le bandeau annonçait **22 lectures depuis,
+pas encore montrées**. Les boucles n'ont pas cessé de lire : c'est l'affichage qui s'arrête.
