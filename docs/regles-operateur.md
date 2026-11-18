@@ -3442,3 +3442,19 @@ heures de passage.
 À ne pas confondre avec l'écart d'un coureur **au vainqueur**, que son §1 définit autrement : celui-là
 se prend de la roue avant du vainqueur à la roue avant du **premier coureur du groupe** où figure ce
 coureur.
+
+
+### 235 · Remets l'ordre à l'endroit · 18 novembre 2026
+
+> « remets l'ordre à l'endroit.
+> C'est tout de même étrange que sur l'ovale ils sont affichés correctement.
+> Ce qu'il faudrait c'est une passing list de leurs détections sur les boucles. On a l'onglet
+> passing mais il n'est pas vraiment au point.
+> Et il faudrait également vérifier ce que la vue Lap by lap a produit pendant ton test »
+
+Dit après le constat que la timeline montrait le 22 au-dessus du 3 alors que le 3 était 2,2 s devant
+lui, les deux dans le même tour.
+
+Quatre choses, dans ses mots : **remettre l'ordre à l'endroit** ; **l'ovale, lui, est juste** ; une
+**passing list des détections sur les boucles**, l'onglet Passing n'étant « pas vraiment au point » ;
+et **vérifier ce que Lap by lap a produit** pendant le test.

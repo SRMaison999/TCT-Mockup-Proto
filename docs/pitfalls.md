@@ -1057,3 +1057,30 @@ vides, pas une erreur à l'exécution puisqu'il n'y a pas eu d'exécution.
 Ce qui trompe, c'est que la page a l'air de marcher : le HTML est là, le CSS est là, et le défaut
 ressemble à un panneau qu'on aurait mal rempli. **Un panneau entièrement vide se vérifie d'abord
 dans la console du navigateur**, pas dans la fonction qui devait le remplir.
+
+
+### A17 · Un repère tenu coureur par coureur ne peut pas ranger deux coureurs l'un par rapport à l'autre
+
+La timeline se rangeait sur la lecture des boucles **plus** les tours entiers comptés sur la dérive
+de chaque coureur. La dérive est une quantité propre à un coureur : rien ne garantit que deux
+voisins en aient compté le même nombre. Un tour ajouté à l'un et pas à l'autre les écarte d'un tour
+entier — 13,44 s sur la course du §88 — alors qu'ils se touchent.
+
+**Deux coureurs se rangent sur une quantité qui les concerne tous les deux**, ici leur place sur
+l'anneau depuis la tête. Dès qu'un classement additionne, par élément, une correction calculée
+séparément pour chaque élément, il est faux entre deux éléments voisins, même si chaque correction
+prise seule est défendable.
+
+Même famille que A15 : la correction était juste pour un coureur, et fausse pour la paire.
+
+
+### D34 · Un test qui ne dessine pas l'écran ne mesure pas ce que l'écran produit
+
+La vue Lap by lap recopie la photo de la timeline **au moment où la timeline est dessinée**. Un test
+qui avance la course sans appeler le dessin la laisse recopier la photo du départ à chaque tour : un
+seul bloc avec tous les coureurs, du premier tour au dernier, sur une course où deux coureurs ont
+presque deux tours d'avance. Le relevé ressemble à un défaut grave et n'est que l'artefact du test.
+
+**Avant de lire un relevé, vérifier qu'il a été produit par le même chemin que l'écran de
+l'opérateur.** Ce qui est alimenté par le dessin ne se mesure pas sans dessiner — quitte à ne
+dessiner qu'une image sur quarante, ce qui suffit ici puisqu'un tour dure 269 images.

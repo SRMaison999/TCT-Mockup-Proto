@@ -4580,3 +4580,82 @@ La valeur de 2,247 s est relevée **identique** à 301,8 s, 307,4 s, 313,4 s, 31
 
 **Ce que cela décide.** L'ordre doit être réparé avant la coupure : une cassure mesurée entre deux
 coureurs rangés à l'envers ne peut pas être juste, quelle que soit la façon dont on la mesure.
+
+
+## §88 · L'ordre de la timeline remis sur la seule lecture des boucles — build 239, 18 novembre 2026
+
+**La course.** 24 coureurs, dossards 1 à 24, allure 18,6 m/s, piste de 250 m — un tour dure 13,44 s.
+40 tours, 551,8 s. Les **BIB 1 et 2 s'échappent au tour 5** à 19,6 m/s ; les **BIB 23 et 24 sont
+lâchés au tour 12** à 17,7 m/s. Aucune fluctuation de vitesse : la course est rejouable à
+l'identique. 11 024 images, 252 949 paires de coureurs qui se suivent dans la timeline.
+
+**Ce qui a changé.** La timeline se rangeait sur `place` : la lecture des boucles, plus les tours
+entiers comptés sur la **dérive** de chaque coureur. La dérive étant propre à un coureur, un tour
+ajouté à l'un et pas à son voisin les écartait de 13,44 s d'un coup. L'ordre et l'écart de deux
+coureurs qui se suivent viennent maintenant de `anneau` : la lecture des boucles ramenée entre zéro
+et un tour depuis la tête. On part de la tête, on descend la piste, et on rencontre chaque coureur
+une fois avant de revenir sur elle.
+
+| sur la même course | build 238 | build 239 |
+|---|---|---|
+| séparations annoncées qui n'existaient pas | 3 355 | **605** |
+| cassures manquées | 248 | 248 |
+| blocs affichés, en moyenne | 2,94 | **2,27** |
+| blocs réellement présents, en moyenne | 2,57 | 2,57 |
+| écarts qui sautent d'un tour entier entre deux coureurs qui se suivent | 10 545 | **0** |
+| coureurs à moins de 2 s l'un de l'autre rangés à l'envers | 6 161 / 228 259 | 6 410 / 228 152 |
+| le plus gros de ces écarts à l'envers | 0,72 s | 0,59 s |
+
+**Les inversions qui restent sont la piste, pas un défaut.** Elles valent 0,25 à 0,59 s et ne durent
+que quelques secondes. Une lecture de boucle peut avoir un tour d'âge : deux coureurs ne sont
+comparés à neuf que lorsqu'ils ont tous les deux repassé sur la même boucle. Un coureur qui vient
+d'accélérer est donc rangé sur son allure d'avant le temps d'y arriver. L'ovale, lui, dessine où la
+bicyclette est à l'instant — c'est pour cela qu'il est juste quand la timeline ne l'est pas encore
+(sa remarque, point 235).
+
+**Une idée à moi, refusée par la mesure.** Lire la boucle que les **deux** coureurs ont passée le
+plus récemment, pour qu'aucune des deux lectures n'ait plus d'un tiers de tour d'âge : les
+inversions entre coureurs à roue sont passées de **2,81 % à 3,12 %**. Elle est partie. La boucle lue
+reste celle où la tête est passée le plus récemment.
+
+**Relevé à 215,0 s, qui montre où en est le moteur.** La chaîne donne : 1 (tête), 2 à 0,11 s, puis
+23 à 0,91 s et 24 à 1,04 s, puis le peloton du 3 au 22, de 8,11 s à 10,35 s. Le 23 et le 24 sont
+vraiment à 14,52 s et 14,63 s du 1 — plus d'un tour entier : sur la piste ils sont donc bien juste
+derrière les deux échappés, et la timeline les y met. Le peloton est lu 0,79 s plus près du 1 qu'il
+ne l'est : c'est l'âge de la lecture. Entre deux coureurs du peloton, 0,12 s — aucune cassure.
+
+
+## §89 · Ce que Lap by lap a produit pendant ce test — build 239, 18 novembre 2026
+
+Il a demandé de le vérifier (point 235). **Premier relevé, sans valeur :** le test tournait sans
+dessiner l'écran, et Lap by lap recopie la photo de la timeline **au moment où elle est dessinée**.
+Il a donc recopié 43 fois la photo du départ — un seul bloc `1-BUNCH` avec les 24 coureurs, jusqu'au
+tour 40 où le 1 a presque deux tours d'avance. Cela ne dit rien de l'application : c'est l'artefact
+du test (pitfalls D34).
+
+**Le relevé, la course rejouée en dessinant l'écran :**
+
+| tour | ce que Lap by lap a inscrit |
+|---|---|
+| 1 | `1-Bunch` [1 … 24] |
+| 6 | `1-Leaders` [1, 2] · `2-Bunch` [3 … 24] |
+| 13 | `1-Leaders` [1, 2] · `2-Bunch` [3 … 24] |
+| 16 | `1-Leaders` [1, 2] · `2-Chase` [22] · `3-Chase` [23, 24] · `4-Bunch` [3 … 21] |
+| 26 | `1-Leaders` [1, 2] · `2-Chase` [22] · `3-Bunch` [3 … 21] · `4-Last` [23, 24] |
+| 40 | `1-Leaders` [1, 2] · `2-Chase` [22] · `3-Chase` [23, 24] · `4-Bunch` [3 … 21] |
+
+L'échappée et les deux lâchés sont **justes et stables du tour 6 au tour 40**. Deux choses ne le
+sont pas.
+
+**1. Le BIB 22 est seul dans un bloc à lui du tour 16 au tour 40.** Aucun ordre ne lui a été donné :
+il roule à l'allure du peloton, au milieu des autres. Le moteur de course le range bien dernier du
+peloton, à 0,12 s du 21 (§88). **Ce n'est donc pas l'ordre.** C'est la couche de l'écran qui range
+au-dessus du moteur : elle trie d'abord sur le **tour d'écart non validé**, et une proposition
+« Lap lost? » en attente compte pour un tour. À 215,0 s, les BIB 3 à 21 portent une telle proposition
+à **−1** ; le 22 n'en porte aucune. L'écran les sépare donc, bien qu'ils roulent ensemble.
+
+**2. Cette proposition elle-même est à regarder.** Dix-neuf coureurs du peloton se voient proposer
+un tour **perdu** parce que les BIB 1 et 2 leur ont pris un tour. Son point 181 dit l'inverse : un
+tour pris donne 20 points à celui qui le prend, et ne retire rien à ceux qu'il dépasse.
+
+Les deux vivent dans la timeline, pas dans le moteur de course, et aucune n'est touchée ici.

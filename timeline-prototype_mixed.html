@@ -676,7 +676,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">238</span>
+      <span class="bld" id="buildno">239</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -869,7 +869,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '238';
+const BUILD = '239';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1610,7 +1610,7 @@ function computeGroupsVraiment(M) {
   // retombe sur les mètres lus, qui sont le même calcul écrit autrement (§1).
   const mcRang = new Map(), mcRetard = new Map(), mcBloc = new Map();
   if (MC) {
-    MC.chaine().forEach((x, i) => { mcRang.set(x.c.bib, i); mcRetard.set(x.c.bib, x.place); });   // la place, pas la lecture repliée
+    MC.chaine().forEach((x, i) => { mcRang.set(x.c.bib, i); mcRetard.set(x.c.bib, x.anneau); });   // l'anneau : la lecture des boucles, et rien qu'elle (E13)
     MC.groupes().forEach((g, i) => g.coureurs.forEach(b => mcBloc.set(b, i)));
   }
   const cmpRead = (a, b) => {

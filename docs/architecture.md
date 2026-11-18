@@ -2576,3 +2576,36 @@ elle attend sa propre proposition.
   `saveCurrentList()` et `loadList(l)`. Une liste porte `{id, no, name, riders, order}`.
 
 `GRIDORDER` est gardé avec le reste des réglages, sous `order` dans `tct.sim.setup`.
+
+
+## §59 · L'anneau : l'ordre de la timeline vient des boucles seules (build 239)
+
+Son point 235 : « remets l'ordre à l'endroit ».
+
+`moteur-course.js`, `chaine()`. Chaque coureur portait deux quantités, et en porte maintenant trois :
+
+- `retard` — la lecture des boucles depuis la tête, repliée sur un **demi-tour**. Elle dit si deux
+  coureurs se touchent **sur la piste**, donc elle sert le constat des ±20. Inchangée.
+- `anneau` — la même lecture ramenée **entre zéro et un tour** : `((retard % T) + T) % T`. **Elle
+  range la timeline**, et c'est elle que `ecartEntre()` soustrait pour l'écart de deux coureurs qui
+  se suivent. Nouvelle.
+- `place` — la lecture à laquelle `placeS()` ajoute les tours entiers comptés sur la **dérive** du
+  coureur. **Elle ne range plus rien.** Elle reste, parce que la dérive nomme toujours le côté par
+  où un coureur est sorti du peloton (E8).
+
+La chaîne part de la tête, descend la piste, et rencontre chaque coureur une fois avant de revenir
+sur elle. Les écarts entre coureurs consécutifs sont donc **positifs par construction** et leur
+somme vaut un tour. Aucun tour n'est ajouté nulle part.
+
+Le garde porte le numéro **E13** dans l'en-tête du fichier, avec la mesure qui l'a imposé
+(mesures.md §88) et celle qui a refusé une idée à moi sur le choix de la boucle lue.
+
+Dans `timeline-prototype_mixed.html`, un seul mot change : `mcRetard` se remplit de `x.anneau` et
+non plus de `x.place`. C'est elle qui porte l'écart affiché en en-tête de bloc — du dernier coureur
+du bloc du dessus au premier du sien (son point 234) — et l'ordre et l'écart viennent donc enfin de
+la même lecture.
+
+**Ce qui n'est pas touché.** La couche de l'écran, dans `computeGroups`, trie **avant** le moteur
+sur `ecEff` — le tour d'écart non validé, proposition en attente comprise — et coupe un bloc dès que
+deux voisins n'ont pas le même. C'est elle, et non l'ordre, qui met le BIB 22 seul dans un bloc du
+tour 16 au tour 40 sur la course du §88 (mesures.md §89).

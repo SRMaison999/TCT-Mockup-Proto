@@ -160,12 +160,16 @@
     // décalage négatif, et le tour d'avance n'existe pas : on ramène le décalage dans le demi-tour
     // autour de zéro, parce que sur un anneau un coureur à 18 s derrière, sur un tour de 19 s, EST
     // une seconde devant. C'est ce que les boucles donnent, et c'est tout ce qu'on en sait (E1).
+    // LA BOUCLE LUE EST CELLE OÙ LA TÊTE EST PASSÉE LE PLUS RÉCEMMENT, et elle le reste. Essayé le
+    // 18 novembre 2026 : la choisir sur la plus fraîche des DEUX lectures, pour qu'aucune n'ait plus
+    // d'un tiers de tour d'âge, a fait passer les inversions entre coureurs à roue de 2,81 % à 3,12 %.
+    // L'idée était de moi, la mesure l'a refusée, elle est partie (mesures.md §88).
     function decalageS(ref, c) {
       let tref = -Infinity, tc = null;
       for (const b of BOUCLES) {
         const a = ref.parBoucle.get(b), x = c.parBoucle.get(b);
         if (a == null || x == null) continue;
-        if (a > tref) { tref = a; tc = x; }   // la boucle où la tête est passée le plus récemment
+        if (a > tref) { tref = a; tc = x; }
       }
       if (tc == null) return null;
       let d = tc - tref;
@@ -190,23 +194,39 @@
       return Math.round((c.derive - retard) / T) * T + retard;
     };
 
-    // LA CHAÎNE. Les coureurs rangés par leur place sur la tête. Un coureur dont on ne peut pas lire
-    // le décalage n'entre pas dans la chaîne (E5).
+    // LA CHAÎNE. On part de la tête et on descend la piste, et on rencontre chaque coureur une fois
+    // avant de revenir sur la tête : c'est l'ANNEAU, la lecture des boucles ramenée entre zéro et un
+    // tour. Un coureur dont on ne peut pas lire le décalage n'entre pas dans la chaîne (E5).
+    //
+    // E13. NE JAMAIS RANGER LA TIMELINE SUR LA DÉRIVE. La timeline se rangeait sur `place` — la lecture
+    //      des boucles à laquelle on ajoutait les tours entiers comptés sur la dérive de chaque coureur.
+    //      Or la dérive est propre à un coureur : un tour ajouté à l'un et pas à son voisin écartait les
+    //      deux de 13,44 s d'un coup. Mesuré à la build 238, sur la course aux deux échappés et deux
+    //      lâchés : la timeline montrait le 22 au-dessus du 3 alors que le 3 était 2,247 s DEVANT le 22,
+    //      les deux dans le même tour, et elle l'a montré ainsi 44 secondes d'affilée. Sur les 229 027
+    //      fois où deux coureurs du même tour se sont suivis dans la timeline, 6 161 étaient à l'envers,
+    //      et 3 355 cassures sortaient sur un écart qui n'existait pas. L'opérateur : « ok c'est
+    //      clairement le moteur qui est complètement faux ! »
+    //      → Le garde : l'ordre et l'écart de deux coureurs qui se suivent viennent de `anneau`, la
+    //        lecture seule. La dérive ne nomme plus que le CÔTÉ par où un coureur est sorti (E8).
+    //
+    // TROIS QUANTITÉS, TROIS USAGES. `retard` est la lecture repliée sur un demi-tour : elle dit si deux
+    // coureurs se touchent SUR LA PISTE, donc elle sert le constat des ±20. `anneau` est la même lecture
+    // ramenée entre zéro et un tour depuis la tête : elle range la timeline et mesure l'écart de deux
+    // coureurs qui se suivent. `place` ajoute les tours de la dérive : elle ne range plus rien.
     function chaine() {
       const t0 = tete();
       if (!t0) return [];
       const T = tourS(t0);
-      // DEUX QUANTITÉS, DEUX USAGES. `retard` est la lecture des boucles, repliée sur un demi-tour :
-      // c’est elle qui dit si deux coureurs se touchent SUR LA PISTE, donc elle qui sert le constat
-      // des ±20. `place` est la même lecture déroulée par la dérive : c’est elle qui dit où chacun
-      // est dans la course, donc elle qui range la timeline et qui mesure l’écart de deux groupes.
-      const liste = [{ c: t0, retard: 0, place: 0 }];
+      const liste = [{ c: t0, retard: 0, place: 0, anneau: 0 }];
       for (const c of coureurs.values()) {
         if (c === t0 || c.n === 0) continue;
         const d = decalageS(t0, c);
-        if (d != null) liste.push({ c, retard: d, place: placeS(c, d, T || tourS(c)) });
+        if (d == null) continue;
+        const Tc = T || tourS(c);
+        liste.push({ c, retard: d, place: placeS(c, d, Tc), anneau: Tc ? ((d % Tc) + Tc) % Tc : d });
       }
-      liste.sort((a, b) => (a.place - b.place) || (a.c.bib - b.c.bib));
+      liste.sort((a, b) => (a.anneau - b.anneau) || (a.c.bib - b.c.bib));
       return liste;
     }
 
@@ -222,9 +242,11 @@
       return v ? z - R.veloM / v : z;
     }
 
+    // L'ÉCART DE DEUX COUREURS QUI SE SUIVENT DANS LA TIMELINE, sur l'anneau : la différence de leurs
+    // lectures depuis la tête, qui est positive par construction puisqu'ils se suivent (E13).
     function ecartEntre(devant, suiveur) {
       if (devant == null || suiveur == null) return null;
-      const z = suiveur.place - devant.place;
+      const z = suiveur.anneau - devant.anneau;
       const v = vitesse(suiveur.c);
       return v ? z - R.veloM / v : z;
     }
