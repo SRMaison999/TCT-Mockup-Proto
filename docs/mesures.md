@@ -4447,3 +4447,24 @@ tous retrouvés.
 
 **La course rejouée** avec un ordre posé à la main : 540,7 s, **un seul bloc de 24 coureurs**, aucun
 `v0`, aucun saut d'écart, **zéro erreur** de console.
+
+---
+
+## §84 · L'édition dans l'ordre de la grille · build 238
+
+**Sur sa liste**, dont l'ordre interne est `20, 12, 7, 22, 18, 3…` et les huit derniers les coureurs
+ajoutés :
+
+| | avant (build 237) | après (build 238) |
+|---|---|---|
+| `Riders`, sans tri | `20, 12, 7, 22, 18, 3…` | `1, 2, 3, 4, 5, 6…` |
+| `Start order` | `1, 2, 3, 4, 5, 6…` | `1, 2, 3, 4, 5, 6…` |
+
+Les deux listes sont désormais **identiques ligne pour ligne**, relevé sur les 24 dossards.
+
+**Avec un ordre posé à la main** — le BIB 24 glissé sur la place 1 — `Start order` et `Riders`
+montrent tous deux `24, 1, 2, 3…`. Le nom modifié sur la **première ligne** de `Riders` va bien au
+**BIB 24** et non au BIB 1 : le rang d'origine suit toujours chaque coureur.
+
+**Avec un tri posé dans la vue SIMULATION** — un clic sur l'en-tête `Name` — `Riders` affiche
+`ASHBY, AWANG, BARDEN, BRAND…` : sa règle du 28 octobre 2026 prime, comme avant.

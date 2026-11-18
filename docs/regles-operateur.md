@@ -3369,3 +3369,20 @@ Sur où mettre les listes enregistrées, le même jour : **« Dans Start list »
 coureur ajouté après coup va à la **fin** de la grille, un coureur retiré en sort ; l'ordre et les
 listes se **bloquent** dès que la course est partie, comme le reste de la liste de départ ; et
 **aucun export fichier** n'a été ajouté — `Save` écrit dans le prototype, pas sur le disque.
+
+
+### 231 · L'édition se lit dans l'ordre de la grille · 18 novembre 2026
+
+> « je trouve dommage que l'onglet Riders des noms, pays, dossards des coureurs ne propose pas le
+> même ordre que le start order. Typiquement dans mes essais l'ordre va de 1 à 24, mais l'édition me
+> propose d'abord el 20, puis 12,7,22,.... »
+
+**Codé au build 238.** Tant qu'aucun tri n'est demandé, les lignes du sous-onglet `Riders` suivent
+`Start order` — donc l'ordre des dossards, ou l'ordre qu'il a posé lui-même.
+
+Ce `20, 12, 7, 22…` était l'ordre interne de la liste, celui où les coureurs ont été ajoutés : un
+ordre que **rien à l'écran ne montrait**, et le même qui avait mis cinq coureurs du mauvais côté de
+la ligne de départ au build 234 (point 228). Il ne commande plus rien et ne se voit plus nulle part.
+
+Sa règle du 28 octobre 2026 tient toujours : un tri posé dans la vue SIMULATION se reporte sur la
+vue START LIST, et prime alors sur l'ordre de la grille.

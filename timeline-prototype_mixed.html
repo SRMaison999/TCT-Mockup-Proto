@@ -676,7 +676,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">237</span>
+      <span class="bld" id="buildno">238</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -869,7 +869,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '237';
+const BUILD = '238';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -3977,10 +3977,19 @@ function sortedRiders() {
 }
 // La liste de départ garde le RANG D'ORIGINE de chaque coureur avec lui : c'est ce rang qui dit quelle ligne de
 // RIDERS on édite ou on retire, et il ne doit rien devoir à l'ordre dans lequel on regarde la liste.
+// L'ÉDITION SE LIT DANS L'ORDRE DE LA GRILLE. L'opérateur, 18 novembre 2026 : « je trouve dommage que l'onglet
+// Riders des noms, pays, dossards des coureurs ne propose pas le même ordre que le start order. Typiquement dans
+// mes essais l'ordre va de 1 à 24, mais l'édition me propose d'abord le 20, puis 12, 7, 22… ». Ce 20, 12, 7, 22
+// était l'ordre interne de RIDERS, celui où les coureurs ont été ajoutés : un ordre que rien à l'écran ne montre.
+// Tant qu'aucun tri n'est demandé, les lignes suivent donc `gridOrder()`, c'est-à-dire exactement ce que montre
+// Start order. Un tri posé dans la vue SIMULATION continue de primer : c'est sa règle du 28 octobre 2026, « si on
+// réordre la liste dans la vue SIMULATION, il faut que ce soit reporté dans la vue START LIST ».
+// `i` reste le rang dans RIDERS : c'est lui qui dit quelle ligne on édite ou on retire.
 function sortedRoster() {
   const rows = RIDERS.map((e, i) => ({ e, i }));
-  if (!simSort) return rows;
-  return rows.sort(simCmp(o => simSort.key === 'bib' ? o.e[0] : (simSort.key === 'nat' ? o.e[2] : o.e[1])));
+  if (simSort) return rows.sort(simCmp(o => simSort.key === 'bib' ? o.e[0] : (simSort.key === 'nat' ? o.e[2] : o.e[1])));
+  const place = {}; gridOrder().forEach((b, k) => { place[b] = k; });
+  return rows.sort((a, b) => place[a.e[0]] - place[b.e[0]]);
 }
 const curActs = () => LOADED ? LOADED.acts : (REC ? REC.acts : []);
 // LES COURSES DE TEST. L'opérateur, 1er novembre 2026, sur l'ancienne course de référence — 40 tours où le 4 et le

@@ -934,6 +934,11 @@ vont au coureur de cette ligne quel que soit l'ordre affiché (`mesures.md` §23
 c'est lui que portent `data-ri` et `data-rosterdel`, donc éditer ou retirer un coureur ne
 dépend jamais de l'ordre dans lequel la liste est regardée (`mesures.md` §23).
 
+**Sans tri, la vue Start list suit la grille (build 238, point 231).** `sortedRoster()` range alors
+ses lignes selon `gridOrder()`, c'est-à-dire exactement ce que montre le sous-onglet `Start order`.
+L'ordre interne de `RIDERS` — celui où les coureurs ont été ajoutés — ne s'affiche plus nulle part
+et ne commande plus rien. Un tri posé dans la vue Simulation prime toujours (`mesures.md` §84).
+
 ---
 
 ## 19. Les réglages du simulateur
@@ -2559,7 +2564,7 @@ elle attend sa propre proposition.
 
 `slTab` dit lequel est ouvert, `renderStartList()` les dessine tous les trois (build 237, point 230).
 
-- **`Riders`** : `sortedRoster()` et `applyRosterEdit(i, field, value)`, qui connaît maintenant le
+- **`Riders`** : `sortedRoster()`, qui suit `gridOrder()` tant qu’aucun tri n’est demandé (build 238, point 231) et le tri de `simSort` sinon, et `applyRosterEdit(i, field, value)`, qui connaît maintenant le
   champ `first`. Le prénom est `RIDERS[i][5]` ; il n'est pas mis en capitales et peut rester vide.
   `addRosterRider()` crée une ligne à six colonnes, prénom compris.
 - **`Start order`** : `gridOrder()` rend la suite des dossards, de la place 1 à la dernière —
