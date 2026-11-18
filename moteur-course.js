@@ -66,8 +66,10 @@
        coureur « se faisant lâcher à l'arrière » et repris en perd 20. Et son point 181 : « Rien :
        ils sont lâchés d'un tour, revenir au contact de la queue du peloton ne leur fait rien
        gagner. » Sur un anneau, les deux gestes se ressemblent ; ce qui les distingue est le CÔTÉ.
-       → Le garde : `derive` retient le chemin qu’on l’a vu prendre. Sur un anneau, « échappé
-         d’une seconde » et « lâché d’un tour moins une seconde » sont la même lecture.
+       → Le garde : `sorti` retient ce côté, noté à l’instant où il sort du peloton — le seul où il
+         se voit, les deux groupes étant encore à une seconde l’un de l’autre. Sur un anneau,
+         « échappé d’une seconde » et « lâché d’un tour moins une seconde » sont la même lecture ;
+         le côté ne se calcule donc pas, il se constate une fois (E14).
    =========================================================================== */
 (function () {
   'use strict';
@@ -96,8 +98,8 @@
       pas: null, dt: null,    // de combien de mètres et en combien de temps il est venu : sa vitesse
       passages: 0,            // ses passages sur la ligne d'arrivée : un compte, pas une distance
       parBoucle: new Map(),   // position de boucle → heure de son dernier passage dessus
-      derive: 0,              // sa dérive sur la tête du peloton, en secondes : elle nomme le CÔTÉ
-      rPrec: null,            //   par lequel il est parti (E8), et rien d'autre.
+      sorti: null,            // par quel bout il est sorti du peloton : 'avant', 'arriere', ou rien.
+                              //   Noté à la séparation, effacé au retour, jamais recalculé (E14).
       colle: false,           // était-il, à l'image d'avant, au contact du coureur qu'il rejoint ?
       credite: null,          // quand son dernier ±20 a été constaté
     });
@@ -190,22 +192,6 @@
       return d;
     }
 
-    // OÙ IL EST PAR RAPPORT À LA TÊTE, en secondes, sans repli. Le décalage lu est replié sur un
-    // demi-tour : il ne peut pas dire si un coureur est 2 s derrière ou tout un tour moins 2 s
-    // devant. La dérive, elle, sait lequel des deux — on l'a vu prendre ce chemin. On s'en sert donc
-    // pour compter les tours entiers qui séparent les deux coureurs, et on garde la LECTURE des
-    // boucles pour la précision.
-    //
-    // E12. NE JAMAIS RANGER LA TIMELINE SUR LE DÉCALAGE REPLIÉ. Mesuré à la build 192, au palier 2
-    //      à 312,4 s : le 12 et le 52 étaient 208 m DEVANT le peloton, et la timeline les montrait
-    //      DERRIÈRE lui ; le 46 et le 70, 106 m derrière, étaient montrés en tête avec l'étiquette
-    //      « 1-LEADERS ». L'opérateur : « non mais ça ne fonctionne absolument pas c'est n'importe
-    //      quoi !! »
-    const placeS = (c, retard, T) => {
-      if (!T || c.derive == null) return retard;
-      return Math.round((c.derive - retard) / T) * T + retard;
-    };
-
     // LA CHAÎNE. On part de la tête et on descend la piste, et on rencontre chaque coureur une fois
     // avant de revenir sur la tête : c'est l'ANNEAU, la lecture des boucles ramenée entre zéro et un
     // tour. Un coureur dont on ne peut pas lire le décalage n'entre pas dans la chaîne (E5).
@@ -220,23 +206,25 @@
     //      et 3 355 cassures sortaient sur un écart qui n'existait pas. L'opérateur : « ok c'est
     //      clairement le moteur qui est complètement faux ! »
     //      → Le garde : l'ordre et l'écart de deux coureurs qui se suivent viennent de `anneau`, la
-    //        lecture seule. La dérive ne nomme plus que le CÔTÉ par où un coureur est sorti (E8).
+    //        lecture seule. Et le CÔTÉ par où un coureur est sorti du peloton est devenu un fait noté
     //
-    // TROIS QUANTITÉS, TROIS USAGES. `retard` est la lecture repliée sur un demi-tour : elle dit si deux
-    // coureurs se touchent SUR LA PISTE, donc elle sert le constat des ±20. `anneau` est la même lecture
-    // ramenée entre zéro et un tour depuis la tête : elle range la timeline et mesure l'écart de deux
-    // coureurs qui se suivent. `place` ajoute les tours de la dérive : elle ne range plus rien.
+    //        à la séparation, et non plus une quantité calculée (E14).
+    //
+    // DEUX QUANTITÉS, DEUX USAGES. `retard` est la lecture repliée sur un demi-tour ; elle ne sert plus
+    // qu'aux journaux. `anneau` est la même lecture ramenée entre zéro et un tour depuis la tête : elle
+    // range la timeline, elle mesure l'écart de deux coureurs qui se suivent, et elle mesure les deux
+    // paires des ±20.
     function chaine() {
       const t0 = tete();
       if (!t0) return [];
       const T = tourS(t0);
-      const liste = [{ c: t0, retard: 0, place: 0, anneau: 0 }];
+      const liste = [{ c: t0, retard: 0, anneau: 0 }];
       for (const c of coureurs.values()) {
         if (c === t0 || c.n === 0) continue;
         const d = decalageS(t0, c);
         if (d == null) continue;
         const Tc = T || tourS(c);
-        liste.push({ c, retard: d, place: placeS(c, d, Tc), anneau: Tc ? ((d % Tc) + Tc) % Tc : d });
+        liste.push({ c, retard: d, anneau: Tc ? ((d % Tc) + Tc) % Tc : d });
       }
       liste.sort((a, b) => (a.anneau - b.anneau) || (a.c.bib - b.c.bib));
       return liste;
@@ -245,21 +233,28 @@
     // L'ÉCART ENTRE DEUX COUREURS QUI SE SUIVENT, son §1 : « le temps entre la roue arrière du
     // coureur 1 et la roue avant du coureur 2 ». La différence de leurs décalages, moins le temps
     // qu'il faut au suiveur pour couvrir une longueur de vélo, à sa vitesse.
-    // LE MÊME ÉCART, MAIS SUR LA PISTE : la lecture repliée, pour le constat des ±20. Un coureur qui
-    // revient sur la queue du peloton la touche SUR LA PISTE, et c’est cela qu’on guette.
-    function ecartPiste(devant, suiveur) {
+    // Il se lit sur l'anneau : c'est lui qui range la timeline, donc c'est lui qui dit l'écart de
+    // deux coureurs qui s'y suivent.
+    function ecartAnneau(devant, suiveur) {
       if (devant == null || suiveur == null) return null;
-      const z = suiveur.retard - devant.retard;
+      const z = suiveur.anneau - devant.anneau;
       const v = vitesse(suiveur.c);
       return v ? z - R.veloM / v : z;
     }
 
-    // L'ÉCART DE DEUX COUREURS QUI SE SUIVENT DANS LA TIMELINE, sur l'anneau : la différence de leurs
-    // lectures depuis la tête, qui est positive par construction puisqu'ils se suivent (E13).
-    function ecartEntre(devant, suiveur) {
-      if (devant == null || suiveur == null) return null;
-      const z = suiveur.anneau - devant.anneau;
-      const v = vitesse(suiveur.c);
+    // L'ÉCART DE DEUX COUREURS NOMMÉS, LU ENTRE EUX DEUX ET SUR PERSONNE D'AUTRE. Pour les ±20, la
+    // paire n'est pas deux voisins de la timeline : c'est un coureur et le dernier — ou le premier —
+    // du peloton, qui peuvent être n'importe où l'un par rapport à l'autre. L'anneau ne sert à rien
+    // ici, parce qu'il est coupé sur le coureur de tête : celui-là y vaut zéro pour toujours, et ne
+    // pourrait donc JAMAIS revenir sur la queue du peloton. Mesuré le 18 novembre 2026 : avec
+    // l'anneau, la course de 24 coureurs sortait ZÉRO constat, les deux échappés étant précisément
+    // le coureur de tête et son compagnon.
+    // On lit donc directement les deux heures de passage sur une boucle que les deux ont franchie.
+    function ecartPaire(devant, suiveur) {
+      if (!devant || !suiveur) return null;
+      const z = decalageS(devant, suiveur);      // positif : le suiveur est derrière
+      if (z == null) return null;
+      const v = vitesse(suiveur);
       return v ? z - R.veloM / v : z;
     }
 
@@ -277,7 +272,7 @@
           // sur la mesure du moment, et sur rien d’autre. Le délai de confirmation de 0,3 s était à
           // moi — il absorbait le saut de position d’un coureur franchissant une boucle —, et depuis
           // que la timeline ne se recalcule qu’aux passages (point 191), ce saut n’existe plus.
-          ec = ecartEntre(devant, x);
+          ec = ecartAnneau(devant, x);
           coupe = ec == null ? false : ec > R.cassureS;
         }
         if (coupe || !g) { g = { coureurs: [], ecartS: devant ? ec : null }; gs.push(g); }
@@ -308,27 +303,43 @@
     }
 
     /* ------------------------------------------------------------------ 5. les 20 points */
-    // PAR OÙ IL EST PARTI (E8). Sur un anneau, « échappé d'une seconde à l'avant » et « lâché d'un
-    // tour moins une seconde » sont la MÊME lecture : aucune détection ne les distingue. Ce qui les
-    // distingue est le chemin qu'on l'a vu prendre. On suit donc, pour chaque coureur, sa dérive
-    // sur la tête du peloton : la somme des petits déplacements relatifs, image après image. Elle
-    // ne sert QU'À nommer le côté — elle n'est jamais une distance, jamais un tour, et elle
-    // retombe à zéro dès qu'un ±20 est constaté (son point 174 : « ils sont considérés avoir
-    // parcouru la même distance que leurs adversaires »).
-    function deriver(c, r, T) {
-      if (c.rPrec != null) {
-        let d = r - c.rPrec;
-        if (T) { while (d > T / 2) d -= T; while (d <= -T / 2) d += T; }
-        c.derive += d;
-      }
-      c.rPrec = r;
-    }
+    // PAR QUEL BOUT IL EST SORTI DU PELOTON. Ses mots, 18 novembre 2026 :
+    //   « Au début nous avons un peloton groupé.
+    //     Par exemple deux coureurs s'en extirpent par l'avant en créant un gap de plus d'une
+    //     seconde entre eux et le premier du peloton.
+    //     Nous avons maintenant LEADERS et BUNCH.
+    //     SI LEADERS rattrapent les derniers coureurs de BUNCH > proposition de tour gagné que
+    //     l'opérateur doit valider !
+    //     Qu'y a t'il de compliqué là-dedans ? »
+    //
+    // RIEN. Le bout — l'avant ou l'arrière — se voit à UN seul instant : celui où le coureur sort
+    // du peloton. À cet instant les deux groupes sont encore à une seconde l'un de l'autre, et
+    // rien n'est ambigu. C'est un FAIT, noté une fois, gardé avec le coureur, et effacé quand il
+    // revient. On ne le recalcule jamais.
+    //
+    // E14. NE JAMAIS RECALCULER LE CÔTÉ EN PERMANENCE. Jusqu'à la build 242, le côté était déduit
+    //      d'une dérive accumulée image après image contre l'ANCRE — le coureur en tête de la
+    //      timeline. Quand c'est lui qui s'échappe, tout le peloton dérive de lui et se lit comme
+    //      lâché : mesuré sur une course de 24 coureurs dont deux s'échappent au tour 5 et deux
+    //      sont lâchés au tour 12, cela donnait NEUF constats, tous des pertes de 20 points, pas
+    //      un seul gain — dix-neuf coureurs du peloton pénalisés à 182,1 s alors qu'ils étaient à
+    //      sept secondes du premier, et le BIB 4 nommé comme rattrapant les coureurs dont il
+    //      faisait partie (mesures.md §93). L'opérateur : « toutes ces complications, qui me
+    //      semblent totalement inutiles et visiblement non fonctionnelles ».
+    //      → Le garde : `sorti` vaut 'avant', 'arriere' ou null, il est posé à la séparation et il
+    //        n'est jamais recalculé. Il n'y a plus de dérive, plus d'ancre dans ce calcul, plus de
+    //        demi-tour, et plus aucun compte de passages.
+    //
+    // E15. LE NOMBRE DE PASSAGES D'UN COUREUR NE DIT RIEN À LUI SEUL. Essayé le 18 novembre 2026 :
+    //      lire le tour gagné sur la différence des passages. Ses mots : « Un coureur qui cherche à
+    //      gagner un tour sur le peloton, peut tout-à-fait avoir fait moins de tours que le
+    //      peloton, il peut déjà avoir perdu deux tours précédemment. » L'essai est mort là.
 
-    // CE QUI EST EN ATTENTE D'ÊTRE ANNONCÉ. Point 180 : deux coureurs sont proposés ENSEMBLE s'ils
-    // ne sont pas éloignés de plus d'une seconde. Or ils ne referment pas la paire sur la même
-    // détection — le 18, le 61 et le 7 l'ont fermée à trois détections d'intervalle à la build 189,
-    // et sortaient en trois propositions séparées. On garde donc le constat ouvert le temps de sa
-    // seconde, et on annonce ce qui s'y est joint.
+    // CE QUI EST EN ATTENTE D'ÊTRE ANNONCÉ. Deux coureurs sont proposés ENSEMBLE s'ils ne sont pas
+    // éloignés de plus d'une seconde. Or ils ne referment pas la paire sur la même détection — le
+    // 18, le 61 et le 7 l'ont fermée à trois détections d'intervalle à la build 189, et sortaient
+    // en trois propositions séparées. On garde donc le constat ouvert le temps de sa seconde, et on
+    // annonce ce qui s'y est joint.
     let attente = null;
 
     function examiner() {
@@ -336,82 +347,59 @@
       if (!pel || pel.coureurs.length < 2) return;
       const ch = chaine();
       const entree = new Map(ch.map(x => [x.c.bib, x]));
-      const T = tourS(coureurs.get(pel.coureurs[0]));   // la durée d’un tour du peloton
+      const dans = new Set(pel.coureurs);
+      const premier = entree.get(pel.coureurs[0]);                       // le premier du peloton
+      const dernier = entree.get(pel.coureurs[pel.coureurs.length - 1]); // le dernier du peloton
+      if (!premier || !dernier) return;
 
       for (const c of coureurs.values()) {
         if (c.n === 0) continue;
         const x = entree.get(c.bib);
-        // la dérive se mesure sur L’ANCRE, jamais sur la tête du peloton : celle-ci change de
-        // coureur à chaque remous du peloton, et chaque changement déplaçait la référence de toute
-        // la longueur du groupe. Mesuré à la build 190 : le 46 et le 70, lâchés, ont reçu un +20.
-        // Elle se nourrit du décalage LU, replié, et pas de la place déroulée : sans quoi elle se
-        // nourrirait d'elle-même.
         if (!x) continue;
-        const lu = decalageS(coureurs.get(ancre) || c, c);
-        if (lu != null) deriver(c, lu, T);
 
-        // IL RATTRAPE, OU IL EST RATTRAPÉ. Ses mots exacts, point 180 : le gain se constate « au
-        // moment un coureur rattrape le DERNIER coureur du peloton », la perte « au moment un
-        // coureur se fait rattraper par le PREMIER coureur du peloton ». Ce n'est donc pas son
-        // retour dans un groupe qu'on guette, c'est UNE paire nommée qui se referme, et c'est sa
-        // dérive qui dit laquelle des deux :
-        //   parti par l'avant (dérive négative) → (le dernier du peloton, lui)
-        //   lâché par l'arrière (dérive positive) → (lui, le premier du peloton)
-        // L'écart de cette paire doit être POSITIF — il est bien derrière celui qu'il rattrape —
-        // et passer sous le seuil du §1. C'est le PASSAGE qui est l'événement, pas l'état.
-        //
-        // SON POINT 181, « Rien : ils sont lâchés d'un tour, revenir au contact de la queue du
-        // peloton ne leur fait rien gagner » : un coureur dont la dérive est positive ne regarde
-        // QUE la paire de l'arrière. Revenir sur la queue ne lui ouvre rien.
-        //
-        // E10. NE JAMAIS CONSTATER SUR L'APPARTENANCE AU GROUPE. Mesure de la build 188 : un
-        //      échappé entre et sort du groupe du peloton des dizaines de fois tant que l'écart
-        //      oscille autour de la seconde, et chaque retour rejouait un ±20 — 89 constats au
-        //      palier 2, tous avec un écart NÉGATIF, c'est-à-dire mesurés sur un coureur encore
-        //      devant celui qu'il était censé rattraper.
-        //      → Le garde : l'écart de la paire doit être > 0, et `colle` retient l'image d'avant.
-        // IL EST PASSÉ PAR L'AUTRE CÔTÉ DE L'ANNEAU. Un coureur ne peut pas rattraper deux fois
-        // le dernier du peloton sans avoir refait le tour entre les deux : le constat ne s'ouvre
-        // que lorsque sa dérive a dépassé le demi-tour. Ce n'est pas un seuil réglé, c'est la piste
-        // — il faut bien passer en face avant de revenir. Mesuré à la build 188 : sans cette
-        // condition, le 46 et le 70 reperdaient 20 points toutes les vingt secondes ; et au tour
-        // ENTIER, le 61 arrivait sur la queue avant que sa dérive n'y soit, et ne constatait rien.
-        if (!T || Math.abs(c.derive) < T / 2) { c.colle = false; continue; }
-        const avant = c.derive < 0;
-        // LE DERNIER, OU LE PREMIER, DU PELOTON : ni lui, ni les autres qui ont fait le tour avec
-        // lui. Quand le 12 et le 52 reviennent ensemble, la chaîne les range AVEC le peloton et le
-        // dernier du groupe devient le 12. Le coureur qu'il rattrape est le dernier de ceux qui,
-        // eux, n'ont pas bougé de leur tour.
-        const sansLui = pel.coureurs.filter(b => {
-          if (b === c.bib) return false;
-          const o = coureurs.get(b);
-          if (!o) return false;
-          if (Math.abs(o.derive) >= T / 2) return false;
-          // NI SES COMPAGNONS QU’ON VIENT DE CRÉDITER. Point 180 : deux coureurs à moins d’une
-          // seconde l’un de l’autre sont UN SEUL constat. Mesuré à la build 188 : à 368,9 s le 7 et
-          // le 18 sont crédités, leur dérive retombe à zéro, et ils deviennent la queue du peloton
-          // — le 61, qui arrive deux dixièmes plus tard, se mesurait alors sur son propre compagnon,
-          // en sortait un écart négatif, et ne gagnait jamais rien. Il a fini la course à 1 178 m
-          // devant le peloton avec zéro point.
-          return !(o.credite != null && maintenant - o.credite <= R.cassureS);
-        });
-        if (!sansLui.length) continue;
-        const avec = coureurs.get(avant ? sansLui[sansLui.length - 1] : sansLui[0]);
-        const e = avant ? ecartPiste(entree.get(avec.bib), x) : ecartPiste(x, entree.get(avec.bib));
+        // 1. IL EST DANS LE PELOTON. Il n'a aucun bout, et il n'en reçoit un qu'en sortant.
+        if (dans.has(c.bib)) { c.sorti = null; c.colle = false; continue; }
+
+        // 2. IL VIENT D'EN SORTIR : on note le bout, maintenant, pendant qu'on le voit. Il est
+        //    juste devant le premier du peloton, ou juste derrière le dernier — c'est l'un ou
+        //    l'autre, et la lecture des boucles le dit sans ambiguïté puisqu'il est encore tout
+        //    près. On prend le plus petit des deux écarts.
+        if (!c.sorti) {
+          const devantLePeloton = -decalageS(premier.c, c);   // positif : il est devant le premier
+          const derriereLePeloton = decalageS(dernier.c, c);  // positif : il est derrière le dernier
+          if (devantLePeloton == null || derriereLePeloton == null) continue;
+          if (devantLePeloton > 0 && (derriereLePeloton <= 0 || devantLePeloton <= derriereLePeloton)) c.sorti = 'avant';
+          else if (derriereLePeloton > 0) c.sorti = 'arriere';
+          else continue;
+          c.colle = false;
+        }
+
+        // 3. ON ATTEND SON ÉVÉNEMENT, ET UN SEUL — celui que son bout désigne.
+        //    Sorti par l'avant : il revient sur LE DERNIER du peloton → tour gagné.
+        //    Sorti par l'arrière : LE PREMIER du peloton revient sur lui → tour perdu.
+        //    L'autre paire n'est jamais regardée : un échappé qui renonce et se laisse reprendre
+        //    par l'avant ne perd rien, et un lâché qui revient sur la queue ne gagne rien.
+        //    Les deux coureurs de la paire sont ceux qu'il a nommés, et l'écart est celui du §1.
+        const avant = c.sorti === 'avant';
+        const e = avant ? ecartPaire(dernier.c, c) : ecartPaire(c, premier.c);
         if (e == null) continue;
-        // le contact, confirmé 0,3 s comme toute cassure du §1 — mais l'écart doit être positif À
-        // L'INSTANT du constat, et pas seulement l'avoir été : sans cela, trois constats du palier
-        // 2 sortaient avec un écart négatif, mesurés sur un coureur déjà repassé devant.
-        const colle = e > 0 && e <= R.cassureS;   // la mesure du moment, sans délai (point 192)
-        if (colle && e > 0 && !c.colle) {
+        // L'écart doit être POSITIF à l'instant du constat — il est bien derrière celui qu'il
+        // rattrape — et passer sous la seconde. C'est le PASSAGE qui est l'événement, pas l'état :
+        // sans `colle`, un écart qui oscille autour de la seconde rejouait le constat des dizaines
+        // de fois (E10, mesure de la build 188).
+        const colle = e > 0 && e <= R.cassureS;
+        if (colle && !c.colle) {
           const delta = avant ? 20 : -20;
-          if (attente && attente.delta === delta && maintenant - attente.ouvertA <= R.cassureS) {
-            attente.membres.push({ c, ecart: e, r: x.retard });
+          const avec = avant ? dernier.c.bib : premier.c.bib;
+          if (attente && attente.delta === delta && attente.avec === avec && maintenant - attente.ouvertA <= R.cassureS) {
+            attente.membres.push({ c, ecart: e, r: x.anneau });
           } else {
             annoncer();
-            attente = { delta, avec: avec.bib, ouvertA: maintenant, membres: [{ c, ecart: e, r: x.retard }] };
+            attente = { delta, avec, ouvertA: maintenant, membres: [{ c, ecart: e, r: x.anneau }] };
           }
-          c.derive = 0; c.rPrec = x.retard; c.colle = true; c.credite = maintenant;   // rPrec : la lecture repliée
+          // Il est revenu : il n'a plus de bout, et il repart avec le peloton — « ils sont
+          // considérés avoir parcouru la même distance que leurs adversaires ».
+          c.sorti = null; c.colle = true; c.credite = maintenant;
         } else c.colle = colle;
       }
 

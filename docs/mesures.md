@@ -4844,3 +4844,51 @@ queue du peloton ne leur fait rien gagner. » Le moteur a déjà le garde qu'il 
 
 **À comparer avec ce que le prototype produit aujourd'hui (§93) : neuf constats, tous des pertes,
 pas un seul juste.**
+
+
+## §95 · Le tour gagné lu sur le bout par lequel le groupe est sorti — build 243, 18 novembre 2026
+
+Sa règle du 18 novembre 2026, codée dans `moteur-course.js`. La dérive accumulée, le coureur de
+repère, le demi-tour et le compte des passages sont tous partis. Il reste un fait par coureur :
+`sorti`, qui vaut `avant`, `arriere` ou rien, posé à l'instant où il quitte le peloton et effacé
+quand il revient.
+
+La course : 24 coureurs, dossards 1 à 24, 40 tours, tous à 18,6 m/s au départ ; les BIB 1 et 2
+accélèrent au tour 5, les BIB 23 et 24 sont lâchés au tour 12.
+
+**Huit constats. Quatre sont justes, et ce sont les quatre événements de la course :**
+
+| heure | | dossards | avec | ce que c'est |
+|---|---|---|---|---|
+| 241,9 s | **+20** | 1 | le 22, dernier du peloton | premier tour pris |
+| 248,6 s | **+20** | 2 | le 22, dernier du peloton | premier tour pris |
+| 329,3 s | **−20** | 23, 24 | le 1, premier du peloton | tour perdu |
+| 470,4 s | **+20** | 1, 2 | le 24, dernier du peloton | second tour pris |
+
+**Avant, sur la même course : neuf constats, tous des pertes, aucun juste (§93).**
+
+**Les quatre autres sont parasites**, et ils ont tous la même origine :
+
+| heure | | dossards | avec |
+|---|---|---|---|
+| 298,1 s | +20 | 5, 6, 7 | le 4 |
+| 544,8 s | +20 | 6 | le 5 |
+| 544,8 s | −20 | 6 | le 8 |
+| 545,9 s | +20 | 7 | le 5 |
+
+**L'origine, relevée à 264,2 s.** Le BIB 20 est lu à **0,11 s** du BIB 1 sur la piste, et il l'est
+vraiment : le 1 a un tour de plus que lui, et un tour dure 13,44 s — le 20 est à 13,56 s du 1 en
+distance de course, c'est-à-dire **roue dans roue, à un tour près**. Même chose pour le 21 et le 22,
+qui s'intercalent entre le 15 et le 16. Le peloton relevé à cet instant est
+`3,4,5,…,15,21,16,22,17,18,19` : ce n'est pas un désordre, c'est la piste.
+
+Une fois que deux coureurs ont pris un tour, **ils roulent au milieu de ceux qu'ils ont doublés**.
+La timeline doit les y montrer — « chacun est toujours dans le même tour que les autres du point de
+vue de la timeline ». Mais « qui est dans le peloton » n'a alors plus de réponse unique : des
+coureurs y entrent et en sortent d'une image à l'autre, reçoivent un bout qu'ils ne méritent pas, et
+le constat part.
+
+**Ce qui reste à trancher** est donc une question de course, et elle est pour l'opérateur : quand
+deux coureurs ont pris un tour et roulent au milieu du peloton, qu'est-ce que le peloton ?
+
+**Un petit défaut noté au passage** : à 544,8 s le BIB 6 paraît deux fois dans le même constat.
