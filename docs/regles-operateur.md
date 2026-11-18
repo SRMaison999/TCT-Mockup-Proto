@@ -791,6 +791,15 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   règle 239 — un coureur n'existe pour le moteur qu'à partir de son premier passage sur la ligne —
   et aucun seuil n'est posé. À trancher : s'il veut en plus un temps de tour minimum, et pour quoi.
 
+- **Le bout par lequel un coureur se détache, juste après que le peloton lui a repris un tour.**
+  Mesuré le 19 novembre 2026 (`docs/mesures.md` §97) : à 364,6 s, une seconde après que le peloton
+  a repris un tour aux BIB 23 et 24, la lecture des boucles donne le 23 « 1,05 s devant le premier
+  du peloton » alors qu'il est 13,03 s derrière lui — un tour. Le décalage lu sur les boucles est
+  ramené à plus ou moins un demi-tour, il ne peut donc pas distinguer les deux. Le moteur note le
+  bout « avant » et rend le tour à 437,0 s. Le seul fait qui tranche est l'événement qui vient de
+  se produire : le peloton a repris un tour au 23, donc il le dépasse, donc le 23 se détache par
+  l'arrière. **À trancher** : est-ce que le logiciel peut le retenir comme ça. Rien n'en est codé.
+
 ### Cinq points tranchés le 29 octobre 2026
 
 Ses réponses, mot pour mot, et ce qu'elles ferment :

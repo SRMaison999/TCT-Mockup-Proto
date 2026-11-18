@@ -4938,3 +4938,53 @@ reçoivent +20 à 436,9 s alors qu'ils continuent de perdre du terrain : à cet 
 qu'ils sortent par l'arrière. Et le compagnon nommé pour le BIB 2 est le BIB 1, son propre
 compagnon d'échappée, au lieu du dernier du peloton : le BIB 1 vient d'être crédité et il est
 ressorti de la mise à l'écart une seconde trop tôt.
+
+## §97 · La course rejouée avec un opérateur au pupitre, 19 novembre 2026
+
+Jusqu'ici les mesures laissaient les propositions en plan : personne ne validait, donc aucun tour
+n'était crédité et rien ne se remettait à plat. Sa remarque du 18 novembre 2026 : « Ce que je
+constate, c'est que tu ne valides pas les tours gagnés et perdus. Sans cette validation c'est sûr
+que c'est le chaos ». La mesure a donc été refaite en validant chaque proposition pour tous ses
+coureurs dès qu'elle paraît, comme le ferait l'opérateur.
+
+Course de 24 coureurs, dossards 1 à 24, 40 tours, allure 18 m/s ; les BIB 1 et 2 accélèrent de
+1 m/s au tour 5, les BIB 23 et 24 ralentissent de 0,9 m/s à partir du tour 12 ; pas d'oscillation.
+Course complète, 565,5 s.
+
+Six propositions, quatre justes et deux fausses — le même compte que sans validation : valider ne
+change pas les constats, cela change ce que la course en garde.
+
+| instant | constat | coureurs | écart réel au BIB 1 | juste ? |
+|---|---|---|---|---|
+| 243,1 s | tour gagné | 1 | 0 s | oui |
+| 244,2 s | tour gagné | 2 | 0,1 s | oui |
+| 363,4 s | tour perdu | 23 et 24 | 30,3 s et 30,4 s | oui |
+| 437,0 s | tour gagné | 23 et 24 | 38,1 s et 38,2 s | **non** |
+| 491,7 s | tour gagné | 1 | 0 s | oui |
+| 493,1 s | tour gagné | 2 | 0,1 s | oui |
+
+À l'arrivée, les BIB 1 et 2 portent chacun deux tours gagnés : c'est exact, ils ont rattrapé le
+peloton deux fois. Les BIB 23 et 24 portent zéro : le tour qu'on leur retire à 363,4 s leur est
+rendu à 437,0 s, alors qu'ils finissent à plus de deux tours. Ils devraient porter un tour perdu.
+
+Inversions de deux coureurs qui se suivent : 2,93 %. Blocs montrés : 1,95 en moyenne.
+
+### Pourquoi le constat de 437,0 s est faux
+
+Mesuré à l'image où le bout est noté, 364,6 s, une seconde après que le peloton les a repris :
+
+| | lecture des boucles | la vérité de la simulation |
+|---|---|---|
+| BIB 23 face au premier du peloton (BIB 3) | **1,05 s devant** | 13,03 s derrière |
+| BIB 23 face au dernier du peloton (BIB 22) | 3,37 s devant | 10,71 s derrière |
+
+Un tour dure 13,89 s. Le décalage lu sur les boucles est ramené à plus ou moins un demi-tour :
+il ne peut donc **pas** distinguer « un tour derrière le peloton » de « une seconde devant le
+peloton ». Les deux lectures donnent « devant », le moteur note le bout « avant », et il attend
+dès lors que le 23 revienne sur le dernier du peloton — ce qui arrive forcément puisqu'il perd
+du terrain. D'où le +20 de 437,0 s.
+
+Ce n'est pas un défaut du constat ni du bout : c'est la limite de la lecture des boucles seule.
+Le seul fait disponible qui tranche est l'événement qui vient de se produire : à 363,4 s le
+peloton a repris un tour au 23, donc le peloton le dépasse, donc quand il se détache ensuite il se
+détache par l'arrière. Question posée à l'opérateur le 19 novembre 2026, rien n'en est codé.
