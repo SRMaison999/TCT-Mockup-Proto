@@ -4345,3 +4345,52 @@ L'ordre des blocs vient de l'écart non validé, les écarts affichés viennent 
 place **145 fois** : par exemple à 5:26,7, `1-Leaders 18 61 7` porte `leader`, `2-Chase 12 52` porte
 `13,1 s`, et `3-Bunch` porte `—` ; à 5:30,7, la carte du 12 et du 52 ayant pris la tête, c'est
 `2-Chase 18 61 7` qui porte `—` et le peloton qui retrouve `12,7 s`.
+
+---
+
+## §81 · La grille de départ qui dépassait la ligne, et le coureur de test qui n'existait plus · build 235
+
+**La course :** la sienne, le 18 novembre 2026 — 24 coureurs, piste de 250 m, 40 tours, 4 sprints,
+allure 18,6 m/s, sa liste de départ dans son ordre. Rejouée à l'identique dans le prototype, les
+trois défauts qu'il décrit sont apparus tous les trois.
+
+**1. Cinq coureurs partaient après la ligne.** La grille était écrite `dist = −40 + i × 2,2` : elle
+commençait 40 m avant la ligne et avançait de 2,2 m par coureur. À seize coureurs elle mesure 33 m
+et tient avant la ligne. À vingt-quatre elle mesure **50,6 m** et la dépasse de **10,6 m**. Les cinq
+derniers de la liste de départ partaient donc du mauvais côté :
+
+| BIB | position au départ |
+|---|---|
+| 8 RUS | 1,8 m après la ligne |
+| 10 AUS | 4,0 m après |
+| 13 NZL | 6,2 m après |
+| 14 MEX | 8,4 m après |
+| 16 MAS | 10,6 m après |
+
+La boucle d'arrivée ne les lit qu'un tour plus tard. Pendant ce tour l'application n'a aucune
+mesure d'eux ; quand elle les lit, elle les voit un tour derrière, et ce tour se **fige** dans
+`took.v0`. Relevé à 227,9 s de course : `v0 = −1` pour ces cinq dossards, et un bloc `3-LAST` de
+cinq coureurs qui ne se referme plus jusqu'à l'arrivée. C'est exactement son bloc du bas.
+
+**2. Un coureur de test codé en dur faisait planter la course au tour 18.** `TIGHT = {lap: 20,
+bibs: [52, 7]}` serrait le BIB 7 et le BIB 52 sur la ligne du sprint 2. Le BIB 52 n'est pas dans sa
+liste de départ : `S.riders.find(x => x.bib === 52)` rendait `undefined`, et `step()` levait
+`TypeError: Cannot read properties of undefined (reading 'offset')` **à chaque image** à partir du
+tour 18 — 500 fois dans le tampon de la console.
+
+L'erreur tombait juste avant le BIB 7, **troisième** de sa liste de départ. Conséquences mesurées :
+
+- les 21 coureurs placés après lui dans la liste ne bougeaient plus : la course se figeait ;
+- les deux placés avant lui, le **20 ITA** et le **12 SUI**, roulaient seuls et prenaient un tour.
+  Fin de course : eux à 10 106 m, le reste du peloton entre 9 750 m et 9 796 m, soit **350 m** ;
+- le repère d'allure, lui, continuait d'avancer. Le peloton reparti courait après lui à sa vitesse
+  maximale, 18,6 + 1,6 = **20,2 m/s**, soit **12,4 s au tour** au lieu de 13,4 s. C'est le 12,4 de
+  ses colonnes `LAP TIME` à partir du tour 19.
+
+**3. Les écarts qui sautaient d'une seconde.** Sur cette course plantée, l'en-tête du bloc de tête
+passait de 24,6 s à 25,6 s et revenait, **toutes les 6,2 s** — le temps d'aller d'une boucle à la
+suivante sur 115 m à 18,6 m/s.
+
+**Après correction, la même course :** elle va au bout, **540,7 s** pour 40 tours de 13,44 s. **Un
+seul bloc de 24 coureurs** du départ à l'arrivée, étalé sur 50,6 m. **Aucun** `v0` posé. **Aucun**
+saut d'écart relevé par la trace. **Zéro** erreur de console.

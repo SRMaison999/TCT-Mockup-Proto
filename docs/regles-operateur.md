@@ -3297,3 +3297,19 @@ pas encore vu porte **`—`**. Un nombre négatif ne s'affiche plus. Il sortait 
 de la paire n'avaient pas été lus sur la même boucle, ou quand le bloc est en tête parce qu'une carte
 de tour attend (point 226) pendant que la piste dit encore le contraire. Le cas continue d'être
 inscrit au journal du code, sous `ECART-NEGATIF`.
+
+
+### 228 · La grille de départ se colle à la ligne · 18 novembre 2026
+
+> « pour la grille de départ je pense qu'il faut placer les premiers coureurs juste avant la ligne
+> finish, et empiler les autres par l'arrière. Ainsi quel que soit le nombre de coureurs, il seront
+> toujours groupés et placés juste avant la ligne finish »
+
+**Codé au build 235.** La grille se compte depuis la ligne, vers l'arrière : le coureur de tête est
+à 7 m de la ligne, les suivants s'empilent tous les 2,2 m. Elle tient donc entièrement avant la
+ligne à seize comme à vingt-quatre coureurs.
+
+Elle était comptée depuis 40 m en amont. À vingt-quatre coureurs elle mesure 50,6 m et dépassait la
+ligne de 10,6 m : les BIB 8, 10, 13, 14 et 16 de sa course partaient **après** la ligne, la boucle
+d'arrivée ne les lisait qu'un tour plus tard, et ce tour de retard restait sur eux jusqu'à
+l'arrivée. C'est le bloc de cinq coureurs qu'il a vu au premier tour (`mesures.md` §81).

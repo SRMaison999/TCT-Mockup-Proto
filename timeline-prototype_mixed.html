@@ -658,7 +658,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">172</span>
+      <span class="bld" id="buildno">235</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -851,7 +851,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '234';
+const BUILD = '235';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -935,7 +935,6 @@ function loadSetup() {
 const SILENT = {};                              // transponder stops answering from lap 14
 const CRASH = { lap: 999, bibs: [], backLap: 999 };  // crash at Pursuit B, back on the track four laps later
 const NOTP = [];                                // riders without transponder from the start: carried with their group, placed by hand
-const TIGHT = { lap: 20, bibs: [52, 7] };       // sprint 2: BIB 7 and 52 cross the line within 15 ms (photo flag)
 
 const $ = s => document.querySelector(s);
 const fmtT = s => { s = Math.max(0, s); const m = Math.floor(s / 60), r = s - m * 60; return m + ':' + (r < 10 ? '0' : '') + r.toFixed(1); };
@@ -967,7 +966,15 @@ function reset() {
     t: 0, factor: 1, finished: false,
     riders: RIDERS.map(([bib, name, nat, color, dk, first], i) => ({
       bib, name, nat, color, dk: !!dk, first: first || '',
-      dist: -40 + i * 2.2, offset: 16.5 - i * 2.2, lapTrue: 0, mode: 'bunch', spd: CFG.pace,
+      // LA GRILLE DE DÉPART TIENT AVANT LA LIGNE, quel que soit le nombre de coureurs. Elle était écrite pour seize :
+      // 40 m avant la ligne, 2,2 m entre deux coureurs. À vingt-quatre elle mesure 50,6 m et dépassait la ligne de
+      // 10,6 m — les cinq derniers de la liste de départ (les BIB 8, 10, 13, 14 et 16 de sa course du 18 novembre
+      // 2026) partaient APRÈS la ligne. La boucle d'arrivée ne les lisait qu'un tour plus tard, et ce tour de retard
+      // se figeait dans `took.v0` : ils restaient un bloc à part jusqu'à l'arrivée.
+      // On compte donc depuis l'AVANT de la grille : le dernier de la liste est à 7 m de la ligne, comme avant.
+      dist: -7 - (RIDERS.length - 1 - i) * 2.2,
+      offset: (RIDERS.length - 1 - i) * 2.2 - (RIDERS.length - 1) * 1.1,
+      lapTrue: 0, mode: 'bunch', spd: CFG.pace,
       rec: null, lastAt: [], lastRel: 0, inBunchSince: null, inBunchPrev: false,   // inBunchPrev: was he in the bunch's cluster on the previous frame? the lap event is the frame that goes false → true
     })),
     lapStatus: {},          // net laps by BIB (gained − lost), derived from S.laps
@@ -1146,9 +1153,13 @@ function step(dt) {
     const po = S.pilot[r.bib];
     if (po) { pilotStep(r, po, base, ref, lap); }
     else {
-      let off = r.offset;
-      if (TIGHT.bibs.includes(r.bib) && lap >= TIGHT.lap - 2 && lap <= TIGHT.lap) off = S.riders.find(x => x.bib === TIGHT.bibs[0]).offset + 0.15 * TIGHT.bibs.indexOf(r.bib);   // a tight sprint
-      const target = ref + TRACK * r.lapTrue + off;
+      // UN COUREUR DE TEST CODÉ EN DUR A FAIT PLANTER LA COURSE. `TIGHT` serrait le BIB 7 et le BIB 52 sur la ligne
+      // du sprint 2 ; le 52 n'est plus dans sa liste de départ, et `S.riders.find(...)` rendait `undefined`. À partir
+      // du tour 18, `step()` levait une erreur à chaque image, juste avant le BIB 7 : tout le peloton se figeait, les
+      // deux coureurs placés avant lui dans la liste roulaient seuls et prenaient un tour, puis le peloton repartait
+      // à sa vitesse maximale pour rattraper le repère d'allure — 20,2 m/s, 12,4 s au tour. Mesuré le 18 novembre
+      // 2026 sur sa course de 24 coureurs. Le scénario est à moi, pas à lui : il est retiré.
+      const target = ref + TRACK * r.lapTrue + r.offset;
       r.spd = base + Math.max(-1.6, Math.min(1.6, 0.12 * (target - r.dist)));
       if (S.wobble && lap >= S.wobble.fromLap) r.spd += wobbleOf(r, S.wobble);
     }

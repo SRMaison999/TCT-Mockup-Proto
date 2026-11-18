@@ -778,6 +778,43 @@ piste. Si ce reste n'est pas de l'ordre de la longueur d'un groupe, les deux cou
 suivent pas et la décision ne tient pas.
 
 
+## A15. Une grille de départ écrite pour un nombre de coureurs donné
+
+`dist = −40 + i × 2,2` plaçait la grille 40 m avant la ligne. Juste pour seize coureurs — 33 m — et
+faux pour vingt-quatre : 50,6 m, dont **10,6 m après la ligne**. Les cinq derniers de la liste de
+départ partaient du mauvais côté, la boucle d'arrivée ne les lisait qu'un tour plus tard, et ce tour
+de retard se figeait dans `took.v0` : un bloc de cinq coureurs à l'arrière pour toute la course
+(`mesures.md` §81).
+
+Retenu : **une grille de départ se compte depuis la ligne, vers l'arrière**, jamais depuis un point
+fixe en amont. Le nombre de coureurs est un réglage de l'opérateur, pas une constante.
+
+Et plus largement : **un départ hors de la zone que les boucles mesurent ne se voit pas tout de
+suite**. Il se voit un tour plus tard, sous la forme d'un groupe que rien n'explique. Quand un bloc
+apparaît sans cause de course, regarder d'abord **où les coureurs ont été posés**.
+
+
+## A16. Un coureur de test codé en dur survit à la liste de départ
+
+`TIGHT = {lap: 20, bibs: [52, 7]}` serrait deux coureurs sur la ligne du sprint 2. Le BIB 52 était
+dans la liste de départ d'origine ; dès que l'opérateur a fait la sienne, il n'y était plus.
+`S.riders.find(...)` rendait `undefined` et `step()` levait une erreur **à chaque image** à partir
+du tour 18 (`mesures.md` §81).
+
+Ce qui rend l'erreur méchante, c'est **où** elle tombe : au milieu de la boucle sur les coureurs. Les
+coureurs déjà traités avançaient, les autres restaient sur place, et le repère d'allure continuait
+tout seul. Un plantage a donc ressemblé à une course : deux échappés, un peloton arrêté, puis un
+peloton qui accélère. Aucun des trois n'était vrai.
+
+Retenu, deux choses. **Un scénario de test ne nomme pas un dossard** : la liste de départ est à
+l'opérateur, et un dossard écrit dans le code n'y est pas garanti. Et **une boucle sur les coureurs
+ne doit pas pouvoir s'interrompre au milieu** : un pas de simulation à moitié joué est pire qu'un pas
+non joué, parce qu'il se lit comme un fait de course.
+
+Ces deux-là sont à moi, pas à lui : voir `regles-operateur.md` point 193, « d'abord retirer ce qui
+est à moi ».
+
+
 ### D31 · Un champ de la barre du haut ne peut pas se tenir à jour depuis le rail
 
 Le type de course (build 211) est un réglage de course, comme `Laps` et `Sprints` : il se bloque

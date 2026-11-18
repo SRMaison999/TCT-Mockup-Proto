@@ -502,8 +502,16 @@ est celle d'un vélo (`TAPE_MIN_SPD` à `TAPE_MAX_SPD`).
 
 `RIDERS` (dossard, nom, NOC, couleur), `CALM_RACE` (la simulation : une configuration
 et deux ordres, §15), `FLAGS` (drapeaux SVG simplifiés), `PALETTE`, `NOTP = []` (tous les coureurs ont un
-transpondeur au départ ; le statut se pose à la main), `TIGHT` (deux coureurs à 11 ms au
-sprint 2).
+transpondeur au départ ; le statut se pose à la main).
+
+`TIGHT` est **retiré** à la build 235. Il nommait le BIB 52, qui n'existe plus dès que l'opérateur
+fait sa propre liste de départ, et faisait planter `step()` à chaque image à partir du tour 18
+(`pitfalls.md` A16, `mesures.md` §81). **Un scénario codé en dur ne nomme plus aucun dossard.**
+
+**La grille de départ** (`reset()`) se compte depuis la ligne d'arrivée, vers l'arrière : le coureur
+de tête est à 7 m de la ligne, les suivants s'empilent tous les 2,2 m. `dist = −7 − (n − 1 − i) × 2,2`,
+avec `n = RIDERS.length`. Elle tient donc avant la ligne quel que soit le nombre de coureurs — ce
+qu'elle ne faisait pas quand elle était comptée depuis 40 m en amont (`pitfalls.md` A15).
 
 | Constante | Valeur | Rôle |
 |---|---|---|
