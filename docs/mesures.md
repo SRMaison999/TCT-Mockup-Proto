@@ -4748,3 +4748,51 @@ lectures sont les **premières** de ces coureurs sur cette boucle, il n'y a pas 
 mesurer. Ce qui les sépare de la course n'est pas une durée, c'est la ligne de départ. Le point
 reste ouvert au §15 pour ce qu'un temps de tour minimum attraperait vraiment : une double lecture
 du même transpondeur sur la même boucle, qu'aucune mesure n'a encore montrée ici.
+
+
+## §93 · D'où sort la proposition de tour perdu faite au peloton — relevé, build 242, 18 novembre 2026
+
+Relevé sur la course du §88, sans rien corriger. Les propositions de ±20 **viennent du moteur de
+course** : l'écran ne fait que montrer ce que `MC.pointsVus()` lui donne.
+
+**Neuf constats sur toute la course, et pas un seul `+20`.**
+
+| heure | constat | dossards | « rattrapé par » | vraiment derrière le BIB 1 |
+|---|---|---|---|---|
+| 182,1 s | −20 | 3 à 11 | **BIB 4** | 7,1 à 8,1 s |
+| 182,1 s | −20 | 12 à 20 | **BIB 4** | 8,2 à 9,1 s |
+| 182,1 s | −20 | 21 | **BIB 4** | 9,3 s |
+| 329,3 s | −20 | 23, 24 | BIB 1 | 26,2 s |
+| 370,4 s | −20 | 3, 4 | **BIB 23** | 17,3 s |
+| 378,0 s | −20 | 5 à 8 | BIB 3 | 17,9 à 18,3 s |
+| 482,2 s | −20 | 3, 4 | **BIB 4** | 23,3 s |
+| 539,2 s | −20 | 8 | BIB 3 | 26,9 s |
+| 545,6 s | −20 | 5, 6, 7 | BIB 8 | 26,9 à 27,2 s |
+
+Trois choses s'y lisent.
+
+**1. Un coureur est rattrapé par lui-même.** À 182,1 s et à 482,2 s, le BIB 4 figure dans la liste
+des coureurs qui perdent 20 points ET il est nommé comme celui qui les rattrape. À 370,4 s, le 3 et
+le 4 sont « rattrapés » par le BIB 23, qui est lui-même à plus d'un tour.
+
+**2. Le peloton perd 20 points sans que rien ne se soit passé.** À 182,1 s, dix-neuf coureurs du
+peloton sont crédités de −20 alors qu'ils sont à **7,1 à 9,3 s** du BIB 1 — deux tiers de tour, pas
+un tour. Personne n'a rattrapé personne.
+
+**3. Les deux coureurs qui prennent vraiment deux tours ne gagnent rien.** Les BIB 1 et 2 finissent
+26,4 s devant le peloton, soit presque deux tours, et ne reçoivent **aucun** `+20` de toute la
+course.
+
+**La cause est une seule.** La dérive, celle qui dit **par quel côté** un coureur est sorti du
+peloton (E8), se mesure sur l'**ancre** — le coureur en tête de la timeline. Ici l'ancre est le
+BIB 1, et c'est lui qui s'échappe. Tout le peloton dérive donc de lui, et quand cette dérive passe
+le demi-tour, le moteur lit le peloton entier comme **lâché** et lui cherche un rattrapeur dans ses
+propres rangs. Le BIB 1, lui, dérive de lui-même : sa dérive vaut zéro pour toujours, et il ne peut
+rien gagner.
+
+**Et c'est aussi le BIB 22 seul dans son bloc.** À 182,1 s les BIB 3 à 21 reçoivent une proposition
+de tour perdu ; le 22, dernier du peloton, est le seul épargné — pour lui l'écart au premier du
+peloton sort négatif et le constat ne s'ouvre pas. L'écran trie sur le tour d'écart, proposition en
+attente comprise, et le sépare des dix-neuf autres. **Un seul défaut, deux symptômes.**
+
+Rien n'est corrigé : le relevé est posé, la réparation se propose.
