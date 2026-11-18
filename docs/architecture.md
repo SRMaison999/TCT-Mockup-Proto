@@ -2640,3 +2640,8 @@ Le clic sur un titre est posé sur `#logrows`, et il ne fait quelque chose que s
 le journal réécrit son contenu à chaque rendu, donc rien ne peut être attaché aux titres eux-mêmes.
 Les deux champs, eux, sont dans `#pfilt`, qui n'est pas réécrit — ils gardent le curseur pendant
 qu'on tape.
+
+**Le second clic range PAR-DESSUS le premier**, et non à l'intérieur : la dernière colonne cliquée
+devient `passK1`, l'ancienne descend en `passK2`. Les deux lectures de son point 236 se défendaient ;
+la question lui a été posée le 18 novembre 2026 et il a répondu « je m'en fous ». Le choix est donc
+de moi, il est celui-ci, et il n'y a rien à rouvrir.
