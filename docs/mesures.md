@@ -4796,3 +4796,51 @@ peloton sort négatif et le constat ne s'ouvre pas. L'écran trie sur le tour d'
 attente comprise, et le sépare des dix-neuf autres. **Un seul défaut, deux symptômes.**
 
 Rien n'est corrigé : le relevé est posé, la réparation se propose.
+
+
+## §94 · Le compte des passages suffit, sans aucune dérive — essai, build 242, 18 novembre 2026
+
+L'opérateur, 18 novembre 2026 : « pourquoi "il faut un coureur de repère pour savoir qui a pris un
+tour et qui en a perdu un" ? Cette phrase me semble absurde ». Essayé sur la course du §88, sans
+rien changer au prototype.
+
+**Ce qui est essayé.** On garde les deux paires qu'il a nommées au point 180 — (le dernier du
+peloton, lui) et (lui, le premier du peloton) — et le moment reste le sien : l'instant où l'une des
+deux se ferme sous la seconde. Mais au lieu de demander à une dérive accumulée **par quel côté** le
+coureur est sorti, on lit la **différence du nombre de passages** entre les deux coureurs de la
+paire. Un passage de plus : il a pris un tour. Un de moins : il en a perdu un. Zéro : il a
+simplement refermé un trou. Aucune dérive, aucun côté, aucun demi-tour.
+
+**Premier essai, et pourquoi il a raté : 67 constats.** Le compte était pris sur la **ligne
+d'arrivée**, à l'instant du contact. Or le peloton met plus de deux secondes à franchir la ligne :
+pendant ce temps ses premiers ont un passage d'avance sur ses derniers. D'où des constats par
+paires — les BIB 17 à 20 reçoivent −1 à 270,5 s et +1 à 271,1 s, six dixièmes plus tard ; les
+BIB 11 à 14 pareil à 283,3 puis 283,8 ; et ainsi de suite à 296, 512, 525 et 538 s. C'est la même
+chose que la mesure E9 de la build 187, à un autre endroit.
+
+**Second essai : le compte se lit sur la boucle que les DEUX coureurs ont passée en dernier.**
+Cette boucle-là est derrière eux deux, et aucun des deux ne l'a repassée depuis : il n'y a plus de
+ligne entre eux, et la différence est exacte. **Sept constats sur toute la course :**
+
+| heure | dossard | | avec | écart |
+|---|---|---|---|---|
+| 238,6 s | 1 | **+20** | le 22, dernier du peloton | 0,94 s |
+| 244,9 s | 2 | **+20** | le 22, dernier du peloton | 0,71 s |
+| 327,9 s | 23 | **−20** | le 1, premier du peloton | 0,80 s |
+| 327,9 s | 24 | **−20** | le 1, premier du peloton | 0,67 s |
+| 334,2 s | 23 | +20 | le 1 | 0,11 s |
+| 487,8 s | 1 | **+20** | le 22, dernier du peloton | 0,98 s |
+| 493,7 s | 2 | **+20** | le 22, dernier du peloton | 0,78 s |
+
+**Six sur sept sont justes**, et ce sont exactement les six événements de la course : les BIB 1 et 2
+prennent un tour vers 240 s puis un second vers 490 s, les BIB 23 et 24 en perdent un à 327,9 s. Le
+BIB 1 est nommé comme premier du peloton à 327,9 s parce qu'il y est revenu après son tour pris,
+ce que demande le point 174.
+
+**Le septième est à jeter, et sa règle le dit déjà.** Le BIB 23 récupère +20 six secondes après
+avoir perdu son tour. Son point 181 : « Rien : ils sont lâchés d'un tour, revenir au contact de la
+queue du peloton ne leur fait rien gagner. » Le moteur a déjà le garde qu'il faut pour ça —
+`credite` et la seconde qui suit un constat.
+
+**À comparer avec ce que le prototype produit aujourd'hui (§93) : neuf constats, tous des pertes,
+pas un seul juste.**
