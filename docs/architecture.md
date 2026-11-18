@@ -508,10 +508,13 @@ transpondeur au départ ; le statut se pose à la main).
 fait sa propre liste de départ, et faisait planter `step()` à chaque image à partir du tour 18
 (`pitfalls.md` A16, `mesures.md` §81). **Un scénario codé en dur ne nomme plus aucun dossard.**
 
-**La grille de départ** (`reset()`) se compte depuis la ligne d'arrivée, vers l'arrière : le coureur
-de tête est à 7 m de la ligne, les suivants s'empilent tous les 2,2 m. `dist = −7 − (n − 1 − i) × 2,2`,
-avec `n = RIDERS.length`. Elle tient donc avant la ligne quel que soit le nombre de coureurs — ce
-qu'elle ne faisait pas quand elle était comptée depuis 40 m en amont (`pitfalls.md` A15).
+**La grille de départ** (`reset()`, `gridRank`) se compte depuis la ligne d'arrivée, vers l'arrière,
+et **dans l'ordre des dossards** : `dist = −7 − gridRank[bib] × 2,2`, où `gridRank` est le rang du
+dossard dans l'ordre croissant. Le plus petit dossard est à 7 m de la ligne, les suivants s'empilent
+tous les 2,2 m. Elle tient avant la ligne quel que soit le nombre de coureurs — ce qu'elle ne faisait
+pas quand elle était comptée depuis 40 m en amont (`pitfalls.md` A15) — et **l'ordre de `RIDERS` n'y
+entre plus** (points 228 et 229). L'ordre de `S.riders` reste celui de la liste de départ : c'est lui
+qui porte la course.
 
 | Constante | Valeur | Rôle |
 |---|---|---|

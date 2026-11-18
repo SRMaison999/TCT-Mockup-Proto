@@ -780,6 +780,10 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
   tour de 195 secondes. À trancher.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
+- **Dire à la main qui est devant et qui est derrière sur la grille de départ** (point 229, sa
+  première phrase). Au build 236 la grille suit le dossard, du plus petit au plus élevé. Rien ne
+  permet de la réordonner, et l'ordre de la liste de départ n'est pas visible quand le panneau est
+  trié. À trancher : où ce réordonnancement se fait, et ce qu'il devient d'une course à l'autre.
 
 ### Cinq points tranchés le 29 octobre 2026
 
@@ -3313,3 +3317,26 @@ Elle était comptée depuis 40 m en amont. À vingt-quatre coureurs elle mesure 
 ligne de 10,6 m : les BIB 8, 10, 13, 14 et 16 de sa course partaient **après** la ligne, la boucle
 d'arrivée ne les lisait qu'un tour plus tard, et ce tour de retard restait sur eux jusqu'à
 l'arrivée. C'est le bloc de cinq coureurs qu'il a vu au premier tour (`mesures.md` §81).
+
+
+### 229 · Le BIB 1 devant, le plus élevé derrière · 18 novembre 2026
+
+> « alors une start liste devrait toujours être éditable, on devrait toujours pouvoir dire qui est
+> devant, qui est derrière etc...
+> Maintenant en l'état actuel des choses, je voudrais que ce soit le BIB 1 qui soit tout devant, et
+> le BIB le plus élevé qui soit à l'arrière »
+
+**Codé au build 236 pour sa deuxième phrase.** La place sur la grille se lit sur le **dossard** :
+le plus petit est collé à la ligne, à 7 m, et les autres s'empilent derrière tous les 2,2 m dans
+l'ordre croissant. L'ordre de la liste de départ n'a plus aucun effet sur le placement.
+
+**Sa première phrase n'est pas codée** : rien ne permet aujourd'hui de dire à la main qui est devant
+et qui est derrière. Elle reste au §15, avec les points qui attendent.
+
+**Ce qui l'a amené là.** Au build 234, la grille était posée dans l'ordre de la **liste de départ**,
+et cet ordre n'est pas celui que le panneau montre quand il est trié par dossard. Dans sa course du
+18 novembre 2026, ses huit coureurs ajoutés — les BIB 2, 5, 6, 8, 10, 13, 14 et 16, que le bouton
+`+ Add rider` numérote en prenant le plus petit dossard libre — étaient à la **fin** de la liste,
+donc en **tête** de la grille. Les cinq derniers, les BIB 8, 10, 13, 14 et 16, partaient après la
+ligne : c'est son bloc du bas (`mesures.md` §81). Il lisait la dernière ligne de son panneau trié,
+le 24 GER, et avait raison de ne pas s'y reconnaître.

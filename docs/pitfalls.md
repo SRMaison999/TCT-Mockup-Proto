@@ -787,7 +787,15 @@ de retard se figeait dans `took.v0` : un bloc de cinq coureurs à l'arrière pou
 (`mesures.md` §81).
 
 Retenu : **une grille de départ se compte depuis la ligne, vers l'arrière**, jamais depuis un point
-fixe en amont. Le nombre de coureurs est un réglage de l'opérateur, pas une constante.
+fixe en amont. Le nombre de coureurs est un réglage de l'opérateur, pas une constante. Au build 236
+elle se range en plus **par dossard** (point 229), donc l'ordre de la liste n'y entre plus du tout.
+
+**Et l'ordre d'une liste n'est pas l'ordre où on la regarde.** Le panneau du simulateur se trie par
+dossard d'un clic sur l'en-tête ; `RIDERS`, lui, garde l'ordre où les coureurs ont été ajoutés, et
+c'est `RIDERS` que la grille lisait. L'opérateur voyait le 24 GER sur sa dernière ligne pendant que
+la fin de sa liste était le 16 MAS, et ne pouvait pas reconnaître les cinq dossards du bloc du bas
+(`mesures.md` §82). Quand un comportement dépend du rang dans une liste, **dire lequel des deux
+ordres il lit** — et le mieux est qu'il n'en lise aucun.
 
 Et plus largement : **un départ hors de la zone que les boucles mesurent ne se voit pas tout de
 suite**. Il se voit un tour plus tard, sous la forme d'un groupe que rien n'explique. Quand un bloc

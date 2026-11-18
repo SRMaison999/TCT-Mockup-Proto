@@ -4394,3 +4394,30 @@ suivante sur 115 m à 18,6 m/s.
 **Après correction, la même course :** elle va au bout, **540,7 s** pour 40 tours de 13,44 s. **Un
 seul bloc de 24 coureurs** du départ à l'arrivée, étalé sur 50,6 m. **Aucun** `v0` posé. **Aucun**
 saut d'écart relevé par la trace. **Zéro** erreur de console.
+
+---
+
+## §82 · Quels dossards partaient après la ligne, et la grille par dossard · build 236
+
+**Ce qui a été vérifié.** Au §81, l'ordre de liste de départ utilisé pour rejouer sa course avait
+été **déduit** de sa timeline, pas lu chez lui. L'opérateur a relevé que la dernière ligne de son
+panneau porte le **24 GER**, pas le 16 MAS. Le test a donc été refait sur sa liste lue dans l'ordre
+des dossards, 1 à 24, avec la grille du build 234 remise en place.
+
+| Liste de départ | Qui part après la ligne | Bloc du bas mesuré |
+|---|---|---|
+| dans l'ordre des dossards, 1 → 24 | BIB 20, 21, 22, 23, 24 | `24 23 22 21 20`, tous à `v0 = −1` à 296,1 s |
+| celle du §81 (coureurs ajoutés à la fin) | BIB 8, 10, 13, 14, 16 | `16 14 13 10 8` — **son écran** |
+
+Le mécanisme est donc confirmé dans les deux cas : **cinq coureurs posés après la ligne font un bloc
+du bas figé à −1 tour**. Les dossards, eux, sont ceux de la **fin de la liste de départ**, et non
+ceux de la fin du panneau trié. Son écran correspond à la seconde ligne, c'est-à-dire à une liste
+dont les huit coureurs ajoutés — les BIB 2, 5, 6, 8, 10, 13, 14 et 16, numérotés par `+ Add rider`
+qui prend le plus petit dossard libre — sont à la fin.
+
+**La grille du build 236**, sur sa liste de 24 coureurs : BIB 1 à 7,0 m de la ligne, puis un coureur
+tous les 2,2 m dans l'ordre croissant, jusqu'au BIB 24 à 57,6 m. **Aucun coureur après la ligne.**
+L'ordre de la liste de départ n'entre plus dans le calcul.
+
+**La course rejouée** va au bout : 540,7 s, **un seul bloc de 24 coureurs**, aucun `v0` posé, aucun
+saut d'écart, zéro erreur de console.
