@@ -1084,3 +1084,21 @@ presque deux tours d'avance. Le relevé ressemble à un défaut grave et n'est q
 **Avant de lire un relevé, vérifier qu'il a été produit par le même chemin que l'écran de
 l'opérateur.** Ce qui est alimenté par le dessin ne se mesure pas sans dessiner — quitte à ne
 dessiner qu'une image sur quarante, ce qui suffit ici puisqu'un tour dure 269 images.
+
+
+### D35 · Un réglage qui change en cours de mesure rend toute la comparaison fausse, sans un mot
+
+Le 18 novembre 2026, l'allure du simulateur est passée de 18,6 à 18 m/s pendant une série de
+mesures — l'opérateur réglait sa course dans la même page. Le script de mesure, lui, portait 18,6
+en dur. Trois relevés de suite sont sortis de là : une modification du moteur a paru faire passer
+les inversions de 2,81 % à 4,27 %, puis le retour en arrière a laissé 4,27 %. Rien de tout cela
+n'était vrai : ce n'était pas la même course, et la vitesse servant à convertir les mètres en
+secondes n'était plus la bonne.
+
+Ce qui trompe, c'est qu'un chiffre qui empire ressemble exactement à une modification ratée. Le
+seul signe était que le **retour en arrière n'a rien ramené**.
+
+**Un script de mesure ne porte jamais en dur un réglage que l'écran peut changer.** Il le lit où
+l'application le lit — ici `tct.sim.setup`. Et quand un retour en arrière ne restaure pas les
+chiffres d'avant, ce n'est pas la modification qu'il faut regarder : c'est ce qui a bougé par
+ailleurs.
