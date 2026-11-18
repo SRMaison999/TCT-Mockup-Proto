@@ -18,9 +18,7 @@ Avant de toucher aux **tours, aux groupes, au merge ou à l'éligibilité** : li
 
 Avant de recoder quelque chose qui « a l'air simple » : lire `docs/pitfalls.md`.
 
-Pour prendre le travail suivant : `docs/travaux.md`.
-
-L'ordre de lecture complet des sept documents, et qui possède quoi, sont dans le `README.md`.
+L'ordre de lecture complet des six documents, et qui possède quoi, sont dans le `README.md`.
 
 ## La manière de travailler
 
@@ -49,8 +47,10 @@ Les dix points qui attendent une décision de l'opérateur sont dans `docs/regle
 ## Quand du code est livré
 
 L'opérateur l'a posé en règle le 28 octobre 2026 : les documents se mettent à jour **dans le
-même tour que le code**. La procédure exacte est dans `docs/travaux.md`, « Comment tenir cette
-liste », point 3.
+même tour que le code**. Donc, dans ce même tour : la ligne de `docs/cas-de-course.md` passe
+conforme, les chiffres vont dans `docs/mesures.md`, le code se décrit dans
+`docs/architecture.md`, l'erreur comprise va dans `docs/pitfalls.md`, et sa règle, mot pour mot,
+dans `docs/regles-operateur.md`.
 
 Le prototype porte un **numéro de build** dans son en-tête, à incrémenter à chaque publication.
 

@@ -3558,10 +3558,10 @@ const FINB = $('#armfinish');
 // The two provenances are shown together, each with its own figure, and one of them is picked: that is the
 // operator's own rule for a linked lap counter — « un désaccord est signalé avec les deux valeurs plutôt que
 // corrigé en silence » (regles-operateur.md §13). The application's figure is either its own count or the
-// operator's; the lap counter's comes from the track, and nothing feeds it yet (travaux.md §4 bis).
+// operator's; the lap counter's comes from the track, and nothing feeds it yet.
 function appValue(autoVal) { return S.togoMode === 'manual' && S.togoManual != null ? S.togoManual : autoVal; }
 // What the application receives from the lap counter on the track. The prototype has no such feed, so it reads the
-// same count the application makes (travaux.md §4 bis): the two provenances agree here, and the disagreement the
+// same count the application makes: the two provenances agree here, and the disagreement the
 // operator's §13 describes cannot be exercised until a real counter is simulated.
 function counterValue(autoVal) { return autoVal; }
 function togoValue(autoVal) { return S.togoPick === 'counter' ? counterValue(autoVal) : appValue(autoVal); }

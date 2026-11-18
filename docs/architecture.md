@@ -762,7 +762,7 @@ compte, parce que c'est elle qui fait qu'**une simulation effacée reste effacé
 Rien en aval ne sait d'où vient cette ligne : plus d'indice `-1`, plus de drapeau `ref`, plus
 de bordure verte sur sa ligne.
 
-**Renommer et effacer (poste `travaux.md` §6a).** Chaque ligne porte *Load*, *Rename* et
+**Renommer et effacer.** Chaque ligne porte *Load*, *Rename* et
 *Delete*. Deux variables d'écran suffisent : `renaming` tient l'indice de la ligne en cours
 d'édition, `delArmed` celui de la ligne dont *Delete* a été cliqué une fois. Le gabarit d'une
 ligne lit les deux et se dessine en conséquence — champ + *Save*/*Cancel*, ou *Delete?* en
@@ -1556,7 +1556,7 @@ couleurs y sont écrites en dur, telles qu'elles sortiraient du code.
 sont dans `mesures.md` §31. Elle n'en invente aucun.
 
 **Ce qu'il faut en faire.** Une réponse qu'il choisit entre dans `regles-operateur.md` §17,
-mot pour mot, puis dans `travaux.md`. Un point qu'il laisse où il est reste dans
+mot pour mot, puis dans le code. Un point qu'il laisse où il est reste dans
 `audit-ux.md`. Quand les cinq sont tranchés, la planche n'a plus d'objet et se retire.
 
 **À savoir pour la relire** : un `node serve.js` lancé avant que le serveur ne sache servir le
@@ -1584,7 +1584,7 @@ rouge pour le Portugal, le vert pour l'Italie — et le dit à l'écran pour qu'
 
 Les points A, C, E et F de la planche sont **tranchés** depuis (`regles-operateur.md` §17,
 points 136 et 138 à 141) ; leurs sections restent dans la planche tant que le code ne les a pas
-rattrapés, et le travail correspondant est dans `travaux.md` §13.
+rattrapés.
 
 ---
 

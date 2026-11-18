@@ -178,7 +178,7 @@ autres coureurs gardent exactement leur place**. Avec deux inéligibles à 250 m
 retard, ils finissent tous deux derrière le peloton et dans l'ordre de la timeline entre
 eux. Avec un ordre arrangé par l'opérateur, rien ne bouge.
 
-**Le scénario qui l'exercerait pour de bon reste à construire** (`travaux.md` §2) : décaler le décrochage des
+**Le scénario qui l'exercerait pour de bon reste à construire** : décaler le décrochage des
 BIB 4 et 11 pour qu'ils soient entre le peloton et la ligne à l'ouverture d'un sprint. Il
 exercerait du même coup les lignes grisées (§8 ci-dessous).
 
@@ -596,8 +596,7 @@ récupérer ce dixième, et de l'écrire ici.
 
 Donc : Restart rejoue sans rien enregistrer ni ouvrir, et `+` enregistre puis ouvre une course
 vide. Une course ouverte par `+` ne porte aucun ordre, donc **ne bouge pas toute seule**,
-quelle que soit la course chargée avant — ce qui est le premier critère du poste `travaux.md`
-§7a.
+quelle que soit la course chargée avant.
 
 **Le point REC**, relevé sur la classe de `#simrec` : **allumé** quand la course est en
 lecture, **éteint** en pause, éteint tant qu'aucune course n'est partie. C'est la lecture que
@@ -1948,14 +1947,13 @@ franchi après les cinq premiers, leurs lignes suivent les cinq places.
 | Lignes grisées de l'ordre | `12 SUI no points`, `52 ITA no points`, sans rang |
 
 **Vérifié en apparence seulement** pour la timeline et le badge, l'état `S.inelig` ne se
-produisant pas dans une course simulée (c'est le scénario que `travaux.md` §2 dit encore à
-construire) : la pastille `no pts` tient dans la colonne de 174 px sans la faire déborder
+produisant pas dans une course simulée (le scénario restait à construire) : la pastille `no pts` tient dans la colonne de 174 px sans la faire déborder
 (−5 px de marge), et le badge rend `1-Bunch · 2 NO PTS`, son fond s'élargissant avec le texte.
 
 ## 50. Le scénario qui force l'inéligibilité, et sa vérification en course — build 147
 
 Construit le 29 octobre 2026, à la demande de l'opérateur. Il comble le manque que `mesures.md`
-§6 et `travaux.md` §2 signalaient depuis la build 53.
+§6 signalait depuis la build 53.
 
 ### La recette, rejouable à la main
 
@@ -3102,7 +3100,6 @@ entier — « 18,3 s → −0,1 s » puis l'inverse, 164 fois. L'écart s'affich
 les boucles, mais la **place** du bloc vient désormais des détections tandis que `g.head` et
 `g.tail`, qui servent la correction de tour, viennent encore des mètres interpolés. Les deux ne
 disent pas toujours la même chose, et quand elles se contredisent un tour est ajouté à l'écart.
-C'est le poste 18 et le poste 20 de `travaux.md`.
 
 ## Build 180 · l'écart des blocs, mesuré aux détections
 
@@ -3691,7 +3688,7 @@ instant précis.
 est classé sur **leur** tour, le 9, pendant que le sprint est celui du tour 10 du leader. Il
 n'entre dans le sprint 1 qu'une fois le tour perdu validé et le passage reclassé sur le tour du
 peloton. À ce moment-là le sprint est fermé, et le grisage ne travaille que tant qu'il est ouvert
-(`spTick`). C'est le poste 22 de `docs/travaux.md`.
+(`spTick`).
 
 **Un second fait, au sprint final.** Le 46 et le 70, un tour en retard, prennent les places **3 et
 4** et marquent **4 et 2 points** : `lappedAt` rend `false` dès qu'il s'agit du sprint final, donc
@@ -4011,7 +4008,7 @@ La barre du haut, elle, **débordait déjà** : son contenu demande **1 558 px**
 de sa boîte, soit 353 px de trop, sans rien de ce build. Le champ du type de course en ajoute
 **138** et porte le débordement à **491 px**. Les deux gros postes sont les six onglets (491 px) et
 le transport du simulateur (543 px) ; le numéro de build, `flex: 0 0 auto`, ne se laisse toujours
-pas couper (règle 74). C'est le poste `travaux.md` §27.
+pas couper (règle 74).
 
 
 ## §67 · La vue Évolution au palier 2 (build 212)

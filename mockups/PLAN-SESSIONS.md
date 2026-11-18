@@ -53,8 +53,9 @@ les plus lourds et peuvent attendre leur tour.
   dans la **barre du haut** (ses mots du 17 novembre 2026), se bloque au départ comme `Laps` et
   `Sprints`, et se garde d'une course à l'autre.
 - **Ce qui reste ouvert et n'est pas de cette session.** La barre du haut déborde à 1440 px —
-  elle débordait déjà avant ce build — c'est le poste `travaux.md` §27, à trancher avec lui.
-  L'export PDF de la maquette n'est pas fait : les exports CSV, journal et trace sont inchangés.
+  elle débordait déjà avant ce build — et ce qui cède quand elle est pleine est à trancher avec
+  lui (les chiffres sont dans `mesures.md` §66). L'export PDF de la maquette n'est pas fait :
+  les exports CSV, journal et trace sont inchangés.
 
 ### S2 · Historique du classement + Évolution — **livré, build 213**
 - **But.** Faire que le moteur **enregistre le classement à chaque étape** (chaque sprint, chaque

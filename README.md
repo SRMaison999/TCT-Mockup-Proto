@@ -29,8 +29,6 @@ seul document, listé ci-dessous.
 5. **`docs/concept.md`** — le produit visé : vision, contexte, écrans, intégrations.
 6. **`docs/mesures.md`** — tous les chiffres du projet, chacun avec le numéro de build où il a
    été mesuré.
-7. **`docs/travaux.md`** — ce qui reste à construire et ce qui est cassé, avec, pour chaque
-   poste, à quoi on saura que c'est fini. **C'est ici qu'on prend le travail suivant.**
 
 ### Qui possède quoi
 
@@ -44,7 +42,6 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 | `docs/architecture.md` | le code du prototype et ses constantes |
 | `docs/pitfalls.md` | les erreurs, leurs causes, les contraintes d'implémentation, les scénarios de test |
 | `docs/mesures.md` | tous les nombres mesurés, avec leur build |
-| `docs/travaux.md` | ce qui reste à construire, ce qui est cassé, et à quoi on saura que c'est fini |
 | `docs/concept.md` | la vision et le produit visé : contexte, écrans, intégrations |
 | `README.md` | la carte du dossier et comment lancer |
 
@@ -64,8 +61,8 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 | `serve.js` | Serveur statique local minimal (voir ci-dessous) |
 | `.claude/launch.json` | Configuration du serveur pour l'aperçu intégré |
 | `.claude/handoff/` | Passations entre sessions d'assistance : `active.md` quand une attend, `archive/` ensuite |
-| `docs/` | Les sept documents du projet, décrits ci-dessus |
-| `docs/audit-ux.md` | **Pas un des sept.** L'audit de l'écran mené le 31 octobre 2026 sur `timeline-prototype_mixed.html` et l'avis sur le design : une **liste de propositions en attente de l'accord de l'opérateur**, rien de plus. Un point qui obtient son accord part dans `docs/travaux.md` ou dans le code, et disparaît de ce fichier. Ne possède aucun fait |
+| `docs/` | Les six documents du projet, décrits ci-dessus |
+| `docs/audit-ux.md` | **Pas un des sept.** L'audit de l'écran mené le 31 octobre 2026 sur `timeline-prototype_mixed.html` et l'avis sur le design : une **liste de propositions en attente de l'accord de l'opérateur**, rien de plus. Un point qui obtient son accord part dans le code, et disparaît de ce fichier. Ne possède aucun fait |
 | `docs/La course aux points.txt` | **Pas un des sept.** Le fonctionnement de la course aux points tel que l'opérateur l'a énoncé le 1er novembre 2026, qu'il a posé lui-même dans le dossier. Ses mots sont consignés au point 174 de `docs/regles-operateur.md`, qui reste l'autorité |
 | `UCI-Rules_PointsRace.pdf` | **Le règlement officiel de l'UCI** pour la course aux points, à la racine du dossier. C'est la référence réglementaire du sport ; les règles auxquelles le code se conforme restent celles de `docs/regles-operateur.md`, qui y renvoie |
 | `CLAUDE.md` | Ce que lit automatiquement une session d’assistance : l’ordre de lecture et la manière de travailler. **Aucun fait, aucune règle, aucune mesure** — il ne fait que renvoyer aux documents qui les possèdent |

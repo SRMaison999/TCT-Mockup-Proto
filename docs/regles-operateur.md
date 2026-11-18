@@ -774,7 +774,7 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   prend la vitesse du groupe rejoint. Pour `↑` et `↓` c'est immédiat ; pour `+lap` et
   `−lap` le coureur revient dans le peloton en une trentaine de secondes, parce qu'il doit
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
-  tour de 195 secondes (`travaux.md` §8d). À trancher.
+  tour de 195 secondes. À trancher.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
 
 ### Cinq points tranchés le 29 octobre 2026
@@ -806,8 +806,8 @@ Cette section vient après le §15 pour ne renuméroter aucune autre : les six s
 précèdent sont citées par leur numéro dans tous les autres documents. Elle porte sur le
 **prototype lui-même**, pas sur la course.
 
-**28 octobre 2026 — la simulation doit devenir une course ordinaire.** Le poste
-`travaux.md` §7a demande que la simulation cesse d'être un cas particulier câblé
+**28 octobre 2026 — la simulation doit devenir une course ordinaire.** Il fallait que la
+simulation cesse d'être un cas particulier câblé
 dans le code et devienne une course enregistrée comme les autres, qu'on charge, rejoue,
 renomme et efface. Deux questions lui ont été posées avant d'y toucher. Ses réponses, mot
 pour mot :

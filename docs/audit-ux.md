@@ -8,9 +8,8 @@ règle du 31 octobre 2026, dans `regles-operateur.md` §14 : « Quand je demande
 avis, la réponse peut contenir ce que je n'ai pas demandé — mais elle reste une liste de
 propositions, et chaque point attend mon accord avant d'entrer dans le code. »
 
-Ce fichier n'est donc **pas** une liste de travaux : `travaux.md` ne reçoit un poste qu'une
-fois qu'il est décidé. Un point qui sort d'ici part dans `travaux.md` ou directement dans le
-code, et disparaît de cette liste.
+Ce fichier n'est donc **pas** une liste de travaux : un point n'est codé qu'une fois qu'il est
+décidé. Un point qui sort d'ici part dans le code, et disparaît de cette liste.
 
 L'ordre est celui de la gêne **en course** : le cosmétique est en bas. Pas de note, pas de
 score — l'ordre porte déjà la priorité.
@@ -231,7 +230,7 @@ même compte que l'application** : rien ne vient de la piste. Les deux nombres s
 par construction, et le désaccord que §13 décrit ne peut jamais s'afficher.
 
 **Où** — `:1537` : `function counterValue(autoVal) { return autoVal; }`. Le code le dit
-lui-même, et `travaux.md` §4 bis aussi.
+lui-même.
 
 **Angle** — 4. Une valeur présentée avec une origine qui n'est pas la sienne est le cas le plus
 coûteux : c'est celle sur laquelle on s'appuie quand les deux divergent.
@@ -389,7 +388,7 @@ chiffres qu'elle avance — contrastes des gris, écarts entre couleurs de dossa
 **La première fournée a été présentée en bloc, et il l'a refusée** : « Mais je ne comprends rien
 à ce que tu me dis », puis « une chose après l'autre ok ? ». Les cinq ont été reposées une à
 une, en montrant ce qui change à l'écran. Ses réponses sont dans `regles-operateur.md` §17,
-points 136 à 141 ; ce qu'elles laissent à faire est dans `travaux.md`.
+points 136 à 141.
 
 | Point | Sa réponse, 31 octobre 2026 | Où il en est |
 |---|---|---|

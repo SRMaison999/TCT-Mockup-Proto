@@ -30,11 +30,9 @@ Dans cet ordre :
    « a l'air simple ».
 4. **`docs/architecture.md`** — le moteur du prototype, décrit section par section (voir le
    renvoi dans chaque fiche d'écran plus bas). C'est la référence technique.
-5. **`docs/travaux.md`** — les travaux, et la procédure de mise à jour des docs « dans le même
-   tour que le code ».
-6. **`mockups/README.md`** et **`mockups/HANDOVER.md`** — les décisions de dessin de chaque
+5. **`mockups/README.md`** et **`mockups/HANDOVER.md`** — les décisions de dessin de chaque
    maquette, et le fil des demandes de l'opérateur.
-7. **`presentation/Course-aux-points-presentation.md`** — la présentation produit : utile pour
+6. **`presentation/Course-aux-points-presentation.md`** — la présentation produit : utile pour
    comprendre ce que chaque écran apporte, du point de vue de l'utilisateur.
 
 ---
@@ -247,10 +245,10 @@ Scénarios (S9) et le fil commentateurs (S10) le lisent de là — ils n'ont pas
   `--good`, `--warn`, `--crit`, `--line`, `--line2`, `--panel`, `--bg`). Polices IBM Plex
   Sans/Mono.
 - `[hidden]{display:none!important}` pour les bascules ; `flex:0 0 auto` contre l'écrasement.
-- **Build incrémenté** à chaque publication ; **docs mises à jour dans le même tour** que le code
-  (`travaux.md`, « Comment tenir cette liste », point 3 : `architecture.md` pour le code,
-  `mesures.md` pour les chiffres, `pitfalls.md` pour l'erreur comprise, et la règle de l'opérateur
-  dans `regles-operateur.md`).
+- **Build incrémenté** à chaque publication ; **docs mises à jour dans le même tour** que le code :
+  `architecture.md` pour le code, `mesures.md` pour les chiffres, `pitfalls.md` pour l'erreur
+  comprise, `cas-de-course.md` pour la ligne qui passe conforme, et la règle de l'opérateur
+  dans `regles-operateur.md`.
 
 ---
 
@@ -278,7 +276,7 @@ Scénarios (S9) et le fil commentateurs (S10) le lisent de là — ils n'ont pas
 
 Elles sont dans `docs/regles-operateur.md` **§15**. Tant qu'elles ne sont pas tranchées par
 l'opérateur, coder une réponse est l'erreur `pitfalls.md` A12. Exemples qui touchent ces écrans :
-la **place suivante** au-delà des places qui comptent (`travaux.md` §10), le **détail de la
+la **place suivante** au-delà des places qui comptent, le **détail de la
 neutralisation** après crash, le **texte de la raison d'inéligibilité**. Les lire avant d'y
 toucher.
 
