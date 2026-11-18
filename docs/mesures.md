@@ -4546,3 +4546,37 @@ faux relevés — 14,15 s — en sont de l'ordre.
 
 **Enfin**, 175 relevés sur 316 — **55 %** — portent sur une frontière dont les deux coureurs n'ont
 **aucune boucle en commun**. Aucune heure de passage ne les relie, et la décision se prend ailleurs.
+
+---
+
+## §87 · L'ordre de la timeline est inversé une fois sur huit · build 238
+
+**La question posée.** Au §86, 55 % des frontières entre deux blocs portaient sur deux coureurs sans
+aucune boucle commune. Si A est devant B et à moins d'un tour, la boucle que B vient de franchir, A
+l'a franchie avant lui : il devrait donc toujours y avoir une boucle qui les relie. Qu'il n'y en ait
+pas veut dire que **l'un des deux n'est pas du côté où la timeline le met**.
+
+**La même course** qu'au §86. 290 frontières relevées.
+
+| | |
+|---|---|
+| frontières relevées | 290 |
+| sans aucune lecture dans le sens affiché | **67** |
+| dont les deux coureurs sont au **même point de course** (passages, tours validés retranchés) | **39** |
+
+Les 28 autres sont des frontières où un tour sépare réellement les deux blocs : là, aucune boucle ne
+peut les relier dans ce sens, et c'est normal.
+
+**Les 39 restantes sont un ordre faux.** Dans un relevé antérieur sur la même course, toutes les
+paires illisibles dans le sens affiché se lisaient en inversant la paire : 108 sur 108.
+
+**Le cas le plus répété.** La timeline montre le **BIB 22 au-dessus du BIB 3**. Les deux ont le même
+nombre de passages sur la ligne, tours validés retranchés — 22 et 22, puis 23 et 23, puis 24 et 24,
+puis 25 et 25. Et sur les boucles, c'est le **3 qui est devant le 22, de 2,247 s**. L'ordre est donc
+à l'envers.
+
+La valeur de 2,247 s est relevée **identique** à 301,8 s, 307,4 s, 313,4 s, 319,5 s, 332,0 s et
+345,9 s — figée pendant 44 secondes de course, soit plus de trois tours.
+
+**Ce que cela décide.** L'ordre doit être réparé avant la coupure : une cassure mesurée entre deux
+coureurs rangés à l'envers ne peut pas être juste, quelle que soit la façon dont on la mesure.

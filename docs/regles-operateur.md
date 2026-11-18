@@ -3421,3 +3421,24 @@ coureurs couraient au même point de la course.
 **Un tour gagné laisse un passage de plus sur la ligne et ne laisse rien dans la timeline.** Le
 coureur y revient avec les autres ; ce qui le distingue est ailleurs, au classement général, où il
 porte ses 20 points. Un compte de passages se lit donc toujours **tours validés retranchés**.
+
+
+### 234 · L'écart entre deux groupes se prend du dernier au premier · 18 novembre 2026
+
+> « ok c'est clairement le moteur qui est complètement faux ! Honnêtement ça faisait un bon moment
+> que je m'en méfiais !
+> Une remarque toutefois, l'écart entre deux groupes ne doit pas être compté entre les premiers de
+> chacun des groupes, mais là encore entre le dernier d'un groupe, et le premier du grouope qui le
+> suit »
+
+Dit sur une proposition de réparation du moteur de course qui mesurait cet écart d'un **premier** à
+l'autre.
+
+**L'écart porté par l'en-tête d'un bloc est donc celui qui le sépare du bloc juste au-dessus**, pris
+du **dernier coureur** de ce bloc-là au **premier coureur** du sien. C'est la même paire que celle
+qui décide de la cassure entre les deux groupes (§1), et c'est donc la même mesure, lue sur les
+heures de passage.
+
+À ne pas confondre avec l'écart d'un coureur **au vainqueur**, que son §1 définit autrement : celui-là
+se prend de la roue avant du vainqueur à la roue avant du **premier coureur du groupe** où figure ce
+coureur.
