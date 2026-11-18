@@ -3340,3 +3340,32 @@ et cet ordre n'est pas celui que le panneau montre quand il est trié par dossar
 donc en **tête** de la grille. Les cinq derniers, les BIB 8, 10, 13, 14 et 16, partaient après la
 ligne : c'est son bloc du bas (`mesures.md` §81). Il lisait la dernière ligne de son panneau trié,
 le 24 GER, et avait raison de ne pas s'y reconnaître.
+
+
+### 230 · Le sous-onglet Start order, les listes enregistrées, les prénoms · 18 novembre 2026
+
+> « alors je pense qu'il faut créer un sous-onglet à l'onglet start list : Start order !
+> Et en plus de cela il faudrait aussi pouvoir sauvegarder les start lists (comme on le fait déjà
+> avec les fichiers de courses simulées), ce qui sera très pratique quand on voudra passer d'une
+> liste à x coureurs à une autre à x+y coureurs ! Comprends-tu ce je veux dire ?
+> Et également pouvoir éditer les prénoms des coureurs (j'ai l'impression que les prénoms sont
+> actuellement codés en dur) »
+
+Sur où mettre les listes enregistrées, le même jour : **« Dans Start list »**.
+
+**Codé au build 237.** L'onglet `Start list` porte trois sous-onglets.
+
+- **`Riders`** : sa liste, avec une colonne **First name** de plus, éditable comme le nom. Le prénom
+  était une colonne de la table du code, repêchée par dossard, et vide pour tout coureur ajouté.
+- **`Start order`** : la grille telle qu'elle sera posée, de la place 1 collée à la ligne jusqu'à la
+  dernière, avec la distance à la ligne sur chaque ligne. On réordonne en **faisant glisser une
+  ligne**, comme l'ordre d'un sprint. `By bib` remet l'ordre des dossards de son point 229, qui
+  tient tant qu'il n'a touché à rien.
+- **`Files`** : ses listes enregistrées, sur le modèle des courses — un numéro propre, un nom qu'il
+  change, `Load` / `Rename` / `Delete`, et `Save` sur la liste courante. Une liste emporte ses
+  coureurs, leurs prénoms, leurs couleurs **et son ordre de départ**.
+
+**Trois choses ont été posées sans qu'il les ait dites**, et elles se défont s'il le veut : un
+coureur ajouté après coup va à la **fin** de la grille, un coureur retiré en sort ; l'ordre et les
+listes se **bloquent** dès que la course est partie, comme le reste de la liste de départ ; et
+**aucun export fichier** n'a été ajouté — `Save` écrit dans le prototype, pas sur le disque.

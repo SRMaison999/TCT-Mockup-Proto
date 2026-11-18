@@ -4421,3 +4421,29 @@ L'ordre de la liste de départ n'entre plus dans le calcul.
 
 **La course rejouée** va au bout : 540,7 s, **un seul bloc de 24 coureurs**, aucun `v0` posé, aucun
 saut d'écart, zéro erreur de console.
+
+---
+
+## §83 · Les trois sous-onglets de Start list · build 237
+
+**Ce qui a été éprouvé**, sur sa liste de 24 coureurs, piste de 250 m, 40 tours, 18,6 m/s.
+
+**Les sous-onglets.** `Riders`, `Start order`, `Files`. Le rail mesure 461 px, la ligne de coureur
+448 px : pastille 18, dossard 34, **prénom 82**, nom 216, NOC 40. Aucun débordement.
+
+**Le prénom.** `Carlos` sur le BIB 1 devient `Carlitos` et la course le reprend ; vidé sur le BIB 2,
+il reste vide ; un coureur ajouté naît **BIB 25, sans prénom**, et la ligne du classement n'affiche
+alors que son nom.
+
+**La grille.** Au départ, places 1 à 24 pour les dossards 1 à 24, de 7,0 m à 57,6 m de la ligne. Le
+BIB 24 glissé sur la place 1 : la grille devient `24, 1, 2, 3…`, le BIB 24 passe à 7,0 m et le BIB 1
+à 9,2 m — relevé sur `S.riders`, donc la simulation suit. `By bib` remet `1, 2, 3…`.
+
+**Les listes.** `Save` sur la liste de 24 → `1 · 24 riders · own start order`. Deux coureurs retirés,
+`Save` → `2 · 22 riders`. `Load` sur la première → 24 coureurs, BIB 24 toujours en tête de grille.
+`Rename` → `Worlds qualif`. `Delete` demande au premier clic (`Delete?`) et supprime au second.
+Après rechargement de la page, la liste enregistrée, la liste courante et l'ordre de grille sont
+tous retrouvés.
+
+**La course rejouée** avec un ordre posé à la main : 540,7 s, **un seul bloc de 24 coureurs**, aucun
+`v0`, aucun saut d'écart, **zéro erreur** de console.

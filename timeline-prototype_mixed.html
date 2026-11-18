@@ -581,6 +581,24 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 #ledgerbox .ledger .lgt b.up{color:var(--good)}
 #ledgerbox .ledger .lgt b.down{color:var(--warn)}
 .lrow{grid-template-columns:62px 118px minmax(0,1fr)} /* build 210 : « READ » renommé « TRANSPONDER » au journal — colonne Type élargie pour le libellé (styles.css partagé inchangé) */
+/* build 237 — l'onglet Start list et ses trois sous-onglets (styles.css partagé inchangé).
+   La ligne de coureur prend une colonne de plus : le PRÉNOM, qui était codé en dur (point 230). */
+.rosterrow{grid-template-columns:22px 34px 82px minmax(0,1fr) 40px 24px}
+.rosterrow input.first{color:var(--muted)}
+.rosterrow input.first::placeholder{color:var(--dim);opacity:.7}
+/* La grille de départ : une ligne par place, qu'on fait glisser. */
+.sorow{display:grid;grid-template-columns:22px 10px 30px 34px minmax(0,1fr) 52px;gap:5px;align-items:center;min-height:24px;padding:1px 5px;margin-bottom:1px;
+  background:#17191c;border-left:3px solid var(--line2);border-radius:0 3px 3px 0;cursor:grab}
+.sorow:active{cursor:grabbing}
+.sorow .pl{font:600 11px var(--mono);color:var(--deep);background:var(--muted);border-radius:3px;padding:1px 0;text-align:center}
+.sorow .sw{width:10px;height:14px;border-radius:2px}
+.sorow .bb{font:600 12px var(--mono);color:var(--fg);text-align:center}
+.sorow .nc{font:600 11px var(--mono);color:var(--muted);text-align:center}
+.sorow .nn{font:500 11.5px var(--sans);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sorow .nn b{color:var(--fg);font-weight:600}
+.sorow .dm{font:500 11px var(--mono);color:var(--dim);text-align:right}
+.sorow.dragging{opacity:.4}
+.sorow.over{border-left-color:var(--acc);box-shadow:inset 0 2px 0 var(--acc)}
 </style>
 
 <div class="shell">
@@ -658,7 +676,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <button class="btn quiet gone" id="leaderauto" title="Back to the leader taken from the track">Auto</button>
       <button class="btn" id="undo" disabled title="Nothing to undo">Undo</button>
       <span class="sp"></span>
-      <span class="bld" id="buildno">236</span>
+      <span class="bld" id="buildno">237</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
@@ -851,7 +869,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '236';
+const BUILD = '237';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -901,6 +919,15 @@ const RIDERS = [
 // distance Finish → Pursuit A, tours, sprints, allure) et l'appairage transpondeur ↔ dossard. Elles sont relues au
 // démarrage, et les valeurs ci-dessus ne servent plus que la toute première fois.
 const SKEY = 'tct.sim.setup';
+// LES LISTES DE DÉPART ENREGISTRÉES. Son point 230, 18 novembre 2026 : « il faudrait aussi pouvoir sauvegarder les
+// start lists (comme on le fait déjà avec les fichiers de courses simulées), ce qui sera très pratique quand on
+// voudra passer d'une liste à x coureurs à une autre à x+y coureurs ». Même modèle que les courses : un numéro
+// propre, un nom qu'il change, Load / Rename / Delete. Une liste emporte ses coureurs ET son ordre de départ.
+const SLKEY = 'tct.sim.lists';
+let LISTS = [];
+// L'ORDRE DE LA GRILLE DE DÉPART, quand l'opérateur l'a posé lui-même : la suite des dossards, du coureur collé à
+// la ligne jusqu'au dernier. `null` = il n'y a pas touché, et c'est l'ordre des dossards qui tient (son point 229).
+let GRIDORDER = null;
 let TPMAP = null, TPSPARE = null;       // dossard → numéro de transpondeur, et les transpondeurs libres
 function saveSetup() {
   // L'appairage est tenu à jour EN MÉMOIRE en même temps que sur le disque : c'est lui que `reset()` relit, et une
@@ -912,7 +939,7 @@ function saveSetup() {
   try {
     localStorage.setItem(SKEY, JSON.stringify({
       cfg: { track: CFG.track, laps: CFG.laps, sprints: CFG.sprints, gap: CFG.gap, pace: CFG.pace, type: CFG.type, advance: CFG.advance },
-      riders: RIDERS, tp: TPMAP ? Object.entries(TPMAP).map(([b, id]) => [+b, id]) : null, spare: TPSPARE
+      riders: RIDERS, order: GRIDORDER, tp: TPMAP ? Object.entries(TPMAP).map(([b, id]) => [+b, id]) : null, spare: TPSPARE
     }));
   } catch (e) { /* storage full or blocked: the settings hold for this session only */ }
 }
@@ -929,8 +956,24 @@ function loadSetup() {
     RIDERS.length = 0;
     for (const r of d.riders) RIDERS.push(r.length < 6 && first[r[0]] ? [r[0], r[1], r[2], r[3], r[4] || 0, first[r[0]]] : r);
   }
+  if (Array.isArray(d.order) && d.order.length) GRIDORDER = d.order.map(Number);
   if (Array.isArray(d.tp)) { TPMAP = {}; for (const [bib, id] of d.tp) TPMAP[bib] = id; }
   if (Array.isArray(d.spare)) TPSPARE = d.spare;
+}
+function saveLists() { try { localStorage.setItem(SLKEY, JSON.stringify(LISTS.slice(0, 60))); } catch (e) { /* storage full or blocked */ } }
+function loadLists() { try { LISTS = JSON.parse(localStorage.getItem(SLKEY) || '[]') || []; } catch (e) { LISTS = []; } }
+function listNo() { let n = 0; for (const l of LISTS) if (l.no > n) n = l.no; return n + 1; }
+
+// L'ORDRE DE LA GRILLE, dossard par dossard, du coureur collé à la ligne jusqu'au dernier.
+// Sans ordre posé à la main, c'est celui des dossards. Avec : un coureur retiré de la liste de départ sort de
+// l'ordre, un coureur ajouté va à la FIN de la grille — il n'y avait pas de place à lui donner ailleurs.
+function gridOrder() {
+  const bibs = RIDERS.map(r => r[0]), byNum = bibs.slice().sort(byBib);
+  if (!GRIDORDER) return byNum;
+  const have = new Set(bibs), out = [], seen = new Set();
+  for (const b of GRIDORDER) if (have.has(b) && !seen.has(b)) { out.push(b); seen.add(b); }
+  for (const b of byNum) if (!seen.has(b)) out.push(b);
+  return out;
 }
 const SILENT = {};                              // transponder stops answering from lap 14
 const CRASH = { lap: 999, bibs: [], backLap: 999 };  // crash at Pursuit B, back on the track four laps later
@@ -971,8 +1014,9 @@ function reset() {
   // `took.v0`, et ils restaient un bloc à part jusqu'à l'arrivée (mesures.md §81).
   // Son point 229, le même jour : « je voudrais que ce soit le BIB 1 qui soit tout devant, et le BIB le plus élevé
   // qui soit à l'arrière ». La place sur la grille se lit donc sur le DOSSARD, et non sur le rang dans la liste de
-  // départ. L'ordre de `S.riders` ne bouge pas pour autant : c'est lui qui porte la course.
-  const gridRank = {}; RIDERS.map(r => r[0]).sort(byBib).forEach((b, k) => { gridRank[b] = k; });
+  // départ — sauf s'il a posé son propre ordre dans le sous-onglet Start order (`GRIDORDER`, point 230).
+  // L'ordre de `S.riders` ne bouge pas pour autant : c'est lui qui porte la course.
+  const gridRank = {}; gridOrder().forEach((b, k) => { gridRank[b] = k; });
   S = {
     t: 0, factor: 1, finished: false,
     riders: RIDERS.map(([bib, name, nat, color, dk, first], i) => ({
@@ -3915,6 +3959,7 @@ let renaming = null, delArmed = null;   // the row being renamed, and the row wh
 // a loaded race was replayed AND recorded at once, so every replay dropped a copy of it in the list: three Loads,
 // three copies (mesures.md §19).
 let RACES = [], REC = null, LOADED = null, simTab = 'riders', railRows = {}, startListEditing = false;
+let slTab = 'riders', lRenaming = null, lDelArmed = null, dragBib = null;   // l'onglet Start list et ses trois sous-onglets
 // L'ordre dans lequel la liste des coureurs est AFFICHÉE. L'opérateur : « il faut pouvoir trier la liste des coureurs
 // par BIB, NOC alphabétique, ou nom alphabétique. un clic sur l'en-tête inverse l'ordre ». C'est un ordre d'affichage
 // et rien d'autre : S.riders n'est jamais réordonné, parce que c'est lui qui porte la course. Tant que rien n'est
@@ -4297,14 +4342,53 @@ function renderRail() {
     + (RACES.length ? RACES.map((r, i) => row(r, i)).join('') : '<div class="hint">No saved race. Play one and press New.</div>');
   if (renaming != null) { const el = $('#rnin'); if (el && document.activeElement !== el) { el.focus(); el.select(); } }
 
-  $('#simstartlist').innerHTML = `<div class="ksub">Entered riders<span class="sp"></span><button class="btn xs quiet" id="rosteradd"${lock}>Add</button><button class="btn xs quiet${startListEditing ? ' on' : ''}" id="rosteredit"${lock}>Edit</button></div>`
-    + sortedRoster().map(({ e: [bib, name, nat, color], i }) => `<div class="rosterrow${startListEditing ? ' editing' : ''}">
+  renderStartList(lock, esc);
+}
+
+// ---------- l'onglet Start list et ses trois sous-onglets ----------
+// Son point 230, 18 novembre 2026 : « il faut créer un sous-onglet à l'onglet start list : Start order ! », les
+// listes enregistrées, et les prénoms éditables. Trois sous-onglets : RIDERS (la liste elle-même), START ORDER
+// (la grille, qu'on réordonne en faisant glisser une ligne) et FILES (les listes enregistrées).
+function renderStartList(lock, esc) {
+  const sub = ['riders', 'order', 'files'].map(k => `<button class="btn xs ${slTab === k ? 'on' : 'quiet'}" data-sl="${k}">${k === 'riders' ? 'Riders' : k === 'order' ? 'Start order' : 'Files'}</button>`).join('');
+  let body = '';
+  if (slTab === 'riders') {
+    body = `<div class="ksub">Entered riders<span class="sp"></span><button class="btn xs quiet" id="rosteradd"${lock}>Add</button><button class="btn xs quiet${startListEditing ? ' on' : ''}" id="rosteredit"${lock}>Edit</button></div>`
+      + sortedRoster().map(({ e: [bib, name, nat, color, dk, first], i }) => `<div class="rosterrow${startListEditing ? ' editing' : ''}">
       <input type="color" class="swatch" data-ri="${i}" data-f="color" value="${color}" title="Change color"${lock}>
       <input class="bib" data-ri="${i}" data-f="bib" value="${bib}"${startListEditing ? '' : ' readonly'}${lock}>
-      <input class="name" data-ri="${i}" data-f="name" value="${name}"${startListEditing ? '' : ' readonly'}${lock}>
-      <input class="noc" data-ri="${i}" data-f="nat" value="${nat}"${startListEditing ? '' : ' readonly'}${lock}>
+      <input class="first" data-ri="${i}" data-f="first" value="${esc(first || '')}" placeholder="First name"${startListEditing ? '' : ' readonly'}${lock}>
+      <input class="name" data-ri="${i}" data-f="name" value="${esc(name)}"${startListEditing ? '' : ' readonly'}${lock}>
+      <input class="noc" data-ri="${i}" data-f="nat" value="${esc(nat)}"${startListEditing ? '' : ' readonly'}${lock}>
       <button class="btn xs quiet" data-rosterdel="${i}" title="Remove from the race"${startListEditing ? '' : ' hidden'}${lock}>×</button>
     </div>`).join('');
+  } else if (slTab === 'order') {
+    const order = gridOrder(), by = RIDERS.reduce((o, r) => (o[r[0]] = r, o), {});
+    body = `<div class="ksub">Start grid<span class="sp"></span><span style="color:var(--dim);text-transform:none;letter-spacing:0">drag a line to reorder</span>`
+      + `<button class="btn xs quiet" id="orderbybib"${GRIDORDER ? lock : ' disabled'}>By bib</button></div>`
+      + order.map((b, k) => { const r = by[b] || [b, '', '—', '#555'];
+        return `<div class="sorow" draggable="${S.started ? 'false' : 'true'}" data-ob="${b}">
+      <span class="pl">${k + 1}</span><span class="sw" style="background:${r[3]}"></span>
+      <span class="bb">${b}</span><span class="nc">${esc(r[2])}</span>
+      <span class="nn">${esc(r[5] || '')} <b>${esc(r[1])}</b></span>
+      <span class="dm">${(7 + k * 2.2).toFixed(1)} m</span></div>`; }).join('')
+      + `<div class="hint">metres measured back from the finish line${GRIDORDER ? '' : ' · riders are in bib order'}</div>`;
+  } else {
+    const cur = `<div class="crow rec"><div class="nm"><span class="dot"></span>Current list · ${plural(RIDERS.length, 'rider')}</div>
+      <div class="mt"><span class="du">${GRIDORDER ? 'own start order' : 'bib order'}</span><span class="sp"></span>
+      <button class="btn xs quiet" id="listsave"${lock}>Save</button></div></div>`;
+    const row = (l, i) => lRenaming === i
+      ? `<div class="crow"><div class="nm"><span class="rno">${l.no}</span><input class="rn" id="lrnin" value="${esc(l.name)}"></div>
+      <div class="mt"><span class="du">${plural(l.riders.length, 'rider')}</span><span class="sp"></span>
+      <button class="btn xs ok" data-lrnok="${i}">Save</button><button class="btn xs quiet" data-lrncancel="1">Cancel</button></div></div>`
+      : `<div class="crow"><div class="nm"><span class="rno">${l.no}</span>${esc(l.name)}</div>
+      <div class="mt"><span class="du">${plural(l.riders.length, 'rider')}${l.order ? ' · own start order' : ''}</span><span class="sp"></span>
+      <button class="btn xs quiet" data-lload="${i}"${lock}>Load</button><button class="btn xs quiet" data-lrn="${i}">Rename</button><button class="btn xs ${lDelArmed === i ? 'armed' : 'danger'}" data-ldel="${i}">${lDelArmed === i ? 'Delete?' : 'Delete'}</button></div></div>`;
+    body = `<div class="ksub">Saved start lists</div>` + cur
+      + (LISTS.length ? LISTS.map(row).join('') : '<div class="hint">No saved list. Press Save to keep this one.</div>');
+  }
+  $('#simstartlist').innerHTML = `<div class="sh" style="justify-content:center;padding:0 0 6px"><span class="seg" id="sltabs">${sub}</span></div>` + body;
+  if (lRenaming != null) { const el = $('#lrnin'); if (el && document.activeElement !== el) { el.focus(); el.select(); } }
 }
 
 function tickRail() {
@@ -4416,6 +4500,13 @@ function applyRosterEdit(i, field, value) {
     const v = String(value || '').trim().toUpperCase(); if (v) RIDERS[i][1] = v;
   } else if (field === 'nat') {
     const v = String(value || '').trim().toUpperCase().slice(0, 3); if (v) RIDERS[i][2] = v;
+  } else if (field === 'first') {
+    // LE PRÉNOM S'ÉCRIT COMME IL SE LIT. Son point 230 : « pouvoir éditer les prénoms des coureurs (j'ai
+    // l'impression que les prénoms sont actuellement codés en dur) ». Il l'était : une colonne de la table du code,
+    // repêchée par dossard, et vide pour tout coureur ajouté. Le nom de famille est mis en capitales parce que le
+    // classement l'affiche ainsi ; le prénom, non — « João » n'est pas « JOÃO ». Il peut rester vide.
+    while (RIDERS[i].length < 6) RIDERS[i].push(RIDERS[i].length === 4 ? 0 : '');
+    RIDERS[i][5] = String(value || '').trim();
   } else if (field === 'color') {
     RIDERS[i][3] = value;
   }
@@ -4425,8 +4516,40 @@ function addRosterRider() {
   if (S.started) return;
   const used = new Set(RIDERS.map(x => x[0])); let bib = 1; while (used.has(bib)) bib++;
   const palette = ['#0284c7', '#c8102e', '#f97316', '#eab308', '#9f1239', '#1d4ed8', '#16a34a', '#d62828', '#4b5563', '#06b6d4', '#22c55e', '#111827', '#ef4444', '#ec4899', '#1e3a8a', '#15803d'];
-  RIDERS.push([bib, 'NEW RIDER', '—', palette[RIDERS.length % palette.length]]);
+  RIDERS.push([bib, 'NEW RIDER', '—', palette[RIDERS.length % palette.length], 0, '']);
   reset(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
+}
+// ---------- les trois sous-onglets de Start list ----------
+function setGridOrder(bibs) {
+  GRIDORDER = bibs && bibs.length ? bibs.slice() : null;
+  reset(); REC = newRec(); saveSetup(); railDirty = true; dirty = true; render();
+}
+// Une ligne déposée sur une autre prend SA place, et les autres se décalent. C'est le geste de l'ordre d'un sprint,
+// « drag a line to reorder », et il fait ici la même chose.
+function dropGridOrder(from, to) {
+  if (S.started || from === to) return;
+  const o = gridOrder(), i = o.indexOf(from), j = o.indexOf(to);
+  if (i < 0 || j < 0) return;
+  o.splice(j, 0, ...o.splice(i, 1));
+  setGridOrder(o);
+}
+function saveCurrentList() {
+  if (S.started) return;
+  const l = { id: 'l' + Date.now(), no: listNo(), name: plural(RIDERS.length, 'rider'),
+    riders: JSON.parse(JSON.stringify(RIDERS)), order: GRIDORDER ? GRIDORDER.slice() : null };
+  LISTS.unshift(l); saveLists();
+  logEvent('OP', 'Start list saved · ' + l.name, false);
+  railDirty = true; dirty = true; render();
+}
+// Charger une liste remplace la liste de départ ET son ordre de grille. La course repart à zéro, comme après toute
+// édition de la liste de départ : on ne change pas les coureurs d'une course déjà partie.
+function loadList(l) {
+  if (S.started || !l || !Array.isArray(l.riders) || l.riders.length < 2) return;
+  RIDERS.length = 0; for (const r of l.riders) RIDERS.push(r.slice());
+  GRIDORDER = Array.isArray(l.order) && l.order.length ? l.order.slice() : null;
+  reset(); REC = newRec(); saveSetup();
+  logEvent('OP', 'Start list loaded · ' + l.name + ' · ' + plural(RIDERS.length, 'rider'), false);
+  railDirty = true; dirty = true; render();
 }
 function removeRosterRider(i) {
   if (S.started || RIDERS.length <= 2 || !RIDERS[i]) return;
@@ -4466,8 +4589,26 @@ $('#rail').addEventListener('keydown', e => {
   else if (e.key === 'Escape') { e.target.blur(); }
 });
 $('#rail').addEventListener('click', e => {
-  const b = e.target.closest('[data-sim],[data-cfg],[data-col],[data-sort],[data-track],[data-load],[data-del],[data-rn],[data-rnok],[data-rncancel],[data-rosterdel],#syncspeeds,#rosteradd,#rosteredit');
+  const b = e.target.closest('[data-sim],[data-cfg],[data-col],[data-sort],[data-track],[data-load],[data-del],[data-rn],[data-rnok],[data-rncancel],[data-rosterdel],[data-sl],[data-lload],[data-ldel],[data-lrn],[data-lrnok],[data-lrncancel],#syncspeeds,#rosteradd,#rosteredit,#orderbybib,#listsave');
   if (!b || b.disabled) return;
+  if (b.dataset.sl) { slTab = b.dataset.sl; lRenaming = null; lDelArmed = null; railDirty = true; render(); return; }
+  if (b.id === 'orderbybib') return setGridOrder(null);
+  if (b.id === 'listsave') return saveCurrentList();
+  if (b.dataset.lload != null) return loadList(LISTS[+b.dataset.lload]);
+  if (b.dataset.ldel != null) {
+    const i = +b.dataset.ldel;
+    if (lDelArmed !== i) { lDelArmed = i; lRenaming = null; railDirty = true; render(); return; }   // premier clic : il demande
+    const gone = LISTS[i]; LISTS.splice(i, 1); saveLists(); lDelArmed = null;
+    logEvent('OP', 'Start list deleted · ' + gone.name, false);
+    railDirty = true; render(); return;
+  }
+  if (b.dataset.lrn != null) { lRenaming = +b.dataset.lrn; lDelArmed = null; railDirty = true; render(); return; }
+  if (b.dataset.lrncancel != null) { lRenaming = null; railDirty = true; render(); return; }
+  if (b.dataset.lrnok != null) {
+    const i = +b.dataset.lrnok, el = $('#lrnin'), v = el ? el.value.trim() : '';
+    if (LISTS[i] && v) { LISTS[i].name = v; saveLists(); }
+    lRenaming = null; railDirty = true; render(); return;
+  }
   // Un clic sur un en-tête trie sur cette colonne ; un second clic sur le même en-tête inverse l'ordre.
   if (b.dataset.sort) {
     simSort = simSort && simSort.key === b.dataset.sort ? { key: b.dataset.sort, dir: -simSort.dir } : { key: b.dataset.sort, dir: 1 };
@@ -4501,6 +4642,26 @@ $('#rail').addEventListener('click', e => {
   render();
 });
 $('#rail').addEventListener('change', e => { if (e.target.matches('.rosterrow input[type=color]')) applyRosterEdit(+e.target.dataset.ri, 'color', e.target.value); });
+// Le glisser d'une ligne de la grille. La ligne qu'on tient se marque, celle qu'on survole montre où elle tombera.
+$('#rail').addEventListener('dragstart', e => {
+  const row = e.target.closest('.sorow'); if (!row) return;
+  dragBib = +row.dataset.ob; row.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', row.dataset.ob); } catch (x) { /* certains navigateurs exigent une donnée */ }
+});
+$('#rail').addEventListener('dragover', e => {
+  const row = e.target.closest('.sorow'); if (!row || dragBib == null) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  for (const x of $('#simstartlist').querySelectorAll('.sorow.over')) x.classList.remove('over');
+  if (+row.dataset.ob !== dragBib) row.classList.add('over');
+});
+$('#rail').addEventListener('drop', e => {
+  const row = e.target.closest('.sorow'); if (!row || dragBib == null) return;
+  e.preventDefault(); const from = dragBib; dragBib = null; dropGridOrder(from, +row.dataset.ob);
+});
+$('#rail').addEventListener('dragend', () => {
+  dragBib = null;
+  for (const x of $('#simstartlist').querySelectorAll('.sorow.over,.sorow.dragging')) x.classList.remove('over', 'dragging');
+});
 $('#simopen').addEventListener('click', () => $('#simfile').click());
 $('#simfile').addEventListener('change', e => {
   const f = e.target.files[0]; if (!f) return;
@@ -4543,7 +4704,7 @@ function loadRace(r) {
 
 // ---------- loop ----------
 window.__proto = { state: () => S, LOOPS: () => LOOPS, moteur: () => MC, step, replayTick, measured, computeGroups, render, detect, tapeCount, sp, spOrder, spFull, spTick, spPoints, dispLap, spSend, spInsert, spHold, standings, dispLap, noTpToggle, trace: () => TRACE, dbg: () => DBG, exportTrace: () => exportTrace(), detectNow: () => detectNow(), markDirty: () => { dirty = true; } };
-loadSetup(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
+loadSetup(); loadLists(); applyCfg(); reset(); REC = newRec(); railDirty = true; render();
 syncSeg();   // the bar is drawn: its labels can be measured and centred on their ink
 let last = performance.now();
 // the race advances in fixed steps of FIXED seconds whatever the speed, so 1x, 4x and 16x run the same race;

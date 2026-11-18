@@ -1045,3 +1045,15 @@ lequel l'opérateur regarde sa carte et décide.
 Une mesure prise à des instants discrets a toujours une fenêtre où elle ne sait pas encore. Quand un
 affichage doit dire la vérité **pendant** cette fenêtre, il lui faut une autre source : ici la carte
 en attente, qui est précisément ce que l'opérateur a sous les yeux.
+
+
+### D33 · Une constante redéclarée éteint toute la page, sans rien dire
+
+Au build 237, une constante nouvelle a été appelée `LKEY` — le nom était déjà pris, mille lignes plus
+bas, par la clé de la mise en page. Le navigateur a levé `Identifier 'LKEY' has already been
+declared` **au chargement**, donc **aucune** ligne du script n'a tourné : écran dessiné, panneaux
+vides, pas une erreur à l'exécution puisqu'il n'y a pas eu d'exécution.
+
+Ce qui trompe, c'est que la page a l'air de marcher : le HTML est là, le CSS est là, et le défaut
+ressemble à un panneau qu'on aurait mal rempli. **Un panneau entièrement vide se vérifie d'abord
+dans la console du navigateur**, pas dans la fonction qui devait le remplir.

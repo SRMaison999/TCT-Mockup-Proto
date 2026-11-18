@@ -2554,3 +2554,20 @@ tour (`pitfalls.md` D36).
 time » : ils corrigent une détection manquée sans rien créditer, ce que le décalage existant — celui
 de `refile()`, qui accompagne un tour crédité — ne sait pas faire. C'est de la logique de course et
 elle attend sa propre proposition.
+
+## 11 bis. L'onglet Start list et ses trois sous-onglets
+
+`slTab` dit lequel est ouvert, `renderStartList()` les dessine tous les trois (build 237, point 230).
+
+- **`Riders`** : `sortedRoster()` et `applyRosterEdit(i, field, value)`, qui connaît maintenant le
+  champ `first`. Le prénom est `RIDERS[i][5]` ; il n'est pas mis en capitales et peut rester vide.
+  `addRosterRider()` crée une ligne à six colonnes, prénom compris.
+- **`Start order`** : `gridOrder()` rend la suite des dossards, de la place 1 à la dernière —
+  `GRIDORDER` s'il y a un ordre posé à la main, l'ordre des dossards sinon. Un coureur retiré sort de
+  l'ordre, un coureur ajouté va à la fin. `dropGridOrder(from, to)` place la ligne déposée à la place
+  de celle qu'elle recouvre ; `setGridOrder(null)` revient à l'ordre des dossards. `reset()` lit
+  `gridOrder()` pour poser `dist` et `offset`.
+- **`Files`** : `LISTS`, gardé sous `tct.sim.lists` (`saveLists()`, `loadLists()`, `listNo()`), avec
+  `saveCurrentList()` et `loadList(l)`. Une liste porte `{id, no, name, riders, order}`.
+
+`GRIDORDER` est gardé avec le reste des réglages, sous `order` dans `tct.sim.setup`.
