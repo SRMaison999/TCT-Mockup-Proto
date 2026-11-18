@@ -155,22 +155,26 @@ premiers qui marquent, le final en double, défilement horizontal. **Source** : 
 (résultat d'un sprint, vérifiable et corrigeable) existe déjà dans le proto : l'aligner sur le
 dessin de la maquette.
 
-### 5.4 Standings (onglet `stand`)
-**Source** : le classement calculé (`architecture.md` §9), `renderStandingsTab` (≈ 3321). Deux
-lectures, bascule dans l'en-tête :
-- **Live** : classement complet, large et lisible (rang · dossard · drapeau · NOC · nom · total ·
-  points par sprint · tours gagnés/perdus · finish order). **Ligne de coupe** en qualification
-  (voir §6).
-- **Évolution** (« Compare ») : suivre jusqu'à 4 coureurs, leurs points dans le temps, l'écart,
-  et re-classer d'un clic sur un moment de la course. **Nécessite** que le moteur **enregistre le
-  classement à chaque entrée** (chaque sprint, chaque tour gagné/perdu) — un historique
-  `{checkpoint → rang, points}` par coureur. La maquette l'embarque en données ; l'intégration le
-  calcule depuis l'historique réel.
-- **Piège** : le graphe Évolution se dimensionne sur la largeur visible. S'il est rendu pendant
-  qu'il est masqué (`display:none`), largeur = 0 → cassé. Rendre/redimensionner **à l'affichage**.
-- **Ses deux mots du 18 novembre 2026**, à tenir en S2 : l'écran revenu en arrière **ne suit pas la
-  course** tant qu'il ne le ramène pas lui-même (**règle 206**), et il n'y a **pas de phrase
-  d'écart** au-dessus du graphe — elle est sortie de la maquette le jour même (**règle 207**).
+### 5.4 Standings (onglet `stand`) — **fait, builds 211 et 213 · ne pas refaire**
+**Source** : le classement calculé (`architecture.md` §9), `renderStandingsTab`. Deux lectures,
+bascule `#stview` dans l'en-tête du panneau :
+- **Live** (build 211) : classement complet, large et lisible (rang · dossard · drapeau · NOC ·
+  prénom + nom · total · points par sprint · tours gagnés/perdus · finish order). **Ligne de coupe**
+  en qualification (voir §6).
+- **Évolution** (« Compare », build 213) : jusqu'à 4 coureurs suivis, leurs points dans le temps,
+  l'écart, et un clic sur un moment re-classe le panneau à cet instant.
+- **Ce qui a été écarté, et pourquoi.** Ce document demandait ici un **historique enregistré**
+  (`{checkpoint → rang, points}` par coureur). Ce n'est **pas** ce qui a été codé : les moments se
+  relisent des sprints et de `S.refiles` à chaque rendu et les points se rejouent depuis le départ
+  (`architecture.md` §56). Un historique figé aurait gardé l'erreur derrière lui ; en rejouant, une
+  correction — un tour annulé, un sprint rejugé, un `Undo` — remonte toute la course. **Ne pas le
+  réintroduire.**
+- **Deux pièges payés** : le graphe se dimensionne sur la largeur **visible** — rendu masqué
+  (`display:none`), largeur = 0 ; et la place se **mesure**, barre de défilement comprise, elle ne
+  se calcule pas (`pitfalls.md` D32).
+- **Ses règles**, tenues : l'écran revenu en arrière **ne suit pas la course** tant qu'il ne le
+  ramène pas lui-même (**206**), **pas de phrase d'écart** au-dessus du graphe (**207**), et tout
+  tient dans la hauteur de son écran de 1920 × 1080 (**208**).
 
 ### 5.5 Passings (onglet `pass`)
 Le relevé **brut** des capteurs. **Source** : `S.reads` (3 boucles) et `S.taps` (tape switches) —
