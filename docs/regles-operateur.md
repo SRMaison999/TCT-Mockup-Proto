@@ -3458,3 +3458,27 @@ lui, les deux dans le même tour.
 Quatre choses, dans ses mots : **remettre l'ordre à l'endroit** ; **l'ovale, lui, est juste** ; une
 **passing list des détections sur les boucles**, l'onglet Passing n'étant « pas vraiment au point » ;
 et **vérifier ce que Lap by lap a produit** pendant le test.
+
+
+### 236 · La passing list se trie par boucle, par dossard, par tour · 18 novembre 2026
+
+> « on devrait pouvoir trier par boucle, par dossard, par lap. En triant par boucle on pourrait
+> voir tous les passages sur cette boucle puis trier par lap pour voir si tout est ok. et pareil
+> par dossard et par lap »
+
+Dit après « Ce qu'il faudrait c'est une passing list de leurs détections sur les boucles. On a
+l'onglet passing mais il n'est pas vraiment au point » (point 235).
+
+**Une ligne reste une détection** — c'est la liste à plat d'aujourd'hui. Ce qui s'ajoute, c'est le
+tri : **par boucle, par dossard, par tour**. Et il le décrit en **deux temps** : on trie par boucle,
+*puis* par tour ; par dossard, *puis* par tour. Le tri précédent reste donc le second critère.
+
+### 237 · Un bouton qui arrête le défilement · 18 novembre 2026
+
+> « pense aussi à implémenter un bouton qui permet de stopper le défilement des événements pour le
+> bas, cela permet de lire plus facilement la passing list »
+
+Dit sur la maquette de la passing list.
+
+**Un bouton arrête le défilement des événements**, pour qu'on puisse lire la liste. Les détections
+continuent d'arriver pendant ce temps : c'est leur affichage qui s'arrête, pas la lecture.

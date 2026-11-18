@@ -1,665 +1,268 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mockup · Passings</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Passing list — proposition</title>
 <style>
-:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--deep:#2c455e;--line:#2d3237;--line2:#87a8c9;
-  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
-  /* une couleur par POSITION sur la piste */
-  --loc-finish:#E0B64A;--loc-m200:#E8894A;--loc-pursb:#A98BE6;--loc-m100:#E06AA0;--loc-pursa:#45B6D6;
-  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+:root{
+  --bg:#0f1114; --panel:#1b1e22; --line:#2a2f35; --line2:#343a41; --fg:#e7ebf0;
+  --muted:#8b949e; --dim:#6b7580; --acc:#4da3ff; --warn:#e0a63a; --good:#4ec97f;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"SF Mono",Menlo,Consolas,monospace;
+}
 *{box-sizing:border-box}
-[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
-.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;overflow:hidden;box-shadow:0 18px 48px #000a}
-.board-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
-.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
-.board-h .close{margin-left:auto;font:500 12px var(--sans);color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:5px 13px;background:#23272b;cursor:pointer}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 13px var(--sans)}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 40px}
+h1{font:600 15px var(--sans);letter-spacing:.02em;margin:0 0 2px}
+.sub{font:400 12px var(--sans);color:var(--dim);margin:0 0 16px}
 
-/* deux lignes de filtres : par type de capteur, et par endroit */
-.filt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:0 0 auto}
-.filt .lbl{font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);min-width:62px}
-.pf{font:500 12px var(--sans);color:var(--muted);border:1px solid var(--line2);border-radius:4px;padding:4px 10px;background:#23272b;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-.pf.on{background:var(--acc);border-color:var(--acc);color:#fff}
-.pf.warn.on{background:var(--warn);border-color:var(--warn);color:#121416}
-.pf i{width:9px;height:9px;border-radius:2px;display:inline-block;flex-shrink:0}
-.pf.l-finish i{background:var(--loc-finish)}.pf.l-m200 i{background:var(--loc-m200)}
-.pf.l-pursb i{background:var(--loc-pursb)}.pf.l-m100 i{background:var(--loc-m100)}.pf.l-pursa i{background:var(--loc-pursa)}
-.pfsep{width:1px;height:16px;background:var(--line2);opacity:.5;margin:0 2px}
-.filt .health{margin-left:auto;display:flex;align-items:center;gap:8px;font:600 11px var(--mono)}
-.filt .health .lbl{color:var(--muted);min-width:0}
-.filt .health .h{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:4px;background:#23272b;color:var(--dim)}
-.filt .health .h b{color:var(--muted)}
-.filt .health .h::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--line2)}
-.filt .health .h.finish::before{background:var(--loc-finish)}
-.filt .health .h.pursb::before{background:var(--loc-pursb)}
-.filt .health .h.pursa::before{background:var(--loc-pursa)}
-.filt .note{font:500 11px var(--sans);color:var(--dim)}
+/* la barre de filtres, telle qu'elle est aujourd'hui dans le prototype */
+.pfilt{display:flex;align-items:center;gap:7px;padding:6px 2px 8px;flex-wrap:wrap}
+.pf{padding:5px 11px;background:#23272b;border:1px solid var(--line2);border-radius:4px;
+  font:500 12px var(--sans);color:var(--fg);cursor:pointer;white-space:nowrap}
+.pf:hover{border-color:var(--muted)}
+.pf.on{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.pfsep{width:1px;height:20px;background:var(--line);margin:0 4px}
+.lab{font:600 10px var(--sans);letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+.hint{flex:1 1 auto;text-align:right;font:500 11px var(--mono);color:var(--dim);min-width:120px}
+.hint b{color:var(--acc);font-weight:600}
 
 /* la liste */
-.tbl{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto;gap:2px;margin-top:2px}
-.ph,.prow{display:grid;grid-template-columns:100px 84px 44px 140px 120px 244px minmax(0,1fr);gap:10px;align-items:center;padding:0 12px}
-.ph{position:sticky;top:0;z-index:1;height:26px;background:var(--panel);font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line2)}
-.ph .r{text-align:right}
-.prow{min-height:32px;background:#17191c;border-left:3px solid var(--line2);font-size:13px;border-radius:0 3px 3px 0}
-/* famille = style du trait : transpondeur plein, pulse en tirets */
-.prow.pulse{border-left-style:dashed}
-/* position = couleur de la ligne sur toute sa longueur (fond uni) + bordure gauche */
-.prow.loc-finish{border-left-color:var(--loc-finish);background:#241f12}
-.prow.loc-m200{border-left-color:var(--loc-m200);background:#261c13}
-.prow.loc-pursb{border-left-color:var(--loc-pursb);background:#1f1a27}
-.prow.loc-m100{border-left-color:var(--loc-m100);background:#271823}
-.prow.loc-pursa{border-left-color:var(--loc-pursa);background:#142029}
-.prow.odd{border-left-color:var(--warn)!important;background:#2a2012}
-.prow .dt{font:500 12px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
-.prow .t{font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
-/* famille : icône + mot */
-.fam{display:inline-flex;align-items:center;gap:6px;font:600 11px var(--sans)}
-.fam.tag{color:var(--muted)}
-.fam.pulse{color:var(--dim)}
-.fam svg{flex-shrink:0}
-/* position : pastille de couleur + nom */
-.loc{display:inline-flex;align-items:center;gap:7px;font:600 12px var(--sans);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.loc i{width:9px;height:9px;border-radius:2px;flex-shrink:0;display:inline-block}
-.loc-finish .loc i{background:var(--loc-finish)}.loc-m200 .loc i{background:var(--loc-m200)}
-.loc-pursb .loc i{background:var(--loc-pursb)}.loc-m100 .loc i{background:var(--loc-m100)}.loc-pursa .loc i{background:var(--loc-pursa)}
-.prow .lap{font:600 13px var(--mono);color:var(--muted)}
-/* Rider : drapeau + dossard + NOC + nom */
-.rider{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.flagw .flag{width:24px;height:16px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
-.rider .rbib{font:600 14px var(--mono);color:var(--fg)}
-.rider .rnoc{font:600 12px var(--mono);letter-spacing:.03em;color:var(--dim)}
-.rider .rnm{font:600 13px var(--sans);color:var(--muted);overflow:hidden;text-overflow:ellipsis}
-.rider .rnone{font:500 12px var(--sans);color:var(--dim);font-style:italic}
-/* Event : le signal / comptage brut */
-.event{font:500 13px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prow.pulse .event{color:var(--dim)}
-.prow.odd .event{color:var(--warn)}
-/* Status : pastille de correspondance */
-.status{display:flex;justify-content:flex-start}
-.st{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;padding:2px 9px;border-radius:999px;border:1px solid var(--line2)}
-.st.matched{color:var(--dim);border-color:#4a515a}
-.st.unmatched{color:var(--warn);border-color:var(--warn);background:#F2A33A14}
-.foot{font:500 11px var(--sans);color:var(--dim);padding:9px 12px 2px;flex:0 0 auto}
-.foot b{color:var(--warn);font-weight:600}
-</style></head>
+.rows{display:flex;flex-direction:column;gap:1px;max-height:62vh;overflow:auto;
+  border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.ph,.prow{display:grid;grid-template-columns:92px 112px 52px 48px 52px minmax(0,1fr) 120px;
+  gap:10px;align-items:center;padding:0 8px}
+.ph{position:sticky;top:0;z-index:2;height:28px;background:var(--panel);
+  font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  border-bottom:1px solid var(--line)}
+.ph span{display:flex;align-items:center;gap:4px;height:100%}
+.ph span.s{cursor:pointer;user-select:none}
+.ph span.s:hover{color:var(--fg)}
+.ph span.k1{color:var(--acc)}
+.ph span.k2{color:#8FB4FF}
+.ph .ar{font:600 10px var(--mono)}
+.ph .n2{font:600 9px var(--mono);color:#8FB4FF;border:1px solid #39506f;border-radius:2px;padding:0 2px}
+.ph .r{justify-content:flex-end}
+.prow{min-height:28px;background:#17191c;border-left:3px solid var(--line2);font-size:13px}
+.prow.sep{border-top:1px solid #2f3942}
+.t{font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.lo{font:600 12px var(--mono);white-space:nowrap}
+.lo.f{color:#8FB4FF}.lo.a{color:#7fd4a8}.lo.b{color:#e3b667}
+.bib{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:18px;
+  padding:0 5px;border-radius:3px;background:#2b3138;font:600 11px var(--mono);color:var(--fg)}
+.noc,.lp,.sig{font:500 12px var(--mono);color:var(--muted)}
+.mk{text-align:right;font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
+.foot{font:500 11px var(--sans);color:var(--dim);padding:10px 2px 0}
+.pf.hold.on{background:var(--warn);border-color:var(--warn);color:#1a1204}
+.held{display:flex;align-items:center;gap:8px;margin:0 0 -1px;padding:6px 10px;
+  background:#2a2209;border:1px solid #4a3a0c;border-bottom:0;border-radius:4px 4px 0 0;
+  font:600 11px var(--sans);letter-spacing:.04em;color:var(--warn)}
+.held[hidden]{display:none}
+.clk{font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.prow.fresh{animation:pop .9s ease-out}
+@keyframes pop{from{background:#1f2a22}to{background:#17191c}}
+
+.note{margin:22px 0 0;padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--acc);
+  border-radius:4px;background:#15181b}
+.note h2{font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.note p{margin:0 0 8px;color:#c7ced6;line-height:1.55}
+.note p:last-child{margin:0}
+.note b{color:var(--fg)}
+kbd{background:#23272b;border:1px solid var(--line2);border-radius:3px;padding:1px 5px;
+  font:500 11px var(--mono);color:var(--fg)}
+</style>
+</head>
 <body>
-<div class="board">
-  <div class="board-h"><b>Passings</b><span class="hint">every transponder read and every timing-pulse passage &middot; newest first &middot; race time</span>
-    <button class="close">Close</button>
-  </div>
+<div class="wrap">
+  <h1>Passing list — proposition</h1>
+  <p class="sub">Course de test : 24 coureurs, dossards 1 à 24, allure 18,6 m/s, 40 tours.
+     Les BIB 1 et 2 s'échappent au tour 5, les BIB 23 et 24 sont lâchés au tour 12.
+     Les détections ci-dessous sont celles de cette course.</p>
 
-  <div class="filt">
-    <span class="lbl">Type</span>
-    <button class="pf on" data-sensor="all">All</button>
-    <button class="pf" data-sensor="tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg>&nbsp;Transponder</button>
-    <button class="pf" data-sensor="pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg>&nbsp;Timing pulse</button>
+  <div class="pfilt">
+    <span class="lab">Source</span>
+    <button class="pf on" data-src="all">All</button>
+    <button class="pf" data-src="0">Finish</button>
+    <button class="pf" data-src="1">Pursuit A</button>
+    <button class="pf" data-src="2">Pursuit B</button>
     <span class="pfsep"></span>
-    <button class="pf warn" data-odd>Unmatched only</button>
-    <span class="health"><span class="lbl">Loop health</span><span class="h finish">Finish <b>45</b></span><span class="h pursb">Pursuit B <b>45</b></span><span class="h pursa">Pursuit A <b>30</b></span></span>
+    <button class="pf" id="hold">Hold</button>
+    <button class="pf" id="reset">Remettre à l'heure</button>
+    <span class="hint" id="hint"></span>
   </div>
-  <div class="filt">
-    <span class="lbl">Location</span>
-    <button class="pf on" data-loc="all">All</button>
-    <button class="pf l-finish" data-loc="finish"><i></i>Finish</button>
-    <button class="pf l-m200" data-loc="m200"><i></i>200 m</button>
-    <button class="pf l-pursb" data-loc="pursb"><i></i>Pursuit B</button>
-    <button class="pf l-m100" data-loc="m100"><i></i>100 m</button>
-    <button class="pf l-pursa" data-loc="pursa"><i></i>Pursuit A</button>
-    <span class="note">a contact with no read is a bike without a transponder &middot; a read with no contact is a wheel the tape could not separate</span>
-  </div>
+  <div class="held" id="held" hidden></div>
 
-  <div class="tbl">
-    <div class="ph"><span>Daytime</span><span>Race time</span><span>Lap</span><span>Type</span><span>Location</span><span>Rider</span><span>Event</span></div>
-    <div class="prow pulse loc-m100">
-    <span class="dt">14:10:44.733</span>
-    <span class="t">10:44.733</span>
-    <span class="lap">20</span>
-    <span class="fam pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg><span>Timing pulse</span></span>
-    <span class="loc"><i></i>100 m</span>
-    <span class="rider"><span class="rnone">group</span></span>
-    <span class="event">16 contacts for 16 reads</span>
+  <div class="rows" id="rows"></div>
+  <div class="foot" id="foot"></div>
+
+  <div class="note">
+    <h2>Ce que fait un clic sur un titre de colonne</h2>
+    <p>Un clic sur <b>TIME</b>, <b>POINT</b>, <b>BIB</b> ou <b>LAP</b> range la liste sur cette
+       colonne. Un second clic sur la même colonne inverse le sens.</p>
+    <p><b>La colonne sur laquelle tu rangeais juste avant devient le second critère</b>, et elle
+       porte le petit <span class="n2">2</span>. Donc : un clic sur <b>POINT</b>, puis un clic sur
+       <b>LAP</b>, et tu as tous les passages rangés par tour, boucle par boucle. Un clic sur
+       <b>BIB</b>, puis sur <b>LAP</b>, et tu as la course d'un coureur, tour par tour, suivie de
+       celle du suivant.</p>
+    <p>Un trait sépare chaque bloc du second critère, pour qu'on voie où une boucle finit et où la
+       suivante commence. <b>Remettre à l'heure</b> revient à la liste d'aujourd'hui : tout, la
+       détection la plus récente en haut.</p>
+    <p><b>Hold</b> arrête le défilement : les détections continuent d'être lues, mais la liste ne
+       bouge plus sous les yeux. Un bandeau dit l'heure à laquelle elle est arrêtée et combien de
+       détections attendent. <b>Reprendre</b> les fait toutes entrer d'un coup. Le mot « Hold » est
+       de moi — dis-moi celui que tu veux.</p>
   </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:43.850</span>
-    <span class="t">10:43.850</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="rbib">52</span><span class="rnoc">ITA</span><span class="rnm">ROSSI</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:43.660</span>
-    <span class="t">10:43.660</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="rbib">7</span><span class="rnoc">NED</span><span class="rnm">BRAND</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:43.470</span>
-    <span class="t">10:43.470</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rbib">12</span><span class="rnoc">SUI</span><span class="rnm">HUBER</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:43.280</span>
-    <span class="t">10:43.280</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="rbib">61</span><span class="rnoc">COL</span><span class="rnm">NAVARRO</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:43.090</span>
-    <span class="t">10:43.090</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="rbib">18</span><span class="rnoc">POR</span><span class="rnm">SANTOS</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:42.900</span>
-    <span class="t">10:42.900</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="rbib">3</span><span class="rnoc">FRA</span><span class="rnm">MOREAU</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:42.710</span>
-    <span class="t">10:42.710</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="rbib">9</span><span class="rnoc">SLO</span><span class="rnm">KOVAC</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:42.520</span>
-    <span class="t">10:42.520</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="rbib">1</span><span class="rnoc">ESP</span><span class="rnm">RIVERA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow pulse loc-pursb odd">
-    <span class="dt">14:10:42.400</span>
-    <span class="t">10:42.400</span>
-    <span class="lap">20</span>
-    <span class="fam pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg><span>Timing pulse</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="rnone">group</span></span>
-    <span class="event">16 contacts for 15 reads &middot; 1 contact with no read — a bike without a transponder</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:42.330</span>
-    <span class="t">10:42.330</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rbib">67</span><span class="rnoc">GER</span><span class="rnm">LEHMANN</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:42.140</span>
-    <span class="t">10:42.140</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="rbib">58</span><span class="rnoc">KAZ</span><span class="rnm">PETROV</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:41.950</span>
-    <span class="t">10:41.950</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="rbib">70</span><span class="rnoc">BRA</span><span class="rnm">SILVA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:41.570</span>
-    <span class="t">10:41.570</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="rbib">23</span><span class="rnoc">DEN</span><span class="rnm">IVERSEN</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:41.380</span>
-    <span class="t">10:41.380</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="rbib">11</span><span class="rnoc">JPN</span><span class="rnm">TANAKA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:41.190</span>
-    <span class="t">10:41.190</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="rbib">4</span><span class="rnoc">GBR</span><span class="rnm">WALSH</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:41.000</span>
-    <span class="t">10:41.000</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="rbib">15</span><span class="rnoc">IRL</span><span class="rnm">O'NEILL</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow pulse loc-m200">
-    <span class="dt">14:10:38.067</span>
-    <span class="t">10:38.067</span>
-    <span class="lap">20</span>
-    <span class="fam pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg><span>Timing pulse</span></span>
-    <span class="loc"><i></i>200 m</span>
-    <span class="rider"><span class="rnone">group</span></span>
-    <span class="event">16 contacts for 16 reads</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:36.183</span>
-    <span class="t">10:36.183</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="rbib">52</span><span class="rnoc">ITA</span><span class="rnm">ROSSI</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:35.993</span>
-    <span class="t">10:35.993</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="rbib">7</span><span class="rnoc">NED</span><span class="rnm">BRAND</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:35.803</span>
-    <span class="t">10:35.803</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rbib">12</span><span class="rnoc">SUI</span><span class="rnm">HUBER</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:35.613</span>
-    <span class="t">10:35.613</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="rbib">61</span><span class="rnoc">COL</span><span class="rnm">NAVARRO</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:35.517</span>
-    <span class="t">10:35.517</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="rbib">52</span><span class="rnoc">ITA</span><span class="rnm">ROSSI</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:35.423</span>
-    <span class="t">10:35.423</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="rbib">18</span><span class="rnoc">POR</span><span class="rnm">SANTOS</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:35.327</span>
-    <span class="t">10:35.327</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="rbib">7</span><span class="rnoc">NED</span><span class="rnm">BRAND</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:35.233</span>
-    <span class="t">10:35.233</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="rbib">3</span><span class="rnoc">FRA</span><span class="rnm">MOREAU</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:35.137</span>
-    <span class="t">10:35.137</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rbib">12</span><span class="rnoc">SUI</span><span class="rnm">HUBER</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:35.043</span>
-    <span class="t">10:35.043</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="rbib">9</span><span class="rnoc">SLO</span><span class="rnm">KOVAC</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:34.947</span>
-    <span class="t">10:34.947</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="rbib">61</span><span class="rnoc">COL</span><span class="rnm">NAVARRO</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:34.853</span>
-    <span class="t">10:34.853</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="rbib">1</span><span class="rnoc">ESP</span><span class="rnm">RIVERA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:34.757</span>
-    <span class="t">10:34.757</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="rbib">18</span><span class="rnoc">POR</span><span class="rnm">SANTOS</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow pulse loc-finish">
-    <span class="dt">14:10:34.733</span>
-    <span class="t">10:34.733</span>
-    <span class="lap">20</span>
-    <span class="fam pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg><span>Timing pulse</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="rnone">group</span></span>
-    <span class="event">16 contacts for 16 reads</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:34.663</span>
-    <span class="t">10:34.663</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rbib">67</span><span class="rnoc">GER</span><span class="rnm">LEHMANN</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:34.567</span>
-    <span class="t">10:34.567</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="rbib">3</span><span class="rnoc">FRA</span><span class="rnm">MOREAU</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:34.473</span>
-    <span class="t">10:34.473</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="rbib">58</span><span class="rnoc">KAZ</span><span class="rnm">PETROV</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:34.377</span>
-    <span class="t">10:34.377</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="rbib">9</span><span class="rnoc">SLO</span><span class="rnm">KOVAC</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:34.283</span>
-    <span class="t">10:34.283</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="rbib">70</span><span class="rnoc">BRA</span><span class="rnm">SILVA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:34.187</span>
-    <span class="t">10:34.187</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ESP"><rect y="0.000" width="3" height="0.500" fill="#aa151b"/><rect y="0.500" width="3" height="1.000" fill="#f1bf00"/><rect y="1.500" width="3" height="0.500" fill="#aa151b"/></svg></span><span class="rbib">1</span><span class="rnoc">ESP</span><span class="rnm">RIVERA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow pulse loc-pursa">
-    <span class="dt">14:10:34.067</span>
-    <span class="t">10:34.067</span>
-    <span class="lap">19</span>
-    <span class="fam pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg><span>Timing pulse</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="rnone">group</span></span>
-    <span class="event">16 contacts for 16 reads</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:33.997</span>
-    <span class="t">10:33.997</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GER"><rect y="0.000" width="3" height="0.667" fill="#000"/><rect y="0.667" width="3" height="0.667" fill="#dd0000"/><rect y="1.333" width="3" height="0.667" fill="#ffce00"/></svg></span><span class="rbib">67</span><span class="rnoc">GER</span><span class="rnm">LEHMANN</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:33.903</span>
-    <span class="t">10:33.903</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="rbib">23</span><span class="rnoc">DEN</span><span class="rnm">IVERSEN</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:33.807</span>
-    <span class="t">10:33.807</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="KAZ"><rect x="0.000" width="3.000" height="2" fill="#00afca"/><circle cx="1.5" cy="1" r="0.45" fill="#fec50c"/></svg></span><span class="rbib">58</span><span class="rnoc">KAZ</span><span class="rnm">PETROV</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:33.713</span>
-    <span class="t">10:33.713</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="rbib">11</span><span class="rnoc">JPN</span><span class="rnm">TANAKA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:33.617</span>
-    <span class="t">10:33.617</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="BRA"><rect width="3" height="2" fill="#009c3b"/><path d="M1.5 .2L2.8 1L1.5 1.8L.2 1Z" fill="#ffdf00"/><circle cx="1.5" cy="1" r=".45" fill="#002776"/></svg></span><span class="rbib">70</span><span class="rnoc">BRA</span><span class="rnm">SILVA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:33.523</span>
-    <span class="t">10:33.523</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="rbib">4</span><span class="rnoc">GBR</span><span class="rnm">WALSH</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-finish">
-    <span class="dt">14:10:33.333</span>
-    <span class="t">10:33.333</span>
-    <span class="lap">20</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Finish</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="rbib">15</span><span class="rnoc">IRL</span><span class="rnm">O'NEILL</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:33.237</span>
-    <span class="t">10:33.237</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="DEN"><rect width="3" height="2" fill="#c60c30"/><rect x=".78" width=".45" height="2" fill="#fff"/><rect y=".78" width="3" height=".45" fill="#fff"/></svg></span><span class="rbib">23</span><span class="rnoc">DEN</span><span class="rnm">IVERSEN</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:33.047</span>
-    <span class="t">10:33.047</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="JPN"><rect x="0.000" width="3.000" height="2" fill="#fff"/><circle cx="1.5" cy="1" r="0.6" fill="#bc002d"/></svg></span><span class="rbib">11</span><span class="rnoc">JPN</span><span class="rnm">TANAKA</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:32.857</span>
-    <span class="t">10:32.857</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="GBR"><rect width="3" height="2" fill="#012169"/><path d="M0 0L3 2M3 0L0 2" stroke="#fff" stroke-width=".4"/><path d="M0 0L3 2M3 0L0 2" stroke="#c8102e" stroke-width=".15"/><rect x="1.25" width=".5" height="2" fill="#fff"/><rect y=".75" width="3" height=".5" fill="#fff"/><rect x="1.35" width=".3" height="2" fill="#c8102e"/><rect y=".85" width="3" height=".3" fill="#c8102e"/></svg></span><span class="rbib">4</span><span class="rnoc">GBR</span><span class="rnm">WALSH</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursa">
-    <span class="dt">14:10:32.667</span>
-    <span class="t">10:32.667</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit A</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="IRL"><rect x="0.000" width="1.000" height="2" fill="#169b62"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ff883e"/></svg></span><span class="rbib">15</span><span class="rnoc">IRL</span><span class="rnm">O'NEILL</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow pulse loc-m100">
-    <span class="dt">14:10:28.067</span>
-    <span class="t">10:28.067</span>
-    <span class="lap">19</span>
-    <span class="fam pulse"><svg viewBox="0 0 24 24" width="14" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15h4V9h5v9h2V6h5v9h4"/></svg><span>Timing pulse</span></span>
-    <span class="loc"><i></i>100 m</span>
-    <span class="rider"><span class="rnone">group</span></span>
-    <span class="event">16 contacts for 16 reads</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:27.183</span>
-    <span class="t">10:27.183</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="ITA"><rect x="0.000" width="1.000" height="2" fill="#009246"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ce2b37"/></svg></span><span class="rbib">52</span><span class="rnoc">ITA</span><span class="rnm">ROSSI</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:26.993</span>
-    <span class="t">10:26.993</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="NED"><rect y="0.000" width="3" height="0.667" fill="#ae1c28"/><rect y="0.667" width="3" height="0.667" fill="#fff"/><rect y="1.333" width="3" height="0.667" fill="#21468b"/></svg></span><span class="rbib">7</span><span class="rnoc">NED</span><span class="rnm">BRAND</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:26.803</span>
-    <span class="t">10:26.803</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SUI"><rect width="3" height="2" fill="#d52b1e"/><rect x="1.3" y=".45" width=".4" height="1.1" fill="#fff"/><rect x=".95" y=".8" width="1.1" height=".4" fill="#fff"/></svg></span><span class="rbib">12</span><span class="rnoc">SUI</span><span class="rnm">HUBER</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:26.613</span>
-    <span class="t">10:26.613</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="COL"><rect y="0.000" width="3" height="1.000" fill="#fcd116"/><rect y="1.000" width="3" height="0.500" fill="#003893"/><rect y="1.500" width="3" height="0.500" fill="#ce1126"/></svg></span><span class="rbib">61</span><span class="rnoc">COL</span><span class="rnm">NAVARRO</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:26.423</span>
-    <span class="t">10:26.423</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="POR"><rect width="3" height="2" fill="#f00"/><rect width="1.2" height="2" fill="#006600"/><circle cx="1.2" cy="1" r=".38" fill="#ffe000"/></svg></span><span class="rbib">18</span><span class="rnoc">POR</span><span class="rnm">SANTOS</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:26.233</span>
-    <span class="t">10:26.233</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="FRA"><rect x="0.000" width="1.000" height="2" fill="#0055a4"/><rect x="1.000" width="1.000" height="2" fill="#fff"/><rect x="2.000" width="1.000" height="2" fill="#ef4135"/></svg></span><span class="rbib">3</span><span class="rnoc">FRA</span><span class="rnm">MOREAU</span></span>
-    <span class="event">Read</span>
-  </div>
-    <div class="prow tag loc-pursb">
-    <span class="dt">14:10:26.043</span>
-    <span class="t">10:26.043</span>
-    <span class="lap">19</span>
-    <span class="fam tag"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="2.2" fill="currentColor" stroke="none"/><path d="M8.2 9.2a5 5 0 0 1 7.6 0"/><path d="M5.6 6.6a8.5 8.5 0 0 1 12.8 0"/></svg><span>Transponder</span></span>
-    <span class="loc"><i></i>Pursuit B</span>
-    <span class="rider"><span class="flagw"><svg class="flag" viewBox="0 0 3 2" aria-label="SLO"><rect y="0.000" width="3" height="0.667" fill="#fff"/><rect y="0.667" width="3" height="0.667" fill="#0000ff"/><rect y="1.333" width="3" height="0.667" fill="#ff0000"/></svg></span><span class="rbib">9</span><span class="rnoc">SLO</span><span class="rnm">KOVAC</span></span>
-    <span class="event">Read</span>
-  </div>
-  </div>
-  <div class="foot">Last unmatched &middot; <b>Timing pulse · on Pursuit B · 16 contacts for 15 reads on Lap 20</b> — 1 bike more than the loops named (a bike without a transponder). Earlier: 200 m start · 1 read the tape could not separate on Lap 19.</div>
 </div>
+
 <script>
-(function(){
-  var sensor='all', loc='all', odd=false;
-  function sync(){
-    document.querySelectorAll('.prow').forEach(function(row){
-      var okS = sensor==='all' || row.classList.contains(sensor);
-      var okL = loc==='all' || row.classList.contains('loc-'+loc);
-      var okO = !odd || row.classList.contains('odd');
-      row.hidden = !(okS && okL && okO);
-    });
+/* ------------------------------------------------------------------ la course
+   Les détections sont produites par la même course que les mesures du §88 :
+   allure 18,6 m/s, grille de 2,2 m par coureur collée à la ligne, trois boucles
+   à 0, 115 et 240 m. Rien n'est inventé : on avance les coureurs et on note
+   l'heure à laquelle chacun franchit chaque boucle. */
+const TRACK = 250, PACE = 18.6, LOOPS = [0, 115, 240];
+const LOOPNAME = ['Finish', 'Pursuit A', 'Pursuit B'];
+const NOM = ['RIVERA','ROSSI','MOREAU','WALSH','BRAND','NAVARRO','SANTOS','KOVAC','LEHMANN','PETROV',
+             'SILVA','DE WIT','IVERSEN','TANAKA','OBRIEN','ONEILL','SMITH','JONES','NOWAK','NOVAK',
+             'SHEVCHENKO','GOMEZ','WEBER','KLEIN'];
+const NAT = ['ESP','ITA','SUI','FRA','NED','COL','POR','SLO','GER','KAZ','BRA','BEL','DEN','JPN',
+             'GBR','IRL','AUS','USA','POL','CZE','UKR','COL','GER','GER'];
+
+const riders = [];
+for (let i = 0; i < 24; i++) riders.push({ bib: i + 1, nat: NAT[i], d: -7 - i * 2.2, v: PACE, lap: 0, next: {} });
+
+const READS = [];
+{
+  const DT = 0.02;
+  for (let t = 0; t <= 552; t += DT) {
+    for (const r of riders) {
+      // les deux ordres du simulateur, aux mêmes instants que la course mesurée
+      if (t >= 53.8 && (r.bib === 1 || r.bib === 2)) r.v = 19.6;
+      if (t >= 147.8 && (r.bib === 23 || r.bib === 24)) r.v = 17.7;
+      const avant = r.d; r.d += r.v * DT;
+      for (let li = 0; li < LOOPS.length; li++) {
+        // le prochain passage de ce coureur sur cette boucle, en distance cumulée
+        if (r.next[li] == null) r.next[li] = LOOPS[li];
+        while (r.d >= r.next[li]) {
+          const frac = (r.next[li] - avant) / (r.d - avant);
+          const tt = t + frac * DT;
+          // LE TOUR EST CELUI DU COUREUR : ses passages sur la ligne d'arrivée, plus un.
+          // Ce n'est pas la distance divisée par la piste — la grille les place avant la ligne,
+          // et le lâché n'est pas dans le même tour que l'échappé au même instant.
+          if (li === 0) r.lap++;
+          READS.push({ t: tt, loop: li, bib: r.bib, nat: r.nat, lap: Math.max(1, r.lap + (li === 0 ? 0 : 1)) });
+          r.next[li] += TRACK;
+        }
+      }
+    }
   }
-  document.querySelectorAll('[data-sensor]').forEach(function(b){b.addEventListener('click',function(){
-    sensor=b.dataset.sensor;
-    document.querySelectorAll('[data-sensor]').forEach(function(x){x.classList.toggle('on',x===b);});
-    sync();
-  });});
-  document.querySelectorAll('[data-loc]').forEach(function(b){b.addEventListener('click',function(){
-    loc=b.dataset.loc;
-    document.querySelectorAll('[data-loc]').forEach(function(x){x.classList.toggle('on',x===b);});
-    sync();
-  });});
-  var ob=document.querySelector('[data-odd]');
-  ob.addEventListener('click',function(){odd=!odd;ob.classList.toggle('on',odd);sync();});
-})();
+}
+READS.sort((a, b) => a.t - b.t);
+
+/* ------------------------------------------------------------------ le rangement
+   Deux critères seulement : celui sur lequel on vient de cliquer, et celui
+   d'avant. Rien n'est gardé au-delà. */
+let k1 = { col: 't', dir: -1 };          // au départ : la plus récente en haut
+let k2 = null;
+let src = 'all';
+
+/* LA COURSE AVANCE, ET LA LISTE AVEC ELLE. `horloge` est le temps de course ; seules les
+   détections déjà lues sont dans la liste. `hold` arrête de les y verser — la course, elle,
+   continue. Ce qui est arrivé pendant l'arrêt est compté et entre d'un coup au relâchement. */
+let horloge = 0, hold = false, vu = 0, derniere = null;
+const VITESSE = 8;                       // la maquette joue la course huit fois plus vite
+
+const VAL = { t: r => r.t, point: r => r.loop, bib: r => r.bib, lap: r => r.lap };
+const T3 = s => { const m = Math.floor(s / 60), x = s - m * 60; return m + ':' + (x < 10 ? '0' : '') + x.toFixed(3); };
+
+function sortKey(r) { return VAL[k1.col](r); }
+
+function build() {
+  const coupe = hold ? vu : horloge;     // Hold : la liste s'arrête à l'heure du clic
+  const base = READS.filter(r => r.t <= coupe && (src === 'all' || r.loop === +src));
+  const rows = base.slice().sort((a, b) => {
+    const d1 = (VAL[k1.col](a) - VAL[k1.col](b)) * k1.dir;
+    if (d1) return d1;
+    if (k2) { const d2 = (VAL[k2.col](a) - VAL[k2.col](b)) * k2.dir; if (d2) return d2; }
+    return a.t - b.t;
+  }).slice(0, 600);
+
+  const head = [
+    ['t', 'Time'], ['point', 'Point'], ['bib', 'Bib'], [null, 'Noc'], ['lap', 'Lap'],
+    [null, 'Signal / count'], [null, 'Note']
+  ];
+  const ph = head.map(([col, lab], i) => {
+    const on1 = col && k1.col === col, on2 = col && k2 && k2.col === col;
+    const cls = 's' + (on1 ? ' k1' : on2 ? ' k2' : '') + (i === 6 ? ' r' : '');
+    const ar = on1 ? `<i class="ar">${k1.dir > 0 ? '▲' : '▼'}</i>`
+             : on2 ? `<i class="ar">${k2.dir > 0 ? '▲' : '▼'}</i><i class="n2">2</i>` : '';
+    return col ? `<span class="${cls}" data-col="${col}">${lab}${ar}</span>`
+               : `<span class="${i === 6 ? 'r' : ''}">${lab}</span>`;
+  }).join('');
+
+  let prev = null;
+  const body = rows.map(r => {
+    const g = k2 ? VAL[k1.col](r) : null;
+    const sep = k2 && prev !== null && g !== prev ? ' sep' : '';
+    prev = g;
+    const lcls = ['f', 'a', 'b'][r.loop];
+    return `<div class="prow${sep}"><span class="t">${T3(r.t)}</span>` +
+      `<span class="lo ${lcls}">${LOOPNAME[r.loop]}</span>` +
+      `<span><i class="bib">${r.bib}</i></span><span class="noc">${r.nat}</span>` +
+      `<span class="lp">L${r.lap}</span><span class="sig">read</span><span class="mk"></span></div>`;
+  }).join('');
+
+  document.getElementById('rows').innerHTML = `<div class="ph">${ph}</div>` + body;
+  const nom = { t: 'TIME', point: 'POINT', bib: 'BIB', lap: 'LAP' };
+  document.getElementById('hint').innerHTML =
+    'rangé sur <b>' + nom[k1.col] + '</b>' + (k2 ? ', puis sur <b>' + nom[k2.col] + '</b>' : '');
+  document.getElementById('foot').textContent =
+    base.length.toLocaleString('fr-FR') + ' détections · ' + rows.length + ' affichées';
+
+  // le bandeau de l'arrêt : ce que la liste ne montre pas encore
+  const bandeau = document.getElementById('held');
+  if (!hold) { bandeau.hidden = true; return; }
+  const retenues = READS.filter(r => r.t > vu && r.t <= horloge).length;
+  bandeau.hidden = false;
+  bandeau.innerHTML = 'ARRÊTÉE À <i class="clk">' + T3(vu) + '</i> · ' +
+    (retenues ? retenues + ' détection' + (retenues > 1 ? 's' : '') + ' depuis, pas encore montrée' + (retenues > 1 ? 's' : '')
+              : 'aucune détection depuis');
+}
+
+document.getElementById('rows').addEventListener('click', e => {
+  const s = e.target.closest('[data-col]'); if (!s) return;
+  const col = s.dataset.col;
+  if (k1.col === col) k1.dir = -k1.dir;          // le même titre : on inverse le sens
+  else { k2 = k1; k1 = { col, dir: 1 }; }        // un autre titre : l'ancien devient le second critère
+  build();
+});
+document.querySelector('.pfilt').addEventListener('click', e => {
+  const b = e.target.closest('[data-src]');
+  if (b) { src = b.dataset.src; document.querySelectorAll('[data-src]').forEach(x => x.classList.toggle('on', x === b)); build(); return; }
+  if (e.target.id === 'hold') {
+    hold = !hold; if (hold) vu = horloge;
+    e.target.classList.toggle('on', hold); e.target.classList.add('hold');
+    e.target.textContent = hold ? 'Reprendre' : 'Hold';
+    build(); return;
+  }
+  if (e.target.id === 'reset') { k1 = { col: 't', dir: -1 }; k2 = null; build(); }
+});
+
+/* L'HORLOGE. La course avance, les détections entrent dans la liste au fur et à mesure, et
+   Hold arrête de les y verser. On ne redessine que quand quelque chose a changé. */
+let t0 = performance.now();
+function tic(now) {
+  const dt = Math.min(0.5, (now - t0) / 1000) * VITESSE;
+  t0 = now;
+  if (horloge < 552) {
+    const avant = horloge; horloge = Math.min(552, horloge + dt);
+    const neuf = READS.some(r => r.t > avant && r.t <= horloge);
+    if (neuf) build();
+  }
+  requestAnimationFrame(tic);
+}
+build();
+requestAnimationFrame(tic);
 </script>
-</body></html>
+</body>
+</html>
