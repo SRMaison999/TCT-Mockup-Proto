@@ -3794,9 +3794,17 @@ Mis devant ces chiffres, il a précisé ce qu'il attend, et ce qu'il tolère :
 >
 > Mais ça, il faudrait le vérifier »
 
-**Vérifié, course complète, build 249** (`mesures.md` §103) : sur les 40 blocs de deux coureurs ou
-plus relevés à l'ouverture des tours, **21 sont dans l'ordre de lecture** et **19 dans l'ordre des
-dossards** — et **aucun dans un autre ordre**. L'ordre affiché est donc toujours l'un des deux qu'il
-accepte. Le BIB 1 en tête du bloc au sprint 2 est l'ordre des dossards, pas une erreur de rang.
+**Vérifié, course complète, build 249** (`mesures.md` §103). Il a relevé lui-même, le même jour,
+que ma première présentation de cette mesure — « 21 tours affichés d'une manière, 19 d'une autre » —
+annonçait deux logiques là où il n'y en a qu'une :
 
-**Rien n'est codé, et il n'y a rien à corriger sur ce point.** L'ovale n'est pas mesuré.
+> « 21 tours sur 40 ont été affichés d'une manière, et 19 tours sur 40 d'une autre manière, cela
+> signifie qu'il n'y a aucune logique, et que c'est juste n'importe quoi »
+
+Il a raison. Sur les 40 blocs de deux coureurs ou plus, **l'ordre affiché est le même à chaque fois** :
+`1.2.3…24`. Il est identique à l'ordre de lecture sur **23** tours et différent sur **17** — mais ce
+n'est pas un second comportement, c'est le même ordre qui coïncide 23 fois. L'ordre affiché à
+l'intérieur d'un bloc est **l'ordre croissant des dossards**, et rien d'autre : il ne suit ni la
+lecture sur la ligne, ni l'ordre que le moteur tient dans sa chaîne.
+
+**C'est donc un écart à cette règle, et il n'est pas codé.** L'ovale n'est pas mesuré.
