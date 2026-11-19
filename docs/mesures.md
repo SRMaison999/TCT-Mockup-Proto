@@ -5103,3 +5103,32 @@ perdre leur tour, ils devraient donc être **dans le peloton** — c'est sa phra
 « ils perdent un tour et sont mergés dans le peloton ». Ils sont bien revenus dans le même tour, mais
 ils partagent un bloc avec les BIB 1 et 2 au lieu d'être dans celui du peloton. Les tours comptés sont
 justes ; c'est l'affichage du bloc qui ne l'est pas.
+
+## §100 · Pourquoi les BIB 23 et 24 passent de LAST à CHASE sur la ligne, build 247, 19 novembre 2026
+
+Sa capture, tour 18 : les BIB 23 et 24, qui étaient `3-LAST` à 2,3 s, deviennent `2-CHASE` à 11,4 s
+au moment où ils franchissent la boucle Finish. Ses mots : « Ils ne doivent pas devenir CHASE ! Ils
+sont LAST, UN POINT C'EST TOUT ! »
+
+**La cause.** La timeline est rangée depuis la tête, et la tête est le BIB 1, qui a gagné un tour.
+Relevé à 243,7 s :
+
+| | lecture sur l'anneau, depuis le BIB 1 | la vérité sur la piste |
+|---|---|---|
+| BIB 1 (la tête) | 0 s | — |
+| le peloton, du BIB 3 au BIB 22 | de 9,76 s à 12,09 s | — |
+| BIB 23 | **3,59 s** | **4,67 s derrière le BIB 22**, le dernier du peloton |
+
+Le BIB 23 est en réalité à 17,3 s derrière le BIB 1. Un tour dure 13,89 s. L'anneau ramène sa
+lecture sur un tour : 17,3 − 13,89 = **3,4 s**, et il se range donc juste derrière la tête, au-dessus
+d'un peloton qui se lit entre 9,8 et 12,1 s. Sur la piste, il est quatre secondes et demie derrière
+ce peloton.
+
+Ce n'est pas le franchissement de la ligne qui le fait changer de camp : la ligne ne fait que
+rafraîchir sa lecture. La bascule se produit dès que son retard sur la tête dépasse un tour, et elle
+se voit à son passage suivant.
+
+C'est le même défaut qu'au §99 et au §97 — l'anneau ne distingue pas « un tour derrière » de « juste
+devant » — mais pris ici du côté de l'affichage : un coureur qui n'a encore rien perdu ni gagné, et
+dont le compte de tours lus (`took.v0`) vaut bien zéro, se retrouve quand même en tête de course
+parce que la tête de la timeline, elle, a un tour d'avance.
