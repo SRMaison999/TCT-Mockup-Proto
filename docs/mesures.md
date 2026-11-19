@@ -5434,3 +5434,23 @@ est tirée de 200 px vers la gauche par des événements de pointeur.
 | Erreurs de console | 0 | | 0 |
 
 Rien n'est écrit dans `tct.layout` de plus qu'avant : `right: 700`, `z.sprint: 1`.
+
+
+## §114 · Les colonnes de la carte du sprint suivent la poignée — build 260, 19 novembre 2026
+
+Fenêtre de 1920 × 1080, simulateur masqué, sprint 1 ouvert ; double-clic sur la poignée (écran
+d'usine), puis poignée tirée de 300 px vers la gauche par des événements de pointeur.
+
+| | d'usine, 500 px | élargie, 800 px |
+|---|---|---|
+| L'ordre · la liste de départ · les commandes | 187 · 105 · 172 | 308 · 173 · 283 |
+| Dans l'ordre : place · BIB · NOC · gap · icône · icône | 22 · 32 · 38 · 22 · 22 · 22 | 39 · 57 · 67 · 39 · 39 · 39 |
+| L'en-tête de l'ordre | les mêmes six | les mêmes six |
+| Dans la liste : BIB · drapeau · NOC | 32 · 22 · 37 | 56 · 22 · 65 |
+| Taille du texte des BIB | 14 px | 14 px |
+| Zoom de la carte (`--z-sprint`) | 1 | 1 |
+| Erreurs de console | 0 | 0 |
+
+Tout s'élargit du rapport 1,6 de la colonne, sauf le drapeau de la liste de départ, qui est une image
+de 22 px dans une case qui, elle, s'élargit. Les chiffres d'usine sont ceux du build 258 : sans poignée,
+rien n'a bougé.

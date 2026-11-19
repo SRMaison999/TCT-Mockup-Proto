@@ -4086,7 +4086,27 @@ elles :
 
 > « Oui, tout grandit »
 
-**Codé au build 259.** La poignée pose toujours la largeur de la colonne ; la carte prend en plus le
-zoom qui est le rapport entre cette largeur et celle qu'elle a sans poignée. Les trois zones gardent
-leurs proportions. Sans poignée, rien ne bouge (point 119). CTRL + molette sur la carte se multiplie
-à ce rapport.
+**Codé au build 259** comme un zoom de la carte entière, chiffres et boutons compris — **c'était la
+mauvaise lecture**, retirée au build 260 : voir le point 260.
+
+
+### 260 · Les colonnes de la carte du sprint suivent sa largeur, et rien d'autre ne grandit · 19 novembre 2026
+
+Il a essayé le build 259, où la poignée faisait grandir la carte comme un zoom :
+
+> « mais non ça ne va pas !Il faut que les largeurs des colonnes du sprint s'élargissent quand on
+> agrandit la fenêtre, et qu'elles s'amincissent quand on réduit la fenêtre ! »
+
+Sur lesquelles :
+
+> « les colonnes du résultat du sprint + la start list + la zone avec les boutons de fonctionsn »
+
+Et, les trois zones faites :
+
+> « oui mais le sprint lui même a déjàé plusieurs colonnes ! »
+
+**Codé au build 260.** Le zoom du build 259 est retiré. La carte est faite de colonnes proportionnelles
+à tous les étages : les trois zones entre elles, et dans le résultat du sprint la place, le BIB, le
+NOC, le gap et les deux colonnes d'icônes, dans la liste de départ le BIB, le drapeau et le NOC. Les
+proportions sont celles de la carte à 500 px, donc sans poignée l'écran est celui d'avant (point 119).
+Les chiffres, les drapeaux et les boutons gardent leur taille.

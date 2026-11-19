@@ -80,6 +80,20 @@
 #rtype.qual .ifstep{display:inline-flex}
 #rtype .ifk:disabled,#rtype .ifsb:disabled{cursor:default;opacity:.55}
 
+/* LES TROIS COLONNES DE LA CARTE DU SPRINT SUIVENT SA LARGEUR (l'opérateur, 19 novembre 2026, point 260).
+   styles.css les pose en minmax(0,1fr) 105px 172px : la poignée ne nourrissait que l'ordre. Les trois sont
+   maintenant proportionnelles, dans le rapport qu'elles ont à 500 px de colonne — 187 · 105 · 172, mesuré —
+   donc à 500 px l'écran est au pixel près celui d'avant, et toute largeur gagnée ou rendue se partage entre
+   les trois. Rien d'autre ne change de taille : ni les chiffres, ni les boutons. */
+#scard .sbody{grid-template-columns:minmax(0,187fr) minmax(0,105fr) minmax(0,172fr)}
+/* ET LES COLONNES À L'INTÉRIEUR DE CHAQUE ZONE AUSSI (le même jour : « oui mais le sprint lui même a déjà
+   plusieurs colonnes ! »). Le résultat du sprint — place, BIB, NOC, gap et les deux colonnes d'icônes — et la
+   liste de départ — BIB, drapeau, NOC — avaient une seule colonne souple, celle qui prenait tout le reste. Les
+   mêmes proportions qu'à 500 px, mesurées : 22 · 32 · 38 · 22 · 22 · 22 pour l'ordre, 32 · 22 · 37 pour la liste.
+   Les en-têtes suivent les mêmes colonnes, pour rester alignés sur leurs lignes. */
+#scard .shd,#scard .srow{grid-template-columns:minmax(0,22fr) minmax(0,32fr) minmax(0,38fr) minmax(0,22fr) minmax(0,22fr) minmax(0,22fr)}
+#scard .shd.sl,#scard .slrow{grid-template-columns:minmax(0,32fr) minmax(0,22fr) minmax(0,37fr)}
+
 /* LE CLASSEMENT, AU DESSIN VALIDÉ LE 16 NOVEMBRE 2026 (mockups/maquette-standings.html, vue Live). Relevé sur la
    maquette : bloc de gauche resserré, le total juste après le nom, une colonne par sprint en pastille ambrée, les
    points de tour en pastille suivis des tours où c'est arrivé, Finish order en ordinal, la ligne de coupe en
@@ -949,7 +963,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '259';
+const BUILD = '260';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -5336,25 +5350,13 @@ function applyLayout() {
   for (const k in CSSVAR) LAY[k] == null
     ? document.documentElement.style.removeProperty(CSSVAR[k])
     : document.documentElement.style.setProperty(CSSVAR[k], LAY[k] + 'px');
-  syncSprintZoom();
 }
-/* LA POIGNÉE DE LA CARTE DU SPRINT AGRANDIT LA CARTE ENTIÈRE (l'opérateur, 19 novembre 2026, point 259 :
-   « il faut que le mouvement latéral de cette poignée ait un vrai effet sur toutes les zones de la carte
-   de sprint », puis « Oui, tout grandit »). Avant, la largeur gagnée allait tout entière dans la colonne
-   de l'ordre, les deux autres étant à largeur fixe : on ne voyait grandir que le vide.
-   La poignée pose toujours la largeur de la colonne ; la carte prend en plus le zoom qui est le rapport
-   entre cette largeur et celle que la feuille de style lui donne sans poignée — clamp(500px, 29 %, 560px)
-   de la scène. Sa largeur de mise en page ne change donc pas, les trois zones gardent leurs proportions
-   et tout grandit ensemble. Sans poignée le rapport vaut 1 et rien ne bouge (point 119). Le réglage
-   CTRL + molette (ZV.sprint) se multiplie à ce rapport, et son étiquette ne montre que lui. */
-function natRight() {
-  const st = $('.stage'); const w = st ? st.getBoundingClientRect().width : 0;
-  return w ? Math.max(500, Math.min(560, w * 0.29)) : 0;   // zone pas rendue : rapport 1 (pitfalls D19)
-}
-function syncSprintZoom() {
-  const nat = natRight(), k = LAY.right != null && nat ? LAY.right / nat : 1;
-  document.documentElement.style.setProperty('--z-sprint', (ZV.sprint * k).toFixed(3));
-}
+/* LA POIGNÉE DE LA CARTE DU SPRINT : les trois colonnes de la carte suivent sa largeur (l'opérateur,
+   19 novembre 2026, point 260 : « Il faut que les largeurs des colonnes du sprint s'élargissent quand on
+   agrandit la fenêtre, et qu'elles s'amincissent quand on réduit la fenêtre ! »). Cela se fait dans la
+   feuille de style, par des colonnes proportionnelles (voir #scard .sbody dans le <style> de ce fichier) :
+   rien ici. Le build 259 couplait un zoom de la carte à la poignée ; il est retiré, c'était la mauvaise
+   lecture de « tout grandit ». */
 function saveLayout() { try { localStorage.setItem(LKEY, JSON.stringify({ ...LAY, oval: ovZoom, tl_z: tlZoom, z: { ...ZV } })); } catch (e) {} }
 function loadLayout() {
   try { const d = JSON.parse(localStorage.getItem(LKEY) || '{}');
@@ -5477,12 +5479,9 @@ new ResizeObserver(() => tlFit()).observe(tlbody);
 const ZCSS = { sprint: '--z-sprint', props: '--z-props' };
 const ZV = { sprint: 1, props: 1 };
 function syncZone(k) {
-  if (k === 'sprint') syncSprintZoom(); else document.documentElement.style.setProperty(ZCSS[k], ZV[k]);
+  document.documentElement.style.setProperty(ZCSS[k], ZV[k]);
   zlab(k, ZV[k], ZV[k]);
 }
-// La largeur sans poignée dépend de la scène, qui change avec la fenêtre et le rail du simulateur :
-// même observateur que pour l'ovale, pour la même raison (D15).
-new ResizeObserver(() => syncSprintZoom()).observe($('.stage'));
 
 /* ---- 1 sexies. la fenêtre des actions remplit sa zone -------------------
    « Il faut que cette fenêtre d'action soit de taille fixe » (l'opérateur,

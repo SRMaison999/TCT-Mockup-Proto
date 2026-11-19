@@ -2892,7 +2892,7 @@ barre). Les règles `#barctl …` de `styles.css` ne s'appliquent plus à rien, 
 autres prototypes. Les règles `.bar #rtype{order:2}` et `.bar #barctl{order:3}` sont retirées.
 
 
-## §72 · La poignée de la carte du sprint pilote le zoom de la carte · build 259
+## §72 · La poignée de la carte du sprint pilote le zoom de la carte · build 259 — **retiré au build 260, §73**
 
 Son point 259. `applyLayout()` appelle `syncSprintZoom()`, qui écrit `--z-sprint` = `ZV.sprint` ×
 `LAY.right / natRight()`. `natRight()` est la largeur que `styles.css` donne à `.right` sans poignée,
@@ -2905,3 +2905,25 @@ mise en page de la carte reste `nat / ZV.sprint` quelle que soit la poignée : l
 l'étiquette de zoom ne montre toujours que `ZV.sprint`. Un `ResizeObserver` sur `.stage` refait le
 calcul quand la fenêtre ou le rail du simulateur change la largeur de la scène (D15). Le double-clic
 sur la poignée remet `LAY.right` à `null`, donc le rapport à 1. `tct.layout` garde les mêmes clés.
+
+
+## §73 · Les colonnes de la carte du sprint, proportionnelles à tous les étages · build 260
+
+Son point 260. **Tout le §72 est retiré** : `syncSprintZoom()`, `natRight()`, l'observateur sur
+`.stage` et l'appel dans `applyLayout()` n'existent plus ; `syncZone()` écrit de nouveau `--z-sprint`
+directement, et la poignée ne pose que `--w-right`, comme au build 258.
+
+À la place, trois règles dans le `<style>` du fichier, qui remplacent les colonnes fixes de
+`styles.css` par des fractions dans le rapport mesuré à 500 px de colonne — donc au pixel près l'écran
+d'avant sans poignée :
+
+- `#scard .sbody` : `minmax(0,187fr) minmax(0,105fr) minmax(0,172fr)` au lieu de `minmax(0,1fr)
+  105px 172px` — l'ordre, la liste de départ, les commandes ;
+- `#scard .shd, #scard .srow` : `22 · 32 · 38 · 22 · 22 · 22` fr au lieu de `22px 32px 38px
+  minmax(0,1fr) 22px 22px` — place, BIB, NOC, gap, deux icônes ; l'en-tête suit les mêmes colonnes ;
+- `#scard .shd.sl, #scard .slrow` : `32 · 22 · 37` fr au lieu de `32px 22px minmax(0,1fr)` — BIB,
+  drapeau, NOC.
+
+`minmax(0, Nfr)` plutôt que `Nfr` seul : la taille minimale automatique d'une piste `fr` est celle de
+son contenu, et un contenu qui ne tient pas forcerait la piste au lieu de la laisser suivre.
+`styles.css` n'est pas touché : les autres prototypes le partagent.
