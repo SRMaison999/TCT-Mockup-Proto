@@ -3710,13 +3710,3 @@ Et dans l'autre sens, dit dans la foulée :
 
 La règle vaut donc des deux côtés : un groupe devant le peloton reste devant, un groupe derrière
 reste derrière, et le seul passage de l'un à l'autre se fait **par le peloton**.
-
-### 247 · Le sprint se juge au tour que le compteur affiche · 19 novembre 2026
-
-Sa capture du sprint 2, build 248 :
-
-> « là le peloton vient de boucler son 20ème tour mais le sprint n'a pas été enregistré .... le
-> sprint a été enregistré au 21 ème tour »
-
-Le compteur de tours et le sprint doivent dire la même chose : pendant tout le tour 20, le compteur
-affiche 20, et le sprint du tour 20 s'enregistre au passage sur la ligne qui termine ce tour-là.
