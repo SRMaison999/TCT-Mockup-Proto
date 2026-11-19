@@ -3732,3 +3732,20 @@ Et dans l'autre sens, dit dans la foulée :
 
 La règle vaut donc des deux côtés : un groupe devant le peloton reste devant, un groupe derrière
 reste derrière, et le seul passage de l'un à l'autre se fait **par le peloton**.
+
+### 248 · Un sprint ne s'ouvre qu'au passage des LEADERS · 19 novembre 2026
+
+Dit en réponse à mon explication sur le sprint final, où j'avançais que les BIB 1 et 2 venaient de
+reprendre un tour :
+
+> « ils avaient repris un tour depuis un petit moment déjà. Mais l'important n'est pas là,
+> l'important est qu'un sprint ne peut s'ouvrir qu'au passage des LEADERS et de personne d'autre !
+> et en l'occurence c'était eux les LEADERS »
+
+**Le sprint s'ouvre au passage du groupe de tête de la timeline, et d'aucun autre.** Ce n'est ni le
+peloton, ni le premier coureur lu sur la ligne, ni un compte de tours : c'est le passage des
+LEADERS. Et les places se lisent à partir de là, donc les LEADERS sont premiers.
+
+Constaté sur la course complète au build 248 : les BIB 1 et 2, `1-LEADERS` dans la timeline, ont
+été enregistrés 23e et 24e du sprint final, derrière les vingt coureurs du peloton et derrière les
+BIB 23 et 24 qui étaient `3-LAST`.
