@@ -5397,3 +5397,22 @@ les positions ne joue que sur les premières secondes, où personne ne roule enc
 
 Un premier passage du même essai sans rejouer les ordres n'avait montré qu'un bloc et aucune
 carte pendant vingt minutes : c'était le harnais qui n'appliquait pas les attaques, pas le code.
+
+
+## §112 · La barre du haut sur un écran de 1366 px — build 258, 19 novembre 2026
+
+Prototype ouvert sur `http://localhost`, course par défaut (le peloton qui reste groupé), sprint 1
+ouvert, fenêtre de 1366 × 768 puis de 1920 × 1080, disposition d'usine.
+
+| | build 257 | build 258 |
+|---|---|---|
+| Largeur de la page, 1366 px, simulateur masqué (`scrollWidth`) | **1637** px, la page défile | **1366** px |
+| Bord gauche de la timeline, 1366 px, simulateur masqué | **−166** px, hors écran | 16 px |
+| Largeur de la barre du haut, 1920 px, simulateur masqué | 1686 px dont les armements | 1686 px, onglets · Undo · build · simulateur |
+| Panneau de l'ovale, 1920 px (écran) | 76 unités de haut | 633 × 154 px, trois lignes de 29, 46 et 36 px |
+| Panneau de l'ovale, 1366 px, simulateur masqué | — | 324 × 79 px, lisible |
+| Erreurs de console au chargement | 0 | 0 |
+
+**Ce qui ne change pas** : simulateur affiché, en 1366 px, l'ovale n'a toujours que 146 px de large
+et la fenêtre d'actions garde ses 290 px — les largeurs minimales des zones ne sont pas touchées
+par ce build, qui ne fait que ce que sa maquette montre.

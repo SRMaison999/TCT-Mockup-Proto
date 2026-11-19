@@ -2868,3 +2868,25 @@ mesure du moment, comme le moteur de course depuis le build 192 ; `S.cass` ne ga
 dernière réponse par paire, pour le journal du code. `S.headLap`, écrit à chaque image et lu par
 personne depuis la build 53 (`pitfalls.md` A10), n'est plus calculé. Le tableau des constantes du
 §11 et l'état du §2 ne les portent plus.
+
+
+## §71 · Le panneau de l'ovale reprend FINAL, les armements et les provenances · build 258
+
+Son point 258. Le `<span id="rtype">` et le `<span id="barctl">` quittent `.bar` ; le `<text
+id="ovtitle">` disparaît ; le `<foreignObject id="ifpanel">` (désormais x 247, y 220, 486 × 118
+unités du viewBox) porte un `.ifrows` de trois `.ifrow` : `#ovtitle` devenu un `<span>` suivi de
+`#rtype` ; `.togopair` (`#srcapp`, `#srccnt`), la boîte `LAP` et `#iftogo` ; `#barctl` qui ne
+contient plus que `#startbtn`, `#armfinish` et l'horloge `#iftime`. Un quatrième bloc, `.ifgone`
+en `display:none`, garde les boîtes `LEADER` et `#ifnext` : `IF.leadchip`, `IF.nextv` et les autres
+sont encore écrits à chaque image par `renderStrip()`, et un `$()` sur rien casserait au chargement.
+
+**Un seul écouteur.** `#barctl` est maintenant dans `#infield`, qui porte déjà `onRaceControl` :
+la ligne `$('#barctl').addEventListener` est retirée, sinon chaque clic d'armement comptait deux
+fois. `hitsPanel()` lit les attributs du `foreignObject`, donc l'évitement des étiquettes de groupe
+suit la nouvelle boîte sans rien changer.
+
+**Les styles**, dans le `<style>` du fichier : `.ifrows`, `#ifpanel .ifrow`, les tailles des
+boîtes blanches (28 px, horloge 96 px de large), de `#iftogo` (32 px), des boutons d'armement
+(26 px, comme dans la barre) et de la paire de provenances (deux lignes de 15 px, comme dans la
+barre). Les règles `#barctl …` de `styles.css` ne s'appliquent plus à rien, et restent pour les
+autres prototypes. Les règles `.bar #rtype{order:2}` et `.bar #barctl{order:3}` sont retirées.

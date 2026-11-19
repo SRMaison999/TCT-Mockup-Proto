@@ -4039,3 +4039,32 @@ mort de ma main, le « tour par rapport à la tête » que plus rien ne lisait :
 
 **Codé au build 257** : `CASS_DELAY_S` et `cassure()` n'existent plus, le repli déclare une cassure
 sur la mesure du moment comme le moteur ; `S.headLap` n'est plus calculé.
+
+
+### 258 · FINAL, les armements et les provenances reviennent au centre de l'ovale · 19 novembre 2026
+
+Il a ouvert le sujet ainsi :
+
+> « Il faut revoir l'UI pour déplacer des éléments. Actuellement ils ont tendance à se chevaucher et
+> déborder de l'écran, particulièrement sur écrans de laptops »
+
+Puis, après avoir dit qu'il n'y avait pas de course de test à charger et qu'il dirait lui-même ce
+qui change, deux captures de son écran de 1920 px, la première telle quelle, la seconde retouchée :
+
+> « voilà, tu as ici la version actuelle, et la version comme je la veux »
+
+Sur la seconde, la barre du haut ne porte plus que les onglets, `Undo`, le numéro de build et les
+commandes du simulateur. `FINAL`, `ARM START`, `ARM FINISH` et la paire `AUTO` / `LAP COUNTER`
+sont au centre de l'ovale, sous le titre, sur trois lignes : le titre avec `FINAL` à sa droite ;
+les deux provenances empilées, `LAP` et `TO GO` ; `ARM START`, `ARM FINISH` et l'horloge. Les
+boîtes `LEADER` et `SPRINT` n'y sont plus. À la question de savoir si elles disparaissent aussi
+de l'ovale :
+
+> « Oui, elles partent »
+
+Ce point **remplace les points 139 et 140** du 31 octobre 2026, qui avaient fait sortir ces mêmes
+réglages du panneau vers la barre du haut, et la place de `FINAL` dans la barre du 17 novembre.
+
+**Codé au build 258.** Les mêmes éléments, avec les mêmes identifiants et les mêmes écouteurs,
+changent d'endroit ; `LEADER` et le prochain sprint restent dans le document sans être dessinés.
+Sur un écran de 1366 px, simulateur masqué, la barre tient et la page ne déborde plus.

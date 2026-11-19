@@ -39,17 +39,40 @@
 .stage{flex:1 1 auto;min-height:0;display:flex;gap:10px}
 .bar{height:40px;gap:8px}
 .bar .logtabs{display:inline-flex;align-self:stretch;flex:0 0 auto;order:1}
-.bar #rtype{order:2}
-.bar #barctl{order:3}
 .bar #undo{order:4}
 .bar .sp{order:5}
 .bar .bld{order:6;font-size:13px;color:var(--muted)}
 .bar #simtransport{order:7}
 .bar #railshow{order:8}
-/* LE TYPE DE COURSE, dans la barre du haut (l'opérateur, 17 novembre 2026 : « Dans la barre du haut »), juste après
-   les onglets et avant ARM START. Sa forme est celle des provenances des tours restants, qui vivent déjà dans cette
-   barre : un mot-clé, une valeur, deux pas. En finale il n'y a ni nombre de qualifiés ni coupe, donc les pas s'en vont. */
-.bar #rtype{flex:0 0 auto;gap:6px}
+/* LE PANNEAU DE L'OVALE, SUR SA MAQUETTE DU 19 NOVEMBRE 2026 (point 258). Trois lignes centrées. Les
+   provenances gardent la forme serrée qu'elles avaient dans la barre (deux lignes de 15 px empilées), les
+   boutons d'armement leurs 26 px. Le fond de l'ovale est clair : les boîtes sont blanches à texte noir
+   (point 148) ; les provenances et les boutons gardent leurs couleurs, qui portent un état. */
+.ifrows{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--sans)}
+#ifpanel .ifrow{gap:8px;align-items:center}
+#ifpanel .ifrow > *{pointer-events:auto}
+#ifpanel .ifgone{display:none}
+#ifpanel .ifhead{height:22px;gap:10px}
+#ovtitle{font:600 17px var(--sans);color:#111;white-space:nowrap}
+#ifpanel .ifb{height:28px;padding:0 9px;gap:6px}
+#ifpanel .ifb .ifk{font-size:11px}
+#ifpanel .ifb .ifv{font-size:18px}
+#ifpanel .ifb .ifu{font-size:11px}
+#ifpanel .ifclock{min-width:96px}
+#ifpanel .ifclock .ifv{font-size:20px}
+#ifpanel #iftogo{height:32px}
+#ifpanel #iftogo .ifk{font-size:12px}
+#ifpanel #iftogo .ifv{font-size:24px}
+#ifpanel .barb{width:auto;height:26px;padding:0 10px;font-size:11px;letter-spacing:.07em;flex:0 0 auto}
+#ifpanel .togopair{display:flex;flex-direction:column;gap:2px;flex:0 0 auto}
+#ifpanel .togopair .srcrow{height:15px;gap:5px;padding:0 6px}
+#ifpanel .togopair .srcrow .ifk{font-size:9px;flex:1 1 auto}
+#ifpanel .togopair .srcv{font-size:10px}
+#ifpanel .togopair .ifsb{height:13px;min-width:13px;font-size:10px;line-height:1}
+#ifpanel .togopair .pick{width:9px;height:9px}
+/* LE TYPE DE COURSE, à droite du titre. Sa forme est celle des provenances : un mot-clé, une valeur, deux pas.
+   En finale il n'y a ni nombre de qualifiés ni coupe, donc les pas s'en vont. */
+#rtype{flex:0 0 auto;gap:6px;height:20px}
 #rtype .ifk{background:0;border:0;padding:0;font:600 11px var(--sans);letter-spacing:.08em;color:var(--muted);cursor:pointer;flex:0 0 auto}
 #rtype .ifk:hover{color:var(--fg)}
 #rtype.qual .ifk{color:var(--warn)}
@@ -699,28 +722,10 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
             <span class="seg"><button class="btn lg quiet" id="simrestart" title="Replay this race from its start">Replay</button><button class="btn lg newrace" id="simnew" title="Open a new, empty race">New</button></span>
           </div>
       </div>
-      <!-- CE QUI EST SORTI DU PANNEAU DE L'OVALE (l'opérateur, 31 octobre 2026, point 140 :
-           « Dans la barre du haut »). Les mêmes éléments, les mêmes identifiants, les mêmes
-           écouteurs : seul leur endroit a changé. La paire de provenances tient sur deux lignes
-           de 15 px, parce que la barre fait 36 px de haut et qu'elles en faisaient 22 chacune. -->
-      <!-- LE TYPE DE COURSE. L'opérateur, 17 novembre 2026 : « Dans la barre du haut ». Il prend la forme des
-           provenances des tours restants, déjà dans cette barre, et se bloque au départ comme Laps et Sprints. -->
-      <span class="srcrow" id="rtype">
-        <button class="ifk" id="rtypek">FINAL</button>
-        <span class="ifstep"><button class="ifsb" data-rtype="-1">&minus;</button><span class="srcv" id="rtypev">10</span><button class="ifsb" data-rtype="1">+</button></span>
-      </span>
-      <span id="barctl">
-        <button class="startb barb" id="startbtn">ARM START</button>
-        <button class="startb finb barb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
-        <span class="togopair">
-          <span class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
-            <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
-            <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
-            <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></span>
-          <span class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
-            <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></span>
-        </span>
-      </span>
+      <!-- FINAL, ARM START, ARM FINISH et la paire AUTO / LAP COUNTER ne sont plus ici : sa maquette du
+           19 novembre 2026 les ramène au centre de l'ovale (regles-operateur.md §17 point 258). La barre
+           ne garde que les onglets, Undo, le numéro de build et les commandes du simulateur, et tient
+           sur un écran de 1366 px. -->
       <!-- `Race leader` et son bouton `Auto` ne sont plus dessinés : ils ne sont pas sur sa
            maquette du 31 octobre 2026. Le bouton reste dans le document avec son écouteur, comme
            `Race log` avant lui — le retirer casserait `$('#leaderauto')`. -->
@@ -757,31 +762,44 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
           <g id="ovlabels"></g>
           <text id="gmeas" class="glabel" x="-9999" y="-9999" aria-hidden="true"></text>
           <g id="infield">
-            <!-- Le titre de la course est descendu de la barre à l'intérieur de l'ovale, sur sa
-                 maquette du 31 octobre 2026, et il y porte les tours, les sprints et la longueur
-                 de piste. Il est écrit en noir : l'intérieur de l'ovale est clair. -->
-            <text id="ovtitle" x="490" y="236" text-anchor="middle" font-family="IBM Plex Sans" font-size="17" font-weight="600" fill="#111"></text>
-            <!-- LE PANNEAU NE GARDE QUE CE QUI SE LIT EN COURSE (l'opérateur, 31 octobre 2026,
-                 regles-operateur.md §17 point 139) : l'horloge, LAP, TO GO, LEADER et le prochain
-                 sprint. La paire AUTO / LAP COUNTER, ses boutons de choix, le bascule M, les pas
-                 − / + et les deux boutons d'armement sont partis dans la barre du haut, qu'il a
-                 choisie (point 140) — ils sont dans #barctl, en haut de ce fichier.
-                 92 px deviennent 64, et le panneau reste centré au même endroit : il descend de
-                 14 px pour que son milieu ne bouge pas.
-                 LA DISPOSITION EST CELLE DE SON CROQUIS (1er novembre 2026) : l'horloge et LAP en
-                 haut, LEADER et TO GO en bas, le prochain sprint à droite sur les deux hauteurs.
-                 Boîtes blanches à texte noir, et TO GO seul en vert. -->
-            <foreignObject id="ifpanel" x="267" y="258" width="446" height="76">
-              <div xmlns="http://www.w3.org/1999/xhtml" class="ifcols">
-                <div class="ifcol">
-                  <div class="ifb ifclock"><span class="ifv" id="iftime">00:00.0</span></div>
-                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span><span class="ifflag" id="ifleadflag"></span><span class="ifnoc" id="ifleadnoc"></span></div>
+            <!-- LE PANNEAU DE L'OVALE, SUR SA MAQUETTE DU 19 NOVEMBRE 2026 (regles-operateur.md §17 point 258).
+                 Trois lignes : le titre de la course avec FINAL à sa droite ; la paire AUTO / LAP COUNTER
+                 empilée, LAP et TO GO ; ARM START, ARM FINISH et l'horloge. Ce sont les éléments qui
+                 étaient dans la barre du haut depuis le 31 octobre 2026 (points 139 et 140) : mêmes
+                 identifiants, mêmes écouteurs, seul l'endroit change. LEADER et le prochain sprint
+                 partent de l'écran (« Oui, elles partent ») mais restent dans le document, jamais
+                 dessinés : le moteur les écrit en place à chaque image, et un $() sur rien casserait.
+                 Le titre est devenu du HTML pour porter FINAL à côté de lui : il n'est plus un <text>.
+                 Les attributs x, y, width, height sont lus par le placement des étiquettes de groupe
+                 (hitsPanel) : ils doivent couvrir ce qui est dessiné. -->
+            <foreignObject id="ifpanel" x="247" y="220" width="486" height="118">
+              <div xmlns="http://www.w3.org/1999/xhtml" class="ifrows">
+                <div class="ifrow ifhead">
+                  <span id="ovtitle"></span>
+                  <span class="srcrow" id="rtype">
+                    <button class="ifk" id="rtypek">FINAL</button>
+                    <span class="ifstep"><button class="ifsb" data-rtype="-1">&minus;</button><span class="srcv" id="rtypev">10</span><button class="ifsb" data-rtype="1">+</button></span>
+                  </span>
                 </div>
-                <div class="ifcol">
+                <div class="ifrow">
+                  <span class="togopair">
+                    <span class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
+                      <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
+                      <button class="ifsb modeb" id="iftogomode" title="The application counts by itself, or the operator counts by hand">M</button>
+                      <button class="pick" data-pick="app" title="Take the laps to go from the application"></button></span>
+                    <span class="srcrow" id="srccnt"><span class="ifk">LAP COUNTER</span><span class="srcv" id="srccntv">—</span>
+                      <button class="pick" data-pick="counter" title="Take the laps to go from the lap counter on the track"></button></span>
+                  </span>
                   <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
                   <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
                 </div>
-                <div class="ifcol">
+                <div class="ifrow" id="barctl">
+                  <button class="startb barb" id="startbtn">ARM START</button>
+                  <button class="startb finb barb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
+                  <div class="ifb ifclock"><span class="ifv" id="iftime">00:00.0</span></div>
+                </div>
+                <div class="ifgone">
+                  <div class="ifb"><span class="ifk">LEADER</span><span class="ifchip" id="ifleadchip"></span><span class="ifflag" id="ifleadflag"></span><span class="ifnoc" id="ifleadnoc"></span></div>
                   <div class="ifb tall" id="ifnext"><span class="ifline"><span class="ifk" id="ifnextk">SPRINT</span><span class="ifv sm" id="ifnextv"></span></span><span class="ifu" id="ifnextu"></span></div>
                 </div>
               </div>
@@ -931,7 +949,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '257';
+const BUILD = '258';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -3520,7 +3538,7 @@ function onRaceControl(e) {
   }
 }
 $('#infield').addEventListener('click', onRaceControl);
-$('#barctl').addEventListener('click', onRaceControl);
+// #barctl vit dans l'ovale depuis le build 258 : l'écouteur de #infield le couvre, un second ferait tout deux fois.
 $('#leaderauto').addEventListener('click', () => { pushUndo('leader auto'); S.leader = null; S.arm = null; logEvent('LEADER', 'Race leader taken from the track', true); syncArm(); dirty = true; render(); });
 // The three leader buttons sit on the track at their own loop. Armed, the button AND the loop's line go green and
 // wait; the moment a rider is read there, both come back to normal and the button shows his number for a moment
