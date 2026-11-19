@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maquette · le panneau de l'ovale</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Maquette seule, pas de moteur. Demandée le 19 novembre 2026 : « Il faut aligner les boutons et les rendre
+   plus beaux ». Les couleurs sont celles de styles.css ; le gris du fond est celui de l'intérieur de l'ovale. */
+:root{--play:#1CC634;--crit:#FF5C5C;--warn:#F2A33A;--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:#121416;font:14px/1.3 var(--sans);color:#111;display:flex;flex-direction:column;align-items:center;gap:28px;padding:28px}
+h1{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:#c1bdb4;margin:0;align-self:flex-start}
+.infield{width:760px;height:300px;border-radius:150px;background:#a4a7ab;border:4px solid #2265e2;display:flex;align-items:center;justify-content:center}
+.panel{display:flex;flex-direction:column;align-items:center;gap:8px}
+.head{display:flex;align-items:center;gap:12px;height:24px}
+.head .title{font:600 17px var(--sans);color:#111;white-space:nowrap}
+.grid{display:grid;grid-template-columns:124px 104px 124px;grid-auto-rows:32px;gap:8px}
+.box{display:flex;align-items:center;justify-content:center;gap:7px;height:100%;padding:0 10px;border-radius:4px;
+  background:#fff;border:1px solid #c9ccd0;color:#111;white-space:nowrap;font:600 11px var(--sans);letter-spacing:.08em}
+.box .k{color:#5a5f66}
+.box .v{font:600 18px var(--mono);font-variant-numeric:tabular-nums;letter-spacing:0}
+.box .u{font:500 11px var(--mono);color:#5a5f66;letter-spacing:0}
+.final{height:24px;padding:0 10px;font-size:11px}
+.srcs{flex-direction:column;justify-content:center;gap:2px;padding:0 8px;font-size:9px}
+.srcs .line{display:flex;align-items:center;gap:5px;width:100%;height:13px}
+.srcs .line .k{flex:1 1 auto;text-align:left}
+.srcs .line .n{font:600 11px var(--mono);letter-spacing:0}
+.srcs .m{width:13px;height:13px;border:1px solid #c9ccd0;border-radius:2px;font-size:9px;display:flex;align-items:center;justify-content:center;background:#f1f2f3}
+.srcs .pick{width:9px;height:9px;border-radius:50%;border:1px solid #5a5f66;background:#fff}
+.srcs .pick.on{background:#111;border-color:#111}
+.togo{background:var(--play);border-color:#3f8f52;justify-content:space-between}
+.togo .k,.togo .v{color:#06220c}
+.togo .k{font-size:12px}
+.togo .v{font-size:24px;line-height:1}
+.clock .v{font-size:20px}
+.btn{font:700 11px var(--sans);letter-spacing:.09em;border-radius:4px;border:1px solid;cursor:pointer;height:100%;width:100%;padding:0}
+.start{background:var(--crit);border-color:var(--crit);color:#fff}
+.fin{background:#fff;border-color:#c9ccd0;color:#111}
+.note{width:760px;font:400 13px/1.5 var(--sans);color:#c1bdb4}
+.note b{color:#fffafa}
+</style></head><body>
+<h1>Le panneau de l'ovale, aligné · proposition du 19 novembre 2026</h1>
+<div class="infield">
+  <div class="panel">
+    <div class="head"><span class="title">Men's Points Race - 40 laps - 4 sprints - 250m</span><button class="box final">FINAL</button></div>
+    <div class="grid">
+      <div class="box srcs">
+        <div class="line"><span class="k">AUTO</span><span class="n">48</span><span class="m">M</span><span class="pick on"></span></div>
+        <div class="line"><span class="k">LAP COUNTER</span><span class="n">48</span><span class="pick"></span></div>
+      </div>
+      <div class="box"><span class="k">LAP</span><span class="v">0</span><span class="u">/ 40</span></div>
+      <div class="box togo"><span class="k">TO GO</span><span class="v">40</span></div>
+      <button class="btn start">ARM START</button>
+      <button class="btn fin">ARM FINISH</button>
+      <div class="box clock"><span class="v">00:00.0</span></div>
+    </div>
+  </div>
+</div>
+<p class="note">Trois colonnes et deux lignes sous le titre, <b>toutes les cases de la même hauteur</b>, chaque colonne de la même
+largeur sur ses deux lignes : AUTO / LAP COUNTER au-dessus d'ARM START, LAP au-dessus d'ARM FINISH, TO GO au-dessus de
+l'horloge. Toutes les boîtes sont <b>blanches à texte noir</b>, y compris FINAL, ARM FINISH et les deux provenances ;
+seules celles qui portent un état gardent leur couleur : TO GO en vert, ARM START en rouge, et elles passent au vert
+quand elles attendent un coureur, comme aujourd'hui.</p>
+</body></html>
