@@ -2890,3 +2890,18 @@ boîtes blanches (28 px, horloge 96 px de large), de `#iftogo` (32 px), des bout
 (26 px, comme dans la barre) et de la paire de provenances (deux lignes de 15 px, comme dans la
 barre). Les règles `#barctl …` de `styles.css` ne s'appliquent plus à rien, et restent pour les
 autres prototypes. Les règles `.bar #rtype{order:2}` et `.bar #barctl{order:3}` sont retirées.
+
+
+## §72 · La poignée de la carte du sprint pilote le zoom de la carte · build 259
+
+Son point 259. `applyLayout()` appelle `syncSprintZoom()`, qui écrit `--z-sprint` = `ZV.sprint` ×
+`LAY.right / natRight()`. `natRight()` est la largeur que `styles.css` donne à `.right` sans poignée,
+`clamp(500px, 29%, 560px)` de `.stage`, recalculée sur la scène mesurée ; scène non rendue, le rapport
+vaut 1 (D19). Comme `#scard{zoom:var(--z-sprint)}` était déjà là pour CTRL + molette, la largeur de
+mise en page de la carte reste `nat / ZV.sprint` quelle que soit la poignée : la grille
+`minmax(0,1fr) 105px 172px` de `.sbody` ne voit rien changer, et tout grandit du même rapport.
+
+`syncZone('sprint')` passe par la même fonction, pour que la molette et la poignée ne s'écrasent pas ;
+l'étiquette de zoom ne montre toujours que `ZV.sprint`. Un `ResizeObserver` sur `.stage` refait le
+calcul quand la fenêtre ou le rail du simulateur change la largeur de la scène (D15). Le double-clic
+sur la poignée remet `LAY.right` à `null`, donc le rapport à 1. `tct.layout` garde les mêmes clés.

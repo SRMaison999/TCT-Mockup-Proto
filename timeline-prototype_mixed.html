@@ -949,7 +949,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '258';
+const BUILD = '259';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -5336,6 +5336,24 @@ function applyLayout() {
   for (const k in CSSVAR) LAY[k] == null
     ? document.documentElement.style.removeProperty(CSSVAR[k])
     : document.documentElement.style.setProperty(CSSVAR[k], LAY[k] + 'px');
+  syncSprintZoom();
+}
+/* LA POIGNÉE DE LA CARTE DU SPRINT AGRANDIT LA CARTE ENTIÈRE (l'opérateur, 19 novembre 2026, point 259 :
+   « il faut que le mouvement latéral de cette poignée ait un vrai effet sur toutes les zones de la carte
+   de sprint », puis « Oui, tout grandit »). Avant, la largeur gagnée allait tout entière dans la colonne
+   de l'ordre, les deux autres étant à largeur fixe : on ne voyait grandir que le vide.
+   La poignée pose toujours la largeur de la colonne ; la carte prend en plus le zoom qui est le rapport
+   entre cette largeur et celle que la feuille de style lui donne sans poignée — clamp(500px, 29 %, 560px)
+   de la scène. Sa largeur de mise en page ne change donc pas, les trois zones gardent leurs proportions
+   et tout grandit ensemble. Sans poignée le rapport vaut 1 et rien ne bouge (point 119). Le réglage
+   CTRL + molette (ZV.sprint) se multiplie à ce rapport, et son étiquette ne montre que lui. */
+function natRight() {
+  const st = $('.stage'); const w = st ? st.getBoundingClientRect().width : 0;
+  return w ? Math.max(500, Math.min(560, w * 0.29)) : 0;   // zone pas rendue : rapport 1 (pitfalls D19)
+}
+function syncSprintZoom() {
+  const nat = natRight(), k = LAY.right != null && nat ? LAY.right / nat : 1;
+  document.documentElement.style.setProperty('--z-sprint', (ZV.sprint * k).toFixed(3));
 }
 function saveLayout() { try { localStorage.setItem(LKEY, JSON.stringify({ ...LAY, oval: ovZoom, tl_z: tlZoom, z: { ...ZV } })); } catch (e) {} }
 function loadLayout() {
@@ -5459,9 +5477,12 @@ new ResizeObserver(() => tlFit()).observe(tlbody);
 const ZCSS = { sprint: '--z-sprint', props: '--z-props' };
 const ZV = { sprint: 1, props: 1 };
 function syncZone(k) {
-  document.documentElement.style.setProperty(ZCSS[k], ZV[k]);
+  if (k === 'sprint') syncSprintZoom(); else document.documentElement.style.setProperty(ZCSS[k], ZV[k]);
   zlab(k, ZV[k], ZV[k]);
 }
+// La largeur sans poignée dépend de la scène, qui change avec la fenêtre et le rail du simulateur :
+// même observateur que pour l'ovale, pour la même raison (D15).
+new ResizeObserver(() => syncSprintZoom()).observe($('.stage'));
 
 /* ---- 1 sexies. la fenêtre des actions remplit sa zone -------------------
    « Il faut que cette fenêtre d'action soit de taille fixe » (l'opérateur,

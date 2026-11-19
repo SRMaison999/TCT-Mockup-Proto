@@ -5416,3 +5416,21 @@ ouvert, fenêtre de 1366 × 768 puis de 1920 × 1080, disposition d'usine.
 **Ce qui ne change pas** : simulateur affiché, en 1366 px, l'ovale n'a toujours que 146 px de large
 et la fenêtre d'actions garde ses 290 px — les largeurs minimales des zones ne sont pas touchées
 par ce build, qui ne fait que ce que sa maquette montre.
+
+
+## §113 · La poignée de la carte du sprint — build 259, 19 novembre 2026
+
+Fenêtre de 1920 × 1080, simulateur masqué, disposition d'usine effacée, sprint 1 ouvert. La poignée
+est tirée de 200 px vers la gauche par des événements de pointeur.
+
+| | avant la poignée | après, build 257 (lu sur sa capture) | après, build 259 |
+|---|---|---|---|
+| Largeur de la colonne | 500 px | ≈ 700 px | 700 px |
+| Zoom de la carte (`--z-sprint`) | 1 | 1 | **1,4** |
+| Colonne de l'ordre | 187 px | ≈ 500 px | 263 px |
+| Liste de départ | 105 px | 105 px | 147 px |
+| Commandes | 172 px | 172 px | 241 px |
+| Rapport des trois colonnes | 1 | ordre seul × 2,7 | **1,4 pour les trois** |
+| Erreurs de console | 0 | | 0 |
+
+Rien n'est écrit dans `tct.layout` de plus qu'avant : `right: 700`, `z.sprint: 1`.

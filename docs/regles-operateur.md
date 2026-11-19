@@ -4068,3 +4068,25 @@ réglages du panneau vers la barre du haut, et la place de `FINAL` dans la barre
 **Codé au build 258.** Les mêmes éléments, avec les mêmes identifiants et les mêmes écouteurs,
 changent d'endroit ; `LEADER` et le prochain sprint restent dans le document sans être dessinés.
 Sur un écran de 1366 px, simulateur masqué, la barre tient et la page ne déborde plus.
+
+
+### 259 · La poignée de la carte du sprint agrandit la carte entière · 19 novembre 2026
+
+Deux captures de son écran de 1920 px, la colonne du sprint à sa largeur d'usine puis élargie à la
+poignée : seule la colonne de l'ordre s'était élargie, le vide entre BIB et GAP avec elle. Ses mots :
+
+> « il faut aussi améliorer l'effet de la poignée pour agrandir la carte de sprint. EN effet elle n'est
+> pas très utile actuellement car elle ne modifie que la largeur d'une colonne de la carte de sprint.
+> Il faut que le mouvement latéral de cette poignée ait un vrai effet sur toutes les zones de la carte
+> de sprint »
+
+À la question de savoir si, quand la poignée élargit la carte, les trois zones grandissent comme un
+zoom — chiffres, drapeaux et boutons compris — ou si la largeur gagnée est seulement partagée entre
+elles :
+
+> « Oui, tout grandit »
+
+**Codé au build 259.** La poignée pose toujours la largeur de la colonne ; la carte prend en plus le
+zoom qui est le rapport entre cette largeur et celle qu'elle a sans poignée. Les trois zones gardent
+leurs proportions. Sans poignée, rien ne bouge (point 119). CTRL + molette sur la carte se multiplie
+à ce rapport.
