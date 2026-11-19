@@ -3781,8 +3781,22 @@ portant un tour gagné validé à 3:58.6 :
 - sur la piste et sur la boucle Finish, le premier est le **BIB 3**, lu à 4:29.3 ; le BIB 1 est lu à
   4:30.9, quatorzième.
 
-Donc la tête de la timeline et la tête de l'ovale ne sont pas le même coureur, de 4:25 à 4:31 au
-moins. Le sprint est ouvert par le BIB 3, ce qui est juste, mais la timeline désigne le BIB 1 comme
-premier du groupe, ce qui contredit cette règle.
+Donc le premier affiché du bloc et le premier lu sur la ligne ne sont pas le même coureur. Le sprint
+est ouvert par le BIB 3, ce qui est juste.
 
-**Rien n'est codé.** Son constat est posé, la correction attend sa décision.
+Mis devant ces chiffres, il a précisé ce qu'il attend, et ce qu'il tolère :
+
+> « cela doit être reflété sur l'ovale ET dans la timeline. Dans la timeline, l'ordre d'affichage des
+> coureurs dans un groupe doit correspondre à leur ordre de lecture.
+>
+> Mais disons que ce n'est pas dérangeant si dans un groupe les coureurs en faisant partie sont
+> affichés par ordre de BIB, du plus petit au plus grand.
+>
+> Mais ça, il faudrait le vérifier »
+
+**Vérifié, course complète, build 249** (`mesures.md` §103) : sur les 40 blocs de deux coureurs ou
+plus relevés à l'ouverture des tours, **21 sont dans l'ordre de lecture** et **19 dans l'ordre des
+dossards** — et **aucun dans un autre ordre**. L'ordre affiché est donc toujours l'un des deux qu'il
+accepte. Le BIB 1 en tête du bloc au sprint 2 est l'ordre des dossards, pas une erreur de rang.
+
+**Rien n'est codé, et il n'y a rien à corriger sur ce point.** L'ovale n'est pas mesuré.

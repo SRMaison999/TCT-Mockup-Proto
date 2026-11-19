@@ -5227,3 +5227,47 @@ L'arrivée s'ouvre à 8:25.7 sur le BIB 1, places 1 et 2 pour les BIB 1 et 2. Id
 même résultat que le build 248 : aucune ne met le bloc de tête assez loin du peloton pour que
 l'ancien arrondi se trompe. La règle est codée et ne dérange rien ; la preuve qu'elle corrige ce
 qu'il a vu viendra de sa course à lui.
+
+
+## §103 · L'ordre d'affichage des coureurs dans un bloc, build 249, 19 novembre 2026
+
+Sa demande du 19 novembre 2026 (point 249) : « l'ordre d'affichage des coureurs dans un groupe doit
+correspondre à leur ordre de lecture », avec une tolérance — « ce n'est pas dérangeant si dans un
+groupe les coureurs en faisant partie sont affichés par ordre de BIB, du plus petit au plus grand.
+Mais ça, il faudrait le vérifier ».
+
+### Ce qui est comparé
+
+L'ordre affiché d'un bloc est relevé **à l'ouverture de chaque tour** (`S.crossG`, la règle 213) :
+c'est l'ordre que l'opérateur avait sous les yeux. Il est comparé, tour par tour, à deux ordres —
+celui des passages de ses coureurs sur la boucle Finish à ce tour, et celui des dossards.
+
+### Course complète, l'opérateur validant chaque proposition
+
+24 coureurs, dossards 1 à 24, 40 tours, 250 m, 18,6 m/s, 4 sprints, BIB 1 et 2 à +1 m/s dès le
+tour 5, BIB 23 et 24 à −0,9 m/s dès le tour 12, pas de flottement.
+
+**40 blocs de deux coureurs ou plus** sur l'ensemble de la course :
+
+| ordre affiché | nombre |
+|---|---|
+| l'ordre de lecture sur la boucle Finish | **21** |
+| l'ordre des dossards, et pas celui de lecture | **19** |
+| un autre ordre | **0** |
+
+Aucun bloc n'est affiché dans un ordre qui ne soit pas l'un des deux qu'il accepte.
+
+### Les dix-neuf cas
+
+Ce sont les tours où les BIB 1 et 2, portant un tour gagné validé, roulent au milieu du peloton : le
+bloc s'affiche `1.2.3…24` alors que la lecture donne, au tour 20, `3.4.5…15.1.16.2.17…24`. Au
+tour 22 la lecture donne `3.4.1.5.2.6…24`, au tour 19 `3.4…21.1.22.2.23.24`. L'affichage `1.2.3…24`
+est exactement l'ordre des dossards.
+
+Ce qui faisait croire à un défaut : le BIB 1 en tête du bloc. Ce n'est pas un rang affirmé par le
+logiciel, c'est le plus petit dossard du bloc.
+
+### Ce qui n'est pas mesuré
+
+**L'ovale.** Sa phrase le nomme — « cela doit être reflété sur l'ovale ET dans la timeline » — et
+rien ici ne le regarde.
