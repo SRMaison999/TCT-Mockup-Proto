@@ -800,6 +800,16 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   se produire : le peloton a repris un tour au 23, donc il le dépasse, donc le 23 se détache par
   l'arrière. **À trancher** : est-ce que le logiciel peut le retenir comme ça. Rien n'en est codé.
 
+- **Le tour auquel un sprint s'enregistre.** Constaté par lui le 19 novembre 2026, sprint 2 de la
+  course aux deux échappés et deux lâchés : « là le peloton vient de boucler son 20ème tour mais le
+  sprint n'a pas été enregistré .... le sprint a été enregistré au 21 ème tour ». Mesuré au build
+  248 : tant qu'aucun leader n'est désigné, le compteur de tours se compte sur le coureur le plus
+  loin **sur la piste**, sans lui retirer le tour qu'il a gagné. À 4:28, le BIB 1 a 19 passages et
+  un tour validé, le peloton en a 18, et le compteur affiche 20 alors que le peloton roule son 19e.
+  Le sprint du tour 20 s'ouvre donc à 4:27.6 et ses passages — ceux qui terminent le 20e tour du
+  peloton — arrivent à 4:55, quand le compteur montre 21. **Rien n'en est codé** : il a constaté,
+  il n'a pas demandé de correction, et un essai de correction a été défait le même jour.
+
 ### Cinq points tranchés le 29 octobre 2026
 
 Ses réponses, mot pour mot, et ce qu'elles ferment :
