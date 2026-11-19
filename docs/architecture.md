@@ -2667,3 +2667,23 @@ Sans ce refus, ces lectures auraient désigné la tête : l'ancre est le **premi
 grille, et de surcroît lu sur une boucle que les autres n'ont pas encore passée.
 
 La colonne Lap de l'onglet Passings les laisse vides (§60) : elles n'appartiennent à aucun tour.
+
+## §62 · Qui dit quoi sur les groupes · build 246
+
+Trois choses, et chacune a un seul propriétaire.
+
+**Le moteur** (`moteur-course.js`) dit **qui roule avec qui** : il range les coureurs sur l'anneau —
+la lecture des boucles ramenée sur un tour depuis la tête — et il coupe là où l'écart dépasse la
+seconde. Il ne sait rien des tours gagnés ou perdus, et il ne peut pas les savoir : sur un anneau,
+un groupe lâché d'un tour se lit juste DEVANT le peloton.
+
+**La timeline** (`computeGroupsVraiment`) dit **dans quel ordre les groupes courent**. Elle le peut
+parce qu'elle connaît `S.lapStatus`, les tours que l'opérateur a validés. Son rangement : d'abord le
+tour d'écart non validé (`ecEff`), puis **le groupe du moteur**, puis le rang sur l'anneau. L'ordre
+du groupe avant le rang est ce qui empêche un groupe de se couper en deux (mesures.md §99).
+
+**La timeline dit au moteur** quels sont ses blocs et lequel est le peloton, par `MC.rangs(blocs,
+iPeloton)`, posé à chaque image à la fin de `computeGroupsVraiment`. Le moteur s'en sert pour ses
+deux constats de ±20 : seul le groupe de tête peut gagner un tour, seul le groupe de queue peut en
+perdre un. C'est le même partage que pour la tête de la timeline, que l'opérateur désigne et que le
+moteur ne cherche jamais.

@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '245';
+const BUILD = '246';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1655,6 +1655,17 @@ function computeGroupsVraiment(M) {
   const cmpRead = (a, b) => {
     const ea = ecEff(a.r), eb = ecEff(b.r);
     if (ea !== eb) return eb - ea;        // un tour d'écart non validé passe devant, ou derrière, tout le reste
+    // LES COUREURS D'UN MÊME GROUPE RESTENT ENSEMBLE. Le groupe vient du moteur, et c'est lui qui
+    // décide qui roule avec qui ; le rang sur l'anneau ne décide que de la place DANS le groupe.
+    //   Sans cela, le peloton se coupait en deux et un autre groupe venait se glisser au milieu : sur
+    // l'anneau, lu depuis la tête, les coureurs du peloton qui roulent devant la tête se lisent à
+    // presque un tour d'elle. Mesuré le 19 novembre 2026 à 516,4 s, sur la course aux deux échappés
+    // et deux lâchés : le moteur ne voyait que deux groupes — « 3…19.1.20.2.21.22 » et « 23.24 » —
+    // et la timeline en montrait quatre, « 1.20.2.21.22 | 23 | 3…19 | 24 ». Les BIB 19, 20, 21 et 22,
+    // coureurs du peloton à deux tours de la tête, se retrouvaient ainsi en tête de course, et le
+    // moteur leur proposait un tour gagné à 516,6 s, 516,7 s, 516,8 s et 520,9 s.
+    const ba = mcBloc.get(a.r.bib), bb = mcBloc.get(b.r.bib);
+    if (ba != null && bb != null && ba !== bb) return ba - bb;
     const ra = mcRang.get(a.r.bib), rb = mcRang.get(b.r.bib);
     if (ra != null && rb != null) return (ra - rb) || (a.r.bib - b.r.bib);
     if (ra != null) return -1;

@@ -5051,3 +5051,55 @@ coureurs du peloton.
    autre version, le BIB 1 recevait DOUZE tours gagnés et neuf coureurs du peloton en recevaient un.
    Le verrou est désormais posé sur les coureurs rattrapés, et il se lève quand la timeline les a
    remis dans le bloc du peloton — « Hop, il est dans le groupe, c'est fini ».
+
+## §99 · Les coureurs d'un même groupe restent ensemble, build 246, 19 novembre 2026
+
+Même course : 24 coureurs, dossards 1 à 24, 40 tours, allure 18 m/s ; les BIB 1 et 2 accélèrent de
+1 m/s au tour 5, les BIB 23 et 24 ralentissent de 0,9 m/s à partir du tour 12 ; pas d'oscillation.
+Course complète, 565,5 s, chaque proposition validée dès qu'elle paraît.
+
+**Trois propositions, trois justes, aucune fausse.** À l'arrivée : les BIB 1 et 2 portent deux tours
+gagnés chacun, les BIB 23 et 24 un tour perdu chacun. C'est exactement la course.
+
+| instant | constat | coureurs | écart réel à la paire nommée | juste ? |
+|---|---|---|---|---|
+| 240,1 s | tour gagné sur le BIB 22 | 1 et 2 | le 1 est à 1,07 s derrière le 22, le 2 à 1,19 s | oui |
+| 332,2 s | tour perdu, repris par le BIB 1 | 23 et 24 | le 1 est à 0,75 s derrière le 23, 0,63 s derrière le 24 | oui |
+| 490,1 s | tour gagné sur le BIB 22 | 1 et 2 | le 1 est à 1,07 s derrière le 22, le 2 à 1,19 s | oui |
+
+Inversions de deux coureurs qui se suivent : 2,93 %. Blocs montrés : 1,95 en moyenne.
+
+### La vérification, telle qu'il l'a corrigée
+
+Sa correction du 19 novembre 2026 (§17 point 243) : « Tu ne dois pas te demander si le 23 et le 24
+sont derrière le 1 > Tu dois te demander si le 1 est entre 0 et 1 seconde derrière le 23 ». La
+colonne ci-dessus est donc l'écart **entre les deux coureurs que le constat nomme**, ramené sur un
+tour, et non plus un écart à un troisième coureur. Deux précisions que la mesure a rendues
+nécessaires :
+
+- **L'écart se ramène sur un tour.** Les deux coureurs d'un rattrapage sont au même endroit de la
+  piste à un tour entier près — c'est tout l'objet du rattrapage. Sans cela, les trois constats
+  justes se lisaient « −12,82 s » et « −27,03 s ».
+- **Sa seconde se mesure de la roue arrière à la roue avant** (§1), ce qui retire 0,09 s à 19 m/s, et
+  **les coureurs d'un même constat sont annoncés ensemble s'ils sont à moins d'une seconde l'un de
+  l'autre** (son point 180). Le constat se juge donc sur celui qui l'a déclenché — le 1 à 0,98 s
+  après la longueur de vélo — et le 2, à 1,10 s, est annoncé avec lui.
+
+### Ce qui a été corrigé
+
+Les cinq fausses propositions du §98 venaient toutes du **rangement des blocs de la timeline**, et
+d'une seule ligne : l'écran rangeait les coureurs par leur rang sur l'anneau sans regarder à quel
+groupe ils appartiennent. Or l'anneau se lit depuis la tête, et un coureur du peloton qui roule
+DEVANT la tête se lit à presque un tour d'elle. Relevé à 516,4 s : le moteur ne voyait que deux
+groupes, « 3…19.1.20.2.21.22 » et « 23.24 », et la timeline en montrait quatre,
+« 1.20.2.21.22 | 23 | 3…19 | 24 ». Les BIB 19, 20, 21 et 22 se retrouvaient en tête de course et
+recevaient un tour gagné. Le groupe passe maintenant avant le rang sur l'anneau, et un groupe ne se
+coupe plus en deux.
+
+### Ce qui reste à regarder
+
+À 360 s, la timeline montre deux blocs : « 1.2.23.24 » et « 3…22 ». Les BIB 23 et 24 viennent de
+perdre leur tour, ils devraient donc être **dans le peloton** — c'est sa phrase du 19 novembre 2026,
+« ils perdent un tour et sont mergés dans le peloton ». Ils sont bien revenus dans le même tour, mais
+ils partagent un bloc avec les BIB 1 et 2 au lieu d'être dans celui du peloton. Les tours comptés sont
+justes ; c'est l'affichage du bloc qui ne l'est pas.

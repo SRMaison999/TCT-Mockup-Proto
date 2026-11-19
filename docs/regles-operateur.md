@@ -3615,3 +3615,30 @@ du peloton ou le premier du peloton — dit lequel des deux rattrapages c'est.
 Et le garde qui manquait : **le groupe**. Un coureur qui se rapproche du dernier du peloton ne
 gagne un tour que s'il est dans le groupe LEADER. Un coureur dont le premier du peloton se
 rapproche ne perd un tour que s'il est dans le groupe LAST.
+
+### 243 · L'écart se lit entre les deux coureurs que le constat nomme, et le rattrapage merge dans le peloton · 19 novembre 2026
+
+Dit en voyant mon compte rendu de la build 245, où je vérifiais chaque constat sur l'écart au BIB 1 :
+
+> « Je constate que tu raisonnes encore et toujours à l'envers, je le constate de par tes
+> explications :
+> "332 s tour perdu 23 et 24 27 s derrière le 1 oui"
+> Tu ne dois pas te demander si le 23 et le 24 sont derrière le 1 > Tu dois te demander si le 1 est
+> entre 0 et 1 seconde derrière le 23 (ou le 24, selon celui des deux qui roule derrière) ! »
+
+Puis, pour les deux constats :
+
+> « tu dois regarder :
+>
+> * l'écart entre ceux qui sont en train de perdre un tour et la tête du peloton pour déterminer si
+>   ils perdent un tour, si cet écart est de moins d'une seconde alors ils perdent un tour et sont
+>   mergés dans le peloton
+> * l'écart entre ceux qui sont en train de gagner un tour et l'arrière du peloton pour déterminer si
+>   ils gagnent un tour, si cet écart est de moins d'une seconde alors ils gagnent un tour et sont
+>   mergés dans le peloton »
+
+Deux choses, et la seconde manquait. **La vérification se fait sur la paire que le constat nomme**,
+jamais sur un écart à un troisième coureur : « le 1 est-il entre 0 et 1 seconde derrière le 23 ».
+Et **le rattrapage merge le groupe dans le peloton** : à l'instant du constat, le groupe cesse
+d'être un bloc à part, il devient le peloton. C'est la même phrase que son « Hop, il est dans le
+groupe, c'est fini » du même jour, dite du côté de l'affichage.
