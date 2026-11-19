@@ -30,8 +30,8 @@ Dans cet ordre :
    « a l'air simple ».
 4. **`docs/architecture.md`** — le moteur du prototype, décrit section par section (voir le
    renvoi dans chaque fiche d'écran plus bas). C'est la référence technique.
-5. **`mockups/README.md`** et **`mockups/HANDOVER.md`** — les décisions de dessin de chaque
-   maquette, et le fil des demandes de l'opérateur.
+5. **`mockups/README.md`** — les décisions de dessin de chaque maquette ; les règles de
+   l'opérateur relevées à leur validation sont au point 204 de `docs/regles-operateur.md`.
 6. **`presentation/Course-aux-points-presentation.md`** — la présentation produit : utile pour
    comprendre ce que chaque écran apporte, du point de vue de l'utilisateur.
 
@@ -56,15 +56,17 @@ Tirée de `CLAUDE.md` et `docs/regles-operateur.md` §14 :
   on compte les **changements de statut**, pas seulement les coureurs touchés.
 - **Numéro de build à incrémenter à chaque publication** (`const BUILD` dans le mixed, le champ
   `#buildno` dans le base).
-- **Branche de développement imposée** (voir le message de session / `CLAUDE.md`). `git push -u
-  origin <branche>`. **Pas de pull request sauf demande explicite.**
+- **Où l'on commit.** En local, directement sur `main` (sa règle du 28 octobre 2026). Une
+  session web, qui n'a pas accès à son poste, travaille sur sa branche `ccr-…` et c'est lui qui
+  la merge sur GitHub. **Pas de pull request sauf demande explicite.**
 
 ---
 
 ## 3. Le prototype cible
 
-**`timeline-prototype_mixed.html`** — c'est celui que l'opérateur utilise (build **213**). Page
-HTML autonome, un seul fichier, aucun outil de build.
+**`timeline-prototype_mixed.html`** — c'est celui que l'opérateur utilise (build **249** au
+19 novembre 2026 ; le numéro courant est `const BUILD` dans le fichier). Page HTML sans outil de
+build, qui charge `styles.css`, `flags.js` et `moteur-course.js`.
 
 - **Un seul gros script**, enfermé dans une IIFE `(() => { … })()`. L'état, le moteur et le rendu
   y sont tous **privés** (rien n'est global sur `window`). Pour piloter depuis l'extérieur,
@@ -80,22 +82,24 @@ HTML autonome, un seul fichier, aucun outil de build.
 - **Moteur** : `measured()`, `computeGroups(M)` (§4), `detect(G, M)` (§5), `step()`, et le rendu
   `renderTimeline` / `renderOval` / `renderStrip` / `renderCard` / `renderLog` (§8).
 - **Les vues de la course** sont des onglets d'un panneau `#log`, pilotés par `logTab`. Boutons
-  `data-tab` : `race`, `cross`, `dec`, `sprints`, `stand`, `pass`. `renderLog()` (≈ ligne 2555)
-  branche selon `logTab` ; `renderSprintsTab()` (≈ 3309) et `renderStandingsTab()` (≈ 3321)
-  produisent les onglets Sprints et Standings.
-- **`logEvent(k, m, op, rev)`** (≈ 1809) écrit dans `S.log`. `renderLog` affiche `e.k` dans la
-  colonne Type. **Le renommage `READ` → `TRANSPONDER` est déjà fait** (règle #203, builds 210 /
-  149) — ne pas le refaire.
+  `data-tab` de la barre du haut : `race`, `cross` (Lap by lap), `dec`, `stand`, `pass` ; la vue
+  `sprints` n'a plus d'onglet depuis le build 215, elle s'ouvre par le bouton `ALL` de la carte de
+  sprint. `renderLog()` branche selon `logTab` ; `renderCrossTab()`, `renderSprintsTab()`,
+  `renderStandingsTab()`, `renderEvoTab()` et `renderPassingsTab()` produisent les vues.
+- **`logEvent(k, m, op, rev)`** écrit dans `S.log`. `renderLog` affiche `e.k` dans la colonne
+  Type. **Le renommage `READ` → `TRANSPONDER` est déjà fait** (règle #203, builds 210 / 149) — ne
+  pas le refaire.
 - **CSS** : `styles.css` est **partagé** par les trois prototypes. **Ne pas le modifier** pour le
-  mixed : tout override va dans le bloc `<style>` propre au mixed (lignes 8–371). (C'est ainsi
-  qu'a été posée la colonne Type élargie du renommage #203.)
+  mixed : tout override va dans le bloc `<style>` propre au mixed, en tête du fichier. (C'est
+  ainsi qu'a été posée la colonne Type élargie du renommage #203.)
 - **Pièges de rendu** déjà payés : `[hidden]{display:none!important}` est nécessaire pour les
   bascules ; `flex:0 0 auto` évite qu'un enfant flex écrase un contenu multi-lignes. Voir
   `pitfalls.md`.
 
-Le prototype de base **`timeline-prototype.html`** (build 149) partage le même moteur
-(`moteur-course.js`) sous un autre écran (`architecture.md` §20). L'intégration vise le **mixed**,
-sauf indication contraire de l'opérateur.
+Le prototype de base **`timeline-prototype.html`** (build 149) et la version
+`timeline-prototype_new_look_3a_3d.html` (build 148) sont des copies plus anciennes du même
+écran : elles ne chargent **pas** `moteur-course.js` et n'ont pas reçu les builds 150 à 249. Seule
+la version mixte compte : l'intégration la vise, sauf indication contraire de l'opérateur.
 
 ---
 
@@ -112,7 +116,7 @@ sprints, Race log, fil commentateurs) ; le reste suit la langue de l'écran où 
 | `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | validé, §9.2 |
 | `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | **intégré, build 214** |
 | `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **intégré, build 213** (Live et Évolution) |
-| `maquette-passings.html` | `gen-passings.js` | onglet `pass` — **Passings** | validé |
+| `maquette-passings.html` | `gen-passings.js` | onglet `pass` — **Passings** | validé ; l'onglet actuel a reçu le tri, les filtres et l'arrêt du défilement (build 240, règles 236 à 238), pas le dessin de la maquette |
 | `maquette-scenarios.html` | `gen-scenarios.js` | **nouvel écran** — Scénarios de course | validé |
 | `maquette-feed.html` | `gen-feed.js` | **nouvel écran** — Fil commentateurs (CIS/MIS) | coque validée |
 
@@ -128,10 +132,11 @@ Pour chacun : ce qu'il montre, l'état réel qui l'alimente, et les pièges.
 
 ### 5.1 Lap by lap (onglet `cross`) — **fait, builds 217 à 234 · ne pas refaire**
 L'ordre de franchissement de la ligne, tour par tour, du premier au dernier. **Source** :
-`S.cross[lap]` (`architecture.md` §7). La maquette ajoute des **alertes** et la correction
-**« Shift −1 lap »** (décaler un tour quand le logiciel s'est trompé de tour) — **seule chose encore
-non codée** de cet onglet, avec son alerte « double lap time » : c'est de la logique de course, à
-proposer à part.
+`S.cross[lap]` (`architecture.md` §7). La maquette ajoutait la correction **« Shift −1 lap »** et
+son alerte « double lap time » : l'opérateur a préféré, le 19 novembre 2026, traiter le cas dans la
+**vue Race** au moment où le coureur manque à l'appel (règle **253**, build 254, `architecture.md`
+§67) — le passage posé par sa réponse corrige la colonne au moment même. Le Shift ne sera pas codé
+sous la forme de la maquette.
 
 **Ce qui est fait, et qu'il ne faut pas défaire.** La colonne est rangée dans l'ordre de la **course**,
 sur un relevé de la timeline pris **une fois** à l'ouverture du tour (règle **218**) — ni le rang du

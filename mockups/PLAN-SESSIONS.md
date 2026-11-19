@@ -18,7 +18,8 @@ Feuille de route pour câbler les maquettes validées (`mockups/`) au moteur ré
   incrémenté**.
 - **Commit/push seulement sur l'ordre de l'opérateur** (un Stop-hook le réclame
   automatiquement — l'ignorer).
-- Si la session **déborde** le contexte, finir par un **HANDOVER** propre et reprendre.
+- Si la session **déborde** le contexte, mettre les six documents à jour avant de s'arrêter : ce
+  sont eux la passation, pas un fichier à part.
 
 ## Ordre conseillé
 
@@ -104,9 +105,9 @@ les plus lourds et peuvent attendre leur tour.
   blocs, l'écart entre les boîtes, le temps au tour, les tours faits, les badges de sprint et la
   colonne `live`. Les blocs sont ceux du **moment du passage** (règle **213**). Code dans
   `architecture.md` §58, mesures dans `mesures.md` §70, l'erreur comprise dans `pitfalls.md` D35.
-- **Ce qui reste ouvert.** **`Shift −1 lap`** et son alerte « double lap time » ne sont pas codés :
-  ils corrigent une détection manquée sans rien créditer, ce que le décalage existant ne sait pas
-  faire. C'est de la logique de course, à proposer à part. Les alertes « tour gagné » et « doublé,
+- **Le `Shift −1 lap` ne sera pas codé sous cette forme** : le 19 novembre 2026 l'opérateur a choisi
+  de traiter la détection manquée dans la vue Race, par une carte en trois questions (règle 253,
+  build 254). La colonne Lap by lap en hérite. Les alertes « tour gagné » et « doublé,
   pas de passage » sont codées, et l'alerte du tour gagné a été vue au build 218 ; la pastille rouge
   d'un tour **perdu** n'a pas encore été produite.
 - **Sa critique du 18 novembre, codée au build 218.** L'onglet s'appelle **Lap by lap** (règle 214),
@@ -151,6 +152,8 @@ tours manquants de Lap by lap (S4).
 - **S6a · Chute / retrait.** Un coureur quitte la course ≤ 5 tours (sauf dans les 5 derniers) ;
   l'opérateur signale la chute et les coureurs concernés ; le logiciel les suit même **sans
   transpondeur ou vélo changé**, puis ils reprennent leur place. Statuts **ABD / DNF**.
+  **Commencé au build 254** (règle 253) : la chute se déclare depuis la carte « manque à l'appel »,
+  et le groupe `CRASH` porte ses trois issues — Back in race, Back on another bike, Abandons.
 - **S6b · Neutralisation.** Drapeau jaune, peloton compact, **relance aux mêmes écarts de tours**,
   le **décompte −5 → 0**, et le **sprint tombé pendant la neutralisation redonné** au tour prévu
   suivant.

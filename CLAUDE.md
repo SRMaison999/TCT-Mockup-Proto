@@ -14,7 +14,9 @@ l'opérateur, mot pour mot, datées. **Une règle ou un seuil qui n'y figure pas
 dans le code.**
 
 Avant de toucher aux **tours, aux groupes, au merge ou à l'éligibilité** : lire
-`docs/regles-operateur.md` du §1 au §7. Ne pas l'avoir fait a déjà coûté des sessions entières.
+`docs/regles-operateur.md` du §1 au §7, puis les points numérotés du §17 qui les ont précisés ou
+remplacés depuis — un point plus récent l'emporte sur une section plus ancienne. Ne pas l'avoir
+fait a déjà coûté des sessions entières.
 
 Avant de recoder quelque chose qui « a l'air simple » : lire `docs/pitfalls.md`.
 
@@ -40,8 +42,8 @@ Les six points, sans les paraphraser :
 6. **Rien ne se décide sur un seul instantané.** Toute mesure se fait sur la course complète,
    et on compte les **changements de statut**, pas seulement les coureurs touchés.
 
-Les dix points qui attendent une décision de l'opérateur sont dans `docs/regles-operateur.md`
-§15. Tant qu'ils ne sont pas tranchés, **coder une réponse à sa place** est l'erreur
+Les points qui attendent une décision de l'opérateur sont dans `docs/regles-operateur.md` §15.
+Tant qu'ils ne sont pas tranchés, **coder une réponse à sa place** est l'erreur
 `docs/pitfalls.md` A12.
 
 ## Quand du code est livré
@@ -60,7 +62,8 @@ Le prototype porte un **numéro de build** dans son en-tête, à incrémenter à
 node serve.js
 ```
 
-Puis `http://localhost:8765/timeline-prototype.html` — la racine `/` sert une autre maquette,
-pas le prototype. Un prototype qui démarre tourne sur une course **vide** : une course de test se
-charge depuis l'onglet Files, sans quoi il ne se passe rien. Les courses de test montent par
-paliers, du plus calme au plus animé. Détails dans le `README.md`.
+Puis `http://localhost:8765/timeline-prototype_mixed.html` — c'est le prototype que l'opérateur
+utilise ; la racine `/` sert une autre maquette, pas le prototype. Un prototype qui démarre tourne
+sur une course **vide** : une course de test se charge depuis l'onglet Files, sans quoi il ne se
+passe rien. Les courses de test vont de la plus calme à la plus animée, et on les nomme par ce
+qu'elles contiennent. Détails dans le `README.md`.

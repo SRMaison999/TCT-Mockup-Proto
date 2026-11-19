@@ -7,6 +7,14 @@ dans `mesures.md`, le code dans `architecture.md`, l'index dans `cas-de-course.m
 Les choix retenus ont été validés avec l'opérateur : **ne pas les remettre en cause sans
 lui**.
 
+**Les numéros.** Les points sont rangés par famille (A modèle de course, B propositions,
+C vue Crossings, D interface et navigateur, F sprints, H cassures et éligibilité) et numérotés
+dans l'ordre où ils ont été écrits, pas dans l'ordre du fichier : les derniers sont en bas, toutes
+familles mêlées. Le 19 novembre 2026, neuf numéros utilisés deux fois par deux sessions
+parallèles ont été renumérotés — A18 à A21 et D47 à D51 — et les renvois des autres documents
+avec eux. Un « retenu » ancien peut avoir été remplacé par une règle plus récente de
+l'opérateur : la note sous le point le dit (B1, H10, les contraintes de la section H).
+
 ---
 
 ## A. Modèle de course
@@ -78,11 +86,11 @@ lit** (voir A10). La règle de l'opérateur était écrite depuis le 25 octobre 
 toucher aux tours, aux groupes, au merge ou à l'éligibilité, lire `regles-operateur.md` du
 §1 au §7. Un seuil qui n'y figure pas n'a rien à faire dans le code.
 
-**A10. `S.headLap` est calculé et lu par personne.** Il est écrit à chaque image dans
-`computeGroups`, avec une marge d'un quart de tour, et plus aucun appelant ne le lit depuis
+**A10. `S.headLap` est calculé et lu par personne.** Il était écrit à chaque image dans
+`computeGroups`, avec une marge d'un quart de tour, et plus aucun appelant ne le lisait depuis
 que l'éligibilité est passée à `S.inelig` (build 53, voir H6). Il a quand même servi de
-caution à un seuil inventé (A9). À retirer, ou à rebrancher sciemment — **mais ne pas s'en
-servir pour justifier une règle.**
+caution à un seuil inventé (A9). **Retiré au build 257**, sur son « retire les deux » du
+19 novembre 2026 (point 256). La leçon reste : un calcul que personne ne lit ne justifie rien.
 
 **A11. Le scénario de la simulation tournait sur toute course neuve.**
 `S.useScript` valait `true` dans `reset()`, donc trois coureurs du scénario bougeaient
@@ -146,6 +154,11 @@ une fois sans accord et a dû être rétabli.
 > attendre la validation. C'est la seule façon dont ce comportement pouvait changer :
 > l'opérateur l'énonce, on le consigne mot à mot, on le code. **L'interdiction d'y toucher
 > de sa propre initiative reste entière** (voir D10 et A13).
+>
+> **Et remplacé de nouveau le 18 novembre 2026, par lui encore** (points 219 et 220) : le merge
+> **attend la validation**, pour le tour gagné comme pour le tour perdu — ce qui est le
+> comportement d'origine de ce point. Codé aux builds 223 à 225, et **confirmé par lui le
+> 19 novembre 2026** (point 250) : « Encore dans un bloc LEADERS jusqu'à mon clic ».
 
 **B2. Proposer sur un écart de compteur.** Le détecteur proposait dès que compteur ≠ mesure,
 donc un « lap lost? » aussitôt après un « +1 lap » réglé à la main. Retenu : proposer
@@ -494,9 +507,11 @@ vélos.
 
 **H10. Un coureur distancé qui dépasse le leader sur la route.** Sa distance au prochain
 sprint bascule de 0 à presque un tour d'une image à l'autre, par le `mod TRACK`. Observé 2 à
-4 dixièmes de seconde à la fois. Ce n'est pas une erreur de la règle mais un bord du calcul,
-et c'est ce que le délai de confirmation doit absorber. **Ne pas conclure d'un instantané
-pris sur ce bord.**
+4 dixièmes de seconde à la fois. Ce n'est pas une erreur de la règle mais un bord du calcul.
+**Ne pas conclure d'un instantané pris sur ce bord.** *(Le délai de confirmation qui devait
+l'absorber était à moi, et l'opérateur l'a retiré le 1er novembre 2026, points 191 et 192 : la
+timeline ne se recalcule plus qu'aux passages sur les boucles, donc ce bord n'existe plus pour
+elle. Le délai ne subsiste que dans le repli de l'écran, `cassure()`.)*
 
 **H11. Croire une mesure prise en appelant `computeGroups` hors du cycle.** La fonction a des
 effets de bord. L'appeler une fois de plus dans la même image donne un résultat différent de
@@ -555,10 +570,13 @@ sur une moyenne de course. **Corrigé à la build 68** (`gapThr(suiveur)`), chif
 3. **Le merge précède l'éligibilité.** Les deux dépendent de « un tour de retard » tel qu'il
    se lit dans la timeline ; coder l'éligibilité avant le merge, c'est la coder sur une
    timeline fausse.
-4. **La validation de l'opérateur ne gouverne que les points**, jamais la place d'un coureur
-   dans la timeline (B1 remplacé).
-5. **Le seuil de cassure est un temps**, multiplié par la vitesse du coureur qui suit, moins
-   une longueur de vélo (A8, H9).
+4. **La validation de l'opérateur gouverne les points et, depuis le 18 novembre 2026, le
+   merge** : un coureur qui a rattrapé le peloton reste dans son bloc jusqu'au clic (points 219
+   et 220, B1). Avant cette date la contrainte disait l'inverse ; elle a changé parce qu'il l'a
+   dit, et pour aucune autre raison.
+5. **Le seuil de cassure est un temps, mesuré en temps** : la différence des heures de passage
+   des deux coureurs sur la même boucle, moins le temps d'une longueur de vélo à la vitesse du
+   coureur qui suit (A8, H9, points 223 et 232). Aucune conversion en mètres.
 6. **Toute mesure va d'un coureur à un autre**, jamais d'un coureur à une statistique de
    groupe (H13, H15).
 7. **Rien ne se décide sur un seul instantané** (H8, H10, H11).
@@ -594,14 +612,14 @@ valeur périmée ne survive pas dans deux fichiers.
 | 17 | **Tape switches** | contacts reproduits au millième de seconde près après `Load` et `Rewind 30s` ; le nombre de vélos sans transpondeur d'un groupe annoncé une seule fois |
 | 18 | **Deux transpondeurs inversés** | `Swap` n'écrit rien au journal ; `Swapped` remet les deux positions d'aplomb tout de suite ; Undo défait vraiment |
 
-### Les deux scénarios qui manquent encore
+### Le scénario qui manquait, et qui existe depuis le build 200
 
-**La conséquence de rang et les lignes grisées n'ont jamais été exercées au cours des tests** : aucune fenêtre d'inéligibilité ne tombe sur une ouverture de sprint. Les deux
-n'ont été vérifiées que sur cas forcé (`mesures.md` §6 et §7).
-
-**À construire** : décaler le décrochage des deux coureurs lâchés pour qu'ils se trouvent
-entre le peloton et la ligne **au moment précis** où un sprint s'ouvre. Un seul scénario
-exercerait les deux règles.
+La conséquence de rang et les lignes grisées n'avaient été vérifiées que sur cas forcé
+(`mesures.md` §6 et §7). La course de test **qui met un lâché inéligible sur la ligne du sprint**
+les exerce en vraie course depuis le build 200 (`mesures.md`, « Build 200 — les six sprints », et
+« Build 201 — le passage lu pendant l'inéligibilité se grise »). Le tableau ci-dessus date d'avant
+les onglets de la version mixte : les gestes y sont toujours justes, les noms d'écran (Crossings,
+Restart, le bandeau Not eligible) sont ceux de l'époque.
 
 
 ### D24 · Recopier une position sans se demander ce qu'elle fait là
@@ -616,7 +634,7 @@ son propre en-tête.
 **La règle** : une maquette qui reprend du code existant hérite aussi de ses défauts. Chaque
 élément recopié se justifie à nouveau, ou se déplace.
 
-### A13 · Répondre à une question par une modification
+### A18 · Répondre à une question par une modification
 
 À cette même question -- « pourquoi est-il là ? » -- j'ai répondu en le **supprimant**, et en
 inventant au passage une interaction (cliquer un coureur de la liste pour le placer) que
@@ -626,7 +644,7 @@ sans transpondeur est **retenue** jusqu'au passage suivant ou jusqu'à `Send`.
 **La règle** : une question sur un comportement n'est pas une autorisation de le changer. On
 explique, on propose, on attend (`regles-operateur.md` §14.3).
 
-### A14 · Écrire du texte que personne n'a demandé
+### A19 · Écrire du texte que personne n'a demandé
 
 Sous les boutons du bloc, j'avais ajouté « la place est retenue jusqu'au passage suivant, ou
 jusqu'à Send ». Deux fautes d'un coup : du texte inventé dans une interface où chaque libellé
@@ -735,7 +753,7 @@ reconstruction, le bouton non. Un relâchement nu ne suffit pas : sans cette gar
 lâché depuis la timeline ou une poignée relâchée au-dessus de la zone presse un bouton que
 personne n'a visé.
 
-## A13. L'écran qu'on regarde n'est pas celui du dépôt
+## A20. L'écran qu'on regarde n'est pas celui du dépôt
 
 **Constaté le 1er novembre 2026**, l'opérateur devant une page « bizarre » : la mise en page
 effondrée, les listes empilées sans style, et le numéro de build affichant **166** alors que le
@@ -762,7 +780,7 @@ build précédent et on discute d'un écran qui n'existe plus.
 **À vérifier avant de conclure qu'un écran est cassé** : le type servi pour `styles.css`, et le
 numéro de build affiché comparé à celui du dépôt.
 
-## A14. Le voisin dans la timeline n'est pas le coureur qui vous suit sur la piste
+## A21. Le voisin dans la timeline n'est pas le coureur qui vous suit sur la piste
 
 Un groupe, c'est une **chaîne** : chaque coureur est à moins d'une seconde de celui qui le suit.
 Rien n'oblige les deux **bouts** de la chaîne à être proches. Au palier 2, le peloton de seize
@@ -1047,7 +1065,7 @@ affichage doit dire la vérité **pendant** cette fenêtre, il lui faut une autr
 en attente, qui est précisément ce que l'opérateur a sous les yeux.
 
 
-### D33 · Une constante redéclarée éteint toute la page, sans rien dire
+### D47 · Une constante redéclarée éteint toute la page, sans rien dire
 
 Au build 237, une constante nouvelle a été appelée `LKEY` — le nom était déjà pris, mille lignes plus
 bas, par la clé de la mise en page. Le navigateur a levé `Identifier 'LKEY' has already been
@@ -1074,7 +1092,7 @@ prise seule est défendable.
 Même famille que A15 : la correction était juste pour un coureur, et fausse pour la paire.
 
 
-### D34 · Un test qui ne dessine pas l'écran ne mesure pas ce que l'écran produit
+### D48 · Un test qui ne dessine pas l'écran ne mesure pas ce que l'écran produit
 
 La vue Lap by lap recopie la photo de la timeline **au moment où la timeline est dessinée**. Un test
 qui avance la course sans appeler le dessin la laisse recopier la photo du départ à chaque tour : un
@@ -1086,7 +1104,7 @@ l'opérateur.** Ce qui est alimenté par le dessin ne se mesure pas sans dessine
 dessiner qu'une image sur quarante, ce qui suffit ici puisqu'un tour dure 269 images.
 
 
-### D35 · Un réglage qui change en cours de mesure rend toute la comparaison fausse, sans un mot
+### D49 · Un réglage qui change en cours de mesure rend toute la comparaison fausse, sans un mot
 
 Le 18 novembre 2026, l'allure du simulateur est passée de 18,6 à 18 m/s pendant une série de
 mesures — l'opérateur réglait sa course dans la même page. Le script de mesure, lui, portait 18,6
@@ -1103,7 +1121,7 @@ l'application le lit — ici `tct.sim.setup`. Et quand un retour en arrière ne 
 chiffres d'avant, ce n'est pas la modification qu'il faut regarder : c'est ce qui a bougé par
 ailleurs.
 
-## D36 · Lire un rang de course sur l'anneau
+## D50 · Lire un rang de course sur l'anneau
 
 **L'erreur.** Chercher le groupe de tête et le groupe de queue dans l'ordre que le moteur donne.
 
@@ -1116,7 +1134,7 @@ qu'elle sait les tours que l'opérateur a validés.
 **Ce qu'il faut faire.** L'écran pose les blocs et dit lequel est le peloton (`MC.rangs`). Le moteur
 ne les cherche pas. C'est le même partage que pour la tête de la timeline, que l'opérateur désigne.
 
-## D37 · Verrouiller un constat sur l'écart qui l'a déclenché
+## D51 · Verrouiller un constat sur l'écart qui l'a déclenché
 
 **L'erreur.** Ne rejouer un constat que si l'écart est repassé au-dessus de la seconde.
 
@@ -1143,3 +1161,15 @@ enregistrés 23e et 24e du sprint final.
 sans arrondi et sans référence au peloton. C'est déjà le tour de l'onglet Crossings. Un tour
 reconstruit par comparaison avec un autre coureur n'est pas un tour : c'est une estimation, et elle
 décide.
+
+### D52 · Un bloc sorti dans une fonction garde une ligne qui nomme l'ancienne portée
+
+En sortant l'enregistrement d'une lecture de `step()` dans `lireBoucle()` (build 254), la ligne
+`rec.spd = … : r.spd` de l'ancien bloc est restée sous sa remplaçante, et `r` n'existe pas dans la
+fonction. La vérification de syntaxe passait : une variable libre n'est pas une faute de syntaxe,
+c'est une erreur à l'exécution, et elle n'est tombée qu'à la première lecture de boucle — vingt
+fois par seconde, dans la console, pendant que l'écran paraissait vivre.
+
+**Retenu** : après avoir sorti un bloc, chercher dans la fonction chaque variable de l'ancienne
+portée (`grep` sur `r\.`, `lap`, `li`…) avant de lancer, et **lire la console au premier pas** de
+l'essai, pas à la fin.

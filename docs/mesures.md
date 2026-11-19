@@ -9,22 +9,27 @@ Chaque mesure porte **le numéro de build où elle a été prise**. Une mesure d
 antérieure n'est pas fausse : elle décrit cette build. Ne la mettez pas à jour, ajoutez la
 nouvelle en dessous.
 
+**Les numéros de section ne sont pas uniques.** Deux sessions ont numéroté en parallèle : les
+§24 à §34 existent deux fois (builds 86 à 120, puis builds 149 à 160), et les §54 à §57 aussi
+(builds 199 à 201, puis builds 211 à 214). Un renvoi vers l'une de ces sections se lit avec son
+numéro de build, qui lui est unique. Rien n'est renuméroté, pour ne casser aucun des renvois
+posés dans les autres documents.
+
 ---
 
 ## 1. La simulation
 
-La simulation, telle qu'elle se charge depuis l'onglet **Files** du simulateur
-(bouton `Load` de la ligne « 250 m · 40 laps »). 16 coureurs, 40 tours sur 250 m, sprint
-tous les 10 tours, dernier sprint doublé.
+La course de référence de cette section — 16 coureurs, 40 tours sur 250 m, les BIB 4 et 11 qui
+décrochent au tour 4, le BIB 12 qui attaque au tour 5 et gagne un tour — est **sortie du dépôt au
+build 168** (`architecture.md` §43) : l'opérateur l'a jugée sans aucun sens sportif. Les chiffres
+ci-dessous décrivent les builds 66 à 68 sur cette course-là et ne se rejouent plus. Les courses de
+test qui l'ont remplacée sont décrites à partir du §43 d'`architecture.md` et mesurées à partir
+des builds 168 et 169 (« Le palier 1 joué en entier », « Le palier 2 joué en entier »).
 
-Le scénario : BIB 4 et 11 décrochent au tour 4 ; BIB 12 attaque au tour 5, les rattrape,
-prend leur roue puis gagne un tour sur le peloton ; 4 et 11 sont repris plus tard ; au
-sprint 2, BIB 7 et 52 passent la ligne à 11 ms d'écart.
-
-**Attention** (voir `pitfalls.md` A10 et A11) : il n'y a plus de scénario depuis la build 74.
-Une course neuve est un peloton nu, parce qu'elle ne porte aucun ordre. Pour mesurer la course
-de référence, il faut la **charger** depuis Files — c'est une course enregistrée comme une
-autre (§15).
+**Attention** (voir `pitfalls.md` A10 et A11) : il n'y a plus de scénario câblé dans le code
+depuis la build 74. Une course neuve est un peloton nu, parce qu'elle ne porte aucun ordre. Pour
+mesurer une course de test, il faut la **charger** depuis Files — c'est une course enregistrée
+comme une autre (§15).
 
 ### État courant — builds 66 à 68, pace 15 m/s
 
@@ -4631,7 +4636,7 @@ Il a demandé de le vérifier (point 235). **Premier relevé, sans valeur :** le
 dessiner l'écran, et Lap by lap recopie la photo de la timeline **au moment où elle est dessinée**.
 Il a donc recopié 43 fois la photo du départ — un seul bloc `1-BUNCH` avec les 24 coureurs, jusqu'au
 tour 40 où le 1 a presque deux tours d'avance. Cela ne dit rien de l'application : c'est l'artefact
-du test (pitfalls D34).
+du test (pitfalls D48).
 
 **Le relevé, la course rejouée en dessinant l'écran :**
 
@@ -4896,7 +4901,7 @@ deux coureurs ont pris un tour et roulent au milieu du peloton, qu'est-ce que le
 
 ## §96 · La chaîne refermée sur elle-même — build 244, 18 novembre 2026
 
-Même course de test, remesurée proprement après l'incident de réglage (pitfalls D35) : 24 coureurs,
+Même course de test, remesurée proprement après l'incident de réglage (pitfalls D49) : 24 coureurs,
 dossards 1 à 24, 40 tours, **18 m/s** — un tour dure 13,89 s. Les BIB 1 et 2 accélèrent au tour 5,
 les BIB 23 et 24 sont lâchés au tour 12.
 
@@ -5283,3 +5288,112 @@ dossards du plus petit au plus grand. `1.2.3…24` est le second. Il n'y a rien 
 
 **L'ovale.** Sa phrase le nomme — « cela doit être reflété sur l'ovale ET dans la timeline » — et
 rien ici ne le regarde.
+
+## §104 · Ce qui attend une validation clignote — build 250, 19 novembre 2026
+
+Course aux deux échappés et deux lâchés (60 tours, 16 coureurs), jouée à ×16 depuis le départ.
+À **4:50.2**, au tour 17, deux cartes « Lap gained? » apparaissent, pour le 12 et pour le 52.
+Relevé à **5:29.5**, les deux cartes toujours en attente :
+
+| Où | Ce qui porte `attente` |
+|---|---|
+| timeline | l'en-tête du bloc du 12 et du 52 (1), leurs deux lignes (12, 52) |
+| ovale | leurs deux pastilles (52, 12) ; aucune bulle, le bloc roulant dans l'amas du peloton |
+
+Opacité calculée, trois lectures à 0, 500 et 750 ms : pastille **0,72 → 0,84 → 0,61**, ligne et
+en-tête **0,82 → 0,74 → 0,78**. Elle oscille entre 1 et 0,3 sur une seconde ; les pastilles,
+redessinées vingt fois par seconde, gardent leur phase grâce au `animation-delay` négatif
+(`architecture.md` §64). Aucune erreur de console. Le son n'est pas mesurable depuis l'essai : il
+est vérifié par l'absence d'erreur à l'apparition des deux cartes, pas à l'oreille.
+
+## §105 · L'anneau vert et la carte verte — build 251, 19 novembre 2026
+
+Même course, mêmes cartes du 12 et du 52 à 4:50.2. Relevé à **4:52.8**, course à ×1 :
+
+| Où | Relevé |
+|---|---|
+| ovale | un cercle `.attring` par pastille (12 et 52), rayon 14, trait `#1CC634` ; opacité **1** puis **0** une demi-seconde plus tard ; plus aucune pastille atténuée |
+| carte qui attend | fond `rgb(28, 198, 52)`, le vert du `TO GO` ; texte `rgb(7, 41, 15)` |
+| timeline | l'en-tête du bloc (1) et les deux lignes battent, comme au build 250 |
+
+Aucune erreur de console. Le son a été entendu par l'opérateur au build 250.
+
+## §106 · Plus de bouton Close — build 252, 19 novembre 2026
+
+Course aux deux échappés et deux lâchés, jouée à ×16. À **3:38.0** : le sprint 1 s'est ouvert et
+refermé tout seul (`1:open/closed`), la carte montre « SPRINT 2 · 7 laps to go · waiting for the
+bell », et la carte ne contient **aucun** élément `data-sact="close"`. Aucune erreur de console.
+
+## §107 · La photo-finish en orange — build 253, 19 novembre 2026
+
+La course de test ne produit aucun départage à moins de 15 ms : vérifié sur une **sonde de style**,
+un élément posé dans la carte puis retiré. `.srow.cam` : fond `rgb(74, 52, 16)`, écart
+`rgb(242, 163, 58)` (le `--warn`). `.sprk.cam` dans All sprints : même fond. L'icône `CAM` porte
+`stroke="#ffffff"`. Aucune erreur de console. Le rendu sur deux coureurs réellement à moins de
+15 ms reste à voir sur une course qui en produit un.
+
+## §108 · Un coureur qui manque à l'appel — build 254, 19 novembre 2026
+
+Course neuve sur la liste de 16 coureurs, 60 tours, piloté par le harnais (le document se
+déclarait caché et le navigateur ralentissait l'horloge). Le transpondeur du BIB 7 est rendu muet à
+**0:40.0** ; sa dernière lecture datait de **0:34.1**.
+
+| Instant | Ce qui se passe |
+|---|---|
+| 0:43.6 | le dernier coureur de son groupe passe Pursuit B |
+| 0:51.9 | le dernier coureur de son groupe passe Pursuit A |
+| **0:54.4** | la carte naît, 2,5 s après : « BIB 7 not read at Pursuit B and Pursuit A · still with … ? » |
+| YES | deux passages posés, Pursuit B à 0:43.6 et Pursuit A à 0:51.9 ; ses lectures passent de 3/2/3 à 3/3/4 par boucle ; sa dernière lecture est Pursuit A à 0:51.9 ; deux lignes au journal |
+| 1:02.7 | la carte suivante, « not read at Finish and Pursuit B » ; NO → « Crash ? » ; YES → groupe `CRASH` au tour 4, carte « CRASH · BIB 7 · Lap 4 · 5 laps to rejoin » avec Back in race · Back on another bike · Abandons ; la timeline montre `CRASH` |
+| Back in race | plus aucun groupe ni carte ; la question suivante ne revient que **16,6 s** plus tard, deux boucles après la remise en course |
+| troisième carte | NO, NO → « Transponder KO ? » ; YES → le 7 est sans transpondeur, porté par le BIB 1 ; plus aucune carte jusqu'à 1:32.8 |
+
+Le premier essai a levé `ReferenceError: r is not defined` à chaque lecture : une ligne de
+l'ancien bloc, qui nommait encore une variable de `step()`, était restée sous la nouvelle
+(`pitfalls.md` D52). Corrigé avant la mesure ci-dessus ; aucune erreur ensuite.
+
+## §109 · La carte de crash à plusieurs coureurs — build 255, 19 novembre 2026
+
+Course neuve sur la liste de 16 coureurs, par le harnais.
+
+| Geste | Ce qu'on relève |
+|---|---|
+| 7 et 12 sélectionnés, bouton `Crash` de la barre, à 0:40.0 | un groupe `crash:7+12` ; une carte à **deux lignes**, six boutons : Back in race, Another bike, Abandons pour le 7 puis pour le 12 ; titre « CRASH · Lap 3 · 5 laps to rejoin » |
+| `Abandons` du 12 | le 12 est retiré (ABD) ; le groupe est `crash:7` ; la carte n'a plus qu'**une ligne** |
+| `Back in race` du 7 | plus de groupe, plus de carte, plus aucune proposition |
+| transpondeur du 3 muet ; question à 0:54.4 ; NO → Crash ? → YES | groupe `crash:3`, la **même carte**, une ligne |
+| `Another bike` du 3 | le 3 est sorti de l'incident et passé sans transpondeur ; plus de groupe ni de carte ; trois lignes au journal |
+
+Le coureur glissé sur le bloc `CRASH` n'a pas été essayé à la souris : la carte se refait sur le
+groupe à chaque pas, le chemin est le même que le bouton. Aucune erreur de console.
+
+## §110 · Six coureurs qui manquent ensemble — build 256, 19 novembre 2026
+
+Course neuve sur la liste de 16 coureurs, par le harnais. Les transpondeurs des BIB 3, 4, 7, 9,
+11 et 12 rendus muets à 0:40.0.
+
+| Instant | Ce qu'on relève |
+|---|---|
+| 0:54.4 | **une seule carte** : « BIB 3, 4, 7, 9, 11 and 12 not read at Pursuit B and Pursuit A · still with … ? » |
+| le 9 lu à nouveau, 0:58.7 | la carte reste, à cinq : « BIB 3, 4, 7, 11 and 12 … » |
+| NO → « Crash ? » → YES | un groupe `crash:3+4+7+11+12`, la carte à **cinq lignes**, titre « CRASH · Lap 4 · still 5 laps to rejoin » |
+| un tour plus tard, tour 5 | « still 4 laps to rejoin » |
+| deux tours plus tard, tour 6 | « still 3 laps to rejoin » |
+| `Back in race` du 3, `Abandons` du 4 | le groupe est `crash:7+11+12`, le 4 est ABD |
+
+Second essai, par le bouton `Crash` de la barre avec 3, 4 et 7 sélectionnés : trois lignes ;
+`Abandons` du 4 : **deux lignes, sans que la carte disparaisse** — au premier essai elle manquait
+une image, `withdraw` l'ayant emportée avec le dossard. Aucune erreur de console.
+
+## §111 · Sans délai et sans tour par rapport à la tête — build 257, 19 novembre 2026
+
+Course aux deux échappés et deux lâchés, dix minutes de course par le harnais, 12 000 pas avec les
+ordres de la course rejoués : `S.headLap` n'existe plus, aucune erreur. Les cartes de tour tombent
+aux mêmes instants qu'au build 250 — le 12 et le 52 à **4:50.2**, le 46 et le 70 à **7:15.1**
+(−20), le 7, le 18 et le 61 à **8:41.0** — et à 10:00.0 la timeline a quatre blocs : 7.18.61 ·
+12.52 · le peloton de neuf · 46.70 ; six blocs au plus sur la course. **Aucune carte « manque à
+l'appel »** sur les dix minutes : un coureur qui décroche est lu, il ne manque pas. Le repli sur
+les positions ne joue que sur les premières secondes, où personne ne roule encore séparé.
+
+Un premier passage du même essai sans rejouer les ordres n'avait montré qu'un bloc et aucune
+carte pendant vingt minutes : c'était le harnais qui n'appliquait pas les attaques, pas le code.

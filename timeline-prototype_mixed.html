@@ -623,6 +623,34 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 .sorow .dm{font:500 11px var(--mono);color:var(--dim);text-align:right}
 .sorow.dragging{opacity:.4}
 .sorow.over{border-left-color:var(--acc);box-shadow:inset 0 2px 0 var(--acc)}
+/* build 250 — ce qui attend une validation clignote (l'opérateur, 19 novembre 2026, point 250) : l'en-tête du
+   bloc et les lignes des coureurs dans la timeline, leurs pastilles et la bulle de leur groupe sur l'ovale.
+   Un battement par seconde, entre l'aspect normal et un aspect atténué ; aucune couleur nouvelle. Chaque élément
+   reçoit en ligne un `animation-delay` négatif calé sur l'horloge du poste : l'ovale est redessiné vingt fois par
+   seconde et la timeline une fois, et sans cela chaque redessin remettrait le battement à zéro. */
+@keyframes attente{0%,100%{opacity:1}50%{opacity:.3}}
+.tl .gh.attente,.tl .trow.attente,#bands path.attente{animation:attente 1s ease-in-out infinite}
+/* build 251 — sur l'ovale, l'atténuation de la pastille « ne se voit presque pas » (l'opérateur, 19 novembre
+   2026) : c'est un ANNEAU VERT autour de la pastille qui apparaît et disparaît, une fois par seconde. Vert parce
+   que l'orange « est proche de la couleur de la piste » et qu'aucune ligne peinte de la piste n'est verte ;
+   le vert est celui du TO GO, --play. La carte qui attend prend le même vert (point 250), à la place de l'ambre
+   du point 136 ; le champ du prochain sprint garde son ambre à deux tours. */
+@keyframes anneau{0%,49%{opacity:1}50%,100%{opacity:0}}
+#oval .attring{animation:anneau 1s steps(1) infinite;pointer-events:none}
+.props .gq.hot{background:var(--play);border-left-color:var(--play)}
+.props .gq.hot .pt,.props .gq.hot .pt b,.props .gq.hot .pl,.props .gq.hot .pbs > .k,
+.props .gq.hot .pb .noc,.props .gq.hot .chip{color:#07290f}
+/* build 253 — la photo-finish est ORANGE, pas rouge, et sa caméra est blanche (l'opérateur, 15 novembre 2026,
+   confirmé le 19, point 252) : le rouge ne dit plus qu'une chose dans la carte, le NO PTS. Même teinte dans la
+   carte (.srow) et dans All sprints (.sprk). styles.css, partagé, garde son rouge pour les deux autres versions. */
+.srow.cam{background:#4a3410}
+.srow.cam .gp{color:var(--warn)}
+.sprk.cam{background:#4a3410}
+/* build 255 — la carte de crash : une ligne par coureur, ses trois issues au bout (point 254). */
+.props .gq.crash{background:#2b1818;border-left:3px solid var(--crit)}
+.props .gq.crash .pt b{color:var(--crit)}
+.props .gq.crash .pb{grid-template-columns:34px 22px 42px auto}
+.props .gq.crash .pa{display:inline-flex;gap:6px}
 </style>
 
 <div class="shell">
@@ -880,7 +908,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 <script src="flags.js"></script>
 <script>
 (() => {
-const GROUP_GAP_S = 1.0, BIKE_L = 1.65, CASS_DELAY_S = 0.3, NEUTRAL_LAPS = 5, MISSING_S = 22;
+const GROUP_GAP_S = 1.0, BIKE_L = 1.65, NEUTRAL_LAPS = 5, MISSING_S = 22;   // plus de délai de confirmation nulle part (point 192, build 257)
 // Two wheels closer than this over the same tape switch make a single contact: the strip cannot tell them apart.
 const TAPE_MIN_GAP = 0.05;
 const round1 = x => Math.round(x * 10) / 10;
@@ -903,7 +931,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '249';
+const BUILD = '257';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1077,6 +1105,7 @@ function reset() {
     noTp: new Map(),        // bib → host bib: a rider without transponder is carried with that rider's group
     passes: [],             // every finish-line crossing read, raw {bib, t, n}
     log: [], proposals: [], snoozed: {}, dismissed: {}, nextId: 1, loggedLap: 0,
+    absentFrom: {},         // par dossard : l'instant depuis lequel « manque à l'appel » se compte (remis en course après un crash)
     cass: {},               // per pair of riders following each other: the break as it stands confirmed
     took: {},               // par dossard : le nombre de tours retranchés AU MOMENT où il a pris le tour du paquet
     inelig: new Set(),      // riders not eligible, from the groups rule in computeGroups
@@ -1224,6 +1253,97 @@ function pilotStep(r, po, base, ref, lap) {
 // ---------- simulation (true world) ----------
 // simulation truth: the race lap is counted in the bunch's lap (a rider who physically took a lap is back in it)
 function raceLap() { const lead = Math.max(...S.riders.filter(r => r.mode !== 'out').map(r => r.dist - TRACK * r.lapTrue)); return Math.min(LAPS, Math.floor(lead / TRACK) + 1); }
+// UNE LECTURE DE BOUCLE, ENREGISTRÉE. Un seul chemin pour deux origines : la simulation (step) et le passage que
+// l'opérateur pose lui-même quand un coureur a manqué à l'appel (point 253, build 254) — le second est marqué
+// `placed`. `d` est la distance cumulée du point lu, `t` l'heure du passage ; `ka` s'en déduit.
+function lireBoucle(o, li, d, t, spdFallback, placed) {
+  const L = LOOPS[li], nb = o.bib, ka = Math.round((d - L) / TRACK);
+  const rec = { d, t, loop: L };
+  rec.spd = o.rec && t > o.rec.t ? (d - o.rec.d) / (t - o.rec.t) : spdFallback;
+  o.rec = rec;
+  (o.lastAt || (o.lastAt = []))[li] = rec.t;   // son dernier temps de passage SUR CETTE BOUCLE : le z du §1
+  // LES PASSAGES SUR LA LIGNE, COMPTÉS ET DATÉS. C'est tout ce qu'il faut pour savoir si deux coureurs sont
+  // dans le même tour, et c'est tout ce que l'opérateur veut qu'on utilise (1er novembre 2026 : « Ce qui nous
+  // intéresse, ce sont les écarts en temps entre les coureurs »). `finN` est le nombre de fois que la boucle
+  // d'arrivée l'a vu, `finAt` la dernière, `finPrev` l'avant-dernière — leur différence est SA durée de tour.
+  if (L === 0) { o.finPrev = o.finAt; o.finAt = rec.t; o.finN = (o.finN || 0) + 1; }
+  S.reads[li].push(placed ? { bib: nb, t: rec.t, placed: true } : { bib: nb, t: rec.t });   // the loop's own passage log: the count that names the bikes
+  if (MC) MC.detection({ bib: nb, boucle: L, t: rec.t });   // la seule entrée du moteur de course
+  // crossings log: line N = lap N of the race as judged. A rider's crossing is filed on his own count brought back by
+  // his credited laps, so a rider who took a lap rides, and is listed, with the bunch. n keeps his real crossing count.
+  if (L === 0 && ka > 0) {
+    // crossings view, re-filing method: a crossing is filed on the rider's own count brought back by his CREDITED laps,
+    // so a rider credited with a lap is listed with the bunch. Nothing else conditions it.
+    const k = ka - S.lapStatus[nb];
+    // the finish, however, is judged on the lap the loops measure for the head of the race
+    const imp = S.bunchRaw == null || !S.inBunch || !S.inBunch.has(nb) ? 0 : Math.round((d - S.bunchRaw) / TRACK);
+    const kn = ka - imp;
+    // L'INÉLIGIBILITÉ EST GRAVÉE SUR LE PASSAGE, à l'instant où il est lu, et ne bouge plus.
+    // L'opérateur, 1er novembre 2026 : « il doit les griser et les annoncer comme inéligibles le temps
+    // de leur inéligibilité ». Le passage d'un coureur en retard est d'abord classé sur SON tour, et
+    // n'entre dans le sprint qu'une fois le tour perdu validé et le passage reclassé : à ce moment-là
+    // l'inéligibilité est souvent terminée, et le sprint fermé. En la gravant ici, le sprint la retrouve
+    // telle qu'elle était quand la ligne a été franchie — c'est pitfalls.md F10 au pied de la lettre.
+    // Mesuré à la build 200, palier 3, sprint 1 : le 46 et le 70 franchissaient la ligne à 196,9 s,
+    // inéligibles depuis 194,1 s, et finissaient 15e et 16e sans un mot.
+    // LE BLOC EST GRAVÉ SUR LE PASSAGE, comme l'inéligibilité juste au-dessus. Sa règle du 18 novembre 2026 :
+    // « la colonne garde les blocs tels qu'ils étaient au moment du passage ». Les blocs d'aujourd'hui ne diraient
+    // rien du tour 20 regardé à l'arrivée, où tout le monde est regroupé. `lastG` est l'état des blocs du dernier
+    // rendu, celui que l'opérateur avait sous les yeux quand la ligne a été franchie ; computeGroups ne se rappelle
+    // pas ici, il a des effets de bord (pitfalls H11).
+    // `blkid`, le plus petit dossard du bloc, est ce qui le RECONNAÎT d'un passage à l'autre. Ni son nom ni sa
+    // couleur ne tiennent : les deux portent son rang, et le rang bouge pendant que les coureurs franchissent la
+    // ligne — le peloton se retrouvait coupé en cinq boîtes au même tour. Le nom et la couleur restent pour
+    // l'affichage, pris sur le premier passage du bloc.
+    const pm = S.markPending[nb];
+    // UN COUREUR QUI PARAÎT DEUX FOIS SUR UN TOUR EST DANS LE PELOTON (sa règle du 18 novembre 2026). Ce
+    // second passage est EXACTEMENT celui-ci : le premier franchissement après un tour gagné validé, celui
+    // qui porte la marque `pm > 0` et qui retombe sur un tour où le coureur figure déjà. À cette seconde-là
+    // la timeline le montre encore derrière le peloton — le rattrapage n'est pas fini sur la piste — et c'est
+    // ce bloc-là qui se gravait : d'où le « Behind » qu'il a relevé sur sa capture. Il prend donc le bloc du
+    // PELOTON, celui sur le tour duquel son passage est rangé. Les passages suivants reprennent le bloc lu :
+    // s'il repart seul, il redevient un bloc de tête, et c'est juste.
+    const bunch = pm > 0 && lastG && lastG.bunch ? lastG.bunch : null;
+    const gbl = bunch || (lastG && lastG.groups.find(g => g.bibs.includes(nb)));
+    const entry = { bib: nb, t: rec.t, n: ka, inelig: !!(S.inelig && S.inelig.has(nb)), blk: gbl ? groupName(gbl) : null, blkc: gbl ? groupColor(gbl) : null, blkid: gbl ? Math.min(...gbl.bibs) : null };
+    if (pm) { entry.mark = pm; if (pm < 0 && k !== ka) (S.holes[k - 1] = S.holes[k - 1] || []).push(nb); delete S.markPending[nb]; }
+    // L'ORDRE DE LA COLONNE EST CELUI DE LA COURSE, ET IL SE RELÈVE UNE FOIS, À L'OUVERTURE DU TOUR.
+    // Ses mots du 18 novembre 2026 : « bien sûr que si que la timeline compte ! le leader de la timeline est
+    // TOUJOURS le premier dans un lap » et « si c'est le coureur 12 qui est en tête, alors c'est lui qui doit
+    // être tout en haut de la liste du tour, et il apparaîtra une deuxième fois quand il repassera. Dans ce
+    // cas là il sera seul LEADER, suivi des autres groupes. » Ce sont les blocs de la timeline, dans leur
+    // ordre, pris au moment où le premier coureur ouvre le tour — le bloc de tête d'abord. Le bloc gravé sur
+    // chaque passage (`blk`) ne suffisait pas : un tour dure une demi-minute, la timeline renumérote et
+    // renomme ses blocs pendant ce temps, et la colonne se retrouvait avec seize noms pris à seize instants
+    // qui se contredisaient. Le rang d'aujourd'hui (`S.tlRank`) ne suffisait pas non plus : il range les
+    // tours passés avec le classement de maintenant, et le 12, parti en tête au tour 19, se retrouvait au
+    // milieu du peloton une fois rentré dans le rang.
+    if (!S.crossG[k] && lastG) S.crossG[k] = lastG.groups.map(g => ({ n: groupName(g), c: groupColor(g), b: [...g.bibs] }));
+    (S.cross[k] = S.cross[k] || []).push(entry);
+    S.passes.push({ bib: nb, t: rec.t, n: ka });
+    // UN SPRINT NE S'OUVRE QU'AU PASSAGE DES LEADERS. Ses mots du 19 novembre 2026 : « un sprint ne peut
+    // s'ouvrir qu'au passage des LEADERS et de personne d'autre ! », et « cela est valable pour tous les
+    // sprints », l'arrivée comprise. Le bloc de tête de la timeline est seul à ouvrir ; l'instant de son
+    // passage est le début de l'enregistrement, et les places se comptent à partir de là.
+    // Le tour lu est `k`, le compte du coureur ramené par ses tours crédités — celui de la course. L'ancienne
+    // ouverture lisait `kn`, un tour reconstruit par rapport au peloton, et le premier coureur lu l'ouvrait,
+    // quel que fût son groupe : au dernier sprint de sa course de test, les 1 et 2, partis en tête, ont été
+    // enregistrés 23e et 24e parce que leur passage tombait avant l'ouverture.
+    if (L === 0 && estDesLeaders(nb)) {
+      for (let j = 1; j <= NSPRINTS; j++) if (S.spFrom[j] == null && k >= sprintLap(j)) S.spFrom[j] = rec.t;
+    }
+    if (L === 0 && !S.finishOpen && S.spFrom[NSPRINTS] != null) {
+      S.finishOpen = S.spFrom[NSPRINTS]; S.finishCrossed = new Set();
+      logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false);
+      // An armed finish line stops the running time on the winner, and disarms itself: the riders behind him
+      // go on crossing, the clock does not go on counting.
+      if (S.finArm) { S.winT = rec.t; S.finArm = false; logEvent('RACE', 'Running time stopped on BIB ' + nb + ' · ' + fmtT(rec.t), false); }
+    }
+    if (L === 0 && S.finishOpen && rec.t >= S.finishOpen) S.finishCrossed.add(nb);   // the finish line only
+  }
+  if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.armDone = { i: LOOPS.indexOf(L), bib: nb, until: S.t + ARM_SHOW_S }; S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
+}
+
 function step(dt) {
   S.anchor += CFG.pace * dt;   // the point the bunch is held against moves on, at the pace and at nothing else
   const lap = raceLap();
@@ -1270,90 +1390,8 @@ function step(dt) {
         // himself unless two transponders have been swapped. A transponder the table names for nobody says nothing.
         const nb = tp ? tp.bib : null; if (nb == null) continue;
         const o = nb === r.bib ? r : S.riders.find(x => x.bib === nb); if (!o) continue;
-        const d = ka * TRACK + L, rec = { d, t: S.t - (r.dist - d) / r.spd, loop: L };
-        rec.spd = o.rec ? (d - o.rec.d) / (rec.t - o.rec.t) : r.spd;
-        o.rec = rec;
-        (o.lastAt || (o.lastAt = []))[li] = rec.t;   // son dernier temps de passage SUR CETTE BOUCLE : le z du §1
-        // LES PASSAGES SUR LA LIGNE, COMPTÉS ET DATÉS. C'est tout ce qu'il faut pour savoir si deux coureurs sont
-        // dans le même tour, et c'est tout ce que l'opérateur veut qu'on utilise (1er novembre 2026 : « Ce qui nous
-        // intéresse, ce sont les écarts en temps entre les coureurs »). `finN` est le nombre de fois que la boucle
-        // d'arrivée l'a vu, `finAt` la dernière, `finPrev` l'avant-dernière — leur différence est SA durée de tour.
-        if (L === 0) { o.finPrev = o.finAt; o.finAt = rec.t; o.finN = (o.finN || 0) + 1; }
-        S.reads[li].push({ bib: nb, t: rec.t });   // the loop's own passage log: the count that names the bikes
-        if (MC) MC.detection({ bib: nb, boucle: L, t: rec.t });   // la seule entrée du moteur de course
-        // crossings log: line N = lap N of the race as judged. A rider's crossing is filed on his own count brought back by
-        // his credited laps, so a rider who took a lap rides, and is listed, with the bunch. n keeps his real crossing count.
-        if (L === 0 && ka > 0) {
-          // crossings view, re-filing method: a crossing is filed on the rider's own count brought back by his CREDITED laps,
-          // so a rider credited with a lap is listed with the bunch. Nothing else conditions it.
-          const k = ka - S.lapStatus[nb];
-          // the finish, however, is judged on the lap the loops measure for the head of the race
-          const imp = S.bunchRaw == null || !S.inBunch || !S.inBunch.has(nb) ? 0 : Math.round((d - S.bunchRaw) / TRACK);
-          const kn = ka - imp;
-          // L'INÉLIGIBILITÉ EST GRAVÉE SUR LE PASSAGE, à l'instant où il est lu, et ne bouge plus.
-          // L'opérateur, 1er novembre 2026 : « il doit les griser et les annoncer comme inéligibles le temps
-          // de leur inéligibilité ». Le passage d'un coureur en retard est d'abord classé sur SON tour, et
-          // n'entre dans le sprint qu'une fois le tour perdu validé et le passage reclassé : à ce moment-là
-          // l'inéligibilité est souvent terminée, et le sprint fermé. En la gravant ici, le sprint la retrouve
-          // telle qu'elle était quand la ligne a été franchie — c'est pitfalls.md F10 au pied de la lettre.
-          // Mesuré à la build 200, palier 3, sprint 1 : le 46 et le 70 franchissaient la ligne à 196,9 s,
-          // inéligibles depuis 194,1 s, et finissaient 15e et 16e sans un mot.
-          // LE BLOC EST GRAVÉ SUR LE PASSAGE, comme l'inéligibilité juste au-dessus. Sa règle du 18 novembre 2026 :
-          // « la colonne garde les blocs tels qu'ils étaient au moment du passage ». Les blocs d'aujourd'hui ne diraient
-          // rien du tour 20 regardé à l'arrivée, où tout le monde est regroupé. `lastG` est l'état des blocs du dernier
-          // rendu, celui que l'opérateur avait sous les yeux quand la ligne a été franchie ; computeGroups ne se rappelle
-          // pas ici, il a des effets de bord (pitfalls H11).
-          // `blkid`, le plus petit dossard du bloc, est ce qui le RECONNAÎT d'un passage à l'autre. Ni son nom ni sa
-          // couleur ne tiennent : les deux portent son rang, et le rang bouge pendant que les coureurs franchissent la
-          // ligne — le peloton se retrouvait coupé en cinq boîtes au même tour. Le nom et la couleur restent pour
-          // l'affichage, pris sur le premier passage du bloc.
-          const pm = S.markPending[nb];
-          // UN COUREUR QUI PARAÎT DEUX FOIS SUR UN TOUR EST DANS LE PELOTON (sa règle du 18 novembre 2026). Ce
-          // second passage est EXACTEMENT celui-ci : le premier franchissement après un tour gagné validé, celui
-          // qui porte la marque `pm > 0` et qui retombe sur un tour où le coureur figure déjà. À cette seconde-là
-          // la timeline le montre encore derrière le peloton — le rattrapage n'est pas fini sur la piste — et c'est
-          // ce bloc-là qui se gravait : d'où le « Behind » qu'il a relevé sur sa capture. Il prend donc le bloc du
-          // PELOTON, celui sur le tour duquel son passage est rangé. Les passages suivants reprennent le bloc lu :
-          // s'il repart seul, il redevient un bloc de tête, et c'est juste.
-          const bunch = pm > 0 && lastG && lastG.bunch ? lastG.bunch : null;
-          const gbl = bunch || (lastG && lastG.groups.find(g => g.bibs.includes(nb)));
-          const entry = { bib: nb, t: rec.t, n: ka, inelig: !!(S.inelig && S.inelig.has(nb)), blk: gbl ? groupName(gbl) : null, blkc: gbl ? groupColor(gbl) : null, blkid: gbl ? Math.min(...gbl.bibs) : null };
-          if (pm) { entry.mark = pm; if (pm < 0 && k !== ka) (S.holes[k - 1] = S.holes[k - 1] || []).push(nb); delete S.markPending[nb]; }
-          // L'ORDRE DE LA COLONNE EST CELUI DE LA COURSE, ET IL SE RELÈVE UNE FOIS, À L'OUVERTURE DU TOUR.
-          // Ses mots du 18 novembre 2026 : « bien sûr que si que la timeline compte ! le leader de la timeline est
-          // TOUJOURS le premier dans un lap » et « si c'est le coureur 12 qui est en tête, alors c'est lui qui doit
-          // être tout en haut de la liste du tour, et il apparaîtra une deuxième fois quand il repassera. Dans ce
-          // cas là il sera seul LEADER, suivi des autres groupes. » Ce sont les blocs de la timeline, dans leur
-          // ordre, pris au moment où le premier coureur ouvre le tour — le bloc de tête d'abord. Le bloc gravé sur
-          // chaque passage (`blk`) ne suffisait pas : un tour dure une demi-minute, la timeline renumérote et
-          // renomme ses blocs pendant ce temps, et la colonne se retrouvait avec seize noms pris à seize instants
-          // qui se contredisaient. Le rang d'aujourd'hui (`S.tlRank`) ne suffisait pas non plus : il range les
-          // tours passés avec le classement de maintenant, et le 12, parti en tête au tour 19, se retrouvait au
-          // milieu du peloton une fois rentré dans le rang.
-          if (!S.crossG[k] && lastG) S.crossG[k] = lastG.groups.map(g => ({ n: groupName(g), c: groupColor(g), b: [...g.bibs] }));
-          (S.cross[k] = S.cross[k] || []).push(entry);
-          S.passes.push({ bib: nb, t: rec.t, n: ka });
-          // UN SPRINT NE S'OUVRE QU'AU PASSAGE DES LEADERS. Ses mots du 19 novembre 2026 : « un sprint ne peut
-          // s'ouvrir qu'au passage des LEADERS et de personne d'autre ! », et « cela est valable pour tous les
-          // sprints », l'arrivée comprise. Le bloc de tête de la timeline est seul à ouvrir ; l'instant de son
-          // passage est le début de l'enregistrement, et les places se comptent à partir de là.
-          // Le tour lu est `k`, le compte du coureur ramené par ses tours crédités — celui de la course. L'ancienne
-          // ouverture lisait `kn`, un tour reconstruit par rapport au peloton, et le premier coureur lu l'ouvrait,
-          // quel que fût son groupe : au dernier sprint de sa course de test, les 1 et 2, partis en tête, ont été
-          // enregistrés 23e et 24e parce que leur passage tombait avant l'ouverture.
-          if (L === 0 && estDesLeaders(nb)) {
-            for (let j = 1; j <= NSPRINTS; j++) if (S.spFrom[j] == null && k >= sprintLap(j)) S.spFrom[j] = rec.t;
-          }
-          if (L === 0 && !S.finishOpen && S.spFrom[NSPRINTS] != null) {
-            S.finishOpen = S.spFrom[NSPRINTS]; S.finishCrossed = new Set();
-            logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false);
-            // An armed finish line stops the running time on the winner, and disarms itself: the riders behind him
-            // go on crossing, the clock does not go on counting.
-            if (S.finArm) { S.winT = rec.t; S.finArm = false; logEvent('RACE', 'Running time stopped on BIB ' + nb + ' · ' + fmtT(rec.t), false); }
-          }
-          if (L === 0 && S.finishOpen && rec.t >= S.finishOpen) S.finishCrossed.add(nb);   // the finish line only
-        }
-        if (S.arm === L && o.mode !== 'out' && !inIncident(nb)) { S.armDone = { i: LOOPS.indexOf(L), bib: nb, until: S.t + ARM_SHOW_S }; S.arm = null; designateLeader(nb, 'next crossing at ' + LOOPNAME[L]); }
+        const d = ka * TRACK + L;
+        lireBoucle(o, li, d, S.t - (r.dist - d) / r.spd, r.spd, false);
       }
     }
   }
@@ -1409,7 +1447,6 @@ function measured() {
   return out;
 }
 
-// ---------- breaks: the threshold held CASS_DELAY_S before it counts ----------
 // A break, and the end of a break, count only once the state has held 0.3 s. The jump when a rider is read
 // at a loop (up to 394 ms measured over a whole race) must neither cut a group nor weld it back.
 // LE DÉLAI NE VAUT QUE POUR DÉCLARER UNE CASSURE, PAS POUR LA LEVER. Son §1 dit qu’une cassure
@@ -1418,13 +1455,6 @@ function measured() {
 // Elle ne servait à rien, et elle faisait afficher un écart négatif en en-tête de groupe : à 492,0 s
 // du palier 2, le 70 au mètre 116 était encore montré sous le 3 au mètre 112, avec −0,12 s. Deux
 // coureurs qui se rejoignent sont donc réunis TOUT DE SUITE.
-function cassure(key, over) {
-  const c = S.cass[key] || (S.cass[key] = { state: over, pending: over, since: S.t });
-  if (over !== c.pending) { c.pending = over; c.since = S.t; }
-  if (!c.pending) { c.state = false; return false; }
-  if (c.pending !== c.state && S.t - c.since >= CASS_DELAY_S) c.state = c.pending;
-  return c.state;
-}
 
 // ---------- groups: measured clusters on the track, operator groups, incident groups ----------
 // Le nom d'un bloc, tel qu'un groupe posé à la main retient ses voisins. Un groupe de l'opérateur porte son
@@ -1508,8 +1538,10 @@ function computeGroupsVraiment(M) {
     const zz = z != null ? z : metres / spd;
     const gap = zz - bike, key = follower.r.bib + '|' + ahead.r.bib;
     const over = gap > GROUP_GAP_S;
-    const avant = S.cass[key] && S.cass[key].state;
-    const res = cassure(key, over);
+    // La cassure se déclare SUR LA MESURE DU MOMENT, ici aussi (son point 192 ; le délai de 0,3 s du repli est parti
+    // au build 257 sur son « retire les deux ») : S.cass ne garde que la dernière réponse, pour le journal du code.
+    const avant = S.cass[key]; S.cass[key] = over;
+    const res = over;
     if (res !== avant && dbgChanged('cass:' + key, res))
       dbg('CASSURE', (res ? 'cassure' : 'recollement') + ' entre ' + ahead.r.bib + ' et ' + follower.r.bib,
         { devant: ahead.r.bib, suit: follower.r.bib, z: z == null ? null : +z.toFixed(3), source: z == null ? 'positions' : 'boucle',
@@ -1551,12 +1583,8 @@ function computeGroupsVraiment(M) {
   // soustraction ci-dessous viennent du même endroit.
   const bunchRaw = bunchFront ? (bunchFront.r.rec ? bunchFront.r.rec.d : bunchFront.m.pos) : null;
   S.bunchRaw = bunchRaw; S.bunchSeq = bunchSeq.map(x => x.r.bib);
-  // where each rider is by position alone, in laps from the front rider (alone, or the first of the front group): a rider a lap down from him has been caught by the leader
+  // (S.headLap, le « tour par rapport à la tête » que plus rien ne lisait depuis la build 53, est retiré au build 257.)
   const reads = live.map(r => ({ r, m: M.get(r.bib) })).filter(x => x.m.read && x.m.pos != null);
-  const headPos = reads.reduce((a, x) => Math.max(a, x.m.pos), -Infinity);
-  S.headLap = {};
-  // a lap down is about 250 m behind him: a bunch 130 m back is not one, so the rounding starts a quarter lap short of the lap
-  for (const x of reads) S.headLap[x.r.bib] = Math.round((x.m.pos - headPos + TRACK / 4) / TRACK);
   S.posOf = {}; S.spdOf = {};
   for (const x of reads) { S.posOf[x.r.bib] = x.m.pos; S.spdOf[x.r.bib] = x.m.spd; }
   // 2. race distance of each rider: measured crossings, brought back by the credited laps the loops confirm
@@ -2306,7 +2334,24 @@ function tapePlace(bib, read, reversal) {
 }
 
 // ---------- proposals: inference, never applied by itself. Each shows inside the group it concerns. ----------
-function addProposal(p) { if (S.proposals.some(q => q.key === p.key) || S.dismissed[p.key] || (S.snoozed[p.key] && S.t < S.snoozed[p.key])) return; p.id = S.nextId++; p.t = S.t; p.lap = raceLap(); S.proposals.push(p); dirty = true; }
+function addProposal(p) { if (S.proposals.some(q => q.key === p.key) || S.dismissed[p.key] || (S.snoozed[p.key] && S.t < S.snoozed[p.key])) return; p.id = S.nextId++; p.t = S.t; p.lap = raceLap(); S.proposals.push(p); dirty = true; if (p.kind === 'lap') sonValidation(); }
+// Le son : une fois, quand une carte de tour apparaît (l'opérateur, 19 novembre 2026, point 250 : « ajoute un son
+// qui retentit une fois quand la validation se déclenche »). Un la de 880 Hz pendant un tiers de seconde, par
+// l'audio du navigateur, sans fichier. Il ne retentit que pendant que la course tourne : le retour de 30 s et le
+// rechargement d'une course rejouent les propositions à l'arrêt, et ne doivent pas sonner.
+let sonCtx = null;
+function sonValidation() {
+  if (!(S.factor > 0)) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    sonCtx = sonCtx || new AC();
+    if (sonCtx.state === 'suspended') sonCtx.resume();
+    const t0 = sonCtx.currentTime, o = sonCtx.createOscillator(), g = sonCtx.createGain();
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+    o.connect(g).connect(sonCtx.destination); o.start(t0); o.stop(t0 + 0.4);
+  } catch (e) { /* un poste sans sortie audio ne doit pas arrêter la course */ }
+}
 function detect(G, M) {
   const now = S.t, lap = raceLap();
   tapeCount();
@@ -2355,28 +2400,63 @@ function detect(G, M) {
         ] });
     }
   }
-  // 2. riders not read for more than a lap, grouped when they went missing together: crash, mechanical, or a silent transponder
-  for (const p of S.proposals.filter(p => p.kind === 'missing' && p.bibs.every(b => M.get(b) && M.get(b).read))) { dropProposals(q => q === p); logEvent('TRANSPONDER', bibList(p.bibs) + ' read again · back in the measured groups', false); }
-  const missing = [];
-  // a rider the operator has declared without a transponder is not 'not read': there is nothing to read. What is
-  // open about him is where he is, which the tape switches answer (tapeAttribute), not whether his transponder works.
-  for (const [bib, m] of M) if (!m.read && !m.off && !S.noTp.has(bib) && !S.proposals.some(p => p.kind === 'missing' && p.bibs.includes(bib))) missing.push({ bib, m });
-  while (missing.length) {
-    const a = missing.shift(), set = [a, ...missing.filter(b => Math.abs(b.m.since - a.m.since) < 4)];
-    for (const b of set) { const i = missing.indexOf(b); if (i >= 0) missing.splice(i, 1); }
-    const bibs = set.map(x => x.bib).sort(byBib), sinceLap = Math.max(1, Math.floor(S.riders.find(r => r.bib === a.bib).rec.d / TRACK) + 1);
-    const key = 'missing:' + bibs.join(',') + ':' + Math.round(a.m.since);
-    addProposal({ key, kind: 'missing', bibs, sinceLap, loop: LOOPNAME[a.m.loop],
-      text: '<b>' + bibList(bibs) + ' not read</b> since ' + LOOPNAME[a.m.loop] + ', Lap ' + sinceLap + (bibs.length > 1 ? ' · together' : ''),
-      actions: [
-        { label: 'Crash', primary: bibs.length > 1, run: p => newGroup(p.bibs, 'crash', p.sinceLap) },
-        { label: 'Mech.', run: p => newGroup(p.bibs, 'mech', p.sinceLap) },
-        { label: 'No transponder', run: p => noTpToggle(p.bibs) },
-        { label: 'Keep in bunch', primary: bibs.length === 1, run: p => { S.dismissed[p.key] = true; logEvent('OP', bibList(p.bibs) + ' kept in the bunch · transponder silent', true); } },
-      ] });
+  // 2. UN COUREUR QUI MANQUE À L'APPEL (l'opérateur, 19 novembre 2026, point 253). Il roulait dans un groupe, et
+  //    le groupe a franchi DEUX boucles de suite sans qu'il soit lu. Deux à trois secondes après que le dernier
+  //    coureur du groupe a franchi la seconde, une carte pose la question, en trois temps : « still with the
+  //    group ? » — YES pose les deux passages manqués à l'heure du dernier du groupe, par le même chemin qu'une
+  //    lecture ; NO → « Crash ? » — YES ouvre le groupe d'incident et sa carte ; NO → « Transponder KO ? » — YES le
+  //    passe sans transpondeur, porté par son groupe ; ✕ le laisse où il est. Tant qu'il n'a pas répondu, le
+  //    coureur reste affiché à sa dernière place dans le groupe (ses mots). L'ancienne carte « not read » à 22 s et
+  //    ses quatre boutons ont disparu avec. ABSENT_S est à nous, entre ses « 2-3 secondes ».
+  //    PLUSIEURS COUREURS QUI MANQUENT ENSEMBLE FONT UNE SEULE CARTE (son point 255, build 256) : ceux du même
+  //    bloc, absents sur les deux mêmes boucles, et chaque réponse vaut pour tous. Un coureur lu entre-temps sort
+  //    de la carte, qui reste pour les autres.
+  for (const p of S.proposals.filter(p => p.kind === 'absent')) {
+    const lus = p.bibs.filter(b => { const r = S.riders.find(x => x.bib === b); return r && r.rec && r.rec.t > p.t0[b]; });
+    if (!lus.length) continue;
+    for (const b of lus) { const r = S.riders.find(x => x.bib === b); logEvent('TRANSPONDER', 'BIB ' + b + ' read again at ' + LOOPNAME[r.rec.loop] + ' · the question is withdrawn for him', false); }
+    p.bibs = p.bibs.filter(b => !lus.includes(b));
+    if (!p.bibs.length) dropProposals(q => q === p); else p.text = texteAbsent(p);
+    dirty = true;
   }
-  // 3. riders of an incident group read again: back on the track
+  for (const g of G.groups) {
+    if (g.incident || g.rows.length < 2) continue;
+    const lots = new Map();   // (li1, li2) → les coureurs du bloc qui manquent sur ces deux boucles
+    for (const x of g.rows) {
+      const r = x.r, bib = r.bib;
+      if (!r.rec || r.mode === 'out' || S.noTp.has(bib) || inIncident(bib) || S.proposals.some(p => p.kind === 'absent' && p.bibs.includes(bib))) continue;
+      const li0 = LOOPS.indexOf(r.rec.loop), t0 = Math.max(r.rec.t, S.absentFrom[bib] || 0);
+      if (li0 < 0) continue;
+      const li1 = (li0 + 1) % LOOPS.length, li2 = (li0 + 2) % LOOPS.length;
+      const others = new Set(g.bibs.filter(b => b !== bib));
+      // l'heure du DERNIER coureur du groupe sur cette boucle, après sa dernière lecture à lui
+      const lastOn = li => { const list = S.reads[li]; let m = null; for (let i = list.length - 1; i >= 0 && list[i].t > t0; i--) if (others.has(list[i].bib) && (m == null || list[i].t > m)) m = list[i].t; return m; };
+      const t1 = lastOn(li1); if (t1 == null) continue;
+      const t2 = lastOn(li2); if (t2 == null || t2 <= t1 || now - t2 < ABSENT_S) continue;
+      const k = li1 + ':' + li2, lot = lots.get(k) || { loops: [li1, li2], times: [t1, t2], bibs: [], t0: {} };
+      lot.bibs.push(bib); lot.t0[bib] = t0; lot.times = [Math.max(lot.times[0], t1), Math.max(lot.times[1], t2)]; lots.set(k, lot);
+    }
+    for (const lot of lots.values()) {
+      const bibs = lot.bibs.sort(byBib), gname = groupName(g);
+      const p = { key: 'absent:' + bibs.join(',') + ':' + Math.round(Math.min(...bibs.map(b => lot.t0[b])) * 10), kind: 'absent', bibs, t0: lot.t0, step: 'with', gname, loops: lot.loops, times: lot.times };
+      p.text = texteAbsent(p);
+      p.actions = [
+        { label: 'YES', primary: true, run: q => placerPassages(q) },
+        { label: 'NO', run: q => { q.step = 'crash'; q.text = texteAbsent(q); q.actions = [
+          { label: 'YES', primary: true, run: z => ouvrirCrash(z) },
+          { label: 'NO', run: z => { z.step = 'tp'; z.text = texteAbsent(z); z.actions = [
+            { label: 'YES', primary: true, run: w => { noTpToggle([...w.bibs]); } },
+            { label: '✕', run: w => { S.dismissed[w.key] = true; logEvent('OP', bibList(w.bibs) + ' kept with ' + w.gname + ' · nothing placed', true); } },
+          ]; dirty = true; return 'keep'; } },
+        ]; dirty = true; return 'keep'; } },
+      ];
+      addProposal(p);
+    }
+  }
+  // 3. riders of an incident group read again: back on the track. Un groupe de crash ouvert par la carte du point 253
+  //    porte déjà sa propre carte à trois choix : il n'en reçoit pas une seconde.
   for (const g of S.groups.filter(g => g.type !== 'manual')) {
+    if (g.type === 'crash') { carteCrash(g); continue; }
     const back = g.bibs.filter(b => M.get(b) && M.get(b).read).sort(byBib);
     if (!back.length) continue;
     const r0 = S.riders.find(r => r.bib === back[0]);
@@ -2391,6 +2471,58 @@ function detect(G, M) {
 // No median anywhere: the operator forbade it on 28 October 2026 (regles-operateur.md §5). The bunch is measured
 // by its front rider, a junction by the rider of the pair. If a statistic of positions reappears here, it is a bug.
 function dropProposals(pred) { S.proposals = S.proposals.filter(p => !pred(p)); }
+const ABSENT_S = 2.5;   // « Après 2-3 secondes » (point 253) : la valeur exacte est à nous
+// YES à « still with the group ? » : les passages manqués sont POSÉS, un par boucle, à l'heure du dernier coureur du
+// groupe sur cette boucle, et passent par lireBoucle() comme une lecture — timeline, ovale, Lap by lap, passing list
+// et moteur de course les reçoivent pareil. La distance du point se déduit de sa dernière lecture : la boucle
+// suivante est à (L' − L) mètres, un tour entier si c'est la même boucle. Marqués `placed` dans S.reads.
+function placerPassages(p) {
+  for (const b of p.bibs) {
+    const o = S.riders.find(x => x.bib === b); if (!o || !o.rec) continue;
+    p.loops.forEach((li, i) => {
+      const L = LOOPS[li], d = o.rec.d + ((((L - o.rec.loop) % TRACK) + TRACK) % TRACK || TRACK);
+      lireBoucle(o, li, d, p.times[i], o.rec.spd || CFG.pace, true);
+      logEvent('TRANSPONDER', 'BIB ' + o.bib + ' · not read at ' + LOOPNAME[L] + ' · passage placed by the operator at ' + fmtT(p.times[i]) + ' with ' + p.gname, true);
+    });
+  }
+  dirty = true;
+}
+// Le texte de la carte à chacun de ses trois temps, refait quand sa liste de coureurs change.
+function texteAbsent(p) {
+  const qui = '<b>' + bibList(p.bibs) + (p.step === 'with' ? ' not read</b>' : '</b>');
+  if (p.step === 'with') return qui + ' at ' + LOOPNAME[LOOPS[p.loops[0]]] + ' and ' + LOOPNAME[LOOPS[p.loops[1]]] + ' · still with ' + p.gname + ' ?';
+  if (p.step === 'crash') return qui + ' · not with ' + p.gname + ' · Crash ?';
+  return qui + ' · no crash · Transponder KO ?';
+}
+// YES à « Crash ? » : le groupe d'incident existant s'ouvre, et une carte porte les trois issues de l'opérateur —
+// « reprend, reprend mais change de vélo ou abandonne ». Les 5 tours sont comptés par le groupe, comme avant.
+function ouvrirCrash(p) { newGroup([...p.bibs], 'crash', raceLap()); }
+// LA CARTE DE CRASH PORTE UNE LIGNE PAR COUREUR, chacun avec ses trois issues (son point 254, build 255). Elle
+// suit le groupe `CRASH` : ouvert par la question qui précède, par le bouton Crash de la barre d'actions avec la
+// sélection, ou grossi d'un coureur glissé sur son bloc, le groupe est la vérité et la carte se refait dessus
+// (detect, section 3). Elle reste tant qu'un coureur y est ; le dernier parti l'emporte.
+const resteCrash = q => S.groups.some(x => x.id === q.gid && x.bibs.length) ? 'keep' : undefined;
+function crashActions(g) {
+  return g.bibs.flatMap(b => [
+    { label: 'Back in race', bib: b, primary: true, run: q => { backInRace([b]); return resteCrash(q); } },
+    { label: 'Another bike', bib: b, run: q => { backInRace([b]); noTpToggle([b]); return resteCrash(q); } },
+    { label: 'Abandons', bib: b, run: q => { withdraw([b], 'ABD'); const g = S.groups.find(x => x.id === q.gid); if (g) carteCrash(g); return resteCrash(q); } },   // withdraw emporte toute carte qui porte le dossard : celle des autres se refait tout de suite
+  ]);
+}
+// Le titre compte CE QUI RESTE, tour après tour (ses mots du 19 novembre 2026 : « lap 22 - still 3 laps to rejoin »).
+function texteCrash(g) {
+  const left = NEUTRAL_LAPS - (raceLap() - g.lap);
+  return '<b>CRASH</b> · Lap ' + g.lap + ' · ' + (left > 0 ? 'still ' + plural(left, 'lap') + ' to rejoin' : 'neutralisation over');
+}
+function carteCrash(g) {
+  const key = 'crash:' + g.id, p = S.proposals.find(x => x.key === key), text = texteCrash(g);
+  if (p) {
+    if (p.bibs.join() !== g.bibs.join()) { p.bibs = [...g.bibs]; p.actions = crashActions(g); dirty = true; }
+    if (p.text !== text) { p.text = text; dirty = true; }
+    return;
+  }
+  addProposal({ key, kind: 'crash', bibs: [...g.bibs], gid: g.id, text, actions: crashActions(g) });
+}
 
 // ---------- operator actions: facts ----------
 // A decision is a journal entry. It is never erased: a later decision can contradict it (rev), dated now, leaving every
@@ -2499,6 +2631,7 @@ function newGroup(bibs, type, lap) {
   const g = { id: S.nextId++, bibs: [...bibs].sort(byBib), type, lap: lap || raceLap(), t: S.t, open: false };
   S.groups.push(g); rehost(bibs, g.bibs);
   dropProposals(p => p.kind === 'missing' && p.bibs.some(b => bibs.includes(b)));
+  if (type === 'crash') carteCrash(g);   // la carte à trois issues, par la question comme par le bouton Crash (point 254)
   logEvent(type === 'manual' ? 'GROUP' : 'INCIDENT', (type === 'manual' ? 'New group: ' : type === 'crash' ? 'Crash · ' : 'Mechanical · ') + bibList(bibs) + (type === 'manual' ? '' : ' · Lap ' + g.lap + ' · ' + NEUTRAL_LAPS + ' laps to rejoin'), true, groupRev(before, 'Groups as before ' + (type === 'manual' ? 'the group of ' : 'the incident of ') + bibList(bibs)));
   S.selection.clear();
 }
@@ -2512,6 +2645,7 @@ function joinGroup(bibs, g) {
 function backInRace(bibs) {
   const before = groupsCopy();
   removeFromGroups(bibs);
+  for (const b of bibs) S.absentFrom[b] = S.t;   // il vient de reprendre : on ne lui redemande rien avant que son groupe ait passé deux boucles depuis maintenant
   dropProposals(p => p.kind === 'back' && p.bibs.some(b => bibs.includes(b)));
   logEvent('INCIDENT', bibList(bibs) + ' back in the race · Lap ' + raceLap() + ' · operator', true, groupRev(before, bibList(bibs) + ' back in the incident'));
 }
@@ -2560,7 +2694,7 @@ function backToAutomatic() {
   logEvent('GROUP', plural(n, 'group') + ' back to the transponder order', true, groupRev(before, 'Groups as placed manually'));
 }
 function removeFromGroups(bibs) { for (const g of S.groups) g.bibs = g.bibs.filter(b => !bibs.includes(b)); S.groups = S.groups.filter(g => g.bibs.length); }
-function dissolve(g) { const before = groupsCopy(); S.groups = S.groups.filter(x => x !== g); logEvent(g.type === 'manual' ? 'GROUP' : 'INCIDENT', (g.type === 'manual' ? 'Group dissolved: ' : 'Incident closed: ') + bibList(g.bibs), true, groupRev(before, (g.type === 'manual' ? 'Group of ' : 'Incident of ') + bibList(g.bibs) + ' restored')); }
+function dissolve(g) { const before = groupsCopy(); S.groups = S.groups.filter(x => x !== g); dropProposals(p => p.kind === 'crash' && p.gid === g.id); logEvent(g.type === 'manual' ? 'GROUP' : 'INCIDENT', (g.type === 'manual' ? 'Group dissolved: ' : 'Incident closed: ') + bibList(g.bibs), true, groupRev(before, (g.type === 'manual' ? 'Group of ' : 'Incident of ') + bibList(g.bibs) + ' restored')); }
 function mergeUp(g, prev) { if (!prev || prev.incident) return; const before = groupsCopy(); const bibs = [...prev.bibs, ...g.bibs].sort(byBib); removeFromGroups(bibs); S.groups.push({ id: S.nextId++, bibs, type: 'manual', lap: raceLap(), t: S.t, open: false }); logEvent('GROUP', 'Merged: ' + bibList(bibs), true, groupRev(before, 'Groups as before merging ' + bibList(bibs))); }
 
 
@@ -2726,6 +2860,8 @@ function lapProposalWaiting() { return S.proposals.some(p => p.kind === 'lap' &&
 function renderTimeline(G) {
   lastG = G; shownProps = new Set();
   const sel = S.selection, lap = dispLap(), sprintN = nextSprintNum(lap);
+  // Le battement de ce qui attend une validation est calé sur l'horloge du poste (voir la règle `attente` du style).
+  const att = ' style="animation-delay:-' + Math.round(performance.now() % 1000) + 'ms"';
   let html = '', props = '';
   // Elle n'existe que tant qu'au moins un groupe est posé à la main, et elle dit combien il y en a.
   const nHand = S.groups.filter(g => g.hand).length;
@@ -2764,12 +2900,21 @@ function renderTimeline(G) {
         const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib)
           .map(x => `<button class="btn xs${/all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${/all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
         props += `<div class="gq hot" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${perBib}</span><span class="pr"><span class="pt"><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b></span><span class="pa">${btns}</span><span class="pl">Lap ${p.lap}</span></span></div>`;
+      } else if (p.kind === 'crash') {
+        // Une ligne par coureur, ses trois issues au bout (point 254). Les index `data-pact` sont ceux de `acts`.
+        const perBib = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib), bibsIn = [...new Set(perBib.map(x => x.a.bib))];
+        const rows = bibsIn.map(b => {
+          const r = S.riders.find(y => y.bib === b);
+          const btns = perBib.filter(x => x.a.bib === b).map(x => `<button class="btn xs${x.a.primary ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label} · BIB ${b}">${x.a.label}</button>`).join('');
+          return `<span class="pb">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><span class="pa">${btns}</span></span>`;
+        }).join('');
+        props += `<div class="gq crash" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${rows}</span><span class="pr"><span class="pt">${p.text}</span></span></div>`;
       } else props += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
     }
     // The box carries the group's own colour, the same one its bubble has on the oval (regles-operateur.md §17).
     const gcol = g.incident ? '' : ` style="--gcol:${groupColor(g, G)}"`;
     html += `<div class="tgrp${isLead ? ' lead' : ''}${g.pending ? ' pending' : ''}${g.op && !g.incident ? ' pinned' : ''}${g.incident ? ' incident' : ' hascol'}" data-gi="${gi}"${gcol}>
-      <div class="gh" data-selgroup="${gi}" title="${info.replace(/<[^>]+>/g, '')} · click to select the whole group">
+      <div class="gh${g.pending ? ' attente' : ''}" data-selgroup="${gi}"${g.pending ? att : ''} title="${info.replace(/<[^>]+>/g, '')} · click to select the whole group">
         <span class="ghl"><span class="gn">${name}</span>${g.op ? '<button class="btn xs quiet gx" data-dissolve="' + g.op.id + '" title="' + (g.incident ? 'Close the incident, riders back to measured groups' : 'Dissolve this group') + '">×</button>' : ''}</span>
         <span class="ghl"><span class="gi">${info}</span>${g.incident ? '' : '<span class="ggap">' + (g.gap != null ? g.gap.toFixed(1) + ' s' : g.gapNone ? '—' : 'leader') + '</span>'}</span>
         ${g.op && g.op.hand ? '<span class="pill warn hand">manual</span>' : ''}
@@ -2787,7 +2932,7 @@ function renderTimeline(G) {
       const mark = x.m.off ? 'off track' : x.m.notp ? 'no transponder' : !x.m.read ? 'not read'
         : (out && !allOut) ? 'out of sprint' : (S.inelig && S.inelig.has(x.r.bib)) ? 'no points' : '';
       const pend = x.pending && rowOk[x.r.bib];
-      html += `<div class="trow${sel.has(x.r.bib) ? ' sel' : ''}${mark ? ' marked' : ''}${mark === 'no points' ? ' nopts' : ''}${pend ? ' pend' : ''}" data-bib="${x.r.bib}" title="${x.r.name}${mark ? ' · ' + mark : ''}${pend ? ' · lap to validate' : ''}">
+      html += `<div class="trow${sel.has(x.r.bib) ? ' sel' : ''}${mark ? ' marked' : ''}${mark === 'no points' ? ' nopts' : ''}${pend ? ' pend' : ''}${x.pending ? ' attente' : ''}" data-bib="${x.r.bib}"${x.pending ? att : ''} title="${x.r.name}${mark ? ' · ' + mark : ''}${pend ? ' · lap to validate' : ''}">
         ${chip(x.r, x.m.off ? 'off' : x.m.notp ? 'notp' : !x.m.read ? 'silent' : '')}${flag(x.r.nat)}<span class="noc">${x.r.nat}</span>${mark === 'no points' ? '<span class="npts">no pts</span>' : ''}</div>`;
     }
     html += '</div>';
@@ -2984,6 +3129,7 @@ function nocText(cx, cy, nat) {
 function renderOval(G, M) {
   let bands = '', dots = '', labels = '';
   const leaderS = G.leader.pos, bubbles = [];
+  const attO = ';animation-delay:-' + Math.round(performance.now() % 1000) + 'ms';   // le battement, calé sur l'horloge du poste
   // 1. which groups get a bubble. A block riding inside the bunch keeps none: its riders carry their own marks.
   const drawn = G.groups.filter(g => !g.incident && g.rows.some(x => !x.m.off) && !(g !== G.bunch && G.bunch && g.cluster === G.bunchCluster && !g.op));
   // 2. riders: lanes computed over every rider on the track, in track order, so that nobody hides anybody
@@ -3027,11 +3173,11 @@ function renderOval(G, M) {
     const colour = groupColor(g, G);   // the bubble carries the group's own colour, the same one its timeline box has
     bubbles.push({ g, gi, sMid: (sHead + sTail) / 2, colour, halfW, mid });
     const d = arcPathOff(sHead + pad, sTail - pad, mid);
-    bands += `<path d="${d}" fill="none" stroke="${colour}" stroke-opacity="0.48" stroke-width="${(halfW * 2).toFixed(1)}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer"/>`;
+    bands += `<path d="${d}"${g.pending ? ' class="attente"' : ''} fill="none" stroke="${colour}" stroke-opacity="0.48" stroke-width="${(halfW * 2).toFixed(1)}" stroke-linecap="round" data-gi="${gi}" style="cursor:pointer${g.pending ? attO : ''}"/>`;
     for (const side of [mid - halfW, mid + halfW]) {            // the two sides of the bubble, in its own colour
       const n = Math.max(2, Math.ceil((sHead - sTail + 2 * pad) / 4)); let e = '';
       for (let i = 0; i <= n; i++) { const sv = sTail - pad + (sHead - sTail + 2 * pad) * i / n, a = normalAt(sv); e += (i ? ' L' : 'M') + (a.p.x + a.nx * side).toFixed(1) + ',' + (a.p.y + a.ny * side).toFixed(1); }
-      bands += `<path d="${e}" fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
+      bands += `<path d="${e}"${g.pending ? ' class="attente" style="animation-delay:' + attO.slice(17) + '"' : ''} fill="none" stroke="${colour}" stroke-opacity="0.9" stroke-width="1.5"${g.pending ? ' stroke-dasharray="5 4"' : ''} pointer-events="none"/>`;
     }
   });
   for (const it of all) {
@@ -3043,7 +3189,7 @@ function renderOval(G, M) {
     // Nothing marks the race leader on the oval: the green ring and the green bar across the track were part of the
     // annotations the operator had taken off, and they had been left behind. The LEADER field names him.
     const stroke = x.m.notp ? '#8FB4FF' : !x.m.read ? '#F2A33A' : sel ? '#fff' : '#ECEAE4', sw = sel ? 3.5 : 1.5;
-    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${BIB_FILL}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="#111" pointer-events="none">${x.r.bib}</text>${nocText(cx, cy, x.r.nat)}</g>`;
+    dots += `<g class="dot" id="dot-${x.r.bib}" data-bib="${x.r.bib}" style="cursor:pointer"><title>BIB ${x.r.bib} · ${x.r.name} · ${x.r.nat}${isLead ? ' · race leader' : ''}</title>${x.pending ? `<circle class="attring" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R + 4}" fill="none" stroke="#1CC634" stroke-width="3" style="animation-delay:${attO.slice(17)}"/>` : ''}<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${DOT_R}" fill="${BIB_FILL}" stroke="${stroke}" stroke-width="${sw}"${!x.m.read || x.m.notp ? ' stroke-dasharray="2 2"' : ''}/><text x="${cx.toFixed(1)}" y="${(cy + 3.4).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" font-weight="700" fill="#111" pointer-events="none">${x.r.bib}</text>${nocText(cx, cy, x.r.nat)}</g>`;
   }
   // riders off the track (incident) sit on the apron, greyed
   for (const g of G.groups) for (const x of g.rows) if (x.m.off) {
@@ -3202,7 +3348,7 @@ function onStripClick(e) {
   if (t.dataset.dissolve) { const g = S.groups.find(x => x.id === +t.dataset.dissolve); if (g) { pushUndo((g.type === 'manual' ? 'dissolve group ' : 'close incident ') + bibList(g.bibs)); dissolve(g); } }
   else if (t.dataset.autogroups) { pushUndo('back to automatic'); backToAutomatic(); }
   else if (t.dataset.selgroup != null) selectGroup(+t.dataset.selgroup);
-  else if (t.dataset.pact != null) { const p = S.proposals.find(x => x.id === +t.closest('[data-pid]').dataset.pid); if (p) { pushUndo((liveActions(p)[+t.dataset.pact].label || t.innerText) + ' · ' + bibList(p.bibs)); liveActions(p)[+t.dataset.pact].run(p); if (p.kind !== 'lap') dropProposals(x => x === p && !S.snoozed[x.key]); else if (S.dismissed[p.key]) dropProposals(x => x === p); } }
+  else if (t.dataset.pact != null) { const p = S.proposals.find(x => x.id === +t.closest('[data-pid]').dataset.pid); if (p) { pushUndo((liveActions(p)[+t.dataset.pact].label || t.innerText) + ' · ' + bibList(p.bibs)); const kept = liveActions(p)[+t.dataset.pact].run(p) === 'keep'; if (kept) { dirty = true; } else if (p.kind !== 'lap') dropProposals(x => x === p && !S.snoozed[x.key]); else if (S.dismissed[p.key]) dropProposals(x => x === p); } }
   else if (t.dataset.reinstate) { const bib = +t.dataset.reinstate; pushUndo('reinstate BIB ' + bib); const e = S.log.find(x => x.k === 'WITHDRAW' && !x.reversed && x.rev && x.m.startsWith('BIB ' + bib + ' ')); if (e) { e.reversed = true; e.rev(); } else reinstate(bib); }
   else if (t.dataset.rlap) { const bib = +t.dataset.bib, d = +t.dataset.rlap; pushUndo(t.innerText.trim() + ' BIB ' + bib); applyLap([bib], d, 'operator'); }
   else if (t.dataset.color) { setColor(+t.dataset.bib, t.dataset.color); return; }
@@ -3734,7 +3880,7 @@ function spClose(k) { const s = sp(k); S.sprintOpen = null; s.closed = true; log
 // ---------- the sprint card ----------
 const scard = $('#scard');
 let lastCardSprint = -1;   // le dernier sprint montré dans la carte, pour ne ramener la bande en vue qu'au changement
-const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo check needed · click to confirm"><path d="M4 7h3.5l2-2.5h5l2 2.5H20v12H4z" fill="none" stroke="#FF5C5C" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="#FF5C5C" stroke-width="2"/></svg>';
+const CAM = '<svg viewBox="0 0 24 24" width="17" height="17" aria-label="photo check needed · click to confirm"><path d="M4 7h3.5l2-2.5h5l2 2.5H20v12H4z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="#FF5C5C" stroke-width="2"/></svg>';
 // La liste de départ : entière, sur une colonne, triable, qu'un sprint soit ouvert ou non. Glisser ou double-clic
 // place un coureur quand un sprint est ouvert ; hors sprint elle ne fait que montrer le plateau.
 function startListHtml(k, seq, tgt, fin, N) {
@@ -3791,8 +3937,10 @@ function renderCard() {
   strip += `<button class="sptab all${logTab === 'sprints' ? ' on' : ''}" data-spall="1" title="Every sprint, side by side">ALL</button>`;
   strip += '</div>';
   let h = strip + `<div class="sh"><b>${fin ? 'FINAL SPRINT · FINISH' : 'SPRINT ' + k}</b>
-    <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span>
-    ${open ? `<button class="btn xs quiet" data-sact="close" title="Close the sprint card">Close</button>` : ''}</div>`;
+    <span class="cnt">${open ? cnt : (toGo > 0 ? plural(toGo, 'lap') + ' to go · waiting for the bell' : 'waiting for the bell')}</span><span class="sp"></span></div>`;
+  // Plus de bouton Close, sur aucun sprint (l'opérateur, 19 novembre 2026, point 251 : « retire les tous »). Un
+  // sprint intermédiaire se ferme tout seul deux tours après sa ligne, quand toutes ses places sont parties et
+  // qu'aucune photo n'attend (spTick) ; le final ne se ferme jamais. spClose() reste pour le harnais de test.
   h += '<div class="sbody"><div class="sleft"><div class="ssec">Order<span class="hint">drag a line to reorder</span></div>';
   // Le drapeau de l'ordre du sprint (l'opérateur, 31 octobre 2026, sur sa capture : « je pense qu'il y a la place
   // pour placer un drapeau dans la zone que j'ai encadré en rouge »). La colonne ne s'élargit pas d'un pixel : les
@@ -4080,7 +4228,7 @@ function renderSprintsTab() {
       if (e.empty) { body += `<div class="sprk${sep}"><span class="pl">${e.place}</span><span></span><span></span><span class="noc">—</span><span class="pts"></span></div>`; continue; }
       const r = S.riders.find(x => x.bib === e.bib); if (!r) continue;
       const p = pts[e.bib] || 0;
-      body += `<div class="sprk${p ? ' score' : ''}${sep}" title="${r.name}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl">${e.place}</span>${chip(r, e.held ? 'notp' : '')}<span class="flagw">${flag(r.nat)}</span><span class="noc">${r.nat}</span><span class="pts">${p ? '+' + p : ''}</span></div>`;
+      body += `<div class="sprk${p ? ' score' : ''}${e.photo ? ' cam' : ''}${sep}" title="${r.name}${e.photo ? ' · photo finish' : ''}${S.noTp.has(e.bib) ? ' · no transponder' : ''}"><span class="pl">${e.place}</span>${chip(r, e.held ? 'notp' : '')}<span class="flagw">${flag(r.nat)}</span><span class="noc">${r.nat}</span><span class="pts">${p ? '+' + p : ''}</span></div>`;
     }
     cols += `<div class="spcol${fin ? ' fin' : ''}${S.sprintOpen === k ? ' op' : ''}" data-spopen="${k}" title="Open this sprint">
       <div class="spcol-h"><div class="spcol-t">${fin ? 'FINAL<span class="x2">×2</span>' : 'SPRINT ' + k}</div><div class="spcol-s">LAP ${s.lap} · ${pill}</div></div>
@@ -5462,7 +5610,7 @@ function renderPassingsTab() {
       // à 240 m, et la ligne FERME le tour — elle vient donc en dernier, et non en premier.
       const ord = LOOPS[li] === 0 ? TRACK : LOOPS[li];
       for (const x of list.slice(-400)) out.push({ t: x.t, point: LOOPNAME[LOOPS[li]], ord,
-        bib: x.bib, lap: lapAt(x.bib, x.t, li === 0), sig: 'read', mark: '' });
+        bib: x.bib, lap: lapAt(x.bib, x.t, li === 0), sig: x.placed ? 'placed · operator' : 'read', mark: x.placed ? 'not read' : '' });
     });
   }
   if (passSrc === 'all' || passSrc === 'tape') {

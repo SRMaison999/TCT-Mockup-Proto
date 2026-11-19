@@ -170,30 +170,36 @@ entière après coup.
 **Les deux lectures de la course**, qu'il faut garder toutes les deux en tête — les confondre
 est l'erreur qui a coûté le plus de versions au prototype :
 
-- **La timeline : la distance de course continue.** Du premier coureur jusqu'au dernier, sans
-  jamais replier la distance sur un tour de piste. Un coureur qui a un tour de retard est
-  250 m plus bas dans la timeline, pas « au même endroit ». C'est la lecture qui dit **qui est
-  devant qui dans la course**.
+- **La timeline : l'ordre de la course.** Du premier coureur jusqu'au dernier, dans l'ordre
+  des groupes et, dans un groupe, dans l'ordre des passages. C'est la lecture qui dit **qui est
+  devant qui dans la course**. Elle ne compte aucun tour : l'opérateur l'a posé le 1er novembre
+  2026, « chacun est toujours dans le même tour que les autres du point de vue de la timeline »
+  (`regles-operateur.md` points 174 et 182) — un tour gagné ou perdu est un événement de
+  20 points, et le coureur revient l'égal des autres dans le peloton.
 - **L'ovale : la position sur le tour de piste.** Où chacun se trouve physiquement maintenant,
-  les uns par rapport aux autres. C'est la lecture qui dit **qui va atteindre la ligne en
-  premier**.
+  les uns par rapport aux autres. C'est une aide visuelle (point 185) : rien de ce que la
+  timeline décide ne s'appuie dessus.
 
 Un coureur peut être plus bas dans la timeline et pourtant plus près de la ligne sur l'ovale :
 c'est précisément la situation que la règle d'éligibilité existe pour traiter
-(`regles-operateur.md` §6).
+(`regles-operateur.md` §6 et point 196).
 
-**Position et groupes.** Entre deux pointages, la position de chaque coureur est estimée par
-extrapolation de sa vitesse sur ses derniers passages. Les groupes sont détectés par les
-**cassures** (`regles-operateur.md` §1), **dans la timeline**, jamais sur la position repliée.
-Le groupe principal est le plus nombreux. Un groupe conserve son identité d'un tour à l'autre,
-et **sa composition est mémorisée même après fusion** : c'est ce qui permet d'attacher une
-décision à « ce groupe-là » avant que la jonction ne le rende illisible.
+**Position et groupes.** L'ordre, les groupes et les écarts se lisent sur les **détections des
+boucles**, trois par tour, et sur rien d'autre (`regles-operateur.md` points 177 et 191) ; entre
+deux détections la timeline ne bouge pas, seul l'ovale avance, par extrapolation de la vitesse.
+Les groupes sont détectés par les **cassures** (`regles-operateur.md` §1), **dans la timeline**,
+jamais sur la position repliée. Le peloton est le groupe où tous les coureurs sont ensemble au
+départ, et il garde cette identité ; ce n'est pas le groupe le plus nombreux de l'instant
+(point 174). Un groupe garde le côté par lequel il a quitté le peloton (point 246), et sa
+composition est mémorisée après fusion : c'est ce qui permet d'attacher une décision à « ce
+groupe-là » avant que la jonction ne le rende illisible.
 
-**Les groupes portent des noms par position, pas des numéros d'identité** : Bunch pour le
-peloton, Break n pour une échappée, Chase n pour un groupe de poursuite. Ces noms sont
-stables : un groupe ne se renomme pas parce qu'on ouvre son menu. Chaque groupe porte en plus
-son **numéro** (1 pour le groupe de tête, puis 2, 3… en descendant) et son **écart**, une
-seule fois, dans son en-tête.
+**Les groupes portent leur rang dans la course, puis leur rôle** (`regles-operateur.md` §17,
+points 22 et 23) : `1-Leader` ou `1-Leaders`, `n-Chase` pour un groupe entre la tête et le
+peloton, `n-Bunch`, `n-Behind` pour un groupe derrière le peloton qui en a encore un derrière
+lui, et le tout dernier toujours `n-Last`. Chaque groupe a sa couleur — vert en tête, bleu au
+peloton, rouge en queue (point 31) — la même sur sa bulle de l'ovale et sur sa boîte de
+timeline, et son **écart** au groupe qui le précède, une seule fois, dans son en-tête.
 
 **État d'un coureur.** En attente, en course, neutralisé, sans transpondeur, retiré, abandon,
 disqualifié. Chaque transition est un événement avec tour d'effet. Un coureur sans
@@ -252,12 +258,13 @@ sprint.
 jusqu'à lui, temps de course, tête de course et sa vitesse. Toujours visibles. À deux tours du
 sprint puis à un tour, le champ du sprint passe en surbrillance.
 
-**Mode sprint.** À la cloche, un tour avant, l'écran change : l'ovale et les listes de
-passages et de décisions se masquent, la carte du sprint prend tout le centre (un ovale réduit
-a été essayé et jugé illisible). La timeline ne change pas. Pendant un sprint, rien d'autre
-n'intéresse l'opérateur. La carte se ferme d'elle-même deux tours plus tard quand tout est
-parti et qu'aucun contrôle photo ne reste ouvert, ou sur *Close* ; un sprint passé se rouvre
-depuis la liste des sprints.
+**La carte du sprint est permanente.** Elle occupe la colonne de droite de l'écran, à côté de
+l'ovale, pendant toute la course (`regles-operateur.md` §17, points 61, 62 et 79) : hors sprint
+elle annonce le prochain et montre la liste de départ entière ; à la cloche elle s'ouvre, et
+l'ovale et la timeline restent visibles. Le mode sprint qui masquait l'ovale (24 octobre 2026) a
+été remplacé par son dessin du 29 octobre. La carte se ferme d'elle-même deux tours plus tard
+quand tout est parti et qu'aucun contrôle photo ne reste ouvert, ou sur *Close* ; un sprint
+passé se rouvre depuis la bande des sprints en tête de la carte (point 201).
 
 **La carte du sprint.** En-tête `SPRINT k · ← Lap L →` — les flèches jugent le sprint sur la
 ligne précédente ou suivante, **ce qui remplace l'armement**, abandonné. Puis *Manual*,
@@ -577,9 +584,11 @@ classés. L'en-tête compte en clair : `16 started · 1 ABD · 15 to rank · 13 
 Départage par la place au dernier sprint. Le nombre de sprints gagnés est disponible dans
 l'export. Les points d'omnium antérieurs s'ajouteront dans une colonne séparée.
 
-**Liste des sprints et sorties.** Un onglet liste chaque sprint avec ses cinq places, le flag
-photo, les non éligibles et l'état d'envoi ; un clic le rouvre. Chaque message parti vers TV,
-scoreboard et web est consigné : heure, sprint, tour, places, flags, nature.
+**Tous les sprints, et les sorties.** Le bouton `ALL` de la carte ouvre tous les sprints courus
+en colonnes, l'ordre complet de chacun, les quatre qui marquent, le final doublé (points 209 à
+211) ; un clic sur une colonne rouvre le sprint. Chaque message parti vers TV, scoreboard et
+web est consigné au journal et dans l'export des sprints : heure, sprint, tour, places, flags,
+nature.
 
 **Export : trois fichiers séparés.** Les sprints avec leur détail (JSON), le classement (CSV),
 le journal factuel (JSON) — ce dernier servant aux réclamations et à l'analyse. Ce sont des
@@ -615,7 +624,7 @@ garde que les décisions de produit.
 | Madison | Même modèle par équipe de deux, avec le relais comme événement ; second temps | 21 oct. |
 | Tempo race et scratch | Même modèle, autre barème ; troisième temps | 21 oct. |
 | Protocole photo-finish | À voir à l'implémentation | 21 oct. |
-| Carte du sprint | Mode sprint à la cloche, ovale masqué, cinq lignes sans points, liste de départ entière à droite, non éligibles repliés, photo = fond rouge et caméra, glisser pour réordonner | 24 oct. |
+| Carte du sprint | Cinq lignes sans points, liste de départ entière, non éligibles repliés, photo = fond rouge et caméra, glisser pour réordonner. L'ovale masqué pendant le sprint est revenu le 29 oct. : la carte est permanente, en colonne de droite, et l'ovale reste visible (`regles-operateur.md` §17, points 62 et 79) | 24 oct., revu le 29 |
 | Envoi d'un sprint | Deux boutons : *Live*, interrupteur ; *Send*, envoi manuel, vert une fois parti puis « Send correction ». Ni mode contrôle ni retenue | 24 oct. |
 | Places envoyées | Cinq, points aux quatre premières ; tout le monde au dernier sprint | 24 oct. |
 | Saisie manuelle | Une case : dossards séparés d'espaces + Entrée = tout l'ordre ; un dossard + Entrée = place cible ▸. Double-clic et glisser depuis la liste de départ. *Clear and record* en secours | 24 oct. |

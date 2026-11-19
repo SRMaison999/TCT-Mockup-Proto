@@ -33,7 +33,7 @@ Ce ne sont pas des opinions. Les proposer est une faute, pas une divergence de g
 |---|---|
 | `drag` HTML5 natif ; agir au `click` sur l'ovale ; reconstruire la timeline pendant un glisser | `pitfalls.md` **D1, D2, D3** — échecs constatés, pas préférences |
 | Automatiser une décision, un retrait, une neutralisation | `concept.md` : « le logiciel propose, l'opérateur dispose », « **jamais de retrait automatique** ». Cela relève du jury, pas de l'ergonomie |
-| Écrire un texte inventé, ou du français, dans une maquette | `pitfalls.md` **A14** — c'est un acte dans la maquette, pas une proposition |
+| Écrire un texte inventé, ou du français, dans une maquette | `pitfalls.md` **A19** — c'est un acte dans la maquette, pas une proposition |
 
 ## B. Ce qui se propose, en s'annonçant contre un principe posé
 

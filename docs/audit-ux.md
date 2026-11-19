@@ -20,56 +20,28 @@ dit pourquoi il est formulé quand même.
 
 ---
 
-## État au 31 octobre 2026
+## État au 19 novembre 2026, build 249
 
-La build 149 n'a résolu **aucun** de ces points : elle répondait à une autre demande — l'ovale
-calé, les poignées, la timeline élastique, les réglages de zone et le drapeau du sprint
-(`architecture.md` §22). Deux liens tout de même :
+Ce qui est sorti de la liste, et par quoi :
 
-- les commandes ajoutées par la build 149 sont posées **hors** des conteneurs que le moteur
-  réécrit, donc elles n'ont pas le défaut du point 1 — les boutons existants l'ont toujours ;
-- la poignée de la barre d'actions et son réglage de taille **atténuent** le point 3 sans le
-  corriger : la ligne reste coupée à la largeur d'origine.
+- **point 1** (les boutons reconstruits) — codé en build 154 sur sa demande (règle 134) ;
+- **point 3** (la ligne de sélection coupée) — plus d'objet depuis la règle 132, build 154 ;
+- **point 4** (un signe sur l'onglet *Race*) — **refusé** : « On ne change rien » (règle 141) ;
+- **point 11** (la pastille des passages dans Crossings) — l'onglet est devenu Lap by lap au
+  build 217, et le compte des tours faits y a sa colonne nommée `LAPS DONE` ;
+- **point 16** (quatre colonnes vides dans Standings) — le classement a été refait au build 211
+  sur la maquette validée ; ses colonnes sont celles de la règle 204 ;
+- **section B** entière — les cinq points de design sont tranchés et codés (règles 136 à 143,
+  builds 156 à 159).
 
-La **build 150** répond à une demande de l'opérateur, pas à cette liste : la fenêtre d'actions
-de taille fixe, CTRL + molette à la place des cinq groupes de boutons, et la poignée de l'ovale
-qui va dans les deux sens (`architecture.md` §23, `regles-operateur.md` §17 points 121 à 125).
-Elle touche cette liste sur trois points, sans en résoudre aucun en entier :
+Ce qui tient encore, vérifié dans le code au build 249 : les points **2, 5, 6, 7, 8, 9, 10, 12,
+13, 14, 15** et, pour deux infobulles, le **17**. Le point 9 a changé de place avec le panneau
+(la paire `AUTO` / `LAP COUNTER` est dans la barre du haut depuis le build 159) et recopie
+toujours le compte de l'application.
 
-- **point 17** : les quatre infobulles françaises du réglage de l'ovale **ont disparu** avec les
-  boutons. Il en reste une, celle du filtre de Passings, et le point est réécrit plus bas ;
-- **point 3** : la ligne qui dit sur quoi on agit gagne 18 px — le `Clear` dégageait 62 px pour
-  le groupe de boutons retiré, il n'en dégage plus que 44 pour l'étiquette. Elle reste coupée ;
-- **point 1** : la barre d'actions est toujours reconstruite une fois par seconde. Les deux
-  boutons du coureur seul y sont maintenant en permanence, donc reconstruits eux aussi. La
-  build 154 l'a corrigé depuis — non pas en cessant de reconstruire, mais en cessant de
-  dépendre du `click` pour agir.
-
-La **build 154** répond elle aussi à une demande de l'opérateur, pas à cette liste — le coin de
-la barre d'actions déblayé, la ligne réduite aux dossards et la fenêtre d'actions qui remplit
-sa zone (`architecture.md` §27, `regles-operateur.md` §17 points 131 à 133). Elle **sort le
-point 3 de la liste** : il n'y a plus de texte à tronquer. Et elle résout la moitié restante
-du **point 17** côté ovale, la dernière infobulle française étant celle de Passings.
-
-La même **build 154** porte en plus la seule chose de cette liste qu'il ait demandée
-directement : « corrige la reconstruction du registre et de la barre d'actions (point 1 de
-l'audit) ». Elle **sort donc aussi le point 1**, qui est réécrit plus bas. Le point 2 en
-dépendait à demi — un appui qui ne produit rien ne donne aucun retour — et il n'en dépend plus
-qu'au sens où l'appui lui-même ne se voit toujours pas.
-
-La **build 155** retire la disposition empilée et son sélecteur, sur sa demande
-(`architecture.md` §29, `regles-operateur.md` §17 point 135). Elle **ne touche aucun point de
-cette liste** : aucun n'est écrit contre une disposition plutôt que l'autre, et toutes les
-mesures qui précèdent ont été prises en « côte à côte », la seule qui reste.
-
-**Reste de la liste au terme des builds 149 à 155** : les points 1 et 3 en sont sortis, le
-point 17 est résolu aux quatre cinquièmes. **Les quatorze autres points tiennent entiers**, et
-la section B entière avec eux — y compris les trois points de catégorie B, qui n'ont toujours
-pas reçu d'accord.
-
-**Attention pour la suite de cette liste** : les numéros de ligne donnés plus bas sont ceux de
-la build 149. Les builds 150 à 155 ont déplacé le fichier ; les repères nommés
-(`renderTimeline`, `counterValue`, `#tbar`) restent justes, les numéros non.
+Les numéros de ligne donnés plus bas sont ceux de la **build 149** et ne valent plus ; les
+repères nommés (`renderTimeline`, `counterValue`, `#tbar`) restent justes. Les points sortis
+gardent leur numéro, barré, pour que les renvois tiennent.
 
 ---
 
@@ -124,30 +96,11 @@ un casserait tous ces renvois pour rien.
 
 ---
 
-## 4. Un onglet ouvert cache la course, et rien ne rappelle qu'elle tourne — **catégorie B**
+## 4. ~~Un onglet ouvert cache la course, et rien ne rappelle qu'elle tourne~~ — **refusé, 31 octobre 2026**
 
-**Ce que c'est** — Les cinq onglets autres que *Race* couvrent l'écran de course. Si une
-proposition « Lap gained? » apparaît pendant qu'on est sur Passings ou Standings, aucun signe
-n'arrive : la barre d'onglets ne porte que `on` / `quiet`.
-
-**Où** — barre d'onglets `:235`, bascule `:3493` (`syncTabs`), classes posées par le
-gestionnaire du moteur.
-
-**Angle** — 1 et 7.
-
-**Catégorie B**, parce que ce point propose d'**ajouter** :
-
-1. **Le principe contredit** — `regles-operateur.md` §14, 31 octobre 2026 : « Par défaut, on
-   dessine ce que j'ai décrit, on retire ce que je rejette, **on n'ajoute rien**. » Et la
-   méthode de la carte de sprint, dessinée dix fois, chaque tour en **retirant**.
-2. **Ce qui est proposé** — une marque sur l'onglet *Race* quand une proposition est en
-   attente, ou le retour automatique sur *Race*.
-3. **Ce que cela coûterait** — un élément de plus dans une barre voulue nue, et un
-   clignotement de plus dans le champ de vision.
-4. **Pourquoi le dire quand même** — avant la version mixte, le journal s'ouvrait exprès et se
-   refermait ; maintenant un onglet peut rester ouvert toute la course. La proposition d'un
-   tour gagné vaut ±20 points et §4 dit qu'elle reste affichée jusqu'à validation ou rejet —
-   affichée derrière un panneau, elle ne l'est pas.
+Le point proposait une marque sur l'onglet *Race* quand une proposition attend, ou le retour
+automatique sur *Race*. Sa réponse, règle 141 : « On ne change rien » — ni le point orange sur
+`Race`, ni le détachement de `Race` des autres onglets. Le numéro est gardé.
 
 ---
 
@@ -262,22 +215,11 @@ de la colonne des chiffres. La build 149 a resserré cette colonne à 46,7 px po
 
 ---
 
-## 11. Crossings : la pastille blanche porte le comptage mesuré, sans un mot et en 9 px
+## 11. ~~Crossings : la pastille blanche porte le comptage mesuré, sans un mot et en 9 px~~ — **sorti, build 217**
 
-**Ce que c'est** — Chaque dossard de l'onglet Crossings porte une petite pastille blanche. Elle
-vaut `ka`, le **nombre de passages physiques** du coureur (`:699`), tandis que la ligne où il
-est rangé vaut `ka − lapStatus`, son **tour crédité**. C'est la couche factuelle et la couche
-officielle côte à côte — et rien ne le dit : ni l'indice de l'onglet, ni un en-tête, ni une
-infobulle.
-
-**Où** — `:1342` (`chipN`), valeur posée `:699`, style `styles.css:40` — 14 px de diamètre,
-police 9 px.
-
-**Angle** — 4, et 7 pour la taille.
-
-**Ce que cela changerait** — la pastille nommée une fois, dans l'indice de l'onglet qui existe
-déjà. Ce point **ajoute un mot** à l'écran : c'est à l'opérateur de dire si le mot vaut la
-place.
+L'onglet Crossings est devenu Lap by lap sur la maquette validée (règles 213 à 215) : le compte
+de passages du coureur est une colonne nommée `LAPS DONE`, verte au-dessus du peloton, rouge en
+dessous, à côté du temps au tour. Plus rien n'est anonyme.
 
 ---
 
@@ -338,74 +280,52 @@ d'explication des *Unmatched* disparaît avant lui.
 
 ---
 
-## 16. Standings : quatre colonnes vides sur onze
+## 16. ~~Standings : quatre colonnes vides sur onze~~ — **sorti, build 211**
 
-**Ce que c'est** — Sur la simulation menée jusqu'au bout, `GAIN`, `LOST`, `LAPS` et
-`STATUS` sont vides pour les seize coureurs. Elles ne portent quelque chose que si un tour a
-été validé ou un coureur retiré.
-
-**Où** — `:2520` (`renderStandingsTab`).
-
-**Angle** — 2.
-
-**Ce que cela changerait** — ces colonnes n'apparaissent que lorsqu'elles ont quelque chose à
-dire. À l'inverse de l'ajout du point 4, celui-ci va dans le sens de la méthode de l'opérateur :
-retirer.
+Le classement a été refait sur la maquette qu'il a validée le 16 novembre 2026 (règle 204) :
+rang, dossard, drapeau, NOC, prénom et nom, total, une colonne par sprint, `Lap +` et `Lap −`
+en points avec leurs tours, `Finish order`, statut. Les colonnes sont les siennes ; qu'elles
+soient vides sur une course sans tour pris ne se discute plus ici.
 
 ---
 
-## 17. Une infobulle en français dans une interface anglaise
+## 17. Deux infobulles en français dans une interface anglaise
 
-**Ce que c'est** — Un filtre de Passings parle français, et sans accents.
+**Ce que c'est** — Deux textes au survol parlent français, l'un sans accents.
 
-**Où** — « Les passages ou le ruban et la boucle ne sont pas tombes d'accord ».
+**Où**, au build 249 — le filtre `Unmatched only` de Passings : « Les passages ou le ruban et la
+boucle ne sont pas tombes d'accord » ; et le bouton `Export trace` de Standings : « La trace :
+tous les changements vus par le prototype, pour le diagnostic » (arrivé avec la build 171).
 
-**Résolu en partie, build 150** — les quatre autres étaient portées par le réglage de taille de
-l'ovale (« La taille du dessin de l'ovale. Le reste de l'ecran ne bouge pas. », « Reduire
-l'ovale », « Revenir a la taille d'origine », « Agrandir l'ovale »), retiré avec les cinq
-groupes de boutons. Il n'en reste qu'une.
+Les quatre infobulles du réglage de taille de l'ovale sont parties avec lui en build 150.
 
 **Angle** — 3. `concept.md` § Décisions prises, 21 octobre : « Langue de l'interface : Anglais ;
-[…] Les documents de travail restent en français. » `timeline-prototype.html` n'en porte
-aucune : elles sont arrivées avec la version mixte. Les commandes ajoutées en build 149, et
-l'étiquette de taille de la build 150, sont en anglais.
+[…] Les documents de travail restent en français. » Et sa règle 109 : l'interface est en anglais,
+et rien ne s'y explique.
 
-**Ce que cela changerait** — le texte restant passe en anglais.
+**Ce que cela changerait** — les deux textes passent en anglais.
 
 ---
 
-# B. L'avis sur le design, demandé le 31 octobre 2026
+# B. L'avis sur le design, demandé le 31 octobre 2026 — **entièrement traité**
 
-Même règle : des propositions, pas des décisions.
+Les six points ci-dessous ont été posés dans une planche, `mockups/maquette-design-b.html`
+(`architecture.md` §30, chiffres dans `mesures.md` §31), puis reposés **un à un** après qu'il a
+refusé la première fournée présentée en bloc : « Mais je ne comprends rien à ce que tu me dis »,
+puis « une chose après l'autre ok ? ». Ses réponses sont dans `regles-operateur.md` §17, points
+136 à 143.
 
-**Les cinq points restants sont dessinés, et quatre sont tranchés.** Le 31 octobre 2026, sur sa
-demande d'attaquer les derniers points de design, les points A, B, C, E et F ont été portés
-dans une planche — `maquette-design-b.html`, décrite dans `architecture.md` §30. Chacun y est
-montré **tel qu'il est aujourd'hui**, puis en réponses posées, avec ce que chacune coûte. Les
-chiffres qu'elle avance — contrastes des gris, écarts entre couleurs de dossard — sont dans
-`mesures.md` §31.
-
-**La première fournée a été présentée en bloc, et il l'a refusée** : « Mais je ne comprends rien
-à ce que tu me dis », puis « une chose après l'autre ok ? ». Les cinq ont été reposées une à
-une, en montrant ce qui change à l'écran. Ses réponses sont dans `regles-operateur.md` §17,
-points 136 à 141.
-
-| Point | Sa réponse, 31 octobre 2026 | Où il en est |
+| Point | Sa réponse, 31 octobre 2026 | Codé |
 |---|---|---|
-| **A** · la hiérarchie | « La carte passe en orange » | tranché, **sort de cette liste** |
-| **B** · les couleurs à 24 | ni l'une ni l'autre — trois options de lui, à essayer | **rouvert**, dessiné, pas tranché |
-| **C** · les gris et la voix | « Les éclaircir, et les phrases quittent les capitales » | tranché, **sort de cette liste** |
-| **E** · le panneau de l'ovale | « Sortir aussi les réglages du panneau », vers « la barre du haut » | tranché, **sort de cette liste** |
-| **F** · la barre d'onglets | « On ne change rien » | **sort de cette liste**, rien à faire |
+| **A** · la hiérarchie | « La carte passe en orange » | build 159 |
+| **B** · les couleurs à 24 | son option 2, les dossards en blanc, puis sans le carré | builds 156 et 157 |
+| **C** · les gris et la voix | « Les éclaircir, et les phrases quittent les capitales » | build 159 |
+| **D** · le réglage de l'ovale | l'ovale calé en haut à gauche | build 149 |
+| **E** · le panneau de l'ovale | « Sortir aussi les réglages du panneau », vers « la barre du haut » | build 159 |
+| **F** · la barre d'onglets | « On ne change rien » | rien à coder |
 
-**Les points A, C et E sont codés en build 159** (`architecture.md` §34, `mesures.md` §33), et
-**le point B l'est en builds 156 et 157** — son option 2, puis le carré du badge retiré. **La
-section B de cet audit est donc entièrement traitée** : les cinq points sont tranchés, et les
-quatre qui demandaient du code l'ont reçu.
-
-**La section A tient entière**, ses quatorze points, à ceci près que le point 9
-(`LAP COUNTER` recopie le compte de l'application) a seulement **changé de place** avec le
-panneau : il est dans la barre du haut, et il recopie toujours.
+Le texte des six points est gardé ci-dessous tel qu'il a été écrit, pour ce qu'il a mesuré ; rien
+n'y attend plus de décision.
 
 ## Ce que le design réussit
 

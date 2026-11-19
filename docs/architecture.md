@@ -1,22 +1,34 @@
-# Architecture du prototype `timeline-prototype.html`
+# Architecture du prototype
 
 **Ce fichier décrit le code, et seulement le code.** Il ne contient aucune règle de course
 — celles-ci sont dans `regles-operateur.md` — et aucun chiffre de mesure — ceux-là sont
 dans `mesures.md`. L'index « quelle règle, codée où, quel statut » est
 `cas-de-course.md`.
 
-**Trois fichiers statiques, chargés par balise, sans empaquetage** (`styles.css` et
-`flags.js` extraits à la build 90, pour que le HTML reste maniable) :
-- `styles.css` : tout le CSS, repris sans changement.
-- `flags.js` : les drapeaux SVG des nations (`FLAGS`, `flag()`, et leurs sept helpers
-  `fv`/`fh`/`fb`/`fd`/`ft`/`fstar`/`fu`) — une donnée pure, sans dépendance, chargée avant
-  le script principal pour que `flag()` existe quand celui-ci en a besoin.
-- `timeline-prototype.html` : le HTML, puis le script principal dans une fermeture
-  immédiate. C'est le seul des trois à contenir l'état et la logique de la course.
+**Le prototype est `timeline-prototype_mixed.html`**, build 249 au 19 novembre 2026. Il charge
+quatre fichiers statiques par balise, sans empaquetage, qui partagent la portée globale du
+navigateur (aucun module ES, aucun `import`) ; l'ordre des balises `<script>` est ce qui
+garantit que chacun existe quand le script principal en a besoin :
+- `moteur-course.js` : **le moteur de course**, reconstruit le 1er novembre 2026 (§50 et
+  suivants). Il ne lit que les détections des boucles.
+- `styles.css` : le CSS **partagé par les trois versions** du prototype. Une règle propre à la
+  version mixte va dans son bloc `<style>`, jamais ici.
+- `flags.js` : les drapeaux SVG des nations (`FLAGS`, `flag()` et leurs helpers), une donnée
+  pure.
+- le fichier HTML lui-même : le HTML, puis le script principal dans une fermeture immédiate.
+  C'est lui qui contient l'état et la logique de la course. Tout l'état vit dans l'objet `S`,
+  recréé par `reset()`.
 
-Les trois partagent la portée globale du navigateur (aucun module ES, aucun `import`) :
-l'ordre des balises `<script>` est ce qui garantit que `flags.js` s'exécute avant le script
-principal. Tout l'état de la course vit dans l'objet `S`, recréé par `reset()`.
+**Comment lire ce fichier.** Les sections 1 à 19 décrivent le socle, écrit pour
+`timeline-prototype.html` jusqu'au build 149 et repris tel quel par la version mixte ; les
+sections 20 et suivantes décrivent ce que la version mixte a reçu depuis, build par build.
+**Quand une section récente contredit une ancienne, c'est la récente qui décrit le code** : le
+moteur de course (§50 à §52, §59, §62) remplace la plus grande part du §4 et du §5, l'ouverture
+d'un sprint (§63) remplace celle du §7, et les sections 21 à 29 remplacent la mise en page du
+§8. Les deux autres fichiers, `timeline-prototype.html` (build 149) et
+`timeline-prototype_new_look_3a_3d.html` (build 148, §20), ne chargent pas le moteur de course
+et n'ont rien reçu depuis ; `timeline-prototype-autonome.html` est la version mixte au build 209
+avec ses trois fichiers inlinés.
 
 **Le harnais de test.** Le script expose
 
@@ -89,9 +101,6 @@ riders[]                            {bib, name, nat, color, dk, dist, offset, la
                                                   l'événement de tour est l'image qui passe false → true
 laps[bib] = {gained, lost}          compteurs de tours, FAITS
 lapStatus[bib]                      net dérivé = gained − lost (toujours via syncLap)
-headLap[bib]                        tours de position par rapport au coureur de tête.
-                                    ⚠️ CALCULÉ À CHAQUE IMAGE ET LU PAR PERSONNE depuis la build 53
-                                    (voir pitfalls.md A11) : à retirer ou à rebrancher sciemment
 refiles[bib] = {gained:[], lost:[]} re-rangements de passages faits à chaque hausse d'un compteur, pour les défaire
 groups[]                            groupes de l'opérateur {id, bibs, type:'manual'|'crash'|'mech', lap, t, open}
 sprintOut (Set)                     coureurs ignorés au prochain sprint
@@ -167,6 +176,17 @@ Toute action de l'opérateur met `dirty = true` puis appelle `render()`.
 
 ## 4. `computeGroups(M)` : du mesuré aux blocs
 
+> **État au build 249.** `computeGroups(M)` n'est plus qu'un cache : elle rend les blocs de la
+> dernière image tant qu'aucune boucle n'a rien détecté de neuf (`tlSign()`, son point 191), et
+> appelle `computeGroupsVraiment(M)` sinon. Dans celle-ci, l'ordre des coureurs, la découpe en
+> groupes et l'écart d'un bloc viennent du **moteur de course** (§52, §59, §62) ; le tour d'écart
+> non validé vient de `S.took` (§58) ; l'éligibilité se lit sur `mcRetard` (§53). Des huit étapes
+> ci-dessous, écrites pour le build 68, restent vraies : la référence du peloton (2, précisée au
+> §49 et `pitfalls.md` D40), le leader (4, précisé aux §37 et §51), la numérotation (7) et les
+> noms (8, corrigés ci-dessous). Les étapes 1, 3, 5 et 6 décrivent l'ancien calcul sur les
+> positions interpolées ; il ne subsiste que comme **repli**, `pairGap()` et `cassure()`, quand
+> aucune boucle n'a vu les deux coureurs d'une paire.
+
 1. **Amas physiques.** Coureurs vivants triés par position sur la piste (`pos mod TRACK`).
    Un nouvel amas quand l'écart entre deux voisins dépasse
    `gapThr(suiveur) = GROUP_GAP_S × vitesse du suiveur + BIKE_L`, et que ce dépassement
@@ -238,47 +258,36 @@ Toute action de l'opérateur met `dirty = true` puis appelle `render()`.
    - `S.inelig` est posé **ici**, donc tout chemin qui juge l'éligibilité doit passer par
      lui — timeline, ovale et carte de sprint comprises.
 
-8. Noms : `groupName(g, G)` → Bunch, Break n, Chase n, Crash, Mechanical.
+8. Noms : `groupName(g, G)` → le rang du bloc depuis la tête, puis son rôle — `1-Leader` ou
+   `1-Leaders`, `n-Chase` devant le peloton, `n-Bunch`, `n-Behind` derrière lui, et le tout
+   dernier toujours `n-Last` (`regles-operateur.md` §17, points 22 et 23). Un groupe d'incident
+   s'appelle `CRASH` ou `MECHANICAL`, sans numéro.
 
-**`computeGroups` a des effets de bord** (`S.inelig`, `S.headLap`, `S.bunchRaw`,
+**`computeGroups` a des effets de bord** (`S.inelig`, `S.bunchRaw`,
 `S.posOf`, désignation du leader) : ne jamais l'appeler une fois de plus pour prendre une
 mesure. Lire `lastG`, que `render()` pose.
 
 ## 5. `detect(G, M)` : les propositions
 
-**Tours gagnés et perdus** — le *quand* réécrit à la build 66, le *combien* à la build 67.
+**Tours gagnés et perdus.** Depuis le build 194 (`mesures.md`, « Build 194 · les ±20 viennent du
+moteur de course »), ce n'est plus `detect()` qui constate un tour : c'est le moteur de course,
+`examiner()` et `annoncer()` dans `moteur-course.js`, sur les règles des points 180 et 241 à 246
+— un écart qui se referme sous la seconde contre le dernier du peloton pour un groupe LEADERS,
+contre le premier du peloton pour un groupe LAST, les deux rangs étant posés par l'écran
+(`MC.rangs`, §62). `detect()` reprend chaque constat nouveau (`mcPointsVus`) et en fait une
+proposition de la forme qu'il a toujours eue, `{kind: 'lap', bibs, delta}`. Les coureurs d'un
+même constat font **une seule** proposition ; une proposition déjà ouverte pour un coureur
+l'exclut.
 
-L'événement est l'image où le coureur **entre dans l'amas du peloton** : `r.inBunchPrev`
-était faux, il est vrai maintenant. L'appartenance à l'amas *est* le test de cassure (§4.1),
-donc il n'y a aucune mesure séparée, aucune distance au peloton testée et aucune tolérance.
+L'ancien calcul — l'entrée dans l'amas du peloton (`r.inBunchPrev`) puis un `Math.round` de
+l'écart de distance contre le coureur du peloton le plus proche (`pairOf`, build 174) — a été
+retiré avec le branchement du moteur ; `pitfalls.md` A9, A21 et H13 gardent pourquoi il était
+faux. `r.bunchSide`, plus ancien encore, a été retiré à la build 66.
 
-Le nombre de tours se mesure contre **le coureur qui le suit, ou qu'il suit** (`regles-operateur.md` §4) :
-`delta = Math.round((m.pos − face) / TRACK)`, où `face` est la position de ce coureur.
-`delta` non nul → proposition, `0` → rien, il a seulement refermé un écart ordinaire.
-Les deux positions sont **brutes** (`m.pos`, jamais la position repliée de l'affichage). Un
-coureur non lu à cet instant ne produit rien : on ne propose que ce que les boucles
-montrent.
-
-**Qui est ce coureur.** `pairOf(bib)` prend, parmi les coureurs **déjà dans le peloton** à
-l'image précédente, celui qui est **le plus proche de lui sur la piste**. C'est bien celui que
-la règle désigne : le **dernier** coureur du peloton pour un coureur qui le rattrape par
-l'arrière, le **premier** coureur du peloton pour un coureur que le peloton rattrape — les deux
-coureurs consécutifs à la frontière des deux groupes. Les attardés et les échappés qui roulent
-entre les deux sont sautés, parce qu'ils ne sont pas le peloton. Si aucun coureur du peloton
-n'est lu, **rien n'est proposé** : on ne mesure pas contre quelqu'un qui n'est pas là.
-
-Jusqu'à la build 173 ce coureur était pris comme **voisin dans la timeline** du peloton, et non le
-plus proche sur la piste — ce qui a fait compter un tour contre un coureur à 126,6 m. Le §47
-raconte la correction et ce qu'elle a changé.
-
-Les coureurs qui arrivent avec le même `delta` sont regroupés dans **une seule**
-proposition. Une proposition déjà ouverte pour un coureur l'exclut.
-
-Le mécanisme précédent, `r.bunchSide` (le camp mémorisé avant la fusion), a été **retiré** à
-la build 66. S'il réapparaît dans un document, ce document est périmé.
-
-Une proposition est **ajoutée** à la fusion et n'est **retirée** qu'à la validation ou au
-rejet. Les propositions de tour n'ajoutent aucune marque sur la timeline ni sur l'ovale.
+Une proposition est **ajoutée** au constat et n'est **retirée** qu'à la validation ou au rejet
+(`regles-operateur.md` §4). Les propositions de tour n'ajoutent aucune marque sur l'ovale ; sur
+la timeline, la ligne du coureur porte une marque bleue sans bouton (§17, point 76), et une carte
+qui attend passe en orange (§34) et vaut un tour d'écart (§58).
 
 **Non lus** (`missing`) : coureurs sans lecture depuis plus de `MISSING_S`, groupés quand
 ils ont disparu ensemble (lectures à moins de 4 s). Actions : Crash, Mech. (groupe
@@ -326,10 +335,10 @@ Dans `step()`, à chaque lecture sur la ligne (`L === 0`) : `k = ka − lapStatu
 peloton. `addLap` re-range les passages déjà faits depuis la jonction (`refile`), `subLap`
 les remet.
 
-L'arrivée s'ouvre quand `kn = ka − implied ≥ LAPS` — **mesuré, pas crédité** — et se ferme
-quand tous les coureurs en course ont passé la ligne depuis. `implied` se calcule ici aussi
-contre `S.bunchRaw`, donc contre le premier coureur du peloton — ce qui est exactement le
-tour du peloton au sens de `regles-operateur.md` §5.
+L'arrivée s'ouvrait, jusqu'au build 248, quand `kn = ka − implied ≥ LAPS`, un tour reconstruit
+par rapport au peloton (`pitfalls.md` D46). **Depuis le build 249 elle s'ouvre comme les autres
+sprints, au passage d'un coureur du bloc de tête de la timeline** (`S.spFrom`, §63), et se ferme
+quand tous les coureurs en course ont passé la ligne depuis.
 
 **Le décodeur lit un transpondeur, pas un coureur.** `step()` prend
 `nb = tpById(r.tp).bib`, le nom que la **table** donne au transpondeur monté sur ce vélo,
@@ -341,8 +350,9 @@ produit aucune lecture.
 
 - **`renderTimeline(G)`** : blocs, lignes (`.trow`, grille BIB · drapeau · NOC · marque de
   proposition), zones de dépôt (`.tgap`, toujours lisibles), section Withdrawn, barre de
-  sélection (`#tbar`). La colonne fait **118 px** : la ligne d'un coureur ne porte ni son nom
-  ni de bouton, tout est dans son infobulle et dans la colonne des actions. L'en-tête du bloc
+  sélection (`#tbar`). La colonne fait **176 px** (§17, points 93 et 96 ; elle en a fait 118 un
+  jour) : la ligne d'un coureur ne porte ni son nom ni de bouton, tout est dans son infobulle et
+  dans la colonne des actions. L'en-tête du bloc
   (`.gh`) est une bande à la couleur du groupe, sur deux lignes, cliquable en entier pour
   sélectionner le groupe (`data-selgroup`). La marque de tours n'apparaît que sur les coureurs en attente
   de validation. **Attention** : `.trow` est aussi le nom des lignes du panneau des
@@ -353,41 +363,40 @@ produit aucune lecture.
   une distance de course sur le tracé SVG `#trackpath`, qui **commence au milieu de la ligne
   droite d’arrivée**, là où se trouve Pursuit A (§14) ; sens de course : bas vers la droite. `renderMarks()` calcule les repères des boucles et des bandes depuis
   la distance de course, ils ne sont plus dessinés en dur.
-- **Inéligibles sur l'ovale** : `noPts` = `S.inelig`, plus les coureurs du sprint ouvert
-  dont le rang brut est 1 à 4 et la raison `lap down`. Dessinés en rouge (`#FF5C5C`), anneau
-  clignotant (`class="blink"`, sous `@media (prefers-reduced-motion: no-preference)`), et
-  une étiquette « No points » hors de la piste reliée au dossard par un pointillé.
-- **Interactions** : clics délégués sur `#tlbody`, `#tbar`, `#logrows` ; glisser au pointeur
-  (`pointerdown/move/up`) sur la timeline et sur l'ovale, avec une étiquette fantôme ; sur
-  l'ovale, sélection et actions de groupe **au relâchement** du pointeur.
+- **Inéligibles sur l'ovale** : rien ne les marque depuis le build 94 (§14) ; le badge de leur
+  groupe dit `NO PTS` (§17, point 103), et la timeline porte la pastille rouge `no pts`.
+- **Interactions** : clics délégués sur `#tlbody` et `#logrows` ; `#tbar`, `#propcard` et
+  `#ledgerbox` répondent au **relâchement** du pointeur avec la garde `pressed()` (§28) ; glisser
+  au pointeur (`pointerdown/move/up`) sur la timeline et sur l'ovale, avec une étiquette fantôme ;
+  sur l'ovale, sélection et actions de groupe **au relâchement** du pointeur.
 
-### Le panneau des passages
+### Le panneau des vues
 
-`#log` n'est plus dans `.mid` : c'est un panneau en `position:fixed`, caché par défaut, ouvert
-par `#logshow` dans la barre du haut et fermé par `#logclose` ou Échap. `renderLog()` sort
+`#log` est un panneau par-dessus la page de course, ouvert par les onglets de la barre du haut
+— Lap by lap, Decisions, Standings, Passings — et par le bouton `ALL` de la carte de sprint pour
+tous les sprints ; l'onglet `Race` le ferme, Échap aussi (§21, §57). `renderLog()` sort
 immédiatement quand il est caché, pour ne pas reconstruire ses lignes à chaque image.
 
 ### La barre d'actions
 
-Sous l'ovale, `.below` prend toute la hauteur restante et contient la barre de sélection
-(`#tbar`, dans `.acts`) et les cartes de proposition (`#propcard`). Deux dispositions, au choix
-de l'utilisateur depuis `#layseg` dans la barre du haut : par défaut les propositions au-dessus
-des actions, ou, avec la classe de corps `lay-side`, les actions en colonne de 268 px à gauche
-des propositions.
+Sous l'ovale, `.below` prend la hauteur dont la barre a besoin et l'ovale prend le reste (§17,
+point 92) ; elle contient la fenêtre d'actions (`#tbar`, dans `.acts`), à sa droite le registre
+`Laps…` quand il est ouvert (`#ledgerbox`, §24), et les cartes de proposition (`#propcard`).
+**Une seule disposition**, côte à côte, depuis le build 155 (§29) ; la classe `lay-side` reste
+parce que `styles.css`, partagé, s'en sert.
 
-`#tbar` ne porte plus seulement les actions d'une sélection : quand elle ne contient **qu'un
-seul coureur**, elle ajoute `Laps…` et `Leader`, et le panneau des compteurs et de la couleur
-(`.ledger`) s'ouvre à sa suite. Ces trois choses étaient sur la ligne du coureur, au survol
-(`.ra`), et ont disparu avec la timeline étroite. La délégation de clic `onStripClick` est
-donc attachée à `#tlbody`, à `#propcard` **et** à `#tbar`.
+`#tbar` ne porte que les dossards de la sélection (§17, point 132) et les boutons d'action ;
+`Laps…` ouvre le registre pour toute la sélection et `Leader` ne vaut que pour un seul coureur
+(§26). Les actions individuelles étaient sur la ligne du coureur, au survol, et ont disparu avec
+la timeline étroite (§17, point 70).
 
 ### La colonne de droite
 
-`#scard` ne vit plus sous l'ovale mais dans `.right`, une colonne qui n'existe **que**
-pendant un sprint (`body.sprintmode`). La carte y garde sa structure d'origine : l'ordre à
-gauche (`.sleft`), la liste de départ à droite (`.sright`), côte à côte dans `.sbody`.
-Pendant un sprint, **l'ovale et le journal restent affichés** — ils étaient masqués
-jusqu'ici.
+`#scard`, la carte du sprint, vit dans `.right`, à droite de l'ovale, **en permanence** (§17,
+point 79) : hors sprint elle montre le prochain sprint non jugé, avec toutes ses commandes sauf
+`Send` et `Close` (point 97). La carte est en trois colonnes — l'ordre, la liste de départ, les
+commandes (point 104, build 148). Pendant un sprint, l'ovale et le journal restent affichés
+(point 62).
 
 ## 9. Sprints
 
@@ -406,8 +415,9 @@ les passages bruts depuis l'instant du clic.
 **Éligibilité** `lappedNow()` renvoie `S.inelig`. `spWhy(k, bib)` ne couvre plus que le
 retrait (ABD/DNF/DSQ), le retrait de l'ordre par la croix et l'exclusion de l'opérateur
 (`S.sprintOut`, photographiée dans `excluded` à l'ouverture puis vidée : l'exclusion ne vaut
-que pour ce sprint). `reinstated` lève tout sauf le retrait. ⚠️ `spWhy` renvoie encore le
-texte `lap down`, dont le libellé est à trancher.
+que pour ce sprint). `reinstated` lève tout sauf le retrait. Un coureur que la règle de course a
+rendu inéligible au moment de son passage est annoncé sous « Not eligible » avec le motif
+« no points · not eligible when he crossed » (§17, point 103).
 
 **Jugement d'un passage.** À chaque image d'un sprint ouvert, `spTick` relit les passages et,
 pour tout coureur qui n'est pas encore dans `judged`, l'y ajoute et le met dans `greyed`
@@ -446,10 +456,11 @@ une place tenue ou vide ne compte pas) ; `standings()` cumule, ajoute ±`LAP_PTS
 compteur, trie par total puis place au final, retirés en bas.
 
 **Carte** `renderCard()` dans `#scard`, rendue avec la timeline (jamais pendant un glisser) ;
-`body.sprintmode` masque l'ovale et le panneau bas. Clics délégués sur `data-sact`,
-double-clic sur `.slrow`, Entrée dans `#sinp` (focus conservé au re-rendu), glisser au
-pointeur entre `.srow`, `.slrow` et `.sdrop`. Onglets Sprints (`renderSprintsTab`) et
-Standings (`renderStandingsTab`) ; exports par `download()`.
+elle est permanente et ne masque plus rien (§8, « La colonne de droite »). Clics délégués sur
+`data-sact`, double-clic sur `.slrow`, Entrée dans `#sinp` (focus conservé au re-rendu), glisser
+au pointeur entre `.srow`, `.slrow` et `.sdrop`. Tous les sprints en colonnes par le bouton `ALL`
+(`renderSprintsTab`, §57) et le classement (`renderStandingsTab`, §55) ; exports par
+`download()`.
 
 **La bande des sprints (point 201, build 207).** En tête de `#scard`, `renderCard` pose une
 `.sprow` : une pastille `.sptab[data-spjump=k]` par sprint (`1…NSPRINTS`, `F` pour `isFinal`),
@@ -500,9 +511,10 @@ est celle d'un vélo (`TAPE_MIN_SPD` à `TAPE_MAX_SPD`).
 
 ## 11. Ce qui est en dur
 
-`RIDERS` (dossard, nom, NOC, couleur), `CALM_RACE` (la simulation : une configuration
-et deux ordres, §15), `FLAGS` (drapeaux SVG simplifiés), `PALETTE`, `NOTP = []` (tous les coureurs ont un
-transpondeur au départ ; le statut se pose à la main).
+`RIDERS` (dossard, nom, NOC, couleur, teinte sombre, prénom — six champs depuis le build 211,
+§55), `CALM_RACE` (la course de test déposée à la première ouverture, §43), `FLAGS` (drapeaux SVG
+simplifiés), `PALETTE` (plus rien ne l'atteint à l'écran depuis le build 151, §24), `NOTP = []`
+(tous les coureurs ont un transpondeur au départ ; le statut se pose à la main).
 
 `TIGHT` est **retiré** à la build 235. Il nommait le BIB 52, qui n'existe plus dès que l'opérateur
 fait sa propre liste de départ, et faisait planter `step()` à chaque image à partir du tour 18
@@ -518,10 +530,9 @@ qui porte la course.
 
 | Constante | Valeur | Rôle |
 |---|---|---|
-| `DEF` | `{track: 250, laps: 40, sprints: 4, gap: 10, pace: 15}` | réglages par défaut, copiés dans `CFG` |
+| `DEF` | `{track: 250, laps: 40, sprints: 4, gap: 10, pace: 15, type: 'final', advance: 10}` | réglages par défaut, copiés dans `CFG` ; `type` et `advance` depuis le build 211 (§55) |
 | `GROUP_GAP_S` | 1.0 | la cassure, en secondes |
 | `BIKE_L` | 1.65 | longueur de vélo, en mètres |
-| `CASS_DELAY_S` | 0.3 | délai de confirmation d'une cassure |
 | `NEUTRAL_LAPS` | 5 | tours de neutralisation |
 | `MISSING_S` | 22 | au-delà, un coureur n'est plus « lu » |
 | `TAPE_MIN_GAP` | 0.05 | deux roues plus proches ne font qu'un contact |
@@ -602,16 +613,13 @@ colonnes affichées et les cinq commandes toujours présentes, borne le résulta
 `RAIL_MIN` et `RAIL_FULL`, et l'écrit dans `--railw`. Les quatre autres onglets gardent
 `RAIL_FULL` : ils ont été dessinés pour.
 
-**Section Race** : trois lignes centrées, en bas de colonne. `▶` / `❙❙` / `↺` ;
-`×1`/`×4`/`×16`, **×1 par défaut** ; une horloge en gros caractères (`#simclock`) ;
-**Rewind 30s**. Juste en dessous : Laps et Sprints, éditables au clavier.
-
-**Ces commandes survivent au repli de la colonne (build 63).** `railHide()` **déplace** le
-bloc `#simtransport` dans la barre du haut au lieu de le cacher avec la colonne, et le remet
-dans `#railtransport` quand la colonne revient : ce sont les mêmes nœuds, donc un seul
-bouton Play et une seule horloge dans la page, et aucun écouteur à redoubler. `tickRail()`
-écrit l'horloge **avant** de sortir quand la colonne est masquée, sinon elle se figeait dans
-la barre. La barre prend la classe `withtransport`, qui cache le titre pour faire la place.
+**Le transport** — `⏮ 30s`, lecture, pause, `×1`/`×4`/`×16` (**×1 par défaut**), l'horloge du
+simulateur, le champ `REC` / `PLAYING RACE n`, puis `Replay` et `New` — vit **dans la barre du
+haut, en permanence**, depuis le 29 octobre 2026 (§17, point 53 ; ses libellés sont ceux du §16
+des règles, §15 et §17 de ce fichier). Masquer le rail ne déplace plus rien : il se réduit à son
+bouton `Simulator`. Dans le rail restent Laps, Sprints et le reste des réglages, éditables au
+clavier. (De la build 63 à la build 112, `railHide()` déplaçait le bloc `#simtransport` entre le
+rail et la barre ; ce va-et-vient n'existe plus.)
 
 **Rewind 30s** (`rewind30()`) ne fait pas de retour arrière « vidéo » ni d'instantanés
 périodiques : il relit la course depuis zéro avec les actes enregistrés tronqués à l'instant
@@ -633,7 +641,7 @@ validation au `blur` qui suit). Le champ de vitesse d'un coureur **ne porte pas*
 à la saisie, rendait le coureur au peloton et redessinait la ligne sous le curseur — on ne
 pouvait pas taper dedans.
 
-## 13. `maquette-groupes.html`
+## 13. `mockups/maquette-groupes.html`
 
 La maquette des décisions du 25 octobre 2026, construite à partir du prototype par un script
 de patch. **Dépassée depuis la build 53**, qui code tout cela dans le prototype même. Elle
@@ -1598,9 +1606,9 @@ Deux choses que le dessin a révélées, et qui sont dites sur la planche :
 laquelle est « la » couleur du pays n'est écrit nulle part. Le dessin prend la dominante — le
 rouge pour le Portugal, le vert pour l'Italie — et le dit à l'écran pour qu'il corrige.
 
-Les points A, C, E et F de la planche sont **tranchés** depuis (`regles-operateur.md` §17,
-points 136 et 138 à 141) ; leurs sections restent dans la planche tant que le code ne les a pas
-rattrapés.
+Les cinq points de la planche sont **tranchés** depuis (`regles-operateur.md` §17, points 136 à
+143) et codés aux builds 156 à 159 (§31 à §34). La planche n'a donc plus d'objet ; elle est
+gardée dans `mockups/` comme témoin, et rien ne la lit.
 
 ---
 
@@ -2301,8 +2309,9 @@ le moteur garde sa propre ancre — le premier coureur détecté — et c'est el
 pas les mètres. L'ovale lit donc toujours `x.behind`, la mesure interpolée, pour dessiner — mais
 les **blocs** qu'il dessine sont ceux du moteur, puisqu'ils viennent de `G.groups`.
 
-Les ±20 que le moteur constate ne sont **pas** branchés : les propositions de l'écran restent
-celles de l'ancien moteur. Ce n'est pas ce qui a été demandé.
+Les ±20 que le moteur constate n'étaient **pas** branchés à cette build : ils le sont depuis le
+build 194 (§5, `mesures.md` « Build 194 »), et leurs règles ont été refaites par ses points 241 à
+246 aux builds 243 à 248 (§62).
 
 ## §53 · L'éligibilité se lit dans la timeline
 
@@ -2713,3 +2722,149 @@ rangement par tour (`S.cross[s.lap]`) ne sert plus que si aucun passage des LEAD
 **`spTick`** ouvre la carte du sprint sur `S.spFrom[k]`, au même instant que la fenêtre. Le tour du
 leader désigné (`dispLap()`) n'ouvre plus rien ; il sert encore à fermer un sprint intermédiaire,
 deux tours plus tard.
+
+
+## §64 · Ce qui attend une validation clignote, et sonne une fois · build 250
+
+Son point 250. Trois endroits, et une règle de style.
+
+**La règle de style**, dans le bloc `<style>` de la version mixte : `@keyframes attente`, un
+battement d'une seconde entre l'opacité pleine et 0,3, posé sur `.tl .gh.attente`,
+`.tl .trow.attente`, `#bands path.attente` et `#oval .dot.attente`. Aucune couleur nouvelle : la
+carte orange qui attend ne change pas, et les éléments gardent leurs couleurs.
+
+**La timeline** (`renderTimeline`) : l'en-tête `.gh` d'un bloc prend `attente` quand `g.pending`
+— au moins un de ses coureurs a une carte de tour en attente —, et la ligne `.trow` d'un coureur
+quand `x.pending`. Ces deux drapeaux existaient déjà : `pendingOf()` les pose dans
+`computeGroupsVraiment`, et ils servaient à la bordure du bloc et au rangement.
+
+**L'ovale** (`renderOval`) : la pastille `g.dot` d'un coureur prend `attente` sur le même
+`x.pending`, et les trois tracés de la bulle de son groupe sur `g.pending`. Une bulle n'est
+dessinée que pour un bloc qui ne roule pas dans l'amas du peloton (§14) : un échappé qui vient de
+rattraper la queue du peloton n'en a donc pas, et ce sont ses pastilles qui clignotent.
+
+**Le battement est calé sur l'horloge du poste.** L'ovale est redessiné vingt fois par seconde et
+la timeline une fois par seconde, et une animation CSS repart de zéro à chaque élément recréé :
+sans précaution, les pastilles ne clignoteraient jamais. Chaque élément reçoit donc en ligne
+`animation-delay:-(performance.now() % 1000) ms`, et tous les redessins retombent sur la même
+phase. C'est la même famille de piège que D2 : un conteneur réécrit ne garde rien de ce que le
+navigateur attache à ses enfants.
+
+**Le son** (`sonValidation`, appelée par `addProposal` pour une proposition de tour) : un la de
+880 Hz pendant un tiers de seconde, par l'audio du navigateur, sans fichier — un oscillateur et une
+enveloppe de gain. Il ne retentit que si `S.factor > 0` : le retour de 30 s et le chargement d'une
+course rejouent les propositions à l'arrêt, dans une boucle serrée, et ne doivent pas sonner. Un
+poste sans audio ne lève aucune erreur : tout est sous `try`.
+
+### L'anneau vert, et la carte en vert (build 251)
+
+Sur l'ovale, l'atténuation de la pastille « ne se voit presque pas » (point 250). La pastille
+reprend donc son aspect plein, et `renderOval` pose devant elle, quand `x.pending`, un cercle
+`.attring` de rayon `DOT_R + 4`, trait de 3, dans le vert `--play` (#1CC634) : `@keyframes anneau`
+le fait apparaître et disparaître une fois par seconde, par pas (`steps(1)`), avec le même
+`animation-delay` négatif que le reste. Vert parce que l'orange « est proche de la couleur de la
+piste » et que la piste ne porte aucune ligne verte.
+
+La carte qui attend, `.props .gq.hot`, prend le même vert à la place de l'ambre du §34, avec son
+texte en vert très sombre ; la règle vit dans le bloc `<style>` de la version mixte, par-dessus
+`styles.css`. `IF.next` continue de perdre `hot` pendant qu'une carte attend : un seul foyer, et il
+est vert maintenant. Le champ du prochain sprint garde son ambre.
+
+## §65 · La carte du sprint n'a plus de bouton Close · build 252
+
+Son point 251. `renderCard` n'émet plus le bouton `data-sact="close"` ; le gestionnaire `close`
+d'`onCardClick` et `spClose()` restent, pour le harnais et pour ne rien casser, mais rien à
+l'écran ne les atteint. La fermeture d'un sprint intermédiaire ne vient plus que de `spTick` :
+deux tours après la ligne, toutes les places parties, aucune photo en attente. Le final, que
+`spTick` exclut, ne se ferme jamais — c'est ce que la règle du 15 novembre 2026 demandait, et la
+seule façon de le fermer vient de partir.
+
+## §66 · La photo-finish en orange · build 253
+
+Son point 252. Trois lignes dans le bloc `<style>` de la version mixte — `.srow.cam` et
+`.sprk.cam` sur un orange sombre (#4a3410), l'écart `.gp` en `--warn` — par-dessus le rouge de
+`styles.css`, partagé, qui ne change pas. L'icône `CAM` passe d'un trait rouge à un trait blanc.
+`renderSprintsTab` pose la classe `cam` sur la ligne d'un coureur dont `e.photo` est vrai, ce
+qu'il ne faisait pas : la colonne d'« All sprints » ne marquait pas la photo du tout.
+
+## §67 · Un coureur qui manque à l'appel : la carte en trois questions · build 254
+
+Son point 253. Quatre choses dans le code.
+
+**Une lecture de boucle a un seul chemin, `lireBoucle(o, li, d, t, spdFallback, placed)`.** Le
+bloc qui enregistrait une lecture dans `step()` — `rec`, `lastAt`, `finN`, `S.reads`, le moteur de
+course, la ligne (`S.cross`, `S.passes`, `S.spFrom`, l'arrivée), la boucle armée — en est sorti tel
+quel. `step()` l'appelle avec la distance de la simulation ; un passage que l'opérateur pose
+l'appelle avec `placed` à vrai, et la distance se déduit de la dernière lecture du coureur : la
+boucle suivante est à `(L' − L) mod TRACK` mètres, un tour entier si c'est la même. Dans `S.reads`
+l'entrée porte alors `placed: true`, et la passing list l'écrit « placed · operator » avec la
+mention « not read ».
+
+**La détection**, dans `detect()`, section 2, à la place de l'ancienne carte « not read » à 22 s.
+Pour chaque coureur d'un bloc de la timeline qui n'est ni retiré, ni sans transpondeur, ni en
+incident : sa dernière lecture est à la boucle `li0`, à `t0`. Les deux boucles suivantes dans le
+sens de course sont `li1` et `li2`. `lastOn(li)` est l'heure du **dernier** coureur de son bloc sur
+cette boucle, après `t0`. Si les deux existent, dans l'ordre, et que `ABSENT_S` (2,5 s) s'est
+écoulé depuis la seconde, la carte `absent` naît, avec `t0`, les deux boucles et les deux heures.
+Elle meurt d'elle-même si le coureur est lu entre-temps. `t0` est relevé à `S.absentFrom[bib]`
+quand il est plus récent : `backInRace` le pose, pour qu'un coureur remis en course ne reçoive pas
+la même question une seconde plus tard — mesuré, elle revient deux boucles après.
+
+**La carte à trois temps.** Une seule proposition, dont `run()` réécrit `text` et `actions` aux
+deux NO et renvoie `'keep'` : le gestionnaire `data-pact` ne la retire alors pas, c'est la seule
+retouche qu'il a reçue. YES à la première question appelle `placerPassages(p)` ; YES à « Crash ? »
+appelle `ouvrirCrash(p)` ; YES à « Transponder KO ? » appelle `noTpToggle` ; ✕ marque la clé
+`dismissed`, et la question ne revient pour ce coureur que s'il est lu puis manque de nouveau.
+
+**La carte du crash.** `ouvrirCrash` ouvre le groupe d'incident par `newGroup(…, 'crash')`, comme
+avant, et pose une proposition `crash` qui porte les trois issues : `Back in race` (`backInRace`),
+`Back on another bike` (`backInRace` puis `noTpToggle`), `Abandons` (`withdraw … 'ABD'`). Tant
+qu'elle est là, la carte `back` des lectures qui reviennent ne se pose pas pour ce groupe, et
+`dissolve()` l'emporte avec le groupe. Le compte des 5 tours reste celui de l'en-tête du bloc.
+
+## §68 · La carte de crash à plusieurs coureurs · build 255
+
+Son point 254. **Le groupe `CRASH` est la vérité, la carte se refait dessus.** `carteCrash(g)`
+crée la proposition `crash:<id du groupe>` si elle n'existe pas, et sinon réaligne ses `bibs` et
+ses actions sur ceux du groupe : `crashActions(g)` donne, par coureur, `Back in race`,
+`Another bike` (`backInRace` puis `noTpToggle`) et `Abandons` (`withdraw … 'ABD'`), chacun portant
+son `bib`. `detect()`, section 3, l'appelle à chaque pas pour chaque groupe de type `crash`, ce qui
+couvre le coureur glissé sur le bloc (`joinGroup`) comme celui qui en sort ; `newGroup(…, 'crash')`
+l'appelle aussi, pour que la carte soit là au même instant que le groupe, que celui-ci vienne de la
+question « Crash ? » (`ouvrirCrash`, qui n'est plus qu'un appel à `newGroup`) ou du bouton `Crash`
+de la barre d'actions.
+
+**Une issue par coureur.** Chaque action rend `'keep'` tant que le groupe a encore un coureur
+(`resteCrash`), et rien quand il est vide : la carte tombe avec le dernier. `withdraw` retire déjà
+toute proposition qui porte le dossard, carte comprise ; `detect()` la refait au pas suivant pour
+ceux qui restent.
+
+**Le rendu** est une branche propre de `renderTimeline` : une `.gq.crash`, la liste des dossards
+à gauche avec, au bout de chaque ligne, ses trois boutons — les `data-pact` sont les index de
+`liveActions(p)`, comme partout — et le titre `CRASH · Lap n · 5 laps to rejoin` à droite. La carte
+des coureurs lus à nouveau (`back`) ne se pose plus pour un groupe `crash` ; elle reste pour les
+groupes `mech`, qui n'ont pas été redemandés.
+
+## §69 · Une carte pour ceux qui manquent ensemble, et le compte à rebours du crash · build 256
+
+Son point 255 et sa remarque sur la capture. Dans `detect()`, section 2, les coureurs d'un bloc
+qui remplissent la condition sont d'abord rangés par **paire de boucles manquées** (`lots`, clé
+`li1:li2`), puis une carte `absent` naît par lot : `bibs` triés, `t0` par dossard, les deux heures
+du dernier du groupe. `texteAbsent(p)` écrit le texte des trois temps à partir de la liste, et se
+rappelle quand elle change : un coureur lu entre-temps (`r.rec.t > p.t0[b]`) sort de `p.bibs`, la
+carte reste pour les autres et tombe avec le dernier. `placerPassages`, `ouvrirCrash` et
+`noTpToggle` agissent sur toute la liste.
+
+`texteCrash(g)` écrit « CRASH · Lap n · still k laps to rejoin », `k = NEUTRAL_LAPS − (tour
+courant − tour du crash)`, et « neutralisation over » à zéro ; `carteCrash` le réécrit à chaque pas
+quand il change. L'action `Abandons` refait la carte des autres tout de suite, parce que `withdraw`
+retire toute proposition qui porte le dossard.
+
+## §70 · Plus de délai, plus de tour par rapport à la tête · build 257
+
+Son point 256. `CASS_DELAY_S` et `cassure()` sont retirés : dans `pairCass`, le repli sur les
+positions — la seule paire qu'aucune boucle n'a encore vue ensemble — déclare la cassure sur la
+mesure du moment, comme le moteur de course depuis le build 192 ; `S.cass` ne garde plus que la
+dernière réponse par paire, pour le journal du code. `S.headLap`, écrit à chaque image et lu par
+personne depuis la build 53 (`pitfalls.md` A10), n'est plus calculé. Le tableau des constantes du
+§11 et l'état du §2 ne les portent plus.

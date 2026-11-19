@@ -1,9 +1,15 @@
-# Maquettes — session du 15 novembre 2026
+# Maquettes — sessions des 15 et 16 novembre 2026
 
-Maquettes **statiques** (pas de moteur), produites pour fixer le dessin de deux écrans avec
+Maquettes **statiques** (pas de moteur), produites pour fixer le dessin des écrans avec
 l'opérateur **avant** intégration dans `timeline-prototype_mixed.html`. Données réelles de la
-course de test (palier 1) récupérées dans `sprints.json`, plus des cas illustratifs inventés
-pour montrer les anomalies. **Ces écrans ne sont pas encore codés dans le prototype.**
+course de test où le peloton reste groupé (60 tours, 6 sprints) récupérées dans `sprints.json`,
+plus des cas illustratifs inventés pour montrer les anomalies.
+
+**État de l'intégration** : All sprints (build 214), Lap by lap (build 217), Standings Live et
+Évolution (builds 211 et 213) sont **codés dans le prototype**. Passings, Race log, Possible
+scenarios et le fil commentateurs sont validés et **pas encore codés** ; l'onglet Passings du
+prototype a reçu le tri, les filtres et l'arrêt du défilement (build 240), pas le dessin de la
+maquette. Le détail est dans `mockups/INTEGRATION.md` §4 et §8.
 
 ## Fichiers
 
@@ -25,7 +31,7 @@ pour montrer les anomalies. **Ces écrans ne sont pas encore codés dans le prot
 | `gen-racelog.js` | Génère la maquette Race log. Entrées **illustratives** (vrais coureurs, un crash neutralisant et des anomalies posées à la main). |
 | `gen-scenarios.js` | Génère la maquette Possible scenarios. Scénario **illustratif** (fin de course serrée, 2 sprints restants), coureurs réels. |
 | `gen-feed.js` | Génère la coque du fil commentateurs `maquette-feed.html`. Embarque Standings et Scenarios en `iframe` (`?embed=1`). Données illustratives (course de test). |
-| `sprints.json` | Résultats réels des 6 sprints de la course de test (palier 1), récupérés via Playwright. |
+| `sprints.json` | Résultats réels des 6 sprints de la course de test où le peloton reste groupé, récupérés via Playwright. |
 
 ## Regénérer
 
@@ -47,9 +53,10 @@ Fonts (lien CDN dans chaque page). Les drapeaux sont inlinés à la génération
 
 ## Décisions de dessin
 
-Elles sont consignées dans le handover de session (`mockups/HANDOVER.md`, copie locale dans
-`.claude/handoff/active.md`), avec les règles de l'opérateur à reporter dans
-`docs/regles-operateur.md` au moment de l'intégration.
+Les règles de l'opérateur relevées à la validation des maquettes sont consignées dans
+`docs/regles-operateur.md`, point 204 ; celles des écrans pas encore codés y sont listées sous
+« relevées, pas encore codées ». Le détail du dessin de chaque écran est dans le tableau ci-dessus
+et dans le générateur `gen-*.js` correspondant, qui en est la référence.
 
 ## Intégration dans le prototype
 

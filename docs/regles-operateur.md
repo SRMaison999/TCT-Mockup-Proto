@@ -11,8 +11,15 @@ sont dans `pitfalls.md`. **Ne recopiez une règle d'ici dans aucun autre fichier
 exactement ce qui a produit onze contradictions entre les documents.
 
 **Le règlement officiel de l'UCI** pour la course aux points est dans le dépôt :
-`UCI-Rules_PointsRace.pdf`, à la racine. C'est la référence réglementaire du sport, et ce
-n'est pas un énoncé de l'opérateur : ce fichier-ci reste ce qui fait foi pour le code.
+`docs/UCI/UCI-Rules_PointsRace.pdf`, avec deux présentations UCI sur le compteur de tours et
+les tours gagnés aux sprints. C'est la référence réglementaire du sport, et ce n'est pas un
+énoncé de l'opérateur : ce fichier-ci reste ce qui fait foi pour le code.
+
+**Un point plus récent l'emporte sur une section plus ancienne.** Les §1 à §13 datent des
+25 au 28 octobre 2026 ; les points numérotés du §17 (jusqu'au 249, le 19 novembre 2026) les ont
+précisés ou remplacés sur plusieurs sujets — le merge (points 219, 220, 243), la mesure en temps
+(223, 232), le peloton et les groupes (241 à 246), l'ouverture d'un sprint (248). Là où une
+section a été remplacée, une note le dit sous elle.
 
 ## Sommaire
 
@@ -746,16 +753,14 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
 
 ## 15. Ce qui reste à trancher
 
-- **L'appairage des transpondeurs changé PENDANT une course.** La règle §16.28 dit que
-  l'appairage se garde. Ce qui n'a pas été énoncé, c'est le sort d'un changement fait en pleine
+- **L'appairage des transpondeurs changé PENDANT une course.** La règle du §16, point 28, dit
+  que l'appairage se garde. Ce qui n'a pas été énoncé, c'est le sort d'un changement fait en pleine
   course — un vélo changé, deux transpondeurs échangés dans les boxes. Il a été codé comme un
   **fait de cette course-là**, qui ne suit pas dans la suivante ; seul ce qui est changé avant
   le départ est gardé. À confirmer ou à retourner.
 - **Où placer le réglage du seuil de cassure.** L'opérateur ne veut pas voir l'indication de la
   seconde sur l'écran de course. L'intention d'en faire un contrôle à l'écran, notée le
   25 octobre, est donc en suspens.
-- **Le texte affiché pour la raison d'inéligibilité**, encore « lap down » alors que la raison
-  est devenue « plus proche de la ligne que le groupe au-dessus ».
 - **Le bandeau « race leader » après un merge.** Un coureur qui a gagné un tour n'est plus en
   tête de la distance de course, et le bandeau donne le leader au premier coureur du peloton.
   Suit-il la timeline ou le classement par points ?
@@ -2285,11 +2290,6 @@ l'écran, une à la fois.
 159. **Le leader désigné se fait reprendre sur la piste, et c'est voulu.** À la question
      « quand vous avez désigné un leader, l'application peut-elle le remplacer toute seule ? »,
      sa réponse du 1er novembre 2026 : « **Oui, laisse comme aujourd'hui : un coureur qui le
-     dépasse sur la piste lui prend la tête.** » Rien à coder : c'est le comportement en place.
-
-159. **Le leader désigné se fait reprendre sur la piste, et c'est voulu.** À la question
-     « quand vous avez désigné un leader, l'application peut-elle le remplacer toute seule ? »,
-     sa réponse du 1er novembre 2026 : « **Oui, laisse comme aujourd'hui : un coureur qui le
      dépasse sur la piste lui prend la tête.** » Et sa raison, le même jour, mot pour mot :
      « **il faut comprendre que si l'opérateur intervient pour corriger l'ordre des groupes de
      la timeline c'est parce qu'il constate que quelque chose ne fonctionne pas très bien. Il
@@ -2917,7 +2917,7 @@ La colonne Type, large de 72 px, est élargie à 118 px pour le libellé plus lo
 ### 204 · Le classement : prénom et nom, les points de tour avec leurs tours, « Finish order » · 15 novembre 2026
 
 Ses règles, relevées à la validation de la maquette `mockups/maquette-standings.html` et consignées
-ici au moment de l'intégration, comme `mockups/HANDOVER.md` §5 le demandait :
+ici au moment de l'intégration, comme le fichier de passation de cette session le demandait :
 
 > **Classement (Standings)** : la colonne d'arrivée s'appelle **« Finish order »** ; les colonnes
 > Lap affichent les **points** (±20 par tour) avec les tours, pas le nombre de tours ; points de
@@ -2941,6 +2941,35 @@ Le **tour** de chaque gain et de chaque perte est celui de la **jonction**, celu
 proposition portait, et non celui où l'opérateur la valide — une proposition reste affichée jusqu'à
 ce qu'il la tranche (§4), et l'écart entre les deux se compte en dizaines de tours (`mesures.md`
 §66).
+
+**Relevées le même jour pour les autres écrans**, dans les termes où la session du 15 novembre
+2026 les a notées à la validation des maquettes (reportées ici le 19 novembre 2026, quand le
+fichier de passation qui les portait a été retiré), et ce qu'il en est au build 249 :
+
+> **Le sprint final ne se ferme jamais** ; il reste toujours ouvert.
+
+**Codé au build 252** : le bouton `Close` est retiré de la carte, pour tous les sprints (point 251).
+
+> **Non éligible à un sprint** : affiché en **rouge avec « NO PTS »**, pas en gris — carte de
+> sprint comme « All sprints ».
+
+**Codé au build 214** (point 209, `architecture.md` §57).
+
+> **Photo-finish** : bande **orange** (pas rouge), icône caméra **blanche**.
+
+**Codé au build 253** (point 252).
+
+> **Pastille du nombre de tours** = compte **absolu** de tours bouclés ; couleur **verte**
+> au-dessus du peloton, **rouge** en dessous.
+
+**Codé au build 217** (colonne `LAPS DONE` de Lap by lap, `architecture.md` §58).
+
+> **Détection ratée / transpondeur manquant** : ne jamais décaler automatiquement ; le logiciel
+> **propose** à l'opérateur de décaler. Après acceptation, le coureur est placé **en bas de son
+> groupe** au tour raté, avec légende.
+
+**Remplacé par son point 253** et codé au build 254 sous une autre forme : la question se pose dans
+la vue Race quand le coureur manque, et le passage posé corrige Lap by lap au moment même.
 
 
 ### 205 · Le type de course est dans la barre du haut · 17 novembre 2026
@@ -3733,6 +3762,13 @@ Et dans l'autre sens, dit dans la foulée :
 La règle vaut donc des deux côtés : un groupe devant le peloton reste devant, un groupe derrière
 reste derrière, et le seul passage de l'un à l'autre se fait **par le peloton**.
 
+### 247 · Retiré le jour même
+
+Le point 247 portait un essai de correction du compteur de tours (« le compteur de tours se
+compte sur les passages, le tour gagné retiré »), fait le 19 novembre 2026 sur son constat du
+tour du sprint et **défait le même jour**. Le constat, lui, est au §15 (« Le tour auquel un sprint
+s'enregistre »). Le numéro n'est pas réattribué.
+
 ### 248 · Un sprint ne s'ouvre qu'au passage des LEADERS · 19 novembre 2026
 
 Dit en réponse à mon explication sur le sprint final, où j'avançais que les BIB 1 et 2 venaient de
@@ -3814,3 +3850,192 @@ l'a redit le même jour, après que j'aie présenté cet ordre comme un défaut 
 > FAISANT PARTIE D'UN GROUPE ! »
 
 L'ovale n'est pas mesuré.
+
+### 250 · Le merge attend le clic, et ce qui attend une validation clignote · 19 novembre 2026
+
+Mis devant les deux versions — ses points 219 et 220 d'un côté, son point 243 de l'autre — sur
+le cas des BIB 1 et 2, LEADERS, qui reviennent sur la queue du peloton avec la carte « Lap
+gained? » affichée et pas encore cliquée :
+
+> « Encore dans un bloc LEADERS jusqu'à mon clic. Cependant ce que je voudrais c'est que dans la
+> timeline les noms des coureurs ou même les groupes des coureurs dont une validation est en
+> attente, ainsi que leurs badges respectifs sur l'ovale, clignotent lorsqu'une validation est en
+> attente. Cela tirera l'attention de l'opérateur. On pourrait même envisager de générer un son »
+
+Deux choses. **Le merge attend le clic** : les points 219 et 220 tiennent, et le « mergés dans le
+peloton » du point 243 se lit comme le résultat de la validation, pas comme l'instant du
+constat. C'est ce que le prototype fait depuis le build 225 ; rien à changer.
+
+**Le clignotement est une demande d'écran** : les coureurs, ou leur groupe, dont une validation
+est en attente clignotent dans la timeline et sur l'ovale. Le son est « à envisager », pas
+demandé. L'écran se propose avant d'être codé (§14) ; **rien n'est codé**.
+
+Sur la proposition d'écran qui a suivi — l'en-tête du bloc et les lignes des coureurs dans la
+timeline, leurs pastilles et la bulle de leur groupe sur l'ovale, un battement par seconde entre
+l'aspect normal et un aspect atténué, sans couleur nouvelle, qui s'arrête au clic sur ✓ ou ✕ ; pas
+de son — sa réponse, mot pour mot :
+
+> « Oui, code-le comme décrit et ajoute un son qui retentit une fois quand la validation se
+> déclenche »
+
+**Codé au build 250** (`architecture.md` §64, `mesures.md` §104). Le son retentit une fois, à
+l'instant où la carte de tour apparaît.
+
+Après l'avoir vu, le même jour, mot pour mot :
+
+> « cette fois j'ai vu. Alors sur la piste c'est pas génial on ne voit presque rien. L'objectif
+> d'attirer l'attention de l'opérateur est manqué. Il faudrait qu'un highlight des pastilles
+> clignote »
+
+La timeline lui convient ; sur l'ovale, l'atténuation de la pastille ne se voit pas. Proposé : un
+anneau orange autour de la pastille, qui apparaît et disparaît une fois par seconde. **En attente de
+sa réponse.**
+
+Sur l'anneau orange proposé :
+
+> « orange c'est proche de la couleur de la piszte »
+
+C'est sa contrainte du 29 octobre 2026 (point 33) : aucune teinte ne doit se rapprocher de celle
+de la piste. Proposé à la place : un anneau **vert**, le vert du `TO GO`, qu'aucune ligne peinte
+de la piste ne porte. **En attente de sa réponse.**
+
+Sur l'anneau vert, mot pour mot :
+
+> « oui, code-le en vert. et du coup met en vert également la carte qui attend al validation »
+
+**Codé au build 251** : l'anneau vert autour des pastilles, et la carte qui attend passe de l'ambre
+au vert du `TO GO`. Cela remplace « La carte passe en orange » du point 136 ; le champ du prochain
+sprint garde son ambre à deux tours (point 46), et la timeline bat comme au build 250.
+
+### 251 · Plus de bouton Close sur la carte du sprint · 19 novembre 2026
+
+Sur la règle relevée le 15 novembre 2026, « Le sprint final ne se ferme jamais », il a demandé à
+quoi servait le bouton `Close` : « mais à quoi sert-il au juste ? et ceux des autres sprints ?
+J'ai l'impression qu'ils ne servent à rien ». Mis devant ses trois effets — arrêter l'envoi en
+Live, figer le jugement d'éligibilité, passer la carte au sprint suivant — et devant la fermeture
+automatique qui existe déjà deux tours après la ligne :
+
+> « retire les tous »
+
+**Codé au build 252** : la carte du sprint n'a plus de bouton `Close`, sur aucun sprint. Un sprint
+intermédiaire se ferme tout seul, deux tours après sa ligne, quand toutes ses places sont parties
+et qu'aucune photo n'attend ; le final ne se ferme jamais. Un sprint intermédiaire dont une place
+n'est jamais partie reste ouvert : la carte passe quand même au sprint suivant quand son tour
+arrive, et le sprint resté ouvert continue de suivre l'éligibilité s'il est rouvert.
+
+### 252 · La photo-finish en orange, caméra blanche · 19 novembre 2026
+
+Sa règle du 15 novembre 2026 (sous le point 204), reposée avec ce que la carte montre aujourd'hui
+— deux lignes sur fond rouge avec une caméra rouge, le même rouge que le `NO PTS` — et la
+question « dans la carte et dans All sprints ? » :
+
+> « Oui, orange avec la caméra blanche »
+
+**Codé au build 253** : dans la carte du sprint et dans la colonne d'« All sprints », la ligne d'un
+départage photo est sur fond orange sombre, son écart en orange, et l'icône caméra est blanche. Le
+rouge ne dit plus qu'une chose dans ces deux écrans : `NO PTS`.
+
+### 253 · Un coureur qui manque à l'appel se traite dans la vue Race · 19 novembre 2026 · premier jet
+
+Devant la proposition de coder le « Shift −1 lap » de la maquette Lap by lap, mot pour mot :
+
+> « alors je pense que c'est peut-être plus important que ce genre de cas soit traité dans la vue
+> Race.
+>
+> Par exemple si un coureur est régulièrement dans un groupe, et puis soudainement lors d'un passage
+> du groupe sur une boucle un coureur manque à l'appel.
+>
+> Je propose plusieurs cas de figure :
+>
+> 1. Après 2-3 secondes, le système demande si le coureur en question est toujours dans le groupe -
+> YES/NO.
+> YES > le système génère un passage rétroactif au même moment que le dernier coureur du groupe qui
+> a franchi la boucle, et donc la timeline, l'ovale, et lap by lap sont propres.
+> NO > Crash ? YES/NO
+> YES > menu contextuel de crash s'ouvre dans lequel on pourra renseigner si le coureur reprend,
+> reprend mais change de vélo ou abandonne. Le menu de crash doit comptabiliser les 5 tours qui
+> sont accordés aux coureurs victimes de crash pour se remettre en course sans être pénalisé.
+> NO > Transponder KO ? YES/x
+> YES > le transpondeur est desactivé
+>
+> Ceci n'est qu'un premier jet »
+
+**Rien n'est codé.** C'est un premier jet, l'écran se propose avant d'être codé (§14). Le
+« Shift −1 lap » de la maquette Lap by lap n'est plus la forme retenue : le cas se traite dans la
+vue Race, au moment où le coureur manque, et Lap by lap en hérite.
+
+Ses deux précisions du même jour, mot pour mot. Sur la place du coureur pendant les questions qui
+suivent un NO :
+
+> « CA dépend de la réponse suivante. i la réponse est Transponder KO, alors il reste dans son
+> groupe à la dernière place. Si c'est un crash, il sort du groupe et bascule dans le "groupe" de
+> crash. »
+
+Et sur le déclenchement :
+
+> « Plutôt que de déclencher la question « BIB 7 not read at Pursuit B · still with 3-Bunch ? » 2 à
+> 3 secondes après le franchissement d'une boucle, on devrait plutôt lancer la question 2 à 3
+> secondes après le franchissement d'une deuxième boucle consécutivement sans lecture du coureur »
+
+Sur l'écran ajusté — déclenchement après deux boucles de suite sans lecture, deux à trois secondes
+après le dernier coureur du groupe ; YES pose les deux passages ; NO → « Crash ? » ; crash YES →
+groupe `CRASH` et carte à trois issues ; crash NO → « Transponder KO ? » ; le coureur reste à sa
+dernière place dans le groupe tant qu'il n'a pas répondu — sa réponse :
+
+> « Oui, code-les »
+
+**Codé au build 254** (`architecture.md` §67, `mesures.md` §108). La carte « not read » à 22 s et ses
+quatre boutons ont disparu. Le « Shift −1 lap » de la maquette Lap by lap n'est pas codé et ne le
+sera pas sous cette forme : le passage posé par YES corrige la colonne au moment même.
+
+### 254 · La carte de crash à plusieurs coureurs, et ouverte sans alerte · 19 novembre 2026
+
+Après le build 254, mot pour mot :
+
+> « il faudrait voir si la carte de crash permet d'y inscrire plusieurs coureurs. ET est-ce qu'on
+> peut ouvrir spontanément cette carte de crash et y inscrire un ou des coureurs même si aucune
+> alerte de lecture manquante n'a encore été déclenchée ? »
+
+Au build 254 la carte née de la question ne porte qu'un coureur ; le bouton `Crash` de la barre
+d'actions ouvre déjà un groupe `CRASH` avec la sélection, mais sans la carte à trois issues.
+Proposé : une ligne par coureur dans la carte, le bouton `Crash` qui ouvre la même carte, et un
+coureur qu'on glisse sur le bloc `CRASH` qui y prend sa ligne. **En attente de sa réponse.**
+
+Sa réponse à la proposition : « Oui, code-les ». **Codé au build 255** (`architecture.md` §68,
+`mesures.md` §109) : la carte de crash porte une ligne par coureur avec ses trois issues ; le bouton
+`Crash` de la barre d'actions l'ouvre avec la sélection ; un coureur glissé sur le bloc `CRASH` y
+prend sa ligne.
+
+### 255 · Six coureurs qui chutent : une question pour les six · 19 novembre 2026
+
+> « encore une question : Si par exemple 6 coureurs chutent, est-ce que le système d'alerte posera
+> la question (si ils sont toujours dans leur groupe) pour les 6 coureurs en même temps ? »
+
+Au build 255, non : une carte par coureur. Proposé : les coureurs du même bloc qui manquent sur
+les deux mêmes boucles font une seule carte, et chaque réponse vaut pour tous — les passages posés,
+le groupe `CRASH` à six lignes, ou les six sans transpondeur ; un coureur lu entre-temps sort de la
+carte. **En attente de sa réponse.**
+
+Sa réponse : « Oui, code-le ». Et, capture à l'appui de la carte « CRASH · Lap 5 · 5 laps to
+rejoin » :
+
+> « Et par la même occasion modifie le menu de crash en n'indiquant pas par exemple lap 22 - 5 laps
+> to rejoin, mais plutôt lap 22 - still 3 laps to rejoin »
+
+La carte compte donc **ce qui reste**, et se met à jour tour après tour.
+
+**Codé au build 256** (`architecture.md` §69, `mesures.md` §110) : les coureurs d'un même bloc
+absents sur les deux mêmes boucles font une seule carte ; un coureur lu entre-temps en sort ; la
+carte de crash dit « still n laps to rejoin » et se met à jour à chaque tour.
+
+### 256 · Plus aucun délai de confirmation, nulle part · 19 novembre 2026
+
+Mis devant ce qui restait du délai de 0,3 s qu'il avait fait retirer le 1er novembre (point 192) —
+le repli de l'écran, pour la seule paire de coureurs qu'aucune boucle n'a encore vue ensemble : les
+premières secondes, un coureur sans transpondeur, un coureur remis en course — et devant un calcul
+mort de ma main, le « tour par rapport à la tête » que plus rien ne lisait :
+
+> « Oui, retire les deux »
+
+**Codé au build 257** : `CASS_DELAY_S` et `cassure()` n'existent plus, le repli déclare une cassure
+sur la mesure du moment comme le moteur ; `S.headLap` n'est plus calculé.
