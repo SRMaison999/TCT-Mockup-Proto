@@ -810,6 +810,18 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   peloton — arrivent à 4:55, quand le compteur montre 21. **Rien n'en est codé** : il a constaté,
   il n'a pas demandé de correction, et un essai de correction a été défait le même jour.
 
+- **Les places du sprint final quand des coureurs ont un tour d'avance ou de retard.** Constaté par
+  lui le 19 novembre 2026, sur la course complète au build 248, arrivée à 10:01.4 : « tout est allé
+  plutôt bien sauf ce dernier sprint. Les leaders 1 et 2 qui se sont extirpés une 3ème fois du
+  peloton et qui donc sont pour la 3ème fois devenus LEADERS ont été enregistrés en dernières places
+  du sprint ! Leurs vraies places, comme leur nom LEADER l'indique, sont les places 1 et 2. Les
+  dernières étant, là aussi comme leur nom LAST l'indique clairement, pour les coureurs 23 et 24
+  (qui de leur côté s'étaient à nouveau fait distancés par le peloton ». Sur sa capture : les BIB 1
+  et 2 sont 23e et 24e, les BIB 23 et 24 sont 21e et 22e, et le peloton occupe les vingt premières
+  places. Les places du final se lisent aujourd'hui sur l'HEURE DE PASSAGE sur la ligne après
+  l'ouverture de l'arrivée ; les BIB 1 et 2, qui venaient de reprendre un tour, repassent la ligne
+  un tour plus tard et se retrouvent donc derrière tout le monde. **Rien n'en est codé.**
+
 ### Cinq points tranchés le 29 octobre 2026
 
 Ses réponses, mot pour mot, et ce qu'elles ferment :
