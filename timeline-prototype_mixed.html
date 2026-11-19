@@ -39,45 +39,58 @@
 .stage{flex:1 1 auto;min-height:0;display:flex;gap:10px}
 .bar{height:40px;gap:8px}
 .bar .logtabs{display:inline-flex;align-self:stretch;flex:0 0 auto;order:1}
+/* SA MAQUETTE DU 19 NOVEMBRE 2026 (point 264) : Undo, le numéro de build, les commandes du simulateur et le bouton
+   Simulator suivent les onglets, à gauche ; le ressort passe en bout de barre. « Ils doivent être déplacés vers la
+   gauche ! » */
 .bar #undo{order:4}
-.bar .sp{order:5}
-.bar .bld{order:6;font-size:13px;color:var(--muted)}
-.bar #simtransport{order:7}
-.bar #railshow{order:8}
-/* LE PANNEAU DE L'OVALE, SUR SA MAQUETTE DU 19 NOVEMBRE 2026 (point 258). Trois lignes centrées. Les
-   provenances gardent la forme serrée qu'elles avaient dans la barre (deux lignes de 15 px empilées), les
-   boutons d'armement leurs 26 px. Le fond de l'ovale est clair : les boîtes sont blanches à texte noir
-   (point 148) ; les provenances et les boutons gardent leurs couleurs, qui portent un état. */
-.ifrows{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--sans)}
-#ifpanel .ifrow{gap:8px;align-items:center}
-#ifpanel .ifrow > *{pointer-events:auto}
+.bar .sp{order:9}
+.bar .bld{order:5;font-size:13px;color:var(--muted)}
+.bar #simtransport{order:6}
+.bar #railshow{order:7}
+/* LE PANNEAU DE L'OVALE, ALIGNÉ (l'opérateur, 19 novembre 2026, point 261, sur mockups/maquette-panneau-ovale.html).
+   Sous le titre, une grille de trois colonnes et deux lignes : 124 · 104 · 124 px, 32 px de haut, 8 px d'écart.
+   Chaque case remplit sa cellule, donc les bords tombent les uns sous les autres. Tout est blanc à texte noir
+   (point 148) — FINAL, ARM FINISH et les deux provenances compris ; TO GO et ARM START gardent leur couleur, qui
+   porte un état, et passent au vert quand ils attendent un coureur, comme avant. */
+.ifrows{display:flex;flex-direction:column;align-items:center;gap:8px;font-family:var(--sans)}
 #ifpanel .ifgone{display:none}
-#ifpanel .ifhead{height:22px;gap:10px}
+#ifpanel .ifhead{display:flex;align-items:center;gap:12px;height:24px}
 #ovtitle{font:600 17px var(--sans);color:#111;white-space:nowrap}
-#ifpanel .ifb{height:28px;padding:0 9px;gap:6px}
+#ifpanel .ifgrid{display:grid;grid-template-columns:124px 104px 124px;grid-auto-rows:32px;gap:8px}
+#ifpanel .ifgrid > *{pointer-events:auto;width:100%;height:100%;box-sizing:border-box;min-width:0}
+#ifpanel .ifb{height:100%;padding:0 10px;gap:7px;justify-content:center}
 #ifpanel .ifb .ifk{font-size:11px}
 #ifpanel .ifb .ifv{font-size:18px}
 #ifpanel .ifb .ifu{font-size:11px}
-#ifpanel .ifclock{min-width:96px}
+#ifpanel .ifclock{min-width:0}
 #ifpanel .ifclock .ifv{font-size:20px}
-#ifpanel #iftogo{height:32px}
+#ifpanel #iftogo{height:100%;justify-content:space-between}
 #ifpanel #iftogo .ifk{font-size:12px}
 #ifpanel #iftogo .ifv{font-size:24px}
-#ifpanel .barb{width:auto;height:26px;padding:0 10px;font-size:11px;letter-spacing:.07em;flex:0 0 auto}
-#ifpanel .togopair{display:flex;flex-direction:column;gap:2px;flex:0 0 auto}
-#ifpanel .togopair .srcrow{height:15px;gap:5px;padding:0 6px}
-#ifpanel .togopair .srcrow .ifk{font-size:9px;flex:1 1 auto}
-#ifpanel .togopair .srcv{font-size:10px}
-#ifpanel .togopair .ifsb{height:13px;min-width:13px;font-size:10px;line-height:1}
-#ifpanel .togopair .pick{width:9px;height:9px}
-/* LE TYPE DE COURSE, à droite du titre. Sa forme est celle des provenances : un mot-clé, une valeur, deux pas.
-   En finale il n'y a ni nombre de qualifiés ni coupe, donc les pas s'en vont. */
-#rtype{flex:0 0 auto;gap:6px;height:20px}
-#rtype .ifk{background:0;border:0;padding:0;font:600 11px var(--sans);letter-spacing:.08em;color:var(--muted);cursor:pointer;flex:0 0 auto}
-#rtype .ifk:hover{color:var(--fg)}
-#rtype.qual .ifk{color:var(--warn)}
+#ifpanel .barb{width:100%;height:100%;padding:0;font-size:11px;letter-spacing:.09em;border-radius:4px}
+#ifpanel .startb.finb{background:#fff;border-color:#c9ccd0;color:#111}
+#ifpanel .startb.finb:hover{border-color:#5a5f66}
+#ifpanel .startb.finb.armed{background:var(--play);border-color:var(--play);color:#06220c}
+/* Les deux provenances : une boîte blanche, deux lignes de 13 px. */
+#ifpanel .togopair{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 8px;
+  background:#fff;border:1px solid #c9ccd0;border-radius:4px;color:#111}
+#ifpanel .togopair .srcrow{height:13px;gap:5px;padding:0;background:none;border:0;border-radius:0}
+#ifpanel .togopair .srcrow .ifk{font-size:9px;flex:1 1 auto;color:#5a5f66;letter-spacing:.08em}
+#ifpanel .togopair .srcv{font-size:11px;color:#111}
+#ifpanel .togopair .ifsb{height:13px;width:13px;min-width:13px;font-size:9px;line-height:1;background:#f1f2f3;border-color:#c9ccd0;color:#111}
+#ifpanel .togopair .ifsb:hover{border-color:#5a5f66}
+#ifpanel .togopair .pick{width:9px;height:9px;background:#fff;border-color:#5a5f66}
+#ifpanel .togopair .srcrow.on .pick{background:#111;border-color:#111}
+/* LE TYPE DE COURSE, à droite du titre, dans la même boîte blanche. En finale il n'y a ni nombre de qualifiés ni
+   coupe, donc les pas s'en vont. */
+#rtype{flex:0 0 auto;gap:6px;height:24px;padding:0 10px;background:#fff;border:1px solid #c9ccd0;border-radius:4px}
+#rtype .ifk{background:0;border:0;padding:0;font:600 11px var(--sans);letter-spacing:.08em;color:#111;cursor:pointer;flex:0 0 auto}
+#rtype .ifk:hover{color:#5a5f66}
+#rtype.qual .ifk{color:#9a5a00}
 #rtype .ifstep{display:none;gap:3px;align-items:center}
 #rtype.qual .ifstep{display:inline-flex}
+#rtype .srcv{color:#111;font-size:12px}
+#rtype .ifsb{height:16px;width:16px;font-size:10px;background:#f1f2f3;border-color:#c9ccd0;color:#111}
 #rtype .ifk:disabled,#rtype .ifsb:disabled{cursor:default;opacity:.55}
 
 /* LES TROIS COLONNES DE LA CARTE DU SPRINT SUIVENT SA LARGEUR (l'opérateur, 19 novembre 2026, point 260).
@@ -394,7 +407,7 @@
    de taille fixe » (l'opérateur, 31 octobre 2026). Sans poignée, la valeur est
    celle que la barre demande, relevée de la barre elle-même (--h-acts-nat), et
    elle ne change plus avec la sélection. */
-.mid > .below{height:var(--h-below, var(--h-acts-nat, auto))}
+.mid > .below{min-height:var(--h-acts-nat, auto)}
 /* Les propositions défilent plutôt que d'être rognées quand la zone du bas est
    resserrée. La barre d'actions, elle, ne défile jamais : « la barre d'actions
    ne doit jamais avoir à défiler pour être vue en entier » (l'opérateur,
@@ -408,6 +421,12 @@ body.lay-side .below > .rsz{cursor:col-resize}
 .rsz::after{content:"";position:absolute;inset:2px;border-radius:2px;background:transparent}
 .main > .rsz::after,.stage > .rsz::after,.below > .rsz::after{inset:2px 1px}
 .mid > .rsz::after{inset:1px 2px}
+/* LA POIGNÉE SOUS L'OVALE EST JUSTE SOUS LE DESSIN (l'opérateur, 19 novembre 2026, points 271 et 272 : « crée une
+   poignée horizontale à placer au-dessous de l'ovale afin que l'on puisse déplacer la limite de hauteur de
+   l'ovale », « je ne veux pas de barre grise horizontale »). Invisible au repos comme les trois autres. La zone de
+   l'ovale n'a plus que la hauteur de son dessin (le rapport du viewBox, 854 : 492), ou celle que la poignée lui
+   pose ; tout ce qui est dessous est à la zone des cartes et de la barre. */
+.mid > .oval{flex:0 1 auto;aspect-ratio:854 / 492;height:var(--h-oval, auto);min-height:120px}
 .rsz:hover::after,.rsz.on::after{background:var(--acc)}
 body.rszing{user-select:none}
 body.rszing.col{cursor:col-resize}
@@ -428,22 +447,72 @@ body.rszing.row{cursor:row-resize}
    — mesuré le 31 octobre 2026 sur une fenêtre de 1024 px, `ledgerShown` vrai pour une boîte de
    0 px de large. `auto` lui garantit la largeur de son contenu ; ce sont les propositions,
    elles seules, qui absorbent ce qui manque. */
-body.lay-side .mid > .below{grid-template-columns:var(--w-acts, 290px) 6px auto minmax(0,1fr);
-  grid-template-rows:minmax(0,1fr);height:var(--h-below, var(--h-acts-nat, auto))}
-/* C'est LA ZONE qui porte le panneau, et non plus la barre posée dedans : ainsi la fenêtre d'actions fait
-   exactement la taille qu'on lui donne à la poignée, et il n'y a pas de bord de panneau avec du fond nu
-   en dessous. « ce vide est perdu pour tout le monde ! » (l'opérateur, 31 octobre 2026). Le contenu, lui,
-   grossit par pas de 1 % jusqu'à remplir — ce qui reste est au plus un pas. */
+/* LA BARRE PREND LA LARGEUR QUE LA ZONE LUI LAISSE (l'opérateur, 19 novembre 2026, point 262) : plus de poignée
+   des actions ni de largeur posée. Le registre garde sa colonne `auto` à droite de la barre, et les propositions
+   n'ont une colonne que lorsqu'il y en a (classe withprops, posée par le rendu) : la barre leur cède alors de la
+   largeur, et ses boutons se resserrent — « responsive seulement horizontalement et non pas verticalement ». */
+/* LES CARTES AU-DESSUS DE LA BARRE, SUR SA LARGEUR (l'opérateur, 19 novembre 2026, point 265 : « les cartes de
+   proposition + le menu de crash, se placent au-dessus de la zone d'action. Sur la même largeur que la zone
+   d'action »). Deux lignes : les cartes, puis la barre et le registre côte à côte. La zone n'a plus de hauteur
+   posée mais un plancher : elle grandit avec les cartes, et c'est l'ovale qui cède — « il faut scroller pour
+   apercevoir tout le contenu du menu de crash ! Mais enfin c'est ridicule ! » Les lignes se serrent en bas, la
+   barre reste collée en bas de la page (point 263). */
+body.lay-side .mid > .below{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;gap:0 8px;
+  align-content:end;flex:1 1 auto;height:auto;min-height:var(--h-acts-nat, auto)}
 body.lay-side .below > .acts{min-height:0;overflow:hidden;background:var(--panel);
   border:1px solid var(--line);border-radius:4px}
-body.lay-side .below > .acts > .tbar{background:0;border:0;border-radius:0}
-/* Le registre ne prend que la largeur de son contenu : debout il demande 137 px, et le partage
-   à parts égales qu'imposait sa forme couchée (343 px, qui laissaient 16 px aux propositions)
-   n'a plus lieu d'être. Les propositions gardent donc tout le reste. */
-body.lay-side .below > .acts{grid-column:1;grid-row:1}
-body.lay-side .below > .rsz{grid-column:2;grid-row:1}
-body.lay-side .below > .ledgerbox{grid-column:3;grid-row:1}
-body.lay-side .below > .props{grid-column:4;grid-row:1}
+body.lay-side .below > .acts > .tbar{display:block;padding:8px 10px;background:0;border:0;border-radius:0}
+/* LA BARRE RESTE COLLÉE EN BAS DE LA PAGE (l'opérateur, 19 novembre 2026, point 263 : « cette zone doit rester collé
+   en bas de la page ! »). La ligne de la grille vaut la hauteur de la zone, posée ou non ; la barre ne s'y étire
+   plus, elle garde la hauteur de ses deux étages et se cale au bas de la ligne. */
+body.lay-side .below > .acts{grid-column:1;grid-row:2;align-self:end}
+body.lay-side .below > .ledgerbox{grid-column:2;grid-row:2}
+body.lay-side .below > .props{grid-column:1 / -1;grid-row:1;overflow:visible;display:flex;flex-direction:column;gap:6px;align-content:stretch}
+body.lay-side .below > .props:not(:empty){margin-bottom:8px}
+/* LES CARTES, SUR SA MAQUETTE APPROUVÉE (19 novembre 2026, mockups/maquette-cartes-proposition.html) : toutes de
+   236 px de large, alignées en colonnes, par le bas ; le texte en tête, un coureur par ligne. Deux moitiés, les
+   tours à gauche et le reste à droite, le jeu au milieu (point 268). Les couleurs sont celles d'avant (point 148,
+   build 151) : la carte de tour verte, la chute rouge sombre, les autres bleues. */
+body.lay-side .below > .props{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;align-items:end}
+body.lay-side .props .half{display:grid;grid-template-columns:repeat(auto-fill,236px);align-items:end;gap:6px;min-width:0}
+body.lay-side .props .half.hd{justify-content:end}
+body.lay-side .props .gq.crash{grid-column:span 2;width:auto}
+body.lay-side .props .gq .hd{display:block}
+body.lay-side .props .gq .q{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font:500 12px/1.4 var(--sans)}
+body.lay-side .props .gq .q .pt{font:500 12px/1.4 var(--sans);white-space:normal}
+body.lay-side .props .gq .q .pa{flex:0 0 auto;padding-top:1px}
+body.lay-side .props .gq .rows{display:flex;flex-direction:column;gap:3px;margin-top:3px}
+body.lay-side .props .gq .pb .pa{margin-left:auto}
+body.lay-side .props .gq{display:block;width:236px;box-sizing:border-box;padding:4px 8px 5px;min-height:0;margin:0}
+body.lay-side .props .gq .pb,body.lay-side .props .gq.crash .pb{display:grid;grid-template-columns:28px 20px 34px minmax(0,1fr);gap:6px;height:24px;align-items:center}
+body.lay-side .props .gq .pb .chip{min-width:28px;height:20px;font-size:13px}
+body.lay-side .props .gq .pb .flag{width:20px;height:13px}
+body.lay-side .props .gq .pb .noc{font-size:12px}
+body.lay-side .props .gq .pb .btn,body.lay-side .props .gq .pr .btn,body.lay-side .props .prop .btn{padding:0 8px;height:24px;line-height:22px;font-size:12px;border-radius:4px}
+body.lay-side .props .gq .pt b{font-weight:600}
+body.lay-side .props .gq .pa{display:flex;gap:4px;justify-content:flex-end}
+body.lay-side .props .gq .btn.xs{height:22px;line-height:20px;padding:0 7px;font-size:12px}
+body.lay-side .props .gq .btn.ok{background:#143824;border-color:var(--play);color:var(--play);font-weight:600}
+body.lay-side .props .gq.hot .btn.ok{background:#0b4d1c;border-color:#0b4d1c;color:#fff}
+body.lay-side .props .gq.hot .pt,body.lay-side .props .gq.hot .pt b,body.lay-side .props .gq.hot .noc{color:#07290f}
+/* LA BARRE ELLE-MÊME, sur sa maquette (mockups/maquette-barre-actions.html) : deux étages de 32 px, toujours deux.
+   Les Clear et les cases ont une largeur à eux — les cases cèdent jusqu'à 150 px quand la place manque —, les douze
+   boutons se partagent le reste en six colonnes égales, Crash prend la septième sur les deux étages. Un libellé qui
+   ne tient plus se coupe de points de suspension : rien ne chevauche, rien ne passe à la ligne. */
+.abar{display:flex;gap:6px;height:70px}
+.abar .clears,.abar .cases,.abar .rest{display:grid;grid-template-rows:32px 32px;gap:6px}
+.abar .clears{flex:0 0 auto;width:62px}
+.abar .cases{flex:0 1 236px;min-width:150px}
+.abar .rest{flex:1 1 auto;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
+.abar .rest .tall{grid-column:7;grid-row:1/3}
+.abar .btn{width:100%;height:100%;padding:0 6px;font-size:12px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;box-sizing:border-box}
+.abar .bibs{display:flex;align-items:center;gap:6px;height:100%;width:100%;padding:0 8px;background:#fff;border:2px solid #c9ccd0;border-radius:4px;
+  color:#111;font:600 13px var(--mono);letter-spacing:.02em;cursor:pointer;overflow:hidden;white-space:nowrap;text-align:left;box-sizing:border-box;min-width:0}
+.abar .bibs.on{border-color:var(--acc);box-shadow:0 0 0 2px #2265e244}
+.abar .bibs .n{font:600 9px var(--sans);letter-spacing:.08em;color:#5a5f66;flex:0 0 auto}
+.abar .bibs .b{display:flex;gap:7px;min-width:0;overflow:hidden}
+.abar .bibs i{font-style:normal}
+.abar .bibs .e{color:#9aa0a6;font:500 12px var(--sans)}
 /* La disposition empilée est retirée : « Le sélecteur de disposition part pour de bon, retire
    les deux dispositions et garde seulement côte à côte » (l'opérateur, 31 octobre 2026). La
    classe `lay-side` reste posée sur le corps de page parce que styles.css s'en sert, et cette
@@ -786,16 +855,21 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
                  Le titre est devenu du HTML pour porter FINAL à côté de lui : il n'est plus un <text>.
                  Les attributs x, y, width, height sont lus par le placement des étiquettes de groupe
                  (hitsPanel) : ils doivent couvrir ce qui est dessiné. -->
-            <foreignObject id="ifpanel" x="247" y="220" width="486" height="118">
+            <!-- ALIGNÉ SUR LA MAQUETTE mockups/maquette-panneau-ovale.html (l'opérateur, 19 novembre 2026, point 261 :
+                 « Il faut aligner les boutons et les rendre plus beaux », puis « Oui, code-la ») : sous le titre,
+                 trois colonnes et deux lignes, toutes les cases de la même hauteur, chaque colonne de la même
+                 largeur sur ses deux lignes. Toutes les boîtes blanches à texte noir ; TO GO et ARM START gardent
+                 leur couleur, qui porte un état. -->
+            <foreignObject id="ifpanel" x="247" y="218" width="486" height="124">
               <div xmlns="http://www.w3.org/1999/xhtml" class="ifrows">
-                <div class="ifrow ifhead">
+                <div class="ifhead">
                   <span id="ovtitle"></span>
                   <span class="srcrow" id="rtype">
                     <button class="ifk" id="rtypek">FINAL</button>
                     <span class="ifstep"><button class="ifsb" data-rtype="-1">&minus;</button><span class="srcv" id="rtypev">10</span><button class="ifsb" data-rtype="1">+</button></span>
                   </span>
                 </div>
-                <div class="ifrow">
+                <div class="ifgrid">
                   <span class="togopair">
                     <span class="srcrow" id="srcapp"><span class="ifk" id="srcappk">AUTO</span><span class="srcv" id="srcappv">—</span>
                       <span class="ifstep" id="iftogostep"><button class="ifsb" data-togo="-1">−</button><button class="ifsb" data-togo="1">+</button></span>
@@ -806,8 +880,6 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
                   </span>
                   <div class="ifb"><span class="ifk">LAP</span><span class="ifv" id="iflap">0</span><span class="ifu" id="iflapof"></span></div>
                   <div class="ifb togo" id="iftogo" title="Click to hold the laps to go back from every output, or to send them again"><span class="ifk">TO GO</span><span class="ifv" id="iftogov">0</span></div>
-                </div>
-                <div class="ifrow" id="barctl">
                   <button class="startb barb" id="startbtn">ARM START</button>
                   <button class="startb finb barb" id="armfinish" title="Arm the finish line: the running time stops when the winner crosses">ARM FINISH</button>
                   <div class="ifb ifclock"><span class="ifv" id="iftime">00:00.0</span></div>
@@ -826,11 +898,10 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
              Elle n'agit que sur le dessin : le reste de l'écran ne bouge pas. -->
       </div>
 
-      <div class="rsz" data-rsz="below" title="Drag to resize the oval · double-click to reset"></div>
+      <div class="rsz" data-rsz="ovh" title="Drag to resize the oval · double-click to reset"></div>
 
       <div class="below">
         <div class="props" id="propcard"></div>
-        <div class="rsz" data-rsz="acts" title="Drag to resize the actions · double-click to reset"></div>
         <!-- Le coin haut-droit de la barre portait TROIS objets sur 77 px, empilés les uns sur les autres :
              « regarde ici ce chaos [...] Il [faut] supprimer tout ce qui est superflu ! » (l'opérateur,
              31 octobre 2026). L'étiquette de taille et le sélecteur des deux dispositions s'en vont, le Clear
@@ -963,7 +1034,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '260';
+const BUILD = '269';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1126,6 +1197,7 @@ function reset() {
     sprintOut: new Set(),   // riders excluded from the next sprint — facts
     withdrawn: new Map(),   // bib → {code, lap} — facts
     selection: new Set(), ledger: null,
+    selB: new Set(), selBox: 'A',   // la seconde case de dossards, et le nom de la case active (point 262) : S.selection est TOUJOURS la case active
     leader: null,           // race leader as designated: {bib, how, lap} — null = taken from the track
     arm: null,              // armed loop: the next rider read there becomes the race leader
     cross: {},              // finish-line crossings by race lap, in order
@@ -2451,26 +2523,41 @@ function detect(G, M) {
     if (!p.bibs.length) dropProposals(q => q === p); else p.text = texteAbsent(p);
     dirty = true;
   }
+  // UNE SEULE CARTE PAR GROUPE (l'opérateur, 19 novembre 2026, point 270 : « Pourquoi tu ne crées pas une carte avec
+  // les deux coureurs dedans ? »). Avant, une carte par paire de boucles : deux coureurs du même groupe, l'un lu pour
+  // la dernière fois une boucle avant l'autre, faisaient deux cartes aux textes différents. Maintenant chaque coureur
+  // porte la liste de TOUTES les boucles qu'il a manquées depuis sa dernière lecture — il en faut au moins deux —, la
+  // carte du groupe les réunit, et son texte nomme les deux dernières boucles que le groupe a passées sans eux. Un
+  // coureur qui se met à manquer alors que la carte de son groupe est ouverte la rejoint au lieu d'en ouvrir une.
   for (const g of G.groups) {
     if (g.incident || g.rows.length < 2) continue;
-    const lots = new Map();   // (li1, li2) → les coureurs du bloc qui manquent sur ces deux boucles
+    const lots = new Map();   // un seul lot par groupe, clé fixe
     for (const x of g.rows) {
       const r = x.r, bib = r.bib;
       if (!r.rec || r.mode === 'out' || S.noTp.has(bib) || inIncident(bib) || S.proposals.some(p => p.kind === 'absent' && p.bibs.includes(bib))) continue;
       const li0 = LOOPS.indexOf(r.rec.loop), t0 = Math.max(r.rec.t, S.absentFrom[bib] || 0);
       if (li0 < 0) continue;
-      const li1 = (li0 + 1) % LOOPS.length, li2 = (li0 + 2) % LOOPS.length;
       const others = new Set(g.bibs.filter(b => b !== bib));
       // l'heure du DERNIER coureur du groupe sur cette boucle, après sa dernière lecture à lui
       const lastOn = li => { const list = S.reads[li]; let m = null; for (let i = list.length - 1; i >= 0 && list[i].t > t0; i--) if (others.has(list[i].bib) && (m == null || list[i].t > m)) m = list[i].t; return m; };
-      const t1 = lastOn(li1); if (t1 == null) continue;
-      const t2 = lastOn(li2); if (t2 == null || t2 <= t1 || now - t2 < ABSENT_S) continue;
-      const k = li1 + ':' + li2, lot = lots.get(k) || { loops: [li1, li2], times: [t1, t2], bibs: [], t0: {} };
-      lot.bibs.push(bib); lot.t0[bib] = t0; lot.times = [Math.max(lot.times[0], t1), Math.max(lot.times[1], t2)]; lots.set(k, lot);
+      const miss = []; let prev = t0;
+      for (let k = 1; k <= LOOPS.length * 3; k++) { const li = (li0 + k) % LOOPS.length, t = lastOn(li); if (t == null || t <= prev) break; miss.push({ li, t }); prev = t; }
+      if (miss.length < 2 || now - prev < ABSENT_S) continue;
+      const lot = lots.get('g') || { bibs: [], t0: {}, miss: {} };
+      lot.bibs.push(bib); lot.t0[bib] = t0; lot.miss[bib] = miss; lots.set('g', lot);
     }
     for (const lot of lots.values()) {
       const bibs = lot.bibs.sort(byBib), gname = groupName(g);
-      const p = { key: 'absent:' + bibs.join(',') + ':' + Math.round(Math.min(...bibs.map(b => lot.t0[b])) * 10), kind: 'absent', bibs, t0: lot.t0, step: 'with', gname, loops: lot.loops, times: lot.times };
+      // les deux dernières boucles que le groupe a passées sans eux : celles du coureur manqué le plus récemment
+      const dernieres = m => m.slice(-2).map(e => e.li);
+      const recent = bibs.map(b => lot.miss[b]).sort((a, b) => b[b.length - 1].t - a[a.length - 1].t)[0];
+      const ouverte = S.proposals.find(q => q.kind === 'absent' && q.step === 'with' && q.gname === gname);
+      if (ouverte) {   // la carte du groupe existe : ces coureurs la rejoignent
+        for (const b of bibs) { ouverte.bibs.push(b); ouverte.t0[b] = lot.t0[b]; ouverte.miss[b] = lot.miss[b]; }
+        ouverte.bibs.sort(byBib); ouverte.loops = dernieres(recent); ouverte.text = texteAbsent(ouverte); dirty = true;
+        continue;
+      }
+      const p = { key: 'absent:' + gname + ':' + Math.round(Math.min(...bibs.map(b => lot.t0[b])) * 10), kind: 'absent', bibs, t0: lot.t0, miss: lot.miss, step: 'with', gname, loops: dernieres(recent) };
       p.text = texteAbsent(p);
       p.actions = [
         { label: 'YES', primary: true, run: q => placerPassages(q) },
@@ -2511,24 +2598,47 @@ const ABSENT_S = 2.5;   // « Après 2-3 secondes » (point 253) : la valeur exa
 function placerPassages(p) {
   for (const b of p.bibs) {
     const o = S.riders.find(x => x.bib === b); if (!o || !o.rec) continue;
-    p.loops.forEach((li, i) => {
-      const L = LOOPS[li], d = o.rec.d + ((((L - o.rec.loop) % TRACK) + TRACK) % TRACK || TRACK);
-      lireBoucle(o, li, d, p.times[i], o.rec.spd || CFG.pace, true);
-      logEvent('TRANSPONDER', 'BIB ' + o.bib + ' · not read at ' + LOOPNAME[L] + ' · passage placed by the operator at ' + fmtT(p.times[i]) + ' with ' + p.gname, true);
-    });
+    // un passage par boucle manquée — toutes, pas seulement les deux premières (point 253 : « un par boucle manquée »)
+    for (const e of (p.miss && p.miss[b]) || []) {
+      const L = LOOPS[e.li], d = o.rec.d + ((((L - o.rec.loop) % TRACK) + TRACK) % TRACK || TRACK);
+      lireBoucle(o, e.li, d, e.t, o.rec.spd || CFG.pace, true);
+      logEvent('TRANSPONDER', 'BIB ' + o.bib + ' · not read at ' + LOOPNAME[L] + ' · passage placed by the operator at ' + fmtT(e.t) + ' with ' + p.gname, true);
+    }
   }
   dirty = true;
 }
 // Le texte de la carte à chacun de ses trois temps, refait quand sa liste de coureurs change.
+// Sa forme du 19 novembre 2026 (point 267) : le fait sur une ligne, la question sur la suivante, et le dossard une
+// seule fois, dans la pastille de la ligne du coureur — jamais dans le texte.
 function texteAbsent(p) {
-  const qui = '<b>' + bibList(p.bibs) + (p.step === 'with' ? ' not read</b>' : '</b>');
-  if (p.step === 'with') return qui + ' at ' + LOOPNAME[LOOPS[p.loops[0]]] + ' and ' + LOOPNAME[LOOPS[p.loops[1]]] + ' · still with ' + p.gname + ' ?';
-  if (p.step === 'crash') return qui + ' · not with ' + p.gname + ' · Crash ?';
-  return qui + ' · no crash · Transponder KO ?';
+  if (p.step === 'with') return '<b>not read</b> at ' + LOOPNAME[LOOPS[p.loops[0]]] + ' and ' + LOOPNAME[LOOPS[p.loops[1]]] + '<br>still with ' + p.gname + ' ?';
+  if (p.step === 'crash') return 'not with ' + p.gname + '<br>Crash ?';
+  return 'no crash<br>Transponder KO ?';
+}
+// UN COUREUR SE VALIDE SÉPARÉMENT (point 268 : « il faut qu'ils soient l'un au-dessus de l'autre pour qu'on puisse
+// les valider séparément »). Une carte à plusieurs coureurs qui reçoit une réponse pour l'un d'eux se scinde : le
+// coureur part dans une carte à lui, au même pas, qui reçoit la réponse ; les autres restent dans la carte d'origine.
+function scinderAbsent(p, bib) {
+  if (p.bibs.length < 2 || !p.bibs.includes(bib)) return p;
+  const q = Object.assign({}, p, { id: S.nextId++, key: p.key + ':' + bib, bibs: [bib], t0: { [bib]: p.t0[bib] }, miss: { [bib]: (p.miss || {})[bib] || [] } });
+  p.bibs = p.bibs.filter(b => b !== bib);
+  S.proposals.splice(S.proposals.indexOf(p) + 1, 0, q);
+  return q;
 }
 // YES à « Crash ? » : le groupe d'incident existant s'ouvre, et une carte porte les trois issues de l'opérateur —
 // « reprend, reprend mais change de vélo ou abandonne ». Les 5 tours sont comptés par le groupe, comme avant.
-function ouvrirCrash(p) { newGroup([...p.bibs], 'crash', raceLap()); }
+// UNE SEULE CARTE DE CRASH POUR CEUX QUI TOMBENT AU MÊME TOUR (l'opérateur, 19 novembre 2026, point 270 : « tu crées deux
+// cartes de crash identiques »). Un groupe CRASH ouvert à ce tour reçoit les coureurs au lieu d'en ouvrir un second :
+// même tour, même compte de 5 tours, une seule carte (carteCrash suit le groupe).
+function ouvrirCrash(p) {
+  const lap = raceLap(), g = S.groups.find(x => x.type === 'crash' && x.lap === lap && x.bibs.length);
+  if (!g) return newGroup([...p.bibs], 'crash', lap);
+  const bibs = [...p.bibs]; removeFromGroups(bibs);
+  g.bibs = [...g.bibs, ...bibs].sort(byBib); rehost(bibs, g.bibs);
+  carteCrash(g);
+  logEvent('INCIDENT', 'Crash · ' + bibList(bibs) + ' join the crash of Lap ' + lap + ' with ' + bibList(g.bibs.filter(b => !bibs.includes(b))), true);
+  S.selection.clear();
+}
 // LA CARTE DE CRASH PORTE UNE LIGNE PAR COUREUR, chacun avec ses trois issues (son point 254, build 255). Elle
 // suit le groupe `CRASH` : ouvert par la question qui précède, par le bouton Crash de la barre d'actions avec la
 // sélection, ou grossi d'un coureur glissé sur son bloc, le groupe est la vérité et la carte se refait dessus
@@ -2783,6 +2893,47 @@ function pathPoint(len) {
   return { x: a.x + (b.x - a.x) * frac, y: a.y + (b.y - a.y) * frac };
 }
 let drag = null, dirty = true, ovalDirty = true, railDirty = true, lastDetect = 0, lastTl = -1, lastG = null;
+const belowEl = $('.below');
+/* LES DEUX MOITIÉS (l'opérateur, 19 novembre 2026, point 268) : « les cartes de crash se placent dans la moitié droite,
+   tout comme les cartes d'alerte de transpondeurs pas détectés, et les cartes de proposition de tours gagnés/perdus
+   se placent sur la moitié gauche. ET quand une moitié est remplie, alors on peut également utiliser l'autre côté ».
+   Chaque moitié a autant de colonnes de 236 px que sa largeur en contient ; une chute en prend deux. Rangée par
+   rangée, chaque côté prend ses cartes, et les places qu'il laisse libres vont aux cartes en trop de l'autre côté,
+   avant d'ouvrir une rangée de plus. Ce qui reste au milieu est voulu : « elle doit rester vide ! [...] la timeline
+   et la carte de sprint ont des poignées pour être agrandies ». */
+const CARTE_W = 236, CARTE_GAP = 6;
+function repartirCartes(html) {
+  if (!html) return '';
+  const cards = html.match(/<div class="gq[\s\S]*?<\/div><\/div>(?=<div class="gq|$)/g) || [html];
+  const L = cards.filter(c => c.startsWith('<div class="gq hot"')), R = cards.filter(c => !c.startsWith('<div class="gq hot"'));
+  const w = propcard.clientWidth, half = w ? Math.floor((w - 12) / 2) : 0;
+  const cap = Math.max(1, Math.floor((half + CARTE_GAP) / (CARTE_W + CARTE_GAP)));
+  // « elle n'est pas pleine, il y a de la place en dessus ! » (le même jour) : une moitié est pleine quand elle ne
+  // peut plus EMPILER de rangée, pas quand sa dernière rangée l'est. Le plafond est la moitié de la hauteur de la
+  // zone de l'ovale ; la hauteur d'une carte s'estime à ses lignes de coureurs, avant qu'elle soit dessinée.
+  const plafond = Math.max(120, Math.round($('.mid').getBoundingClientRect().height / 2));
+  const poids = c => c.startsWith('<div class="gq crash"') ? 2 : 1;
+  const haut = c => 34 + 27 * (c.split('<span class="pb"').length - 1);
+  const cote = () => ({ rows: [], h: 0 });
+  const essaie = (sd, c, force) => {
+    let r = sd.rows[sd.rows.length - 1], nh;
+    if (!r || r.used + poids(c) > cap) {
+      nh = sd.h + haut(c) + (sd.rows.length ? CARTE_GAP : 0);
+      if (nh > plafond && sd.rows.length && !force) return false;
+      r = { used: 0, h: 0, cards: [] }; sd.rows.push(r);
+    } else {
+      nh = sd.h - r.h + Math.max(r.h, haut(c));
+      if (nh > plafond && !force) return false;
+    }
+    r.cards.push(c); r.used += poids(c); sd.h = nh; r.h = Math.max(r.h, haut(c));
+    return true;
+  };
+  const G_ = cote(), D_ = cote();
+  for (const c of L) essaie(G_, c) || essaie(D_, c) || essaie(G_, c, true);
+  for (const c of R) essaie(D_, c) || essaie(G_, c) || essaie(D_, c, true);
+  const lo = G_.rows.flatMap(r => r.cards), ro = D_.rows.flatMap(r => r.cards);
+  return '<div class="half hg">' + lo.join('') + '</div><div class="half hd">' + ro.join('') + '</div>';
+}
 
 // a BIB chip with, in its corner, the rider's real number of finish-line crossings
 function chipN(r, n) { return `<span class="cw">${chip(r)}<span class="cn">${n}</span></span>`; }
@@ -2917,31 +3068,38 @@ function renderTimeline(G) {
     const rowOk = {};
     for (const p of proposalsFor(g)) {
       const acts = liveActions(p);
+      // LA FORME DES CARTES, APPROUVÉE LE 19 NOVEMBRE 2026 (« Ca c'est bien », mockups/maquette-cartes-proposition.html) :
+      // le texte une seule fois, en tête — le fait, puis la question avec les boutons qui valent pour toute la carte
+      // au bout de sa ligne —, et dessous UN COUREUR PAR LIGNE, dossard, drapeau, code pays, ses propres boutons au
+      // bout. Le dossard n'est écrit qu'une fois, dans la pastille. Toutes les cartes font la même largeur. Les
+      // couleurs sont celles d'avant : la carte de tour en vert (hot), la chute en rouge sombre, les autres en bleu.
+      const rowOf = (b, btns) => { const r = S.riders.find(y => y.bib === b); return `<span class="pb">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><span class="pa">${btns}</span></span>`; };
+      const carte = (cls, head, headBtns, rows) => `<div class="gq ${cls}" data-pid="${p.id}"><div class="hd"><span class="q"><span class="pt">${head}</span>${headBtns ? '<span class="pa">' + headBtns + '</span>' : ''}</span></div>${rows ? '<div class="rows">' + rows + '</div>' : ''}</div>`;
       if (p.kind === 'lap') {
-        // Chaque coureur concerné garde son ✓, mais dans la carte et non plus sur sa ligne : à 118 px de large le
-        // bouton mangeait son code pays (« 52 · I ✓ »). La carte liste les dossards, comme son croquis du
-        // 29 octobre 2026. La ligne du coureur, elle, porte une marque discrète.
         acts.forEach((a, i) => { if (a.bib) rowOk[a.bib] = 1; });
-        // La carte est dessinée comme son croquis du 29 octobre 2026 : les dossards empilés sous un en-tête BIB, à
-        // gauche, « car on a besoin de prendre connaissance des BIB impliqués très rapidement », avec leur drapeau
-        // et leur code pays qu'il a demandés en plus. Le ✓ de chaque coureur est resté à côté du sien.
-        const perBib = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib).map(x => {
-          const r = S.riders.find(y => y.bib === x.a.bib);
-          return `<span class="pb">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><button class="btn xs ok" data-pact="${x.i}" title="${x.a.label}">✓</button></span>`;
-        }).join('');
+        const rows = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib).map(x => rowOf(x.a.bib, `<button class="btn xs ok" data-pact="${x.i}" title="${x.a.label}">✓</button>`)).join('');
         const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib)
           .map(x => `<button class="btn xs${/all/.test(x.a.label) ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label}">${/all/.test(x.a.label) ? '✓ all' : x.a.label === 'Dismiss' ? '✕' : x.a.label}</button>`).join('');
-        props += `<div class="gq hot" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${perBib}</span><span class="pr"><span class="pt"><b>${p.delta > 0 ? 'Lap gained?' : 'Lap lost?'}</b></span><span class="pa">${btns}</span><span class="pl">Lap ${p.lap}</span></span></div>`;
+        props += carte('hot', '<b>' + (p.delta > 0 ? 'Lap gained?' : 'Lap lost?') + '</b> · Lap ' + p.lap, btns, rows);
       } else if (p.kind === 'crash') {
         // Une ligne par coureur, ses trois issues au bout (point 254). Les index `data-pact` sont ceux de `acts`.
         const perBib = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib), bibsIn = [...new Set(perBib.map(x => x.a.bib))];
-        const rows = bibsIn.map(b => {
-          const r = S.riders.find(y => y.bib === b);
-          const btns = perBib.filter(x => x.a.bib === b).map(x => `<button class="btn xs${x.a.primary ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label} · BIB ${b}">${x.a.label}</button>`).join('');
-          return `<span class="pb">${chip(r)}${flag(r.nat)}<span class="noc">${r.nat}</span><span class="pa">${btns}</span></span>`;
-        }).join('');
-        props += `<div class="gq crash" data-pid="${p.id}"><span class="pbs"><span class="k">BIB</span>${rows}</span><span class="pr"><span class="pt">${p.text}</span></span></div>`;
-      } else props += `<div class="prop" data-pid="${p.id}"><span class="pt">${p.text}</span><span class="pa">${acts.map((a, i) => `<button class="btn xs${a.primary ? ' primary' : ''}" data-pact="${i}">${a.label}</button>`).join('')}</span></div>`;
+        const rows = bibsIn.map(b => rowOf(b, perBib.filter(x => x.a.bib === b).map(x => `<button class="btn xs${x.a.primary ? ' ok' : ' quiet'}" data-pact="${x.i}" title="${x.a.label} · BIB ${b}">${x.a.label}</button>`).join(''))).join('');
+        props += carte('crash', p.text, '', rows);
+      } else if (p.kind === 'absent') {
+        // Les mêmes réponses sur la ligne de chaque coureur : une réponse ne vaut que pour lui (scinderAbsent).
+        const btns = acts.map((a, i) => `<button class="btn xs${a.primary ? ' ok' : ' quiet'}" data-pact="${i}">${a.label}</button>`).join('');
+        props += carte('', p.text, '', p.bibs.map(b => rowOf(b, btns.replace(/data-pact="/g, 'data-bib="' + b + '" data-pact="'))).join(''));
+      } else if (acts.some(a => a.bib)) {
+        // Les cartes dont les réponses portent un dossard (un vélo seul à une bande) : une ligne par coureur avec sa
+        // réponse, et les réponses communes au bout de la ligne du texte.
+        const rows = acts.map((a, i) => ({ a, i })).filter(x => x.a.bib).map(x => rowOf(x.a.bib, `<button class="btn xs${x.a.primary ? ' ok' : ''}" data-pact="${x.i}">${x.a.label}</button>`)).join('');
+        const btns = acts.map((a, i) => ({ a, i })).filter(x => !x.a.bib).map(x => `<button class="btn xs quiet" data-pact="${x.i}">${x.a.label}</button>`).join('');
+        props += carte('', p.text, btns, rows);
+      } else {
+        const btns = acts.map((a, i) => `<button class="btn xs${a.primary ? ' ok' : ' quiet'}" data-pact="${i}">${a.label}</button>`).join('');
+        props += carte('', p.text, btns, p.bibs.length ? p.bibs.map(b => rowOf(b, '')).join('') : '');
+      }
     }
     // The box carries the group's own colour, the same one its bubble has on the oval (regles-operateur.md §17).
     const gcol = g.incident ? '' : ` style="--gcol:${groupColor(g, G)}"`;
@@ -2976,7 +3134,8 @@ function renderTimeline(G) {
     html += '</div>';
   }
   tlbody.innerHTML = html;
-  propcard.innerHTML = props;
+  propcard.innerHTML = repartirCartes(props);
+  belowEl.classList.toggle('withprops', !!props);   // la colonne des propositions n'existe que quand il y en a (point 262)
   const bibs = [...sel].sort(byBib), dis = sel.size ? '' : ' disabled';
   const key = bibs.join(','), gsel = G.groups.find(g => [...g.bibs].sort(byBib).join(',') === key), gsi = gsel ? G.groups.indexOf(gsel) : -1, prevG = gsi > 0 ? G.groups[gsi - 1] : null;
   const canMerge = gsel && !gsel.incident && prevG && !prevG.incident, canBack = gsel && gsel.incident, allOutSel = sel.size && bibs.every(b => S.sprintOut.has(b)), allNoTpSel = sel.size && bibs.every(b => S.noTp.has(b));
@@ -2992,7 +3151,7 @@ function renderTimeline(G) {
   // Les deux boutons du coureur seul sont TOUJOURS là, désactivés quand la sélection ne s'y prête pas :
   // c'est déjà ce que font tous les autres boutons de cette barre, et c'est ce qui fait que la fenêtre d'actions
   // ne change plus de taille selon la sélection (l'opérateur, 31 octobre 2026).
-  const solo = `<span class="grpb"><button class="btn xs${S.ledger ? ' on' : ''}" data-ledger="1"${dis} title="Adjust the laps gained and lost of the selected riders">Laps…</button><button class="btn xs" data-lead="${one == null ? '' : one}"${one == null || G.leaderBib === one ? ' disabled' : ''} title="This rider is the race leader">Leader</button></span>`;
+  const solo = `<button class="btn xs${S.ledger ? ' on' : ''}" data-ledger="1"${dis} title="Adjust the laps gained and lost of the selected riders">Laps…</button><button class="btn xs" data-lead="${one == null ? '' : one}"${one == null || G.leaderBib === one ? ' disabled' : ''} title="This rider is the race leader">Leader</button>`;
   let led = '';
   // La sélection des couleurs est RETIRÉE : « il faut retirer la sélection des couleurs, c'est inutile »
   // (l'opérateur, 31 octobre 2026). Le registre ne porte plus que les tours gagnés et perdus. PALETTE et
@@ -3011,10 +3170,23 @@ function renderTimeline(G) {
   // « il ne faut afficher que les BIB, rien d'autre » (l'opérateur, 31 octobre 2026). Le nom du groupe, l'effectif
   // et la phrase d'invite s'en vont : la ligne ne porte plus que les dossards sélectionnés, et elle cesse donc
   // d'être coupée. Le groupe et l'effectif sont dans la timeline, à gauche, sur l'en-tête du bloc.
-  tbar.innerHTML = `<span class="selinfo">${sel.size ? '<b>' + bibList(bibs) + '</b>' : ''}<button class="btn xs quiet clr" data-act="clear"${dis}>Clear</button></span>${solo}
-    <span class="grpb"><button class="btn xs" data-act="lap" data-v="1"${dis} title="Selected riders gain a lap">+1 lap</button><button class="btn xs" data-act="lap" data-v="-1"${dis} title="Selected riders lose a lap">−1 lap</button><button class="btn xs" data-act="sprint"${dis} title="Selected riders are ignored in the next sprint, or back in it">${allOutSel ? 'Back in sprint ' + sprintN : 'Ignore in sprint ' + sprintN}</button><button class="btn xs" data-act="notp"${dis} title="Selected riders have no transponder: carried with their group, placed by hand in the sprints">${allNoTpSel ? 'Transponder back' : 'No transponder'}</button><button class="btn xs" data-act="swaptp"${bibs.length === 2 ? '' : ' disabled'} title="The two selected riders carry each other's transponder: exchange the attribution">Swapped</button></span>
-    <span class="grpb"><button class="btn xs primary" data-act="group" data-type="manual"${dis} title="New group with the selected riders">Group</button><button class="btn xs danger" data-act="group" data-type="crash"${dis} title="Crash group with the selected riders">Crash</button><button class="btn xs danger" data-act="group" data-type="mech"${dis} title="Mechanical group with the selected riders">Mech.</button><span class="sep"></span><button class="btn xs" data-act="merge"${canMerge ? '' : ' disabled'} title="Merge this group with the group above (select exactly one group)">Merge ↑</button><button class="btn xs primary" data-act="back"${canBack ? '' : ' disabled'} title="Riders of this incident back in the race">Back in race</button></span>
-    <span class="grpb"><button class="btn xs danger" data-act="wd" data-v="ABD"${dis} title="Selected riders withdraw by themselves">ABD</button><button class="btn xs danger" data-act="wd" data-v="DNF"${dis} title="Selected riders put out of the race by the commissaires">DNF</button><button class="btn xs danger" data-act="wd" data-v="DSQ"${dis} title="Selected riders disqualified">DSQ</button></span>`;
+  // LA BARRE SUR SA MAQUETTE DU 19 NOVEMBRE 2026 (mockups/maquette-barre-actions.html, point 262) : sous l'ovale, sur
+  // la largeur que la zone lui laisse, deux étages de 32 px et jamais plus. À gauche les deux Clear l'un sur l'autre,
+  // puis les deux cases de dossards A et B l'une sur l'autre — « deux zones permettant d'afficher des numéros de
+  // dossards auxquels on va appliquer les actions », huit dossards par case —, puis douze boutons de même largeur
+  // sur six colonnes et Crash à droite sur les deux étages. « Ignore in sprint » s'appelle « No Pts », « No
+  // transponder » « No TRA ». Mech. et Back in race ne sont plus dans la barre : la carte de crash les porte.
+  // La case active porte le cadre bleu ; un clic sur l'autre case l'active (les deux ensembles permutent, de sorte
+  // que S.selection reste la case active partout dans le moteur). Chaque Clear vide la case de sa ligne.
+  const boxA = S.selBox === 'A' ? S.selection : S.selB, boxB = S.selBox === 'B' ? S.selection : S.selB;
+  const caseHtml = (k, set) => `<button type="button" class="bibs${S.selBox === k ? ' on' : ''}" data-box="${k}" title="${S.selBox === k ? 'The actions apply to this case' : 'Click: the actions apply to this case'}"><span class="n">${k}</span><span class="b">${[...set].sort(byBib).map(b => '<i>' + b + '</i>').join('') || '<span class="e">—</span>'}</span></button>`;
+  tbar.innerHTML = `<div class="abar">
+    <div class="clears"><button class="btn xs quiet" data-clear="A"${boxA.size ? '' : ' disabled'} title="Empty case A">Clear</button><button class="btn xs quiet" data-clear="B"${boxB.size ? '' : ' disabled'} title="Empty case B">Clear</button></div>
+    <div class="cases">${caseHtml('A', boxA)}${caseHtml('B', boxB)}</div>
+    <div class="rest">
+      <button class="btn xs primary" data-act="group" data-type="manual"${dis} title="New group with the selected riders">Group</button><button class="btn xs" data-act="merge"${canMerge ? '' : ' disabled'} title="Merge this group with the group above (select exactly one group)">Merge ↑</button><button class="btn xs" data-act="lap" data-v="1"${dis} title="Selected riders gain a lap">+1 lap</button><button class="btn xs" data-act="lap" data-v="-1"${dis} title="Selected riders lose a lap">−1 lap</button>${solo}<button class="btn xs danger tall" data-act="group" data-type="crash"${dis} title="Crash group with the selected riders">Crash</button>
+      <button class="btn xs" data-act="sprint"${dis} title="Selected riders are ignored in the next sprint, or back in it">${allOutSel ? 'Back in sprint ' + sprintN : 'No Pts'}</button><button class="btn xs" data-act="notp"${dis} title="Selected riders have no transponder: carried with their group, placed by hand in the sprints">${allNoTpSel ? 'Transponder back' : 'No TRA'}</button><button class="btn xs" data-act="swaptp"${bibs.length === 2 ? '' : ' disabled'} title="The two selected riders carry each other's transponder: exchange the attribution">Swapped</button><button class="btn xs danger" data-act="wd" data-v="ABD"${dis} title="Selected riders withdraw by themselves">ABD</button><button class="btn xs danger" data-act="wd" data-v="DNF"${dis} title="Selected riders put out of the race by the commissaires">DNF</button><button class="btn xs danger" data-act="wd" data-v="DSQ"${dis} title="Selected riders disqualified">DSQ</button>
+    </div></div>`;
   // Le registre sort de la barre : il s'affiche à droite d'elle, dans son propre conteneur, et la barre garde
   // donc sa taille quoi qu'on ouvre (l'opérateur, 31 octobre 2026).
   ledgerbox.innerHTML = led;
@@ -3380,7 +3552,7 @@ function onStripClick(e) {
   if (t.dataset.dissolve) { const g = S.groups.find(x => x.id === +t.dataset.dissolve); if (g) { pushUndo((g.type === 'manual' ? 'dissolve group ' : 'close incident ') + bibList(g.bibs)); dissolve(g); } }
   else if (t.dataset.autogroups) { pushUndo('back to automatic'); backToAutomatic(); }
   else if (t.dataset.selgroup != null) selectGroup(+t.dataset.selgroup);
-  else if (t.dataset.pact != null) { const p = S.proposals.find(x => x.id === +t.closest('[data-pid]').dataset.pid); if (p) { pushUndo((liveActions(p)[+t.dataset.pact].label || t.innerText) + ' · ' + bibList(p.bibs)); const kept = liveActions(p)[+t.dataset.pact].run(p) === 'keep'; if (kept) { dirty = true; } else if (p.kind !== 'lap') dropProposals(x => x === p && !S.snoozed[x.key]); else if (S.dismissed[p.key]) dropProposals(x => x === p); } }
+  else if (t.dataset.pact != null) { let p = S.proposals.find(x => x.id === +t.closest('[data-pid]').dataset.pid); if (p && p.kind === 'absent' && t.dataset.bib) p = scinderAbsent(p, +t.dataset.bib); if (p) { pushUndo((liveActions(p)[+t.dataset.pact].label || t.innerText) + ' · ' + bibList(p.bibs)); const kept = liveActions(p)[+t.dataset.pact].run(p) === 'keep'; if (kept) { dirty = true; } else if (p.kind !== 'lap') dropProposals(x => x === p && !S.snoozed[x.key]); else if (S.dismissed[p.key]) dropProposals(x => x === p); } }
   else if (t.dataset.reinstate) { const bib = +t.dataset.reinstate; pushUndo('reinstate BIB ' + bib); const e = S.log.find(x => x.k === 'WITHDRAW' && !x.reversed && x.rev && x.m.startsWith('BIB ' + bib + ' ')); if (e) { e.reversed = true; e.rev(); } else reinstate(bib); }
   else if (t.dataset.rlap) { const bib = +t.dataset.bib, d = +t.dataset.rlap; pushUndo(t.innerText.trim() + ' BIB ' + bib); applyLap([bib], d, 'operator'); }
   else if (t.dataset.color) { setColor(+t.dataset.bib, t.dataset.color); return; }
@@ -3433,6 +3605,12 @@ tbar.addEventListener('input', e => { const i = e.target.closest('[data-colorpic
 ledgerbox.addEventListener('input', e => { const i = e.target.closest('[data-colorpick]'); if (i) setColor(+i.dataset.colorpick, i.value); });
 tbar.addEventListener('pointerup', e => {
   if (!pressed(e)) return;
+  // Les deux cases de dossards (point 262). Choisir l'autre case permute les deux ensembles : S.selection reste la
+  // case active, et tout ce qui lit S.selection — la timeline, l'ovale, les actions — suit sans rien savoir.
+  const bx = e.target.closest('[data-box]');
+  if (bx) { if (S.selBox !== bx.dataset.box) { const t = S.selection; S.selection = S.selB; S.selB = t; S.selBox = bx.dataset.box; dirty = true; render(); } return; }
+  const cl = e.target.closest('[data-clear]');
+  if (cl) { (cl.dataset.clear === S.selBox ? S.selection : S.selB).clear(); dirty = true; render(); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const bibs = [...S.selection].sort(byBib);
   if (b.dataset.act !== 'clear' && bibs.length) pushUndo(b.innerText.trim() + ' · ' + bibList(bibs));
@@ -5329,8 +5507,10 @@ addEventListener('wheel', e => {
    BOUTONS » (l'opérateur, 31 octobre 2026) : ce qui est posé est gardé sur le
    poste et relu au chargement, le réglage de l'ovale compris. */
 const LKEY = 'tct.layout';
-const LAY = { tl: null, right: null, below: null, acts: null };
-const CSSVAR = { tl: '--w-tl', right: '--w-right', below: '--h-below', acts: '--w-acts' };
+// 'ovh' (build 269) remplace 'below' : la poignée pose la hauteur de l'ovale, plus celle de la zone du bas. Une
+// valeur 'below' gardée sur le poste n'est plus lue. 'acts' n'a plus de poignée depuis le build 262.
+const LAY = { tl: null, right: null, ovh: null, acts: null };
+const CSSVAR = { tl: '--w-tl', right: '--w-right', ovh: '--h-oval', acts: '--w-acts' };
 
 // Les planchers. Celui de la zone du bas n'est pas un chiffre : c'est la hauteur de la barre
 // d'actions, parce que « la barre d'actions ne doit jamais avoir à défiler pour être vue en
@@ -5342,8 +5522,9 @@ const RZ = {
   // resserrement, et non celle qu'elle occupe à cet instant : « il faut pouvoir récupérer avec double clic ET
   // avec la poignée ! » (l'opérateur, 31 octobre 2026). Avant cela le plancher valait la hauteur courante, donc
   // la poignée butait au premier pixel et l'ovale ne se récupérait qu'au double-clic.
-  below: { axis: 'y', sign: -1, el: '.below', min: () => Math.max(40, actsMin),
-           max: () => Math.max(120, $('.mid').getBoundingClientRect().height - 240) },
+  // La hauteur de l'ovale : du plancher de 120 px à tout ce que la zone laisse une fois la barre et ses écarts posés.
+  ovh:   { axis: 'y', sign:  1, el: '.oval',  min: () => 120,
+           max: () => Math.max(120, $('.mid').getBoundingClientRect().height - Math.max(88, actsNat) - 14) },
   acts:  { axis: 'x', sign:  1, el: '.acts',  min: () => 200, max: () => 520 },
 };
 function applyLayout() {
@@ -5357,10 +5538,14 @@ function applyLayout() {
    feuille de style, par des colonnes proportionnelles (voir #scard .sbody dans le <style> de ce fichier) :
    rien ici. Le build 259 couplait un zoom de la carte à la poignée ; il est retiré, c'était la mauvaise
    lecture de « tout grandit ». */
-function saveLayout() { try { localStorage.setItem(LKEY, JSON.stringify({ ...LAY, oval: ovZoom, tl_z: tlZoom, z: { ...ZV } })); } catch (e) {} }
+function saveLayout() { try { localStorage.setItem(LKEY, JSON.stringify({ v: 2, ...LAY, oval: ovZoom, tl_z: tlZoom, z: { ...ZV } })); } catch (e) {} }
 function loadLayout() {
   try { const d = JSON.parse(localStorage.getItem(LKEY) || '{}');
     for (const k in CSSVAR) if (typeof d[k] === 'number' && isFinite(d[k])) LAY[k] = Math.round(d[k]);
+    // Une hauteur de la zone du bas posée AVANT le build 262 l'était pour une barre qui grandissait pour la remplir ;
+    // la barre à deux étages ne le fait plus, et cette hauteur ne laissait que du vide au-dessus d'elle (point 263).
+    // Elle est oubliée une fois, le poste garde ensuite ce qu'il pose.
+    if (d.v !== 2) LAY.below = null;
     if (typeof d.oval === 'number' && isFinite(d.oval)) ovZoom = d.oval;
     if (typeof d.tl_z === 'number' && isFinite(d.tl_z)) tlZoom = d.tl_z;
     if (d.z) for (const k in ZV) if (typeof d.z[k] === 'number' && isFinite(d.z[k])) ZV[k] = d.z[k];
@@ -5391,7 +5576,6 @@ document.addEventListener('pointermove', e => {
   if (!rz) return;
   const d = rz.spec.axis === 'x' ? e.clientX - rz.x : e.clientY - rz.y;
   let v = Math.round(rz.start + d * rz.spec.sign);
-  if (rz.key === 'below') { const c = belowDetent(); if (Math.abs(v - c) <= 10) v = c; }
   LAY[rz.key] = Math.max(rz.spec.min(), Math.min(rz.spec.max(), v));
   applyLayout();
 });
@@ -5516,37 +5700,15 @@ let actsApplied = 1, actsNat = 0, actsMin = 0, actsKey = '';
 const setZActs = v => document.documentElement.style.setProperty('--z-acts', v);
 const tbarH = () => tbar.getBoundingClientRect().height;
 function actsFit() {
+  // DEUX ÉTAGES, TOUJOURS (l'opérateur, 19 novembre 2026, point 262 : « responsive seulement horizontalement et non
+  // pas verticalement. Il faut toujours garder les deux étages »). La barre ne grossit ni ne se resserre plus pour
+  // remplir sa zone : sa hauteur est celle de ses deux étages, et c'est la zone qui la prend — plancher et valeur
+  // d'usine de la poignée de l'ovale confondus. Le point 122 (« Elle se resserre seule ») est remplacé par celui-ci.
   const w = Math.round(actsEl.getBoundingClientRect().width);
   if (!w) return;                                 // zone pas rendue : on ne décide rien sur une mesure vide (D19)
-  // Les deux hauteurs se relèvent REGISTRE FERMÉ, et la largeur de la zone suffit à les dater : le registre a
-  // sa propre colonne et ne touche plus à celle des actions. Les relever registre ouvert serait de toute façon
-  // une mesure prise sur un écran de passage, et c'est le resserrement, en dessous, qui absorbe les écarts.
-  const key = String(w);
-  if (ledgerbox.innerHTML === '') {
-    const fresh = key !== actsKey;
-    if (fresh) { actsKey = key; actsNat = 0; actsMin = 0; }
-    setZActs(1);
-    const nat = Math.ceil(tbarH());
-    if (nat > actsNat) { actsNat = nat; document.documentElement.style.setProperty('--h-acts-nat', actsNat + 'px'); }
-    if (fresh) { setZActs(ACTS_FLOOR); actsMin = Math.ceil(tbarH()); }
-  }
-  /* La barre prend toute sa zone, et rien de plus. On part de la taille qu'elle a et on marche dans le sens
-     qui manque : d'un état stable cela coûte UNE mesure, et ce n'est que lorsqu'on vient de tirer la poignée
-     que la boucle fait plusieurs pas. Relire une disposition à chaque image est ce que D15 interdit. */
-  const box = actsEl.getBoundingClientRect().height;
-  let z = actsApplied;
-  setZActs(z);
-  if (tbarH() > box + 1) {
-    while (z > ACTS_FLOOR && tbarH() > box + 1) { z = Math.max(ACTS_FLOOR, +(z - ACTS_STEP).toFixed(2)); setZActs(z); }
-  } else {
-    while (z < ACTS_CEIL) {
-      const n = Math.min(ACTS_CEIL, +(z + ACTS_STEP).toFixed(2));
-      setZActs(n);
-      if (tbarH() > box + 1) { setZActs(z); break; }
-      z = n;
-    }
-  }
-  actsApplied = z;
+  setZActs(1);
+  const nat = Math.ceil(tbarH()) + (actsEl.offsetHeight - actsEl.clientHeight);   // les deux bords de la zone
+  if (nat > 2 && nat !== actsNat) { actsNat = nat; actsMin = nat; document.documentElement.style.setProperty('--h-acts-nat', nat + 'px'); }
 }
 /* La barre change de hauteur disponible sans être reconstruite : la fenêtre, la poignée de l'ovale et celle des
    actions. Même observateur que pour l'ovale et la timeline, pour la même raison (D15). */

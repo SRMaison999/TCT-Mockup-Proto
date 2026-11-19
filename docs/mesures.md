@@ -5454,3 +5454,81 @@ d'usine), puis poignée tirée de 300 px vers la gauche par des événements de 
 Tout s'élargit du rapport 1,6 de la colonne, sauf le drapeau de la liste de départ, qui est une image
 de 22 px dans une case qui, elle, s'élargit. Les chiffres d'usine sont ceux du build 258 : sans poignée,
 rien n'a bougé.
+
+
+## §115 · Le panneau de l'ovale aligné — build 261, 19 novembre 2026
+
+Fenêtre de 1920 × 1080, simulateur masqué, course par défaut avant le départ. Boîtes mesurées à
+l'écran, en pixels (bord gauche · largeur · hauteur).
+
+| | provenances / ARM START | LAP / ARM FINISH | TO GO / horloge |
+|---|---|---|---|
+| Ligne du haut | 462 · 125 · 32 | 595 · 105 · 32 | 708 · 125 · 32 |
+| Ligne du bas | 462 · 125 · 32 | 595 · 105 · 32 | 708 · 125 · 32 |
+
+Au build 260 les mêmes six cases avaient six largeurs (104, 93, 94, 90, 96, 105) et quatre hauteurs
+(36, 28, 32, 26), et leurs bords gauches différaient d'une ligne à l'autre de 1 à 11 px.
+
+Un clic sur `ARM FINISH` le passe armé (classe `armed`, vert) et un second le ramène au repos :
+l'écouteur de `#infield` le couvre toujours. Erreurs de console : 0.
+
+
+## §116 · La barre d'actions sous l'ovale — build 262, 19 novembre 2026
+
+Course par défaut avant le départ, disposition d'usine, simulateur masqué.
+
+| | 1920 × 1080 | 1366 × 768 |
+|---|---|---|
+| Zone du bas (hauteur) | 88 px, deux étages | 88 px, deux étages |
+| Barre (largeur) | 836 px | 583 px |
+| Cases A et B | 236 × 32 | 158 × 32 |
+| Chacun des douze boutons | 67 × 32 | 42 × 32 |
+| Crash | 67 × 70 | 42 × 70 |
+| Chevauchement, débordement de la page | aucun · 1920 = 1920 | aucun · 1366 = 1366 |
+
+À 1366 px les libellés se coupent de points de suspension (« Gr… », « Me… ») : rien ne chevauche, mais la barre
+n'est plus lisible qu'au survol. Avec la colonne du sprint tirée à 800 px, la barre tombe à 283 px et les
+boutons à 14 px.
+
+**Les deux cases**, vrais clics dans le volet, 1920 px : case A active au chargement ; clic sur la case B → B
+active ; clics sur les coureurs 9 et 11 dans la timeline → B porte « 9 11 », A reste vide, les deux lignes sont
+surlignées dans la timeline. Clear A vide A et elle seule ; Group se grise quand la case active est vide.
+Erreurs de console : 0 après correction d'une accolade de trop (le premier chargement du build avait planté à
+`Unexpected token 'new'`).
+
+
+## §117 · Les cartes au-dessus de la barre — build 266, 19 novembre 2026
+
+1920 × 1080, simulateur masqué, disposition d'usine, deux coureurs choisis puis Crash.
+
+| | |
+|---|---|
+| Zone des cartes | 1160 × 80 px, deux moitiés de 574 px |
+| Carte de crash, moitié droite | 478 × 80 px, deux colonnes de 236, alignée au bord droit |
+| Lignes des deux coureurs | 24 px chacune, les trois boutons de 83, 86 et 71 px au bout |
+| Fond de la carte | rgb(43, 24, 24), le rouge sombre d'avant |
+| La barre pendant que la carte est ouverte | 1152 × 88 px, entière, en bas de la page |
+| Défilement de la zone des cartes | aucun |
+
+La carte de transpondeur et la carte de tour n'ont pas pu être ouvertes sur cette course à l'arrêt : leur forme est
+vérifiée sur le code (`texteAbsent()`, `carte()`) et sur la maquette, pas à l'écran. À regarder sur une course
+qui tourne.
+
+
+## §118 · Deux transpondeurs coupés en course — build 269, 19 novembre 2026
+
+Course par défaut, 16 coureurs, simulateur à ×4 ; transpondeurs des BIB 12 et 52 coupés à **0:17.0** dans l'onglet
+Transponders, après que les deux ont été lus au départ.
+
+| Instant | Ce qu'on relève |
+|---|---|
+| 0:29.2 | **une seule carte**, moitié droite : « not read at Pursuit A and Finish · still with 1-Bunch ? », le 12 et le 52 chacun sur sa ligne avec YES / NO |
+| 0:29 → 1:09 | la carte reste, les deux coureurs restent dans le bloc 1-Bunch |
+| YES sur la ligne du 12, 2:26.7 | la carte ne garde que le 52 ; le 12 n'y est plus |
+| NO sur la ligne du 52, 2:29.2 | « not with 1-Bunch · Crash ? », YES / NO, le 52 seul |
+| YES, 2:32.8 | bloc CRASH dans la timeline, carte « CRASH · Lap 9 · still 4 laps to rejoin » à droite, « 52 ITA Back in race · Another bike · Abandons » |
+
+Un premier essai, les deux transpondeurs coupés **avant le départ**, n'avait donné aucune carte : sans aucune
+lecture, les deux coureurs sont comptés par la bande du Finish comme des vélos sans transpondeur, et ce n'est pas
+le cas du point 253. Entre 1:09 et 2:26, un bloc « 2-Last » est apparu dans la timeline : c'est MISSING_S, 22 s
+sans lecture, qui range un coureur muet à l'arrière — un comportement d'avant ce build, à regarder séparément.

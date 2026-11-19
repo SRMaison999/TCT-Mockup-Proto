@@ -2927,3 +2927,141 @@ d'avant sans poignée :
 `minmax(0, Nfr)` plutôt que `Nfr` seul : la taille minimale automatique d'une piste `fr` est celle de
 son contenu, et un contenu qui ne tient pas forcerait la piste au lieu de la laisser suivre.
 `styles.css` n'est pas touché : les autres prototypes le partagent.
+
+
+## §74 · Le panneau de l'ovale, aligné · build 261
+
+Son point 261, sur `mockups/maquette-panneau-ovale.html`. Dans `#ifpanel` (x 247, y 218, 486 × 124
+unités), `.ifrows` porte `.ifhead` — `#ovtitle` et `#rtype` — puis `.ifgrid`, une grille
+`124px 104px 124px` × `32px` à 8 px d'écart, dont les six cases sont, dans l'ordre : `.togopair`
+(`#srcapp`, `#srccnt`), la boîte `LAP`, `#iftogo`, `#startbtn`, `#armfinish`, l'horloge `#iftime`.
+Chaque case prend `width:100%;height:100%` de sa cellule : c'est la grille qui aligne, pas le
+contenu. L'identifiant `barctl` n'existe plus — rien ne le lisait depuis le build 258. `.ifgone` garde
+`LEADER` et `#ifnext` hors écran, comme au build 258.
+
+**L'habillage**, dans le `<style>` du fichier : la paire de provenances devient une boîte blanche
+(`.togopair`) dont les deux `.srcrow` n'ont plus ni fond ni bordure, le `M` et les pas en gris clair,
+la pastille de choix noire quand elle est prise (`.srcrow.on .pick`) ; `#rtype` est une boîte blanche
+de 24 px, `QUALIF` en brun foncé (`#9a5a00`) au lieu de l'ambre, qui ne se lisait pas sur blanc ;
+`#armfinish` (`.startb.finb`) est blanc au repos et garde le vert armé de `styles.css`. `#startbtn`,
+`#iftogo` et leurs états ne changent pas. Les règles `#ifpanel .ifrow …` du build 258 sont retirées.
+
+
+## §75 · La barre d'actions sous l'ovale, deux cases de dossards · build 262
+
+Son point 262, sur `mockups/maquette-barre-actions.html`.
+
+**L'état.** `S.selB` (un `Set`) et `S.selBox` (`'A'` ou `'B'`) rejoignent `S.selection`. **`S.selection` est
+toujours la case active** : choisir l'autre case permute les deux ensembles et change `S.selBox`, de sorte que
+tout ce qui lit `S.selection` — la timeline, l'ovale, les actions, Échap — suit sans rien savoir. La case A
+montre `S.selBox === 'A' ? S.selection : S.selB`, la case B l'inverse. Ni `snapshot()` ni `tct.layout` ne
+portent la sélection : rien à y ajouter.
+
+**La barre.** Le rendu écrit dans `#tbar` un `.abar` : `.clears` (deux boutons `data-clear="A|B"`), `.cases`
+(deux boutons `.bibs[data-box]`, `.on` pour l'active, huit dossards en `<i>`), `.rest` — une grille
+`repeat(7, minmax(0,1fr))` × 2 rangs de 32 px : Group, Merge ↑, +1 lap, −1 lap, Laps…, Leader, puis No Pts
+(`data-act="sprint"`, libellé « Back in sprint N » quand tous sont déjà hors sprint), No TRA (`data-act="notp"`,
+« Transponder back » dans l'autre sens), Swapped, ABD, DNF, DSQ ; Crash (`data-act="group" data-type="crash"`)
+en `.tall`, septième colonne sur les deux rangs. Les boutons Mech. et Back in race ne sont plus rendus ;
+`data-act="back"` reste dans le gestionnaire, sans bouton. Le gestionnaire `pointerup` de `#tbar` traite
+`[data-box]` et `[data-clear]` avant `[data-act]`.
+
+**La zone du bas.** La poignée `data-rsz="acts"` n'est plus dans le HTML (`RZ.acts` et `--w-acts` restent, sans
+rien qui les atteigne). `.below` est une grille `minmax(0,1fr) auto 0` — la barre, le registre, rien — et
+`minmax(0,1fr) auto minmax(260px,38%)` quand elle porte la classe `withprops`, posée par le rendu dès que
+`propcard` a un contenu : les propositions prennent alors leur colonne et la barre se resserre. `actsFit()` ne
+zoome plus la barre : il relève sa hauteur (deux étages + les bords de la zone, 88 px) dans `--h-acts-nat` et
+`actsMin`, donc la zone du bas vaut cette hauteur sans poignée et c'est son plancher. `--z-acts` reste à 1.
+
+**Les styles**, dans le `<style>` du fichier : `.abar` (flex, 70 px), `.clears` 62 px, `.cases` 236 px qui
+cèdent jusqu'à 150, `.rest` qui prend le reste ; `.abar .btn` à 100 % de sa cellule, 12 px, points de suspension ;
+`.abar .bibs` blanc à texte noir, cadre bleu `.on`. Les règles `.tbar .grpb`, `.tbar .selinfo` de `styles.css`
+ne s'appliquent plus à rien ici.
+
+
+## §76 · La barre collée en bas · build 263
+
+Son point 263. `body.lay-side .below > .acts{align-self:end}` : la ligne de la grille vaut toujours la hauteur de
+la zone, posée ou d'usine, mais la barre ne s'y étire plus et se cale en bas. `tct.layout` porte une clé `v: 2` ;
+`loadLayout()` remet `LAY.below` à `null` quand elle manque, une fois, et `saveLayout()` l'écrit ensuite.
+Mesuré en 1920 × 1080 avec `{below: 250}` en stockage : zone de 88 px au chargement, barre à 982–1070 ; poignée
+tirée de 150 px, zone de 238 px et barre toujours à 982–1070.
+
+
+## §77 · Les commandes du simulateur à gauche · build 264
+
+Son point 264. Seuls les `order` de la barre changent : `#undo` 4, `.bld` 5, `#simtransport` 6, `#railshow` 7,
+et le ressort `.sp` passe à 9, en bout de barre. Mesuré en 1920 × 1080, simulateur masqué : onglets 228–647,
+Undo 655–708, build 716–740, commandes 748–1171, Simulator 1179–1258, puis rien jusqu'à 1904.
+
+
+## §78 · Les cartes au-dessus de la barre, en deux moitiés · build 266
+
+Ses points 265 à 269 (le 265 est le build 265, resté en copie de travail : les cartes empilées sur toute la largeur).
+
+**La zone du bas.** `.below` est une grille de deux lignes : les cartes (`#propcard`, `grid-column: 1 / -1`), puis
+la barre et le registre côte à côte. Elle n'a plus de hauteur posée mais un plancher, `min-height: var(--h-below,
+var(--h-acts-nat))`, et `align-content:end` : elle grandit avec les cartes, l'ovale cède, la barre reste en bas
+(point 263). `#propcard` ne défile plus.
+
+**Les deux moitiés.** `repartirCartes(html)` découpe la chaîne des cartes rendues, met les `.gq.hot` (les tours) à
+gauche et les autres à droite, puis répartit rangée par rangée : chaque moitié a `cap` colonnes — autant de fois
+236 + 6 px que sa largeur en contient, lue sur `propcard.clientWidth` —, une chute pèse deux colonnes, et les places
+qu'un côté laisse libres sur une rangée vont aux cartes en trop de l'autre côté avant qu'une rangée de plus
+s'ouvre. Le résultat est `<div class="half hg">…</div><div class="half hd">…</div>`, `#propcard` étant
+`grid-template-columns: 1fr 1fr`, chaque `.half` `repeat(auto-fill, 236px)` aligné par le bas, la droite
+`justify-content:end`. Le vide du milieu est le jeu des poignées (point 268).
+
+**La forme des cartes.** Un seul gabarit, `carte(cls, head, headBtns, rows)` : `.hd > .q` porte le texte et les
+boutons de carte, `.rows` une `.pb` par coureur (`rowOf(bib, btns)`) — pastille, drapeau, NOC, boutons à droite.
+Le tour : titre « Lap gained? · Lap N », « ✓ all » et « ✕ » en tête, un ✓ par coureur. La chute : son titre, trois
+boutons par coureur, `span 2`. Le transpondeur (`kind: 'absent'`) : `texteAbsent()` écrit deux lignes séparées
+d'un `<br>` sans le dossard, et les réponses YES / NO (puis YES / ✕) sont répétées sur la ligne de chaque coureur
+avec `data-bib` ; `onStripClick` appelle alors `scinderAbsent(p, bib)`, qui sort ce coureur dans une carte à lui,
+au même pas, et lui applique la réponse — les autres restent dans la carte d'origine. Les cartes dont les réponses
+portent un dossard (un vélo seul à une bande, « It is BIB 12 ») ont une ligne par coureur avec sa réponse ; les
+autres gardent texte et boutons en tête, et une ligne par coureur sans bouton. Les `.prop` n'existent plus.
+
+**Les couleurs** restent celles de `styles.css` et du build 151 : `.gq` bleu `#1a2238` à bord `--acc`, `.gq.hot`
+vert `--play` à texte `#07290f`, `.gq.crash` `#2b1818` à bord `--crit`. Les boutons ✓ de la carte verte sont en
+vert sombre plein pour rester lisibles sur le vert.
+
+
+## §79 · Une carte par groupe, une chute par tour, et le plafond des moitiés · build 267
+
+Son point 270. **La détection des coureurs non lus** (section 2 de `detect`) ne fait plus un lot par paire de
+boucles mais un lot par groupe : pour chaque coureur sans lecture, `miss` liste toutes les boucles que son groupe
+a passées sans lui depuis sa dernière lecture, chacune à l'heure du dernier coureur du groupe sur cette boucle ; il
+en faut au moins deux, et 2,5 s depuis la dernière. S'il existe déjà une carte `absent` au pas `with` pour ce
+groupe (`gname`), les coureurs la rejoignent ; sinon elle est créée avec `loops` = les deux dernières boucles du
+coureur manqué le plus récemment, ce qu'écrit `texteAbsent()`. `placerPassages()` pose un passage par entrée de
+`p.miss[bib]`, dans l'ordre ; `scinderAbsent()` emporte `miss` du coureur scindé.
+
+**`ouvrirCrash(p)`** cherche un groupe `crash` du tour courant encore peuplé ; s'il existe, les coureurs y sont
+déplacés (`removeFromGroups`, `rehost`, `carteCrash(g)`), sinon `newGroup` comme avant.
+
+**`repartirCartes()`** empile chaque côté en rangées et n'envoie une carte de l'autre côté que si son côté ne peut
+plus empiler sans dépasser le plafond, la moitié de la hauteur de `.mid` ; la hauteur d'une carte s'estime à
+34 + 27 × ses lignes de coureurs, avant qu'elle soit dessinée.
+
+**Vérifié ensuite** (mesures.md §118) : la carte vient 12 s après la coupure et les coureurs restent dans le peloton
+en attendant la réponse ; le faux relevé d'une régression a été retiré des règles.
+
+
+## §80 · La poignée sous l'ovale, visible · build 268
+
+Son point 271. Trois règles de style : la poignée du bas passe de 6 à 8 px, son ::after prend le gris --line2 à
+55 % au repos et l'accent au survol et pendant le glissé. Rien d'autre ne change : même élément, même RZ.below,
+même double-clic.
+
+
+## §81 · La poignée sous le dessin : elle pose la hauteur de l'ovale · build 269
+
+Son point 272. La zone de l'ovale, .mid > .oval, passe de flex:1 1 auto à flex:0 1 auto avec aspect-ratio 854 / 492
+— le rapport du viewBox — et height: var(--h-oval, auto) : sans poignée sa hauteur est celle du dessin borné par
+la largeur, exactement ce que l'ancienne zone étirée dessinait (668 px pour 1160 de large), et elle se resserre si
+la hauteur manque. La zone du bas prend le reste (flex:1 1 auto, min-height --h-acts-nat, align-content:end). La
+poignée, data-rsz="ovh", pilote --h-oval : clé ovh dans LAY et CSSVAR, plancher 120 px, plafond la zone moins la
+barre et ses écarts ; sign +1, le double-clic l'efface. Le cran belowDetent() n'a plus d'objet. Une valeur below
+gardée dans tct.layout n'est plus lue. Mesuré en 1920 × 1080 : dessin 668 px, poignée à 738, tirée de 200 px le
+dessin fait 468 et la barre reste à 982–1070 ; double-clic, 668 de nouveau.

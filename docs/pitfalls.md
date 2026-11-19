@@ -1173,3 +1173,14 @@ fois par seconde, dans la console, pendant que l'écran paraissait vivre.
 **Retenu** : après avoir sorti un bloc, chercher dans la fonction chaque variable de l'ancienne
 portée (`grep` sur `r\.`, `lap`, `li`…) avant de lancer, et **lire la console au premier pas** de
 l'essai, pas à la fin.
+
+
+### D53 · Un nom de classe neuf peut déjà exister dans styles.css
+
+Build 266 : les deux moitiés de la zone des cartes s'appelaient `half left` et `half right`. Mesurée, la moitié
+droite faisait 500 px au lieu de 574, et sa carte ne touchait pas le bord : `.right` est la colonne du sprint dans
+`styles.css` (`width:clamp(500px, 29%, 560px)`), et la moitié en héritait. Les moitiés s'appellent `hg` et `hd`.
+
+**Avant de nommer un élément** dans le prototype, chercher le nom dans `styles.css` : cette feuille est partagée, ses
+sélecteurs sont courts (`.right`, `.row`, `.rows`, `.hd`, `.chip`), et une collision ne lève aucune erreur — elle se
+voit seulement à la mesure.

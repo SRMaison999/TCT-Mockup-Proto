@@ -850,6 +850,23 @@ l'ovale ; la réponse s'applique partout où le nom s'affiche.
 
 ---
 
+### Ce qui, à l'écran, prend de la place à vide · relevé du 19 novembre 2026, à trancher
+
+Sa règle du point 266 : « NE CREE PAS DE BOUTON OU DE MENU OU DE CARTE QUI OCCUPENT DE LA PLACE ALORS QU'ILS
+SONT VIDES ! ». Mesuré sur le prototype en 1920 × 1080, simulateur masqué, avant le départ, build 265 :
+
+| Ce qui est vide et prend de la place | Place prise | D'où il vient |
+|---|---|---|
+| La carte du sprint avant la cloche : « waiting for the bell », cinq places vides, les commandes du sprint | 500 × 1008 px, toute la colonne de droite | sa page du 29 octobre 2026 |
+| La case de dossards B, tant qu'elle est vide | 236 × 32 px | son point 262 |
+| Les deux bandes « new group » de la timeline, au-dessus et au-dessous des groupes | 166 × 30 px chacune | son point 115 |
+| Les deux boutons SET LEADER sur la piste, au repos | 190 × 49 px chacun | son point 112 |
+| La timeline sous le dernier groupe | 543 px de haut | la colonne elle-même |
+
+Ne prennent rien à vide : les cartes de proposition (0 px sans carte), le registre Laps… (0 px fermé). Les quinze
+boutons grisés de la barre sur dix-sept avant toute sélection ne sont pas vides, ils sont grisés (son point 124 :
+la fenêtre d'actions ne change pas de taille avec la sélection).
+
 ## 16. Le simulateur : courses enregistrées, Restart, REC
 
 Cette section vient après le §15 pour ne renuméroter aucune autre : les six sections qui la
@@ -4110,3 +4127,292 @@ Et, les trois zones faites :
 NOC, le gap et les deux colonnes d'icônes, dans la liste de départ le BIB, le drapeau et le NOC. Les
 proportions sont celles de la carte à 500 px, donc sans poignée l'écran est celui d'avant (point 119).
 Les chiffres, les drapeaux et les boutons gardent leur taille.
+
+
+### 261 · Le panneau de l'ovale, aligné · 19 novembre 2026
+
+Après avoir essayé le build 260, sur les commandes revenues dans l'ovale au build 258 :
+
+> « Maintenant les boutons qui sont revenus dans l'ovale, tu n evas quand même pas les laisser comme
+> ça ? C'est une réplique parfaite du croquis que j'avais fait ! C'est moche ! Il faut aligner les
+> boutons et les rendre plus beaux »
+
+Une maquette lui a été proposée, `mockups/maquette-panneau-ovale.html` : sous le titre, trois colonnes
+et deux lignes, toutes les cases de la même hauteur, chaque colonne de la même largeur sur ses deux
+lignes ; toutes les boîtes blanches à texte noir, FINAL, ARM FINISH et les provenances compris ; TO GO
+et ARM START seuls en couleur. Sa réponse :
+
+> « Oui, code-la »
+
+**Codé au build 261.** Son croquis reste la référence de ce que le panneau contient et de l'ordre des
+cases ; la maquette fixe leur alignement et leur habillage.
+
+### Les commits se font sur sa demande, jamais seuls · 19 novembre 2026
+
+Au moment où un commit partait de lui-même à la fin d'un tour :
+
+> « non tu ne commit pas ! »
+>
+> « tu commite seulement quand je te le dis »
+
+La règle du 28 octobre 2026 — les documents se mettent à jour dans le même tour que le code — tient ;
+le commit est un acte à part, qui attend son mot.
+
+
+### 262 · La barre d'actions sous l'ovale : deux Clear, deux cases de dossards, deux étages · 19 novembre 2026
+
+Sa capture, retouchée : la barre d'actions quitte sa boîte à gauche et passe sous l'ovale, en bas de l'écran,
+sur deux lignes de boutons.
+
+> « il faut encore adapter la partie des boutons d'action en dessous de l'ovale comme sur la capture, mais
+> proprement »
+
+Sur les deux cases blanches à côté de Clear :
+
+> « ce sont deux zones permettant d'afficher des numéros de dossards auxquels on va appliquer les actions.
+> actuellement il y en a une, là j'en ai dessiné une 2ème »
+
+Sur ce que porte la deuxième :
+
+> « les dossards que l'on désire. mais il faut imaginer que l'on doive sélectionner la case de dossards avant
+> d'actionnner un bouton »
+
+Sur la première maquette (`mockups/maquette-barre-actions.html`), qui portait tous les boutons d'alors :
+
+> « c'et vrai qu'il manque le bouton CRASH (qui lui ouvre ensuite un menu avec les boutons Mech et Back in
+> race). Alors ajoute le à droite. et ajoute un deuxième bouton CLEAR, cela permettra de clear le contenu de
+> chacune zone de numéros de dossards séparément »
+
+> « alors moi je les aurais mis différemment : CLEAR - DOSSARDS    DOSSARDS - CLEAR
+> ET le bouton "Ignore in Sprint 1" peut être renommé "No Pts" et le bouton "No Transponder" peut être renommé
+> " No TRA" : cela permettra de résuire un peu la largeur de ces boutons »
+
+Puis, cette disposition refusée :
+
+> « il faut mettre les deux boutons CLEAR l'un au-dessus de l'autre, suivis des cases de dossard l'une en dessus
+> de l'autre, et ensuite tous les autre boutons sur deux étages sans laisser d'espace vide »
+
+> « et il faut prévoir de pouvoir inscrire 8 dossards par case »
+
+> « et tous les boutons doivent être de la même dimension »
+
+Treize boutons ne se partageant pas en deux étages égaux, il lui a été proposé que Crash, à droite, prenne les
+deux étages : « ok ». Sur la maquette finale :
+
+> « cette fois c'est bon. juste une chose, il faut que cette zone soit responsive latéralement puisque la
+> timeline et la carte de sprints sont susceptibles de réduire la largeur à leur disposition »
+
+> « Oui, mais cette zone d'action, elle doit être responsive seulement horizontalement et non pas verticalement.
+> Il faut toujours garder les deux étages. Mais par contre, si on agrandit la timeline et on agrandit la carte de
+> sprint, la largeur à disposition de la zone du bouton d'action va se réduire. Donc il faut faire en sorte qu'il
+> n'y ait pas de chevauchement. Voilà, c'est tout. »
+
+**Codé au build 262.** La barre prend la largeur que la zone du bas lui laisse ; sa hauteur est celle de ses deux
+étages et ne bouge plus — **le point 122 (« Elle se resserre seule ») est remplacé**, et la poignée des actions
+(point 120, build 149) n'a plus d'objet et disparaît. La case active porte un cadre bleu ; un clic sur l'autre
+case l'active, et les coureurs cliqués dans la timeline ou sur l'ovale entrent dans la case active. Chaque Clear
+vide la case de sa ligne. Mech. et Back in race ne sont plus dans la barre : la carte de crash porte Back in race
+et Another bike pour chaque coureur (point 254) ; aucun bouton ne crée plus de groupe « Mech. » directement.
+Les cartes de proposition restent à droite de la barre et lui prennent de la largeur quand il y en a.
+
+
+### 263 · La barre d'actions reste collée en bas de la page · 19 novembre 2026
+
+Il a essayé le build 262 sur son écran : la zone du bas y gardait une hauteur qu'il avait posée à la poignée
+du temps de l'ancienne barre, et la barre à deux étages se calait en haut de cette zone, du vide sous elle.
+
+> « Ca ne va pas ! cette zone doit rester collé en bas de la page ! »
+
+**Codé au build 263.** La barre garde la hauteur de ses deux étages et se cale au bas de sa zone, quelle que soit
+la hauteur de celle-ci. Une hauteur de la zone du bas posée avant le build 262 est oubliée une fois au
+chargement — elle l'avait été pour une barre qui grandissait, et ne laissait plus que du vide ; ce que le poste
+pose ensuite est gardé (point 119).
+
+
+### 264 · Les commandes du simulateur suivent les onglets, à gauche · 19 novembre 2026
+
+Sa maquette du matin (point 258) montrait déjà Undo, le numéro de build, les commandes du simulateur et le
+bouton Simulator à la suite des onglets ; le build 258 les avait laissés à droite.
+
+> « et je constate que tu n'as pas déplacé les boutons d'action du simulateur ! Ils doivent être déplacés vers
+> la gauche ! »
+
+**Codé au build 264.** Dans la barre du haut, de gauche à droite : les cinq onglets, Undo, le numéro de build,
+⏮ 30s, lecture et pause, ×1 ×4 ×16, l'horloge du simulateur, Replay et New, Simulator ; le reste de la barre est
+vide.
+
+
+### 266 · Rien de vide ne prend de place · 19 novembre 2026
+
+Devant les maquettes des cartes de proposition au-dessus de la barre d'actions, et après avoir demandé de
+« réfléchir plus et mieux » à la place disponible, en capitales :
+
+> « NE GASPILLE PAS DE L'ESPACE INUTILEMENT ! »
+
+> « NE CREE PAS DE BOUTON OU DE MENU OU DE CARTE QUI OCCUPENT DE LA PLACE ALORS QU'ILS SONT VIDES ! »
+
+**Pas encore codé.** La règle vaut pour tout l'écran ; ce qu'elle condamne aujourd'hui est relevé au §15.
+
+
+### 267 · La question du coureur non lu sur deux boucles, mot pour mot · 19 novembre 2026
+
+Pendant la revue des cartes de proposition :
+
+> « Si un coureur n'est pas détecté sur deux boucles consécutives il doit y avoir une question :
+>
+> BIB 7 not read at Pursuit B and Pursuit A
+> still with 3-Bunch ?  YES / NO »
+
+C'est la question de son point 253, dans sa forme finale : sur deux lignes, le fait puis la question, et les
+deux réponses à côté. **Le prototype l'écrit déjà** depuis le build 254, dans texteAbsent() : « 7 not read at
+Pursuit B and Pursuit A · still with 3-Bunch ? » avec YES et NO, sur une seule ligne séparée d'un point médian.
+La coupure en deux lignes suit la forme des cartes, encore à trancher.
+
+
+### 268 · Les cartes : les tours à gauche, les chutes et les transpondeurs à droite · 19 novembre 2026
+
+Sur la maquette des cartes alignées en colonnes de même largeur, mockups/maquette-cartes-proposition.html :
+
+> « et on va aussi définir que les cartes de crash se placent dans la moitié droite, tout comme les cartes
+> d'alerte de transpondeurs pas détectés, et les cartes de proposition de tours gagnés/perdus se placent sur la
+> moitié gauche. ET quand une moitié est remplie, alors on peut également utiliser l'autre côté »
+
+Et sur le vide qui reste au milieu, entre les deux moitiés, quand il a demandé « et la zone jaune reste vide ? »
+et qu'on lui a répondu non :
+
+> « Si justement elle doit rester vide ! Tu as déjà oublié que la timeline et la carte de sprint ont des poignées
+> pour être agrandies ? »
+
+Les cartes gardent donc leur largeur, chaque moitié se remplit depuis son bord, et ce qui reste au milieu est le jeu
+que les poignées de la timeline et de la carte du sprint viennent prendre.
+
+**Pas encore codé** : la forme des cartes se fixe sur la maquette avant le code.
+
+
+### 269 · Les cartes de proposition, codées sur la maquette approuvée · 19 novembre 2026
+
+La place, d'abord :
+
+> « ok maintenant les cartes de proposition + le menu de crash, se placent au-dessus de la zone d'action. Sur la
+> même largeur que la zone d'action. Cependant les cartes de proposition sont actuellement mal proportionnées, il
+> faut les réduire »
+
+Puis, devant le build 264 où la carte de crash prenait sa colonne à droite de la barre :
+
+> « Ca ne va pas ! Quand on ouvre le menu de crash, la zone des boutons d'action disparait ! »
+
+> « et en plus il faut scroller pour apercevoir tout le contenu du menu de crash ! Mais enfin c'est ridicule ! »
+
+La forme, ensuite, sur `mockups/maquette-cartes-proposition.html`, après plusieurs versions refusées — une liste
+pleine largeur (« C'EST PLEIN DE VIDE »), des cartes à la file (« On ne s'y retrouve pas du tout ! L'opérateur
+doit y voir clair »), un titre qui fixait la largeur (« un titre qui prend toute une largeur et qui crée une carte
+à 3/4 vide ») :
+
+> « si un coureur n'est pas détecté sur deux boucles consécutives il doit y avoir une question :
+> BIB 7 not read at Pursuit B and Pursuit A / still with 3-Bunch ?  YES / NO »
+
+> « et même on peut encore améliorer car il y a deux fois le numéro de dossard »
+
+Sur la carte à trois coureurs — le texte une fois en tête, un coureur par ligne avec son YES / NO :
+
+> « Ca c'est bien, »
+
+Et sur la carte à un coureur dessinée autrement, le coureur à gauche du texte :
+
+> « Ca c'est moins bien »
+
+Puis :
+
+> « Maintenant comme tu peux le constater, les colonnes selon leur contenu ont toute une largeur différente. Cela
+> devient moche asymétrique. Corrige ça »
+
+> « code les, et respecte les couleurs »
+
+**Codé au build 266.** Les cartes se posent au-dessus de la barre d'actions, sur sa largeur, en colonnes de 236 px
+alignées par le bas, les tours à gauche et le reste à droite (point 268). Chaque carte : le texte une fois en tête,
+le fait puis la question, les boutons qui valent pour toute la carte au bout de cette ligne ; dessous un coureur par
+ligne — dossard, drapeau, code pays — avec ses propres boutons au bout. Le dossard n'est écrit que dans la pastille.
+La carte de crash prend deux colonnes. Les couleurs sont celles d'avant : la carte de tour verte, la chute rouge
+sombre, les autres bleues. Une réponse sur la ligne d'un coureur d'une carte de transpondeur ne vaut que pour lui.
+Sans carte, la zone n'existe pas ; avec, c'est l'ovale qui cède, jamais la barre, et rien ne défile.
+
+
+### 270 · Une seule carte par groupe, une seule chute par tour, et une moitié n'est pleine qu'en hauteur · 19 novembre 2026
+
+Il a essayé le build 266 sur une course qui tourne. Deux coureurs non lus du même peloton, l'un lu pour la
+dernière fois une boucle avant l'autre, faisaient deux cartes :
+
+> « Mais là pourquoi tu recrées deux fois la même carte ? Pourquoi tu ne crées pas une carte avec les deux
+> coureurs dedans ? »
+
+Sur l'idée de porter les boucles de chaque coureur sur sa ligne quand elles diffèrent :
+
+> « C'est ridicule ! Ils sont dans le me peloton, ils manquent sur des boucles qui se suivent ! »
+
+Deux chutes ouvertes au même tour faisaient deux cartes de crash, dont une à gauche :
+
+> « Et ça ne s'arrange pas, tu crées deux cartes de crash identiques, et tu en places une à gauche et une à
+> droite ? Nul nul nul »
+
+Et sur la carte de gauche, venue de la règle du débordement appliquée à la rangée du bas :
+
+> « TU NE POUVAIS PAS LA PLACER AU DESSUS ? elle n'est pas pleine, il y a de la place en dessus !!!!!!!!!! »
+
+**Codé au build 267.** Les coureurs non lus d'un même groupe font une seule carte, dont le texte nomme les deux
+dernières boucles que le groupe a passées sans eux ; un coureur qui se met à manquer rejoint la carte ouverte de
+son groupe. YES pose un passage par boucle manquée, toutes. Un coureur dont le crash est confirmé au tour où un
+crash est déjà ouvert le rejoint : une seule carte. Une moitié n'est pleine que lorsqu'elle ne peut plus empiler
+de rangée — plafond : la moitié de la hauteur de la zone de l'ovale —, et c'est seulement alors que l'autre côté
+sert.
+
+**Vérifié à l'écran** (mesures.md §118) : deux transpondeurs coupés en course à 0:17, une seule carte à 0:29,
+« not read at Pursuit A and Finish · still with 1-Bunch ? », le 12 et le 52 chacun sur sa ligne, et les deux restent
+dans le peloton tant qu'on n'a pas répondu. Un premier essai, transpondeurs coupés AVANT le départ, n'avait donné
+aucune carte : sans aucune lecture, un coureur est compté par la bande comme un vélo sans transpondeur, ce n'est
+pas le cas du point 253. Le relevé contraire écrit un moment au §15 était faux et a été retiré.
+
+
+### 271 · La poignée sous l'ovale doit se voir · 19 novembre 2026
+
+> « crée une poignée horizontale à placer au-dessous de l'ovale afin que l'on puisse déplacer la limite de hauteur
+> de l'ovale »
+
+> « elle n'est plus là cette poignée ! »
+
+> « elle n'existe plus !!!!!!!!!!!!!!!!!!!!!! Tu l'as retiré »
+
+La poignée du 31 octobre 2026 (point 121) n'a pas été retirée : elle est toujours entre l'ovale et la zone du bas,
+et elle fonctionne. Mais elle était invisible au repos, et depuis le build 262 la zone du bas ne fait plus que la
+hauteur de la barre : la poignée est descendue à 140 px sous le dessin de la piste, dans le noir, là où personne ne
+la cherche. Seule la poignée de la largeur de la barre d'actions a été retirée (point 262), parce que la barre prend
+toute la largeur.
+
+**Codé au build 268.** La poignée se voit au repos : une ligne grise sur toute la largeur de la zone, bleue sous la
+souris. Les trois autres poignées restent comme elles étaient.
+
+
+### 272 · Pas de barre grise : la poignée, invisible, juste sous le dessin de la piste · 19 novembre 2026
+
+Sur la ligne grise du build 268 :
+
+> « je ne veux pas de barre grise horizontale !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! »
+
+Et sur la poignée elle-même, qu'il ne trouvait plus (point 271) :
+
+> « Il n'y avait que celle là, et maintenant il n'y en a plus »
+
+**Codé au build 269.** La ligne grise est retirée. La zone de l'ovale n'a plus que la hauteur de son dessin, et
+la poignée, invisible au repos comme les trois autres, est juste sous le dessin de la piste : c'est là qu'il la
+cherchait. Tirée, elle pose la hauteur de l'ovale ; tout ce qui est dessous est à la zone des cartes et de la
+barre, qui reste collée en bas. Sans poignée, le dessin a exactement la taille d'avant.
+
+
+### 273 · Le coureur non lu ne quitte pas son groupe si l'on répond qu'il y est · 19 novembre 2026
+
+Devant le relevé du §15 — le coureur dont le transpondeur se tait quitte son groupe avant que la question se pose :
+
+> « il ne doit pas quitter son groupe si on répond qu'il est toujours dans le bunch »
+
+Avec son point 253, qui tient : tant que la question n'a pas de réponse, il reste affiché à sa dernière place dans
+le groupe. **C'est déjà ainsi** — son constat le même jour : « mais d'ailleurs il ne quitte pas son groupe ! »,
+« RAS ici ». YES pose ses passages et il est de nouveau lu avec le groupe ; mesures.md §118.

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maquette · les cartes de proposition au-dessus de la barre</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Maquette seule, pas de moteur. Demandée le 19 novembre 2026 : « les cartes de proposition + le menu de crash, se
+   placent au-dessus de la zone d'action. Sur la même largeur que la zone d'action. Cependant les cartes de
+   proposition sont actuellement mal proportionnées, il faut les réduire ». La barre est celle de
+   maquette-barre-actions.html ; les cartes sont redessinées plus petites. */
+:root{--bg:#121416;--panel:#4a4945;--line:#2d3237;--line2:#87a8c9;--fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;
+  --play:#1CC634;--crit:#FF5C5C;--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font:14px/1.3 var(--sans);color:var(--muted);display:flex;flex-direction:column;gap:22px;padding:28px;min-width:1216px}
+h1{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin:0}
+.zone{width:1160px;flex:0 0 auto;height:360px;border:1px dashed #3a3f45;border-radius:4px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:8px}
+.zone .ov{flex:1 1 auto;display:flex;align-items:center;justify-content:center;color:#3a3f45;font:600 13px var(--sans);letter-spacing:.06em}
+/* les cartes : chacune large comme son contenu, côte à côte, alignées en bas ; dedans, le titre en tête et
+   un coureur par ligne avec ses boutons, pour valider chacun séparément */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;align-items:end;width:100%}
+.half{display:grid;grid-template-columns:repeat(auto-fill,236px);align-items:end;gap:6px}
+.half.right{justify-content:end}
+.card.crash{grid-column:span 2}
+.card{display:flex;align-items:center;gap:12px;padding:3px 8px 4px;max-width:100%;
+  background:#1d2024;border:1px solid var(--line);border-left:4px solid var(--line2);border-radius:4px;font:500 12px var(--sans);color:#c9d6f5}
+.card .rows{display:flex;flex-direction:column;gap:3px}
+.card .hd{display:flex;flex-direction:column;gap:2px;font:500 12px/1.4 var(--sans);min-width:0}
+.card .hd > span:first-child{white-space:normal}
+.card .hd .q{display:flex;align-items:center;gap:8px}
+.card .hd .q .pa{margin-left:4px}
+.card .who{display:flex;align-items:center;gap:6px}
+.card.crash,.card.multi{flex-direction:column;align-items:stretch;gap:3px}
+.card.multi .hd{align-self:flex-start}
+.card .hd .q{justify-content:space-between}
+.card .hd .q .pa{margin-left:12px}
+.card .rows .row .pa{margin-left:auto}
+.card.crash .hd{align-self:flex-start}
+.card .hd b{color:var(--muted);font-size:12px}
+.card .hd .pa{justify-content:flex-start}
+.card .row{display:grid;grid-template-columns:28px 20px 34px auto;gap:6px;align-items:center;height:24px}
+.card .pa{display:flex;gap:4px;justify-content:flex-end}
+.card.lap{border-left-color:var(--play)}
+.card.lap .hd b{color:var(--play)}
+.card.crash{border-left-color:var(--crit);background:#2b1818}
+.card.crash .hd b{color:var(--crit)}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:20px;padding:0 5px;border-radius:4px;font:600 13px var(--mono);color:#fff;background:var(--line2)}
+.flag{width:20px;height:13px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.noc{font:600 12px var(--mono);letter-spacing:.04em}
+.btn{font:500 12px var(--sans);color:var(--fg);background:#23272b;border:1px solid var(--line2);border-radius:4px;padding:0 8px;height:22px;cursor:pointer;white-space:nowrap}
+.btn.ok{background:#143824;border-color:var(--play);color:var(--play);font-weight:600}
+.btn.quiet{color:var(--muted)}
+.btn.primary{background:var(--acc);border-color:var(--acc);color:#0b1020;font-weight:600}
+.btn.danger{border-color:#6b2a2a;color:#ffb3b3}
+.btn.sq{width:26px;padding:0}
+/* la barre, telle qu'approuvée */
+.bar{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:8px 10px;display:flex;gap:6px;width:100%}
+.clears,.cases,.rest{display:grid;grid-template-rows:32px 32px;gap:6px}
+.clears{flex:0 0 auto;width:62px}.cases{flex:0 1 236px;min-width:150px}.rest{flex:1 1 auto;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
+.rest .tall{grid-column:7;grid-row:1/3}
+.bar .btn{height:100%;width:100%;padding:0 6px;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bibs{height:100%;display:flex;align-items:center;gap:6px;padding:0 8px;background:#fff;border:2px solid #c9ccd0;border-radius:4px;color:#111;font:600 13px var(--mono);overflow:hidden;white-space:nowrap}
+.bibs.on{border-color:var(--acc);box-shadow:0 0 0 2px #2265e244}
+.bibs .n{font:600 9px var(--sans);letter-spacing:.08em;color:#5a5f66}
+.bibs .e{color:#9aa0a6;font:500 12px var(--sans)}
+.note{width:1160px;font:400 13px/1.5 var(--sans);color:var(--dim)}
+.note b{color:var(--muted)}
+</style></head><body>
+<h1>Les cartes de proposition au-dessus de la barre · proposition du 19 novembre 2026</h1>
+<div class="zone">
+  <div class="ov">ICI L'OVALE, SUR TOUTE LA HAUTEUR RESTANTE</div>
+  <div class="cards">
+    <div class="half left">
+      <div class="card multi lap"><div class="hd"><span class="q"><b>Lap gained?</b> · Lap 14<span class="pa"><button class="btn quiet sq">✕</button></span></span></div><div class="rows"><div class="row"><span class="chip">12</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#d62828"/></svg><span class="noc">SUI</span><span class="pa"><button class="btn ok sq">✓</button></span></div></div></div>
+      <div class="card multi lap"><div class="hd"><span class="q"><b>Lap gained?</b> · Lap 22<span class="pa"><button class="btn ok">✓ all</button><button class="btn quiet sq">✕</button></span></span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok sq">✓</button></span></div><div class="row"><span class="chip">12</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#d62828"/></svg><span class="noc">SUI</span><span class="pa"><button class="btn ok sq">✓</button></span></div><div class="row"><span class="chip">23</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#9f1239"/></svg><span class="noc">POR</span><span class="pa"><button class="btn ok sq">✓</button></span></div><div class="row"><span class="chip">58</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#0284c7"/></svg><span class="noc">KAZ</span><span class="pa"><button class="btn ok sq">✓</button></span></div></div></div>
+    </div>
+    <div class="half right">
+      <div class="card multi"><div class="hd"><span><b>not read</b> at Pursuit B and Pursuit A</span><span class="q">still with 3-Bunch ?</span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div><div class="row"><span class="chip">12</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#d62828"/></svg><span class="noc">SUI</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div><div class="row"><span class="chip">46</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">BEL</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div></div></div>
+      <div class="card multi"><div class="hd"><span><b>not read</b> at Pursuit B and Pursuit A</span><span class="q">still with 3-Bunch ?</span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div></div></div>
+      <div class="card multi"><div class="hd"><span>not with 3-Bunch</span><span class="q">Crash ?</span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div></div></div>
+      <div class="card multi"><div class="hd"><span>no crash</span><span class="q">Transponder KO ?</span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet sq">✕</button></span></div></div></div>
+      <div class="card crash"><div class="hd"><span><b>CRASH</b> · Lap 15 · still 5 laps to rejoin</span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok">Back in race</button><button class="btn quiet">Another bike</button><button class="btn quiet">Abandons</button></span></div></div></div>
+    </div>
+  </div>
+  <div class="bar">
+    <div class="clears"><button class="btn quiet">Clear</button><button class="btn quiet">Clear</button></div>
+    <div class="cases"><div class="bibs on"><span class="n">A</span>9 11</div><div class="bibs"><span class="n">B</span><span class="e">—</span></div></div>
+    <div class="rest">
+      <button class="btn primary">Group</button><button class="btn">Merge ↑</button><button class="btn">+1 lap</button><button class="btn">−1 lap</button><button class="btn">Laps…</button><button class="btn">Leader</button><button class="btn danger tall">Crash</button>
+      <button class="btn">No Pts</button><button class="btn">No TRA</button><button class="btn">Swapped</button><button class="btn danger">ABD</button><button class="btn danger">DNF</button><button class="btn danger">DSQ</button>
+    </div>
+  </div>
+</div>
+<p class="note"><b>La forme qu'il a approuvée le 19 novembre 2026 (« Ca c'est bien »).</b> Le texte est écrit une seule fois, en tête, sur
+ses deux lignes : le fait, puis la question ; dessous, <b>un coureur par ligne</b> — dossard, drapeau, code pays — avec
+ses réponses au bout de sa ligne, pour répondre pour l'un sans répondre pour les autres. À un seul coureur, la même
+forme : il l'a préférée à la carte où le coureur était à gauche du texte (« Ca c'est moins bien »). Le dossard n'est
+écrit qu'une fois, dans la pastille. La carte de crash : son titre, puis un coureur par ligne avec Back in race,
+Another bike, Abandons. <b>Toutes les cartes ont la même largeur, 236 px</b>, et s'alignent en colonnes au-dessus de la barre, par le bas.
+<b>Les tours gagnés ou perdus se placent dans la moitié gauche ; les chutes et les transpondeurs non lus dans la moitié
+droite</b> ; quand une moitié est pleine, l'autre côté sert aussi. La carte de crash, plus large, prend deux colonnes ; sans carte, la zone n'existe pas. Les textes et les boutons sont ceux que le prototype écrit aujourd'hui. <b>Un tour gagné</b> : ce que la carte écrit aujourd'hui, rien de plus — « Lap gained? » et le tour, avec au bout de la
+ligne le ✕ et, à plusieurs coureurs, le « ✓ all » ; dessous un coureur par ligne avec son ✓.</p>
+
+<h1>Quand la moitié droite est pleine, la carte suivante prend la gauche</h1>
+<div class="zone" style="height:220px">
+  <div class="ov">ICI L'OVALE</div>
+  <div class="cards">
+    <div class="half left">
+      <div class="card multi lap"><div class="hd"><span class="q"><b>Lap gained?</b> · Lap 14<span class="pa"><button class="btn quiet sq">✕</button></span></span></div><div class="rows"><div class="row"><span class="chip">12</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#d62828"/></svg><span class="noc">SUI</span><span class="pa"><button class="btn ok sq">✓</button></span></div></div></div>
+      <div class="card multi"><div class="hd"><span><b>not read</b> at Finish and Pursuit B</span><span class="q">still with 2-Bunch ?</span></div><div class="rows"><div class="row"><span class="chip">23</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#9f1239"/></svg><span class="noc">POR</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div></div></div>
+    </div>
+    <div class="half right">
+      <div class="card multi"><div class="hd"><span><b>not read</b> at Pursuit B and Pursuit A</span><span class="q">still with 3-Bunch ?</span></div><div class="rows"><div class="row"><span class="chip">7</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">NED</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div></div></div>
+      <div class="card multi"><div class="hd"><span><b>not read</b> at Pursuit A and Finish</span><span class="q">still with 1-Bunch ?</span></div><div class="rows"><div class="row"><span class="chip">46</span><svg class="flag" viewBox="0 0 3 2"><rect width="3" height="2" fill="#1d4ed8"/></svg><span class="noc">BEL</span><span class="pa"><button class="btn ok">YES</button><button class="btn quiet">NO</button></span></div></div></div>
+    </div>
+  </div>
+  <div class="bar" style="opacity:.5"><div class="clears"><button class="btn quiet">Clear</button><button class="btn quiet">Clear</button></div><div class="cases"><div class="bibs on"><span class="n">A</span><span class="e">—</span></div><div class="bibs"><span class="n">B</span><span class="e">—</span></div></div><div class="rest"><button class="btn primary">Group</button><button class="btn">Merge ↑</button><button class="btn">+1 lap</button><button class="btn">−1 lap</button><button class="btn">Laps…</button><button class="btn">Leader</button><button class="btn danger tall">Crash</button><button class="btn">No Pts</button><button class="btn">No TRA</button><button class="btn">Swapped</button><button class="btn danger">ABD</button><button class="btn danger">DNF</button><button class="btn danger">DSQ</button></div></div>
+</div>
+<p class="note">Trois coureurs non lus, chacun sa carte, et un tour gagné. La moitié droite reçoit les deux premières cartes de
+transpondeur et ses deux colonnes sont prises : la troisième, celle du 23, se pose dans la moitié gauche, à côté du
+tour gagné, plutôt que d'ouvrir une nouvelle rangée à droite. Une nouvelle rangée ne s'ouvre que lorsque les deux
+moitiés sont pleines.</p>
+</body></html>
