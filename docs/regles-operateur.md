@@ -3642,3 +3642,30 @@ jamais sur un écart à un troisième coureur : « le 1 est-il entre 0 et 1 seco
 Et **le rattrapage merge le groupe dans le peloton** : à l'instant du constat, le groupe cesse
 d'être un bloc à part, il devient le peloton. C'est la même phrase que son « Hop, il est dans le
 groupe, c'est fini » du même jour, dite du côté de l'affichage.
+
+### 244 · Les LAST restent LAST quand les LEADERS les dépassent · 19 novembre 2026
+
+Dit sur la capture de la build 246 au tour 28, 6:00.0, où le bloc de tête montrait « 1-LEADERS
+4 RIDERS : 1, 2, 23, 24 » :
+
+> « les 23 et 24 doivent être LAST »
+
+Puis, après avoir demandé la mesure :
+
+> « j'ai dit une chose sans vérifier : sur cette capture, est-ce que les 23 et 24 viennent tout juste
+> de perdre leur tour ? si oui ils doivent être dans le peloton. Si ils sont sur le point de perdre
+> un deuxième tour sur le peloton ils doivent être LAST »
+
+Et la règle, dite en voyant la mesure :
+
+> « si les LEADERS rattrapent et dépassent les LAST les LAST demeurent LAST !!!! »
+
+**Le rang d'un groupe ne change pas parce qu'un autre groupe le dépasse sur la piste.** Un groupe de
+tête qui revient sur un groupe lâché et le double reste le groupe de tête ; le groupe lâché reste le
+groupe de queue. Les deux sont au même endroit de la piste à cet instant, et cela ne dit rien de
+leur place dans la course.
+
+La mesure qui a tranché sa question, à 360,0 s : le premier du peloton (BIB 3) est à **1,08 s
+derrière le 23** et à **0,96 s derrière le 24**, et le peloton leur a repris **0,92 tour** depuis
+leur tour perdu de 332,2 s. Ils ne viennent donc pas d'être rattrapés : ils sont **sur le point de
+perdre un deuxième tour**. Ils doivent être LAST.

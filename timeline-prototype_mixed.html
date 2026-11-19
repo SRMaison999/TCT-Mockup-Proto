@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '246';
+const BUILD = '247';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1652,7 +1652,18 @@ function computeGroupsVraiment(M) {
     MC.chaine().forEach((x, i) => { mcRang.set(x.c.bib, i); mcRetard.set(x.c.bib, x.anneau); });   // l'anneau : la lecture des boucles, et rien qu'elle (E13)
     MC.groupes().forEach((g, i) => g.coureurs.forEach(b => mcBloc.set(b, i)));
   }
+  // LE RANG D'UN GROUPE NE CHANGE PAS PARCE QU'UN AUTRE LE DÉPASSE SUR LA PISTE. Sa règle du
+  // 19 novembre 2026 : « si les LEADERS rattrapent et dépassent les LAST les LAST demeurent LAST ».
+  // Les deux sont au même endroit de la piste à cet instant, et cela ne dit rien de leur place dans
+  // la course. Ce qui la dit, ce sont les tours que l'opérateur a validés.
+  //   Mesuré au tour 28, 6:00,0, sur la course aux deux échappés et deux lâchés : le bloc de tête
+  // montrait « 1-LEADERS 4 RIDERS : 1, 2, 23, 24 » — les BIB 1 et 2, qui ont un tour d'avance, dans
+  // le même bloc que les BIB 23 et 24, qui ont un tour de retard et à qui le peloton vient d'en
+  // reprendre 0,92 de plus. Ses mots : « les 23 et 24 doivent être LAST ».
+  const tourDe = r => S.lapStatus[r.bib] | 0;
   const cmpRead = (a, b) => {
+    const ta = tourDe(a.r), tb = tourDe(b.r);
+    if (ta !== tb) return tb - ta;        // le tour validé passe avant tout : un LAST reste LAST
     const ea = ecEff(a.r), eb = ecEff(b.r);
     if (ea !== eb) return eb - ea;        // un tour d'écart non validé passe devant, ou derrière, tout le reste
     // LES COUREURS D'UN MÊME GROUPE RESTENT ENSEMBLE. Le groupe vient du moteur, et c'est lui qui
@@ -1750,7 +1761,8 @@ function computeGroupsVraiment(M) {
       let coupe = !g;
       if (prec) {
         const ba = mcBloc.get(prec.r.bib), bb = mcBloc.get(x.r.bib);
-        coupe = ecEff(prec.r) !== ecEff(x.r) ? true                // un écart non validé ne se mélange pas au peloton
+        coupe = tourDe(prec.r) !== tourDe(x.r) ? true              // un LAST reste LAST, même dépassé (point 244)
+              : ecEff(prec.r) !== ecEff(x.r) ? true                // un écart non validé ne se mélange pas au peloton
               : (ba != null && bb != null) ? ba !== bb
               : pairCass(prec, x, Math.max(0, x.behindRead - prec.behindRead));
       }
