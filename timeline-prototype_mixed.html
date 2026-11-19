@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '248';
+const BUILD = '249';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -2459,9 +2459,25 @@ function designateLeader(bib, how) {
   logEvent('LEADER', 'BIB ' + bib + ' is the race leader · ' + how, byOperator, byOperator ? () => { S.leader = prev; logEvent('LEADER', prev ? 'BIB ' + prev.bib + ' is the race leader again · reversal' : 'Race leader taken from the track · reversal', true); } : null);
   if (byOperator && !leadLinking) leadFirst(bib);
 }
-function dispLap() {   // the lap counter is counted on the race leader
+// LE COMPTEUR DE TOURS SE COMPTE SUR LES PASSAGES LUS, LE TOUR GAGNÉ RETIRÉ.
+//   Sa capture du 19 novembre 2026, sprint 2 : « là le peloton vient de boucler son 20ème tour mais
+// le sprint n'a pas été enregistré… le sprint a été enregistré au 21ème tour ».
+//   Sans leader désigné, le compteur retombait sur `raceLap()`, qui prend le coureur le plus loin
+// SUR LA PISTE sans lui retirer le tour qu'il a gagné. Mesuré : à 4:28, le BIB 1 a 19 passages et un
+// tour validé, le peloton en a 18 — le compteur affichait 20 alors que le peloton roulait son 19e.
+// Le sprint du tour 20 s'ouvrait donc un tour trop tôt, et ses passages — ceux qui terminent le 20e
+// tour du peloton, à 4:55 — arrivaient quand le compteur montrait déjà 21.
+//   Il se compte donc comme pour un leader désigné : sur les passages lus, moins les tours validés.
+function dispLap() {
   const r = S.leader && S.riders.find(x => x.bib === S.leader.bib);
-  return r && r.rec ? Math.min(LAPS, Math.floor((r.rec.d - TRACK * S.lapStatus[r.bib]) / TRACK) + 1) : raceLap();   // counted on the leader, in the bunch's lap once his laps are credited
+  if (r && r.rec) return Math.min(LAPS, Math.floor((r.rec.d - TRACK * (S.lapStatus[r.bib] | 0)) / TRACK) + 1);
+  let loin = null;
+  for (const x of S.riders) {
+    if (x.mode === 'out' || !x.rec) continue;
+    const v = x.rec.d - TRACK * (S.lapStatus[x.bib] | 0);
+    if (loin == null || v > loin) loin = v;
+  }
+  return loin == null ? raceLap() : Math.min(LAPS, Math.floor(loin / TRACK) + 1);
 }
 function lapMark(v) { return v === 0 ? 'same lap' : (v > 0 ? '+' : '−') + Math.abs(v); }
 function sprintToggle(bibs, reversal) {

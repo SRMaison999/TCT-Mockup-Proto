@@ -5174,3 +5174,37 @@ Les BIB 23 et 24 changent de côté **7 fois** sur toute la course, contre **50*
    rattrapage de 8:10.1 ne sortant plus.
 5. **Le côté ne coupe pas les blocs, il les range.** Essayé l'inverse : le peloton se brisait en
    morceaux et la course partait en vrille — 68 propositions, le BIB 11 à douze tours perdus.
+
+## §102 · Le compteur de tours comptait sur la piste, pas sur les passages, build 249, 19 novembre 2026
+
+Sa capture du sprint 2 : « le peloton vient de boucler son 20ème tour mais le sprint n'a pas été
+enregistré … le sprint a été enregistré au 21 ème tour ».
+
+**La cause.** Tant qu'aucun leader n'est désigné, le compteur retombait sur le coureur le plus loin
+**sur la piste**, sans lui retirer le tour qu'il a gagné. Relevé sur la course aux deux échappés et
+deux lâchés :
+
+| instant | passages du BIB 1 | son tour validé | passages du peloton | compteur affiché |
+|---|---|---|---|---|
+| 4:28.0 | 19 | +1 | 18 | **20** |
+| 4:41.0 | 19 | +1 | 19 | 20 |
+| 4:55.0 | 20 | +1 | 20 | 21 |
+
+Le BIB 1 a gagné un tour à 4:00.1 : il a 19 passages là où le peloton en a 18, et le compteur
+affichait 20 alors que le peloton roulait son 19e. Le sprint du tour 20 s'ouvrait donc **un tour
+trop tôt**, à 4:27.6, et ses passages — ceux qui terminent le 20e tour du peloton, à 4:55 —
+arrivaient quand le compteur montrait déjà 21.
+
+**Ce qui est corrigé.** Le compteur se compte comme pour un leader désigné : sur les passages lus,
+moins les tours validés. Plus aucune distance de piste n'y entre.
+
+| sprint | ouverture, avant | ouverture, après | premier passage jugé |
+|---|---|---|---|
+| 1, tour 10 | 2:08.6 (compteur 10) | 2:08.6 (compteur 10) | 2:22.5 |
+| 2, tour 20 | 4:27.6 (compteur 20) | **4:40.1** (compteur 20) | 4:54.8 |
+| 3, tour 30 | 6:46.4 (compteur 30) | **7:00.3** (compteur 30) | 7:14.2 |
+| 4, arrivée | 9:05.3 (compteur 40) | **9:33.1** (compteur 40) | 9:47.0 |
+
+Chaque sprint s'ouvre désormais **un tour** avant d'être jugé, et non deux. Les tours gagnés et
+perdus sont inchangés : les BIB 1 et 2 finissent avec deux tours gagnés chacun, les BIB 23 et 24
+avec un tour perdu chacun.
