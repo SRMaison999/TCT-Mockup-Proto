@@ -5276,9 +5276,8 @@ est celui des dossards. Dans `computeGroupsVraiment`, c'est le dernier recours d
 par dossard — qui décide dès que l'écart de tours, le bloc et le rang du moteur ne séparent pas deux
 coureurs, ce qui est le cas de tout un peloton groupé.
 
-**C'est un écart à sa règle**, et sa tolérance ne le couvre qu'à moitié : il accepte l'ordre des
-dossards, mais il demande que l'ovale et la timeline montrent le même premier coureur — et le premier
-par dossard n'est pas le premier sur la piste.
+**Et c'est conforme.** Il accepte deux ordres à l'intérieur d'un groupe, l'ordre réel ou l'ordre des
+dossards du plus petit au plus grand. `1.2.3…24` est le second. Il n'y a rien à corriger.
 
 ### Ce qui n'est pas mesuré
 

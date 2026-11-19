@@ -3807,4 +3807,10 @@ n'est pas un second comportement, c'est le même ordre qui coïncide 23 fois. L'
 l'intérieur d'un bloc est **l'ordre croissant des dossards**, et rien d'autre : il ne suit ni la
 lecture sur la ligne, ni l'ordre que le moteur tient dans sa chaîne.
 
-**C'est donc un écart à cette règle, et il n'est pas codé.** L'ovale n'est pas mesuré.
+**L'ordre des dossards est l'un des deux ordres qu'il accepte, donc il n'y a rien à corriger.** Il
+l'a redit le même jour, après que j'aie présenté cet ordre comme un défaut :
+
+> « JE TE L'AI DIT, ON PEUT ACCEPTER L'ORDRE REEL OU L'ORDRE DES DOSSARDS DU PLUS PETIT AU PLUS GRAND
+> FAISANT PARTIE D'UN GROUPE ! »
+
+L'ovale n'est pas mesuré.
