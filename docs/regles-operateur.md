@@ -3680,3 +3680,33 @@ depuis le départ. Cela vaut partout : les comptes rendus, les mesures, les comm
 Les **écarts entre coureurs**, eux, restent en secondes — c'est la règle du §1, « plus d'une seconde
 d'écart ». Un écart de 1,07 s se dit 1,07 s. Ce qui change, c'est l'instant : « à 4:12.5, le BIB 23
 est à 6,1 s derrière le dernier du peloton ».
+
+### 246 · Un groupe derrière le peloton ne peut pas devenir un groupe devant le peloton · 19 novembre 2026
+
+Dit après que j'ai écrit que les boucles ne pouvaient pas savoir de quel côté du peloton se
+trouvaient les BIB 23 et 24, parce que les deux écarts mesurés valaient 6,1 s et 5,7 s :
+
+> « BIUEN SUR QUE SI ILS PEUVENT LE SAVOIR !! PUISQUE 23 ET 24 ETAIENT DANS LE GROUPE LAST, ILS SONT
+> DERRIERE !!!!!!!!!!!!!!!!!!!!!!!!!!!! ILS NE PEUVENT PASSER D'UN GROUPE QUI SE TROUVE DERRIERE LE
+> PELOTON A UN GROUPE QUI SE TROUVE DEVANT !! »
+
+**Le côté d'un groupe par rapport au peloton ne se recalcule pas à chaque image : il se garde.** Un
+groupe qui est derrière le peloton reste derrière. Il ne peut passer devant qu'en le rattrapant —
+et à ce moment-là il est dans le peloton (son point 243 : « ils gagnent un tour et sont mergés dans
+le peloton »), ce qui est le seul instant où le côté peut changer.
+
+C'est la suite directe de son point 244, « si les LEADERS rattrapent et dépassent les LAST les LAST
+demeurent LAST ».
+
+La mesure qui l'a amené, à 4:32.5 de course : les BIB 23 et 24 sont à 6,1 s derrière le dernier du
+peloton et à 5,7 s devant le premier — ils sont à l'opposé du peloton sur la piste, et les deux
+lectures se valent. L'instant présent ne tranche pas ; ce qui tranche, c'est qu'ils étaient déjà
+derrière.
+
+Et dans l'autre sens, dit dans la foulée :
+
+> « ET INVERSEMENT C'EST LA MEME CHOSE ! UN GROUPE NE PEUT PASSER D'UN GROUPE QUI SE TROUVE [DEVANT]
+> LE PELOTON A UN GROUPE QUI SE TROUVE DERRIERE LE PELOTON »
+
+La règle vaut donc des deux côtés : un groupe devant le peloton reste devant, un groupe derrière
+reste derrière, et le seul passage de l'un à l'autre se fait **par le peloton**.

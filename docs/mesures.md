@@ -5132,3 +5132,45 @@ C'est le même défaut qu'au §99 et au §97 — l'anneau ne distingue pas « un
 devant » — mais pris ici du côté de l'affichage : un coureur qui n'a encore rien perdu ni gagné, et
 dont le compte de tours lus (`took.v0`) vaut bien zéro, se retrouve quand même en tête de course
 parce que la tête de la timeline, elle, a un tour d'avance.
+
+## §101 · Le côté du peloton se garde, build 248, 19 novembre 2026
+
+Même course : 24 coureurs, dossards 1 à 24, 40 tours, allure 18 m/s ; les BIB 1 et 2 accélèrent de
+1 m/s au tour 5, les BIB 23 et 24 ralentissent de 0,9 m/s à partir du tour 12 ; pas d'oscillation.
+Course complète, chaque proposition validée dès qu'elle paraît.
+
+**Trois propositions, trois justes, aucune fausse.**
+
+| instant | constat | coureurs | écart réel à la paire nommée |
+|---|---|---|---|
+| 4:00.1 | tour gagné sur le BIB 22 | 1 et 2 | le 1 est à 1,07 s derrière le 22, le 2 à 1,19 s |
+| 5:32.2 | tour perdu, repris par le BIB 1 | 23 et 24 | le 1 est à 0,75 s derrière le 23, à 0,63 s derrière le 24 |
+| 8:10.1 | tour gagné sur le BIB 22 | 1 et 2 | le 1 est à 1,07 s derrière le 22, le 2 à 1,19 s |
+
+À l'arrivée : les BIB 1 et 2 portent deux tours gagnés chacun, les BIB 23 et 24 un tour perdu
+chacun. C'est la course.
+
+**À 3:49.6, l'instant de sa capture**, la timeline montre `1.2 | 3…22 | 23.24` : les BIB 23 et 24
+sont LAST. Avant la correction, ils y devenaient `2-CHASE`.
+
+Les BIB 23 et 24 changent de côté **7 fois** sur toute la course, contre **50** avant la correction.
+
+### Ce qui a été corrigé, et dans quel ordre
+
+1. **Le côté du peloton se garde, il ne se relit pas** (son point 246). Il est lu à la seule image
+   où il est sûr — la première où le coureur n'est plus dans le peloton, les deux groupes étant
+   encore à une seconde l'un de l'autre — et il tient ensuite. Relu à chaque image, il basculait :
+   mesuré à 4:32.5, les BIB 23 et 24 sont à 6,1 s derrière le dernier du peloton et à 5,7 s devant
+   le premier ; les deux lectures se valent, et le classement sautait d'une image à l'autre.
+2. **Le relire au rattrapage le retournait aussi.** À 5:31.7, le premier du peloton revient sur les
+   BIB 23 et 24, qui se lisent donc « juste devant lui » — ils basculaient au-dessus du peloton
+   alors qu'ils étaient en train de perdre un tour, et leur tour perdu ne sortait plus du tout.
+3. **Le premier d'un bloc est celui qui a le plus grand trou derrière lui.** Un bloc est une suite
+   de coureurs séparés de moins d'une seconde : le seul endroit où il s'ouvre est son plus grand
+   trou. Rangé depuis la tête de la timeline, le peloton tournait sur lui-même quand la tête roulait
+   dedans — « 20.3.4.5… », puis « 19.20.3.4… », toutes les deux images entre 4:25 et 5:00.
+4. **Le tour validé n'entre pas dans le rangement.** Au rattrapage le groupe est mergé dans le
+   peloton (son point 243) : le garder à part empêchait les BIB 1 et 2 d'en gagner un second, leur
+   rattrapage de 8:10.1 ne sortant plus.
+5. **Le côté ne coupe pas les blocs, il les range.** Essayé l'inverse : le peloton se brisait en
+   morceaux et la course partait en vrille — 68 propositions, le BIB 11 à douze tours perdus.

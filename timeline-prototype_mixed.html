@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '247';
+const BUILD = '248';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1653,17 +1653,15 @@ function computeGroupsVraiment(M) {
     MC.groupes().forEach((g, i) => g.coureurs.forEach(b => mcBloc.set(b, i)));
   }
   // LE RANG D'UN GROUPE NE CHANGE PAS PARCE QU'UN AUTRE LE DÉPASSE SUR LA PISTE. Sa règle du
-  // 19 novembre 2026 : « si les LEADERS rattrapent et dépassent les LAST les LAST demeurent LAST ».
-  // Les deux sont au même endroit de la piste à cet instant, et cela ne dit rien de leur place dans
-  // la course. Ce qui la dit, ce sont les tours que l'opérateur a validés.
-  //   Mesuré au tour 28, 6:00,0, sur la course aux deux échappés et deux lâchés : le bloc de tête
+  // 19 novembre 2026 : « si les LEADERS rattrapent et dépassent les LAST les LAST demeurent LAST »,
+  // et « ILS NE PEUVENT PASSER D'UN GROUPE QUI SE TROUVE DERRIERE LE PELOTON A UN GROUPE QUI SE
+  // TROUVE DEVANT », dans les deux sens. Ce qui tient cette règle est le CÔTÉ gardé par coureur,
+  // plus bas, et non un tour validé : au rattrapage, le groupe est mergé dans le peloton.
+  //   Mesuré au tour 28, 6:00.0, sur la course aux deux échappés et deux lâchés : le bloc de tête
   // montrait « 1-LEADERS 4 RIDERS : 1, 2, 23, 24 » — les BIB 1 et 2, qui ont un tour d'avance, dans
   // le même bloc que les BIB 23 et 24, qui ont un tour de retard et à qui le peloton vient d'en
   // reprendre 0,92 de plus. Ses mots : « les 23 et 24 doivent être LAST ».
-  const tourDe = r => S.lapStatus[r.bib] | 0;
   const cmpRead = (a, b) => {
-    const ta = tourDe(a.r), tb = tourDe(b.r);
-    if (ta !== tb) return tb - ta;        // le tour validé passe avant tout : un LAST reste LAST
     const ea = ecEff(a.r), eb = ecEff(b.r);
     if (ea !== eb) return eb - ea;        // un tour d'écart non validé passe devant, ou derrière, tout le reste
     // LES COUREURS D'UN MÊME GROUPE RESTENT ENSEMBLE. Le groupe vient du moteur, et c'est lui qui
@@ -1761,8 +1759,7 @@ function computeGroupsVraiment(M) {
       let coupe = !g;
       if (prec) {
         const ba = mcBloc.get(prec.r.bib), bb = mcBloc.get(x.r.bib);
-        coupe = tourDe(prec.r) !== tourDe(x.r) ? true              // un LAST reste LAST, même dépassé (point 244)
-              : ecEff(prec.r) !== ecEff(x.r) ? true                // un écart non validé ne se mélange pas au peloton
+        coupe = ecEff(prec.r) !== ecEff(x.r) ? true                // un écart non validé ne se mélange pas au peloton
               : (ba != null && bb != null) ? ba !== bb
               : pairCass(prec, x, Math.max(0, x.behindRead - prec.behindRead));
       }
@@ -1776,8 +1773,31 @@ function computeGroupsVraiment(M) {
     for (const x of grows) x.pending = pendingOf(x.r.bib);
     if (grows.length) groups.push({ rows: grows, op: g, cluster: grows[0].cluster || null });
   }
+  // LE PREMIER D'UN BLOC EST CELUI QUI A LE PLUS GRAND TROU DERRIÈRE LUI. Un bloc est une suite de
+  // coureurs séparés de moins d'une seconde (§1) : le seul endroit où il s'ouvre est son plus grand
+  // trou, et c'est donc lui qui dit où le bloc commence. Sans cela, le bloc était rangé depuis la
+  // TÊTE de la timeline, et quand la tête roule DANS le peloton — parce qu'elle a pris un tour — la
+  // coupure de l'anneau tombe au milieu du peloton et le fait tourner sur lui-même. Mesuré le
+  // 19 novembre 2026 entre 265 s et 300 s : l'ordre du peloton changeait toutes les deux images,
+  // « 20.3.4.5… » puis « 19.20.3.4… » puis « 19.20.21.3.4… », et son premier et son dernier
+  // changeaient de coureur avec lui — d'où le BIB 23 replacé au-dessus du peloton à partir de 279,6 s.
+  const rTour = MC ? MC.tour() : null;
+  const anneauRaw = b => mcRetard.get(b);
+  const orienter = g => {
+    if (!rTour || g.rows.length < 2) return;
+    const a = g.rows.map(x => anneauRaw(x.r.bib));
+    if (a.some(v => v == null)) return;
+    let k = 0, plusGrand = -1;
+    for (let i = 0; i < a.length; i++) {
+      const prec = a[(i - 1 + a.length) % a.length];
+      const trou = (((a[i] - prec) % rTour) + rTour) % rTour;
+      if (trou > plusGrand) { plusGrand = trou; k = i; }
+    }
+    if (k) g.rows = g.rows.slice(k).concat(g.rows.slice(0, k));
+  };
   for (const g of groups) {
     g.rows.sort(cmpRead);   // dans un bloc : l'ordre de passage sur les boucles (point 174, point 177)
+    orienter(g);
     g.bibs = g.rows.map(x => x.r.bib);
     // la tête et la queue d'un bloc, en mètres LUS : son instruction du 1er novembre 2026
     g.head = Math.min(...g.rows.map(x => x.behindRead == null ? 1e9 : x.behindRead));
@@ -1785,9 +1805,81 @@ function computeGroupsVraiment(M) {
     g.incident = !!(g.op && g.op.type !== 'manual');
     g.pending = g.rows.some(x => x.pending);
   }
-  // les blocs se rangent eux aussi sur l'ordre des boucles : « ils composent la timeline dans l'ordre chronologique
-  // de leurs groupes » (point 174). C'est le premier coureur de chaque bloc qui le place.
-  groups.sort((a, b) => (a.incident - b.incident) || cmpRead(a.rows[0], b.rows[0]));
+  // LES BLOCS SE RANGENT PAR RAPPORT AU PELOTON, PAS PAR RAPPORT À LA TÊTE.
+  //
+  //   Sa capture du 19 novembre 2026, tour 18 : les BIB 23 et 24, `3-LAST` à 2,3 s, deviennent
+  // `2-CHASE` à 11,4 s en franchissant la boucle Finish. Ses mots : « Ils ne doivent pas devenir
+  // CHASE ! Ils sont LAST, UN POINT C'EST TOUT ! » Puis, sur la même image : « les 23 et 24 n'ont
+  // pas encore perdu un tour sur les 1 et 2 ».
+  //   La cause, mesurée à 243,7 s (mesures.md §100) : tout était rangé depuis la TÊTE, et la tête
+  // est le BIB 1, qui a gagné un tour. Le BIB 23 est à 17,3 s derrière lui ; un tour dure 13,89 s ;
+  // la lecture ramenée sur un tour vaut donc 3,4 s, et le range juste derrière la tête, au-dessus
+  // d'un peloton lu entre 9,8 et 12,1 s — alors qu'il est 4,7 s DERRIÈRE le dernier de ce peloton.
+  //   Le repère est donc le peloton, et de quel côté du peloton un coureur se trouve NE SE
+  // RECALCULE PAS : cela se garde. Son point 246 : « PUISQUE 23 ET 24 ETAIENT DANS LE GROUPE LAST,
+  // ILS SONT DERRIERE !!! ILS NE PEUVENT PASSER D'UN GROUPE QUI SE TROUVE DERRIERE LE PELOTON A UN
+  // GROUPE QUI SE TROUVE DEVANT !! » Un coureur ne change de côté qu'en traversant le peloton, et
+  // ce moment-là porte un nom : il est dans le peloton.
+  //   Pourquoi le garder, et ne pas le relire : quand un groupe est à l'opposé du peloton sur la
+  // piste, ses deux écarts au peloton se valent. Mesuré à 4:32.5 de course : les BIB 23 et 24 sont
+  // à 6,1 s derrière le dernier du peloton et à 5,7 s devant le premier. L'instant présent ne
+  // tranche pas — et c'est là que le classement basculait d'une image à l'autre.
+  //   Le côté se lit donc à l'instant où il est sûr : celui où le coureur vient de quitter le
+  // peloton, où l'un des deux écarts est à peine plus d'une seconde et l'autre presque un tour.
+  const anneauDe = b => mcRetard.get(b);
+  const Ttour = MC ? MC.tour() : null;
+  const pelotonBloc = groups.filter(g => !g.incident && g.cluster === bunchCluster)
+    .reduce((a, g) => (!a || g.rows.length > a.rows.length ? g : a), null);
+  const surUnTour = s => ((s % Ttour) + Ttour) % Ttour;
+  // les deux écarts d'un coureur au peloton, lus sur les boucles et ramenés sur un tour
+  const ecartsAuPeloton = bib => {
+    if (!pelotonBloc || !Ttour) return null;
+    const a = anneauDe(bib);
+    const pTete = anneauDe(pelotonBloc.rows[0].r.bib);
+    const pQueue = anneauDe(pelotonBloc.rows[pelotonBloc.rows.length - 1].r.bib);
+    if (a == null || pTete == null || pQueue == null) return null;
+    return { devant: surUnTour(pTete - a), derriere: surUnTour(a - pQueue) };
+  };
+  // LE CÔTÉ DE CHAQUE COUREUR, gardé d'une image à l'autre. −1 devant le peloton, +1 derrière,
+  // 0 dedans. Il ne se relit que dans le peloton ou juste à sa sortie.
+  S.cote = S.cote || {};
+  if (pelotonBloc && Ttour) {
+    const dedans = new Set(pelotonBloc.bibs);
+    for (const g of groups) {
+      if (g.incident) continue;
+      for (const x of g.rows) {
+        const bib = x.r.bib;
+        if (dedans.has(bib)) { S.cote[bib] = 0; continue; }
+        const e = ecartsAuPeloton(bib);
+        if (!e) continue;
+        // ON NE LE RELIT PAS. Le côté est lu à la SEULE image où il est sûr : la première où le
+        // coureur n'est plus dans le peloton, les deux groupes étant encore à une seconde l'un de
+        // l'autre. Ensuite il tient, jusqu'à ce que le coureur retraverse le peloton.
+        //   Le relire chaque fois qu'il repasse près du peloton le retournait au RATTRAPAGE : à
+        // 5:31.7 de course, le premier du peloton revient sur les BIB 23 et 24, qui se lisent donc
+        // « juste devant lui » — et ils basculaient au-dessus du peloton, alors qu'ils sont en train
+        // de perdre un tour. Le groupe de queue devenait le peloton lui-même, et leur tour perdu ne
+        // sortait plus du tout.
+        if (!S.cote[bib]) S.cote[bib] = e.devant < e.derriere ? -1 : 1;
+      }
+    }
+  }
+  // la place d'un bloc, en secondes : négative s'il est devant le peloton, positive s'il est derrière
+  const placeAuPeloton = g => {
+    if (!pelotonBloc || !Ttour || g === pelotonBloc) return 0;
+    const e = ecartsAuPeloton(g.rows[0].r.bib), f = ecartsAuPeloton(g.rows[g.rows.length - 1].r.bib);
+    if (!e || !f) return 0;
+    const cote = S.cote[g.rows[0].r.bib] || (e.devant < e.derriere ? -1 : 1);
+    return cote < 0 ? -f.devant : e.derriere;
+  };
+  //   Le tour VALIDÉ n'entre pas dans ce rangement : au rattrapage le groupe est mergé dans le
+  // peloton (son point 243), donc un coureur qui a gagné un tour roule dans le peloton et s'affiche
+  // avec lui. Le garder à part l'empêchait d'en gagner un second : mesuré le 19 novembre 2026, les
+  // BIB 1 et 2 ne recevaient qu'un tour au lieu de deux, leur rattrapage de 8:10 ne sortant plus.
+  const placeVue = new Map(groups.map(g => [g, placeAuPeloton(g)]));
+  groups.sort((a, b) => (a.incident - b.incident)
+    || (placeVue.get(a) - placeVue.get(b))
+    || cmpRead(a.rows[0], b.rows[0]));
   // UN GROUPE POSÉ À LA MAIN GARDE SA PLACE. L'opérateur, 1er novembre 2026 : « si on force pour déplacer un
   // groupe manuellement, il faut une indication pour informer que l'utilisateur a forcé. Et avoir la possibilité
   // de laisser tel quel (forcé) mais aussi de retourner au mode automatique (qui replacerait tous les groupes
