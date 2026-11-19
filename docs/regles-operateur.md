@@ -3756,3 +3756,33 @@ jour :
 > « oui, et cela est valable pour tous les sprints »
 
 Donc les quatre sprints, l'arrivée comprise, s'ouvrent de la même manière.
+
+### 249 · Le sprint est remporté par le coureur en tête du groupe · 19 novembre 2026
+
+Dit après que je lui aie posé une question qui n'avait pas lieu d'être, sur un sprint où l'écran ne
+montrait qu'un seul groupe :
+
+> « mais alors si il n'y a qu'un groupe, ou éventuellement un deuxième groupe de coureurs distancés,
+> pourquoi tu as un doute sur celui qui remporte le sprint ? C'est celui en tête du groupe !!
+> C'est celui qui sera lu en premier sur la boucle Finish !
+> Et d'ailleurs le premier sur l'ovale et dans la timeline, devrait être le même coureur »
+
+**Trois affirmations, et la troisième n'est pas vraie dans le logiciel.**
+
+Le coureur en tête du groupe remporte le sprint, et c'est le premier lu sur la boucle Finish : il n'y
+a rien à décider. **Et le premier sur l'ovale et le premier dans la timeline devraient être le même
+coureur.**
+
+Mesuré sur la course de test au build 249 — 24 coureurs, 40 tours, 250 m, 18,6 m/s, BIB 1 et 2 à
++1 m/s dès le tour 5, BIB 23 et 24 à −0,9 m/s dès le tour 12 — au sprint 2, tour 20, les BIB 1 et 2
+portant un tour gagné validé à 3:58.6 :
+
+- la timeline montre **un seul bloc**, `1-Bunch`, et en tête de ce bloc le **BIB 1**, puis le 2 ;
+- sur la piste et sur la boucle Finish, le premier est le **BIB 3**, lu à 4:29.3 ; le BIB 1 est lu à
+  4:30.9, quatorzième.
+
+Donc la tête de la timeline et la tête de l'ovale ne sont pas le même coureur, de 4:25 à 4:31 au
+moins. Le sprint est ouvert par le BIB 3, ce qui est juste, mais la timeline désigne le BIB 1 comme
+premier du groupe, ce qui contredit cette règle.
+
+**Rien n'est codé.** Son constat est posé, la correction attend sa décision.
