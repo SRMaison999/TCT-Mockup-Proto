@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '244';
+const BUILD = '245';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1981,6 +1981,17 @@ function computeGroupsVraiment(M) {
     S.ligne.ouverts = S.ligne.ouverts.filter(o => attend(o) <= o.groupes.length);
   }
   S.inelig = new Set(S.ligne.inelig.filter(b => enCourse.includes(b)));
+  // LE GROUPE DE TÊTE ET LE GROUPE DE QUEUE SONT CEUX QUE LA TIMELINE MONTRE, et c'est la timeline
+  // qui les dit au moteur. Son point 242 : « Le groupe qui peut être crédité d'un tour gagné ne peut
+  // être QUE le groupe LEADER, ou LEADERS ! Le groupe qui peut être sanctionné d'un tour perdu ne
+  // peut être QUE le groupe LAST ». Le moteur ne peut pas les trouver seul : il range les coureurs
+  // sur l'anneau, et sur l'anneau un groupe lâché d'un tour se lit juste DEVANT le peloton. Mesuré à
+  // la build 245 sur la course aux deux échappés et deux lâchés : à 360 s la timeline montre
+  // « 1.2 | 3…22 | 23.24 » — les BIB 23 et 24 en queue, c'est juste — et l'anneau du moteur montre
+  // « 1.2 | 23.24 | 3…22 », les mêmes coureurs au milieu. La timeline a juste parce qu'elle sait les
+  // tours que l'opérateur a validés ; l'anneau, lui, ne peut pas les connaître.
+  const rangs = groups.filter(g => !g.incident);
+  MC.rangs(rangs.map(g => g.bibs.slice()), rangs.indexOf(bunch));
   return { groups, leaderBib, leader, bunch, bunchCluster };   // no single threshold any more: it is per pair
 }
 

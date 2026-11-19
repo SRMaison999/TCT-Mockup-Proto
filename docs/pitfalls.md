@@ -1102,3 +1102,29 @@ seul signe était que le **retour en arrière n'a rien ramené**.
 l'application le lit — ici `tct.sim.setup`. Et quand un retour en arrière ne restaure pas les
 chiffres d'avant, ce n'est pas la modification qu'il faut regarder : c'est ce qui a bougé par
 ailleurs.
+
+## D36 · Lire un rang de course sur l'anneau
+
+**L'erreur.** Chercher le groupe de tête et le groupe de queue dans l'ordre que le moteur donne.
+
+**Pourquoi c'est faux.** L'anneau range les coureurs sur un tour. Un groupe lâché d'un tour se lit
+donc juste DEVANT le peloton, et un groupe qui a pris un tour juste derrière. Mesuré le 19 novembre
+2026 : à 360 s, la timeline montre « 1.2 | 3…22 | 23.24 » et l'anneau montre « 1.2 | 23.24 | 3…22 ».
+Les deux sont cohérents avec les mêmes lectures de boucles ; seule la timeline a raison, parce
+qu'elle sait les tours que l'opérateur a validés.
+
+**Ce qu'il faut faire.** L'écran pose les blocs et dit lequel est le peloton (`MC.rangs`). Le moteur
+ne les cherche pas. C'est le même partage que pour la tête de la timeline, que l'opérateur désigne.
+
+## D37 · Verrouiller un constat sur l'écart qui l'a déclenché
+
+**L'erreur.** Ne rejouer un constat que si l'écart est repassé au-dessus de la seconde.
+
+**Pourquoi c'est faux.** L'écart est mesuré contre « le dernier du peloton », et ce coureur-là
+change d'identité dès que l'ordre du peloton bouge. L'écart saute alors d'un coureur à l'autre.
+Mesuré le 19 novembre 2026 : l'écart entre le BIB 1 et le dernier du peloton descend régulièrement
+de 1,19 s à zéro entre 240 s et 256 s, sans jamais repasser au-dessus de la seconde — et le constat
+est sorti trois fois. Dans une autre version du même garde, le BIB 1 a reçu douze tours gagnés.
+
+**Ce qu'il faut faire.** Verrouiller sur les COUREURS rattrapés, et lever le verrou quand la
+timeline les montre dans le bloc du peloton. Ses mots : « Hop, il est dans le groupe, c'est fini. »

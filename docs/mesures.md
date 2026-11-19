@@ -4988,3 +4988,66 @@ Ce n'est pas un défaut du constat ni du bout : c'est la limite de la lecture de
 Le seul fait disponible qui tranche est l'événement qui vient de se produire : à 363,4 s le
 peloton a repris un tour au 23, donc le peloton le dépasse, donc quand il se détache ensuite il se
 détache par l'arrière. Question posée à l'opérateur le 19 novembre 2026, rien n'en est codé.
+
+## §98 · Ses quatre points codés, build 245, 19 novembre 2026
+
+Même course : 24 coureurs, dossards 1 à 24, 40 tours, allure 18 m/s ; les BIB 1 et 2 accélèrent de
+1 m/s au tour 5, les BIB 23 et 24 ralentissent de 0,9 m/s à partir du tour 12 ; pas d'oscillation.
+Course complète, 565,5 s, chaque proposition validée dès qu'elle paraît.
+
+Ce qui a été codé, ce sont ses quatre points du 19 novembre 2026 (§17 point 242) : le rattrapage se
+lit sur un écart qui se referme sous la seconde, contre le dernier du peloton pour un tour gagné et
+contre le premier du peloton pour un tour perdu ; et seul le groupe de tête peut gagner un tour,
+seul le groupe de queue peut en perdre un. Le constat porte sur tout le groupe.
+
+Huit propositions, trois justes et cinq fausses :
+
+| instant | constat | coureurs | écart réel au BIB 1 | juste ? |
+|---|---|---|---|---|
+| 240,1 s | tour gagné | 1 et 2 | avec le peloton | oui |
+| 332,2 s | tour perdu | 23 et 24 | 27,0 s et 27,1 s | oui |
+| 490,1 s | tour gagné | 1 et 2 | avec le peloton | oui |
+| 492,4 s | tour gagné | 24 | 44,1 s | **non** |
+| 516,6 s | tour gagné | 19 | 27,8 s | **non** |
+| 516,7 s | tour gagné | 20 | 27,9 s | **non** |
+| 516,8 s | tour gagné | 21 | 28,1 s | **non** |
+| 520,9 s | tour gagné | 22 | 28,4 s | **non** |
+
+À l'arrivée : les BIB 1 et 2 portent deux tours gagnés chacun, c'est exact. Le BIB 23 porte un tour
+perdu, c'est exact — c'était la faute du §97, elle est réparée. Le BIB 24 revient à zéro et quatre
+coureurs du peloton, les BIB 19, 20, 21 et 22, portent un tour gagné qu'ils n'ont pas fait.
+
+Inversions de deux coureurs qui se suivent : 2,93 %. Blocs montrés : 1,95 en moyenne.
+
+### Ce qui reste faux, et où
+
+Les cinq fausses propositions ont toutes la même cause, et elle n'est plus dans la lecture du
+rattrapage : **c'est l'ordre des blocs de la timeline**. Relevé à 515,0 s, la timeline montre
+« 1.2 | 23 | 3…22 | 24 ». Les BIB 23 et 24 sont séparés alors qu'ils roulent ensemble, et une
+seconde et demie plus tard le bloc de tête devient le BIB 19 seul, puis le 20, puis le 21, puis le
+22 — des coureurs du peloton, à deux tours du BIB 1, que la timeline range un par un en tête de
+course. Le moteur les croit, et propose.
+
+Ce que cela ferme : le rattrapage lui-même ne se trompe plus. Les trois constats justes tombent à la
+bonne seconde et sur les bons coureurs, et la faute du §97 — le tour rendu au 23 et au 24 — n'existe
+plus. Ce qui reste à corriger est **le rangement des blocs**, où le même défaut avait déjà été relevé
+au §96 : le BIB 22 seul dans un bloc du tour 16 au tour 40, et un tour perdu proposé à dix-neuf
+coureurs du peloton.
+
+### Trois erreurs à moi, mesurées en chemin
+
+1. **Chercher le groupe de tête et le groupe de queue sur l'anneau.** À 360 s la timeline montre
+   « 1.2 | 3…22 | 23.24 » — les BIB 23 et 24 en queue, c'est juste — et l'anneau du moteur montre
+   « 1.2 | 23.24 | 3…22 », les mêmes coureurs au milieu. En lisant l'anneau, le groupe de queue était
+   le peloton lui-même : le tour perdu des 23 et 24 ne sortait plus du tout, et les deux tours gagnés
+   des BIB 1 et 2 tombaient à un seul. C'est le garde E17 du moteur.
+2. **Sauter les coureurs que le peloton du moteur a avalés.** Le peloton du moteur se referme
+   justement sur celui qui arrive, à l'instant du rattrapage : les BIB 1 et 2 ne recevaient qu'un
+   tour gagné au lieu de deux.
+3. **Rouvrir le constat sur l'écart.** L'écart lu entre le BIB 1 et le dernier du peloton descend
+   régulièrement de 1,19 s à zéro entre 240 s et 256 s, sans jamais repasser au-dessus de la seconde,
+   et le constat sortait trois fois — à 240,1 s, 246,2 s et 252,8 s. La raison : le dernier du peloton
+   CHANGE DE COUREUR quand l'ordre du peloton bouge, et l'écart saute d'un coureur à l'autre. Dans une
+   autre version, le BIB 1 recevait DOUZE tours gagnés et neuf coureurs du peloton en recevaient un.
+   Le verrou est désormais posé sur les coureurs rattrapés, et il se lève quand la timeline les a
+   remis dans le bloc du peloton — « Hop, il est dans le groupe, c'est fini ».

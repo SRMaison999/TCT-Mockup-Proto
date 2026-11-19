@@ -3576,3 +3576,42 @@ proposition part là, et l'opérateur la valide.
 
 **Le nombre de passages d'un coureur ne dit rien à lui seul** : celui qui cherche à prendre un tour
 peut en avoir perdu deux avant.
+
+### 242 · Le rattrapage se lit sur un écart qui se referme, et seuls LEADERS et LAST sont concernés · 19 novembre 2026
+
+Dit après deux explications de ma part qu'il a arrêtées net — l'une parlait d'un coureur « qui se
+fait passer dessus par le peloton », l'autre demandait « est-ce que c'est le peloton qui a rattrapé
+le coureur, ou le coureur qui a rattrapé le peloton ». Ses mots :
+
+> « STOP !!!!!!!!!!!!!!!!!!!!!!!!!!¨¨ ARRETE DE DIRE N'IMPORTE QUOI !!!
+>
+> "le peloton l'a rattrapé → il perd un tour, et le peloton lui passe dessus, donc il se retrouve
+> derrière le peloton" > Mais pourquoi un coureur qui se fait rattraper par le peloton , se ferait
+> passer dessus par le peloton ? Et se retrouverait derrière le peloton ??
+>
+> "lui a rattrapé le peloton → il gagne un tour, et c'est lui qui passe dessus, donc il se retrouve
+> devant le peloton." > Mais là aussi pourquoi les choses se passerait comme tu les décris ?
+>
+> "est-ce que c'est le peloton qui a rattrapé le coureur, ou le coureur qui a rattrapé le peloton ?"
+> Cette question est vraiment embarrassante quant à tes capacités intellectuelles !
+> Je t'explique simplement, et il ne faut SURTOUT PAS que tu essaies de reformuler et de repartir je
+> en sais où !
+>
+> * Si un coureur qui se trouvait il y a quelques secondes encore à disons 3 secondes derrière le
+>   dernier coureur du peloton, et que maintenant il se retrouve tout proche de lui, à moins d'une
+>   seconde > il a rattrapé le peloton
+> * Si un coureur qui se trouvait il y a quelques secondes encore à disons 3 secondes devant le
+>   premier coureur du peloton, et que maintenant il se retrouve tout proche de lui, à moins d'une
+>   seconde > il s'est fait rattraper par le peloton
+> * Le groupe qui peut être crédité d'un tour gagné ne peut être QUE le groupe LEADER, ou LEADERS !
+> * Le groupe qui peut être sanctionné d'un tour perdu ne peut être QUE le groupe LAST »
+
+Ce qui meurt ici : le côté noté à la séparation et gardé avec le coureur (`sorti`), l'image unique
+où il devait se noter (`etaitDedans`), et toute idée de retenir ce qui s'est passé au rattrapage
+précédent. Tout cela était à moi. Le rattrapage **ne se déduit pas** d'un fait passé : il **se
+lit** sur un écart qui se referme, contre un coureur nommé, et ce que ce coureur est — le dernier
+du peloton ou le premier du peloton — dit lequel des deux rattrapages c'est.
+
+Et le garde qui manquait : **le groupe**. Un coureur qui se rapproche du dernier du peloton ne
+gagne un tour que s'il est dans le groupe LEADER. Un coureur dont le premier du peloton se
+rapproche ne perd un tour que s'il est dans le groupe LAST.
