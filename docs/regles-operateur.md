@@ -3669,3 +3669,14 @@ La mesure qui a tranché sa question, à 360,0 s : le premier du peloton (BIB 3)
 derrière le 23** et à **0,96 s derrière le 24**, et le peloton leur a repris **0,92 tour** depuis
 leur tour perdu de 332,2 s. Ils ne viennent donc pas d'être rattrapés : ils sont **sur le point de
 perdre un deuxième tour**. Ils doivent être LAST.
+
+### 245 · Les instants de course se disent à l'heure du chrono · 19 novembre 2026
+
+> « autre chose, pourrais-tu dire 4:12.5 de course plutôt que 272,5 s , c'est très agaçant »
+
+Un instant de course se dit **4:12.5**, comme l'horloge de l'écran le montre, jamais en secondes
+depuis le départ. Cela vaut partout : les comptes rendus, les mesures, les commentaires du code.
+
+Les **écarts entre coureurs**, eux, restent en secondes — c'est la règle du §1, « plus d'une seconde
+d'écart ». Un écart de 1,07 s se dit 1,07 s. Ce qui change, c'est l'instant : « à 4:12.5, le BIB 23
+est à 6,1 s derrière le dernier du peloton ».
