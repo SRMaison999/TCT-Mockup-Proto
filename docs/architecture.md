@@ -2687,3 +2687,29 @@ iPeloton)`, posé à chaque image à la fin de `computeGroupsVraiment`. Le moteu
 deux constats de ±20 : seul le groupe de tête peut gagner un tour, seul le groupe de queue peut en
 perdre un. C'est le même partage que pour la tête de la timeline, que l'opérateur désigne et que le
 moteur ne cherche jamais.
+
+
+## §63 · L'ouverture d'un sprint · build 249
+
+Son point 248 : « un sprint ne peut s'ouvrir qu'au passage des LEADERS et de personne d'autre », et
+« cela est valable pour tous les sprints ».
+
+**`estDesLeaders(bib)`** répond si ce dossard est dans le bloc de tête de la timeline, c'est-à-dire
+le premier bloc de `lastG.groups` qui n'est pas un incident. Tant que la timeline n'a pas de blocs
+— au tout premier passage de la course — il répond oui, et le coureur lu ouvre, comme avant.
+
+**`S.spFrom`** garde, pour chaque sprint, l'instant de son ouverture : sprint → temps de course.
+Dans la boucle de détection, sur la ligne d'arrivée seule, un passage de `estDesLeaders` estampille
+tout sprint dont le tour est atteint. Le tour lu est `k = ka - S.lapStatus[bib]`, le compte de
+passages du coureur moins ses tours crédités : le tour de la course, celui de l'onglet Crossings.
+L'arrivée est le sprint `NSPRINTS`, dont le tour vaut `LAPS` : `S.finishOpen` prend donc
+`S.spFrom[NSPRINTS]` et rien d'autre.
+
+**`spCrossings(k)`** lit les passages depuis `S.spFrom[k]`, et garde le premier de chaque coureur.
+C'est la même fenêtre pour les quatre sprints. Les deux anciens chemins restent derrière :
+l'enregistrement à la main de l'opérateur (« Clear and record », `s.recordFrom`) passe devant, et le
+rangement par tour (`S.cross[s.lap]`) ne sert plus que si aucun passage des LEADERS n'a été lu.
+
+**`spTick`** ouvre la carte du sprint sur `S.spFrom[k]`, au même instant que la fenêtre. Le tour du
+leader désigné (`dispLap()`) n'ouvre plus rien ; il sert encore à fermer un sprint intermédiaire,
+deux tours plus tard.

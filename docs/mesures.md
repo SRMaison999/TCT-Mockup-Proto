@@ -5174,3 +5174,56 @@ Les BIB 23 et 24 changent de côté **7 fois** sur toute la course, contre **50*
    rattrapage de 8:10.1 ne sortant plus.
 5. **Le côté ne coupe pas les blocs, il les range.** Essayé l'inverse : le peloton se brisait en
    morceaux et la course partait en vrille — 68 propositions, le BIB 11 à douze tours perdus.
+
+
+## §102 · Le sprint s'ouvre au passage des LEADERS, build 249, 19 novembre 2026
+
+Sa règle du 19 novembre 2026 (point 248), et sa confirmation le même jour : « cela est valable pour
+tous les sprints ».
+
+### Ce que faisait le logiciel
+
+Un sprint intermédiaire prenait les passages **rangés sur son tour**, et l'arrivée les passages
+**postérieurs au premier coureur lu dont le compte de tours atteignait la distance**. Ce compte-là
+n'était pas le tour de la course : il était reconstruit par rapport au peloton, et arrondi au tour
+entier. Un groupe de tête à plus d'un demi-tour du peloton s'arrondissait du mauvais côté, se
+retrouvait compté un tour en retard, n'ouvrait donc pas l'arrivée — et son passage, tombé avant
+l'ouverture, n'était ramassé qu'au tour suivant, en dernières places.
+
+### Ce qu'il fait maintenant
+
+Le passage d'un coureur du **bloc de tête de la timeline** ouvre le sprint dont le tour est atteint,
+et l'instant de ce passage est le début de l'enregistrement. Le tour lu est le compte de passages du
+coureur moins ses tours crédités — le tour de la course, sans arrondi. L'arrivée est le sprint 4 et
+suit la même règle.
+
+### Mesures, course complète, l'opérateur validant chaque proposition
+
+Course de test : 24 coureurs, dossards 1 à 24, 40 tours, piste de 250 m, allure 18,6 m/s,
+4 sprints, pas de flottement.
+
+**Course de référence** — BIB 1 et 2 à +1 m/s dès le tour 5, BIB 23 et 24 à −0,9 m/s dès le
+tour 12. Arrivée à 9:06.6. Quatre propositions validées : 3:58.6 les BIB 1 et 2 gagnent un tour,
+5:28.0 les BIB 23 et 24 en perdent un, 7:48.2 les BIB 1 et 2 en gagnent un second, 8:07.8 les
+BIB 23 et 24 reprennent le leur. Tours crédités à l'arrivée : BIB 1 et 2 à +2, tous les autres à 0.
+
+Les quatre sprints s'ouvrent à 2:10.6, 4:29.3, 6:38.4 et 8:58.1, chaque fois sur le premier coureur
+du bloc de tête. **Le résultat des quatre sprints est identique au build 248**, place pour place :
+la course n'a qu'un seul bloc à chacun de ces instants, et le bloc de tête y est le peloton. Au
+sprint 2, les BIB 1 et 2 sont 14e et 16e parce qu'ils ont franchi la ligne 14e et 16e, à 4:31.0, le
+premier du peloton étant passé à 4:29.3.
+
+**Course à échappée tardive** — BIB 1 et 2 à +3 m/s dès le tour 36, rien d'autre. Au sprint final
+les BIB 1 et 2 franchissent la ligne à 8:48.5 et 8:48.6, le premier du peloton à 8:58.1 : ils
+ouvrent l'arrivée et prennent les places 1 et 2. Identique au build 248.
+
+**Course à troisième échappée** — BIB 1 et 2 à +1 m/s dès le tour 5 puis +4 m/s dès le tour 35,
+BIB 23 et 24 à −0,9 m/s dès le tour 12. Tours crédités : BIB 1 et 2 à +2, BIB 23 et 24 à −1.
+L'arrivée s'ouvre à 8:25.7 sur le BIB 1, places 1 et 2 pour les BIB 1 et 2. Identique au build 248.
+
+### Ce que ces mesures ne montrent pas
+
+**Le cas qu'il a vu n'est pas reproduit.** Sur les trois courses mesurées, le build 249 donne le
+même résultat que le build 248 : aucune ne met le bloc de tête assez loin du peloton pour que
+l'ancien arrondi se trompe. La règle est codée et ne dérange rien ; la preuve qu'elle corrige ce
+qu'il a vu viendra de sa course à lui.

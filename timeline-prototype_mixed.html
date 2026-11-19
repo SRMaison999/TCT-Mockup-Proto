@@ -903,7 +903,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '248';
+const BUILD = '249';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1070,7 +1070,8 @@ function reset() {
     arm: null,              // armed loop: the next rider read there becomes the race leader
     cross: {},              // finish-line crossings by race lap, in order
     crossG: {},             // le relevé de la timeline à l'ouverture de chaque tour : les blocs dans l'ordre de la course
-    finishOpen: null, finishCrossed: null, holes: {}, markPending: {},   // holes: lap lines a lapped rider has no crossing in
+    finishOpen: null, finishCrossed: null, holes: {}, markPending: {},
+    spFrom: {},             // sprint k -> l'instant ou les LEADERS ont ouvert ce sprint en franchissant la ligne   // holes: lap lines a lapped rider has no crossing in
     undo: [],
     sprints: {}, sprintOpen: null, outputs: [], liveMode: true,   // sprints: one record per sprint (see sp()); outputs: what left for TV, scoreboard, web
     noTp: new Map(),        // bib → host bib: a rider without transponder is carried with that rider's group
@@ -1332,10 +1333,19 @@ function step(dt) {
           if (!S.crossG[k] && lastG) S.crossG[k] = lastG.groups.map(g => ({ n: groupName(g), c: groupColor(g), b: [...g.bibs] }));
           (S.cross[k] = S.cross[k] || []).push(entry);
           S.passes.push({ bib: nb, t: rec.t, n: ka });
-          // finish: the head of the race, counted in the bunch's lap, opens the finish on completing the distance;
-          // every other rider still in the race then finishes at his next crossing, and the race is closed when all have crossed
-          if (L === 0 && !S.finishOpen && kn >= LAPS) {
-            S.finishOpen = rec.t; S.finishCrossed = new Set();
+          // UN SPRINT NE S'OUVRE QU'AU PASSAGE DES LEADERS. Ses mots du 19 novembre 2026 : « un sprint ne peut
+          // s'ouvrir qu'au passage des LEADERS et de personne d'autre ! », et « cela est valable pour tous les
+          // sprints », l'arrivée comprise. Le bloc de tête de la timeline est seul à ouvrir ; l'instant de son
+          // passage est le début de l'enregistrement, et les places se comptent à partir de là.
+          // Le tour lu est `k`, le compte du coureur ramené par ses tours crédités — celui de la course. L'ancienne
+          // ouverture lisait `kn`, un tour reconstruit par rapport au peloton, et le premier coureur lu l'ouvrait,
+          // quel que fût son groupe : au dernier sprint de sa course de test, les 1 et 2, partis en tête, ont été
+          // enregistrés 23e et 24e parce que leur passage tombait avant l'ouverture.
+          if (L === 0 && estDesLeaders(nb)) {
+            for (let j = 1; j <= NSPRINTS; j++) if (S.spFrom[j] == null && k >= sprintLap(j)) S.spFrom[j] = rec.t;
+          }
+          if (L === 0 && !S.finishOpen && S.spFrom[NSPRINTS] != null) {
+            S.finishOpen = S.spFrom[NSPRINTS]; S.finishCrossed = new Set();
             logEvent('RACE', 'Finish · Lap ' + LAPS + ' · BIB ' + nb + ' first across the line · waiting for every rider', false);
             // An armed finish line stops the running time on the winner, and disarms itself: the riders behind him
             // go on crossing, the clock does not go on counting.
@@ -2661,6 +2671,12 @@ const G_AHEAD = { h: [152, 200], s: [65, 90], l: [51, 58] };    // head → bunc
 const G_BEHIND = { h: [200, 360], s: [90, 100], l: [58, 68] };  // bunch → tail
 const G_BUNCH = 'hsl(200 90% 58%)';
 function groupRanked(G) { return (G || lastG).groups.filter(x => !x.incident); }
+// Le bloc de tête de la timeline : le premier bloc qui n'est pas un incident. Tant que la timeline n'a pas de
+// blocs — au tout premier passage — le coureur lu ouvre, comme avant.
+function estDesLeaders(bib) {
+  const gs = lastG && lastG.groups && lastG.groups.filter(g => !g.incident);
+  return !gs || !gs.length ? true : gs[0].bibs.includes(bib);
+}
 function groupRank(g, G) { const i = groupRanked(G).indexOf(g); return i < 0 ? 0 : i + 1; }
 function groupColor(g, G) {
   G = G || lastG;
@@ -3512,6 +3528,7 @@ function spStarted(k) { const s = S.sprints[k]; return !!(s && (s.opened || spCr
 function spCrossings(k) {
   const s = sp(k), first = new Map(); let list;
   if (s.recordFrom != null) list = S.passes.filter(p => p.t >= s.recordFrom);
+  else if (S.spFrom && S.spFrom[k] != null) list = S.passes.filter(p => p.t >= S.spFrom[k]);   // depuis le passage des LEADERS
   else if (isFinal(k)) list = S.finishOpen == null ? [] : S.passes.filter(p => p.t >= S.finishOpen);
   else list = S.cross[s.lap] || [];
   for (const p of [...list].sort((a, b) => a.t - b.t)) if (!first.has(p.bib)) first.set(p.bib, p.t);
@@ -3685,7 +3702,9 @@ function spTick() {
     // retiré, à une échappée — et `=== s.lap` laissait alors le sprint ne jamais s'ouvrir : il était jugé mais
     // absent de la carte (mesuré sur la course du 2 novembre 2026, le sprint 1 passé de 9 à 11 sans ouvrir). Le
     // garde `!s.opened` empêche toute ré-ouverture. La finale garde son repli `S.finishOpen != null`.
-    if (!s.opened && ((!isFinal(k) && lap >= s.lap) || (isFinal(k) && (lap === LAPS || S.finishOpen != null)))) {
+    // La carte s'ouvre quand les LEADERS ont ouvert le sprint, et pas avant : c'est le même instant que la
+    // fenêtre d'enregistrement. Le tour du leader désigné (`dispLap`) n'ouvre plus rien.
+    if (!s.opened && S.spFrom[k] != null) {
       s.opened = true; s.live = S.liveMode; s.target = null;
       if (!isFinal(k)) s.excluded = [...S.sprintOut].sort(byBib);
       s.greyed = []; s.judged = []; s.lapped = lappedNow(); S.sprintOut.clear();   // the rank consequence holds at the finish too

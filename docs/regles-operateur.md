@@ -3749,3 +3749,10 @@ LEADERS. Et les places se lisent à partir de là, donc les LEADERS sont premier
 Constaté sur la course complète au build 248 : les BIB 1 et 2, `1-LEADERS` dans la timeline, ont
 été enregistrés 23e et 24e du sprint final, derrière les vingt coureurs du peloton et derrière les
 BIB 23 et 24 qui étaient `3-LAST`.
+
+Demandé si la règle valait pour l'arrivée seule ou pour tous les sprints, il a répondu le même
+jour :
+
+> « oui, et cela est valable pour tous les sprints »
+
+Donc les quatre sprints, l'arrivée comprise, s'ouvrent de la même manière.

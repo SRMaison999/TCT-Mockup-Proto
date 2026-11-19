@@ -1128,3 +1128,18 @@ est sorti trois fois. Dans une autre version du même garde, le BIB 1 a reçu do
 
 **Ce qu'il faut faire.** Verrouiller sur les COUREURS rattrapés, et lever le verrou quand la
 timeline les montre dans le bloc du peloton. Ses mots : « Hop, il est dans le groupe, c'est fini. »
+
+
+### D46 · Un tour reconstruit par rapport au peloton n'est pas le tour de la course
+
+L'arrivée s'ouvrait sur `kn = ka - imp`, où `imp` est l'avance du coureur sur le peloton mesurée en
+distance et **arrondie au tour entier**. Pour un coureur dans le peloton, `imp` vaut zéro et tout va
+bien. Pour un groupe de tête à plus d'un demi-tour du peloton, l'arrondi monte d'un cran : le groupe
+se compte un tour en retard, n'ouvre pas l'arrivée, et son passage — antérieur à l'ouverture — n'est
+ramassé qu'au tour suivant, en dernières places. C'est ce que l'opérateur a vu : ses LEADERS
+enregistrés 23e et 24e du sprint final.
+
+**Le tour d'un coureur est son compte de passages moins ses tours crédités**, `ka - S.lapStatus`,
+sans arrondi et sans référence au peloton. C'est déjà le tour de l'onglet Crossings. Un tour
+reconstruit par comparaison avec un autre coureur n'est pas un tour : c'est une estimation, et elle
+décide.
