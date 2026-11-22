@@ -239,7 +239,7 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 .sprk.score .noc{color:var(--muted)}
 .sprk .pts{font:700 12px var(--mono);color:var(--good);text-align:right}
 /* Race log */
-.jg-note{font:500 13px var(--sans);color:var(--dim);flex:0 0 auto;border-left:3px solid var(--line2);padding:4px 0 4px 10px}
+.jg-note{font:500 13px var(--sans);color:var(--dim);flex:0 0 auto;padding:4px 0}
 .jg-note b{color:var(--muted)}
 .jg{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column}
 .jg-row{display:grid;grid-template-columns:54px 108px 1fr;gap:12px;align-items:center;min-height:40px;padding:6px 10px;border-bottom:1px solid #23262a;border-left:3px solid var(--line)}
@@ -272,7 +272,7 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
     <button class="on" data-tab="stand">Standings</button>
     <button data-tab="sprints">Sprints</button>
     <button data-tab="scen">Scenarios</button>
-    <button data-tab="log">Race log</button>
+    <button data-tab="log">Race facts</button>
   </nav>
 
   <div class="panel" data-panel="start" hidden>${startView}</div>
@@ -280,7 +280,7 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
   <div class="panel" data-panel="stand"><iframe class="vframe" src="maquette-standings.html?embed=1" title="Standings"></iframe></div>
   <div class="panel" data-panel="sprints" hidden>${sprintsView}</div>
   <div class="panel" data-panel="scen" hidden><iframe class="vframe" src="maquette-scenarios.html?embed=1" title="Scenarios"></iframe></div>
-  <div class="panel" data-panel="log" hidden>${logView}</div>
+  <div class="panel" data-panel="log" hidden><iframe class="vframe" src="maquette-racefacts.html?embed=1" title="Race facts"></iframe></div>
 </div>
 <script>
 (function(){

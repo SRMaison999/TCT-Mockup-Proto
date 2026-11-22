@@ -78,7 +78,7 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 
 | Fichier | Rôle |
 |---|---|
-| `mockups/` | Les maquettes **statiques** des écrans dessinés avec l'opérateur les 15 et 16 novembre 2026 (All sprints, Lap by lap, Standings, Passings, Race log, Possible scenarios, fil commentateurs), leurs générateurs, le brief d'intégration `INTEGRATION.md` et le plan des sessions `PLAN-SESSIONS.md`. L'état de chaque écran — codé ou pas encore — est dans `mockups/README.md` |
+| `mockups/` | Les maquettes **statiques** des écrans dessinés avec l'opérateur les 15 et 16 novembre 2026 (All sprints, Lap by lap, Standings, Passings, Race log, Possible scenarios, fil commentateurs, Race facts), leurs générateurs, le brief d'intégration `INTEGRATION.md` et le catalogue `MAQUETTES OUTPUTS.pdf` (les maquettes des **sorties** — fil commentateurs, analyses d'approche intégrées, écran des entraîneurs — en images, ce qu'elles montrent et comment on les obtient). L'état de chaque écran — codé ou pas encore — est dans `mockups/README.md` |
 | `mockups/maquette-groupes.html` | Maquette des décisions du 25 octobre 2026, dérivée du prototype, **conservée comme témoin** : les décisions ont depuis été codées. `maquette-groupes.jpg` en est une capture |
 | `mockups/maquette-groupe-force.html` | La planche du groupe posé à la main, approuvée le 1er novembre 2026 et codée au build 161 |
 | `mockups/maquette-design-b.html` | La planche des cinq points de design du 31 octobre 2026, tous tranchés depuis (`docs/architecture.md` §30) |

@@ -141,8 +141,7 @@ body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
 .brow.win .bpl{color:var(--good)}
 
 .fightwrap{flex:1 1 auto;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:10px}
-.bc{border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:6px;padding:10px 12px;background:#17191c}
-.bc.good{border-left-color:var(--good)}.bc.acc{border-left-color:#8FB4FF}.bc.warn{border-left-color:var(--warn)}
+.bc{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#17191c}
 .bch{display:flex;align-items:center;gap:8px;margin-bottom:7px}
 .bct{font:700 12px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .bcp{margin-left:auto;font:700 11px var(--mono);color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:2px 9px}

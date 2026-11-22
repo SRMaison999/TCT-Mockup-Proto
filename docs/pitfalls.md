@@ -1184,3 +1184,18 @@ droite faisait 500 px au lieu de 574, et sa carte ne touchait pas le bord : `.ri
 **Avant de nommer un élément** dans le prototype, chercher le nom dans `styles.css` : cette feuille est partagée, ses
 sélecteurs sont courts (`.right`, `.row`, `.rows`, `.hd`, `.chip`), et une collision ne lève aucune erreur — elle se
 voit seulement à la mesure.
+
+
+## Déclarer un manque sans avoir ouvert les vues qui le comblent
+
+**22 novembre 2026.** En écrivant comment brancher les maquettes de sortie au moteur, j'ai annoncé
+trois manques : les faits ne seraient pas écrits au moment où ils arrivent, le tour ne serait pas
+porté par la lecture, la chute ne serait pas codée. Les trois étaient faux. `S.cross` — ce que l'onglet
+Lap by lap affiche — garde pour chaque tour qui a franchi la ligne, à quelle heure, son compte de
+tours propre, la marque du tour gagné ou perdu et le bloc où roulait le coureur ; la chute ouvre un
+groupe daté avec son décompte de tours.
+
+J'avais lu l'état `S` champ par champ et conclu qu'il ne gardait que l'instant présent. C'est vrai des
+champs de l'image courante, et faux des relevés que les vues construisent au fil de la course.
+**Avant d'écrire qu'une donnée manque, ouvrir l'onglet qui l'affiche** : si un écran la montre, le
+moteur la garde.

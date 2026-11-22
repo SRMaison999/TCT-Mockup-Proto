@@ -785,6 +785,11 @@ compte les **changements de statut**, pas seulement les coureurs touchés.
   rouler jusqu'à sa place dedans. Le rendre instantané déplace une proposition de perte de
   tour de 195 secondes. À trancher.
 - **La Madison, la course tempo et le scratch** : même modèle, autre barème.
+- **Le nombre de tours d'approche des sprints.** Les analyses d'approche destinées aux médias
+  et aux entraîneurs lisent la position des coureurs sur les boucles Pursuit B et Pursuit A
+  pendant les tours qui précèdent chaque sprint. Il avait été question de trois tours. Interrogé
+  le 22 novembre 2026 : « Je ne sais pas à vrai dire. Peut-être que nous devrions être
+  flexibles.... » Le nombre n'est donc pas fixé, et aucun ne se code d'office.
 - **Dire à la main qui est devant et qui est derrière sur la grille de départ** (point 229, sa
   première phrase). Au build 236 la grille suit le dossard, du plus petit au plus élevé. Rien ne
   permet de la réordonner, et l'ordre de la liste de départ n'est pas visible quand le panneau est
@@ -4416,3 +4421,397 @@ Devant le relevé du §15 — le coureur dont le transpondeur se tait quitte son
 Avec son point 253, qui tient : tant que la question n'a pas de réponse, il reste affiché à sa dernière place dans
 le groupe. **C'est déjà ainsi** — son constat le même jour : « mais d'ailleurs il ne quitte pas son groupe ! »,
 « RAS ici ». YES pose ses passages et il est de nouveau lu avec le groupe ; mesures.md §118.
+
+### 274 · Les boucles s'appellent Back straight et Home straight · 22 novembre 2026
+
+Devant les deux maquettes d'approche :
+
+> « Et surtout il faut les nommer différemment : Home straight pour "Pursuit A", et Back straight pour "Pursuit B". »
+
+Les deux écrans d'approche portent ces noms, à l'axe du graphe comme dans les textes. La troisième
+boucle reste la ligne d'arrivée.
+
+
+### 275 · Deux points par tour dans la vue des entraîneurs · 22 novembre 2026
+
+> « Je pense qu'il vaudrait mieux n'afficher que deux points par tour, car la distance entre les boucles Pursuit A et Finish est finalement très courte. »
+
+Le tableau de `maquette-approches-coachs.html` ne montre plus que Back straight et Home straight,
+deux relevés par tour, le résultat du sprint restant sa propre colonne.
+
+**Ce qui n'est pas de lui.** Le graphe de la vue des médias garde le relevé de la ligne : c'est là
+que le sprint se juge. Il ne l'a pas demandé, il ne l'a pas refusé — à lui de trancher.
+
+
+### 276 · Un coureur s'écrit dossard, drapeau, NOC, prénom, NOM · 22 novembre 2026
+
+> « Pour bien identifier rapidement les coureurs, je pense qu'il est utile de toujours faire référence à eux dans les explication en texte comme dans les listes, comme ceci :
+> `<BIB> <Flag> <NOC> <Prénom> <Nom>`
+> Cela pour plus e clarté et également pour plus de cohérence avec le reste du projet. »
+
+Appliqué partout dans les deux écrans d'approche : listes, pastilles, textes, colonne de gauche du
+graphe.
+
+**Ce qui n'est pas de lui.** Le même jour, sur le chevauchement de l'ancien graphe :
+> « Partie de gauche le dossard passe par dessus le rang. Retirons le dossard dans la partie de gauche et mettons mieux en valeur les rangs. »
+Le rang est maintenant dans sa propre case, détaché, et la colonne de gauche porte le coureur
+**en entier, dossard compris** — parce que c'est une liste, donc le format ci-dessus. Le
+chevauchement a disparu, mais le dossard n'a pas été retiré : à confirmer ou à retourner.
+
+
+### 277 · Pas de bande colorée sur le côté des cartes explicatives · 22 novembre 2026
+
+> « Je n'aime pas les bandes colorées sur les côtés des cartes explicatives […] Je préfère que les noms des coureurs soient mis en évidence dans la couleur qui les highlight. »
+
+Et, sur les écrans des autres sessions :
+
+> « Les autres maquettes que tu n'as pas traitées dans cette session mais qui existent déjà, ont aussi pour certaines d'entre elles les bandes colorées sur les côtés des cartes explicatives. Supprime-les également ! »
+
+Retirées des cartes de bagarres de `maquette-scenarios.html`, de la boîte d'alerte de
+`maquette-lapbylap.html` et de la note du fil de `maquette-feed.html`. **Ne sont pas des cartes
+explicatives et gardent leur trait** : les lignes de `maquette-passings.html` et de
+`maquette-racelog.html` colorées par position et par type, les lignes du coureur suivi dans
+Évolution, les blocs de groupe de Lap by lap et les lignes gagné/perdu du fil.
+
+
+### 278 · Ce qui mérite d'être dit sur l'approche d'un sprint · 22 novembre 2026
+
+> « Il faut par défaut "allumer" le graphique du vainqueur et du 2ème du sprint uniquement. »
+
+> « Les infos qui disent que la plus grosse remontée est celle d'un coureur qui prend, par exemple, la 7ème place du sprint n'est l'info la plus pertinente. Les infos pertinentes sont celles des coureurs highlightés d'une part, et également les infos relatives aux bagarres pour la victoire, la 2ème place, la 3ème, 4ème. Notamment en confrontant ces coureurs entre eux. Dans les courses de qualification la bagarre pour la dernière ou les dernières places qualificatives sont intéressantes. »
+
+La colonne de droite de `maquette-approches.html` dit donc : les coureurs surlignés, puis les
+quatre bagarres — la victoire, la 2ème, la 3ème, la 4ème place — chacune en confrontant le coureur
+qui tient la place et celui qui la lui dispute, puis la dernière place qualificative en manche de
+qualification. La plus grosse remontée et le plus loin revenu dans les points sont retirés.
+
+
+### 279 · Les deux vues se proposent toutes les deux · 22 novembre 2026
+
+> « J'aime les deux vues médias et coachs. Je pense même qu'on devrait proposer les deux vues. »
+
+Les deux surfaces restent. **Ce qu'il reste à préciser** : s'il veut dire que chacun des deux
+publics reçoit les deux vues, ou que les deux maquettes continuent toutes les deux — à lui de le
+dire.
+
+### 280 · Back straight et Finish line, dans les deux vues · 22 novembre 2026
+
+Sur le graphe des médias :
+
+> « Dans le graphique de l'approche "médias", on pourrait là aussi ne montrer que "Backstraight" et "Finish line" »
+
+Puis, le même jour :
+
+> « Pour la vue Coachs, il faut également utiliser "back straight" et "Finish line" »
+
+**Ce point remplace le point 275**, qui donnait Back straight + Home straight aux entraîneurs.
+Les deux écrans lisent maintenant les **mêmes deux relevés par tour** : le back straight et la
+ligne. La boucle du home straight reste dans la donnée et ne s'affiche nulle part.
+
+
+### 281 · La liste du résultat à droite du graphe, les rangs sur l'échelle · 22 novembre 2026
+
+> « Ce que je veux c'est supprimer les noms des coureurs en dessous du graphique. Et la colonne de gauche doit avoir un titre "Sprint result" et afficher les coureurs dans l'ordre du sprint, de haut en bas. Et on sélectionne les coureurs depuis cette liste. Il faut aussi que les rangs soient affichés sur l'échelle verticale à gauche du table, de façon à ce que l'on puisse comprendre la fluctuation des positions entre le début de l'approche et le sprint. »
+
+Puis, après que j'ai mal lu sa raison — « **NON !** » — il a tranché autrement :
+
+> « Mais tu m'as donné une idée : plaçons la liste du résultat à droite du graphique. et la courbe indiquera à gauche la position au début de l'approche et, à droite, la position au moment du sprint. »
+
+Donc : les pastilles sous le graphe sont **retirées**, l'échelle des **rangs est à gauche du
+tracé**, et la liste **Sprint result** est **à droite**, dans l'ordre d'arrivée du sprint, de haut
+en bas ; c'est d'elle qu'on sélectionne un coureur. La courbe se lit de gauche — où il était au
+début de l'approche — à droite, où il finit.
+
+
+### 282 · Ce qui n'était pas clair et qui est supprimé · 22 novembre 2026
+
+Sur les deux chiffres « 3 / 3 » de la liste des coureurs de la vue des entraîneurs :
+
+> « NON, supprime ces données. »
+
+Sur le mot qui annonçait les coureurs sélectionnés :
+
+> « "FOLLOWING" > Supprime »
+
+> « Les noms des coureurs affichés plus loin sur la même ligne que "FOLLOWING", suppriem les également. Ils sont redondants »
+
+La barre de la vue des entraîneurs ne porte plus que le nombre de tours regardés.
+
+
+### 283 · « Lap gained » : aux médias aussi, et clarifié · 22 novembre 2026
+
+> « "Lap gained" devrait aussi être proposé aux médias, mais surtout devrait être clarifié. Je trouve cela assez confus. »
+
+> « J'ajouterais qu'on pourrait indiquer si d'autres coureurs ont été avec le coureur analysé entre le début et la fin de son attaque. »
+
+La carte est la **même dans les deux surfaces**. Elle raconte dans l'ordre — attaque, échappé,
+revenu sur le peloton, tour crédité — chaque étape avec **son tour et son temps de course** ; puis
+trois chiffres seulement : l'affaire entière en tours et en temps, le moment de l'attaque par
+rapport au sprint, et de combien il roulait plus vite que le peloton à chaque tour. Puis **qui
+l'a accompagné**, entre quels tours et combien de tours ; le sprint tombé pendant la tentative ;
+et l'attente entre le retour sur le peloton et la validation. Le chiffre « hors du peloton », qui
+doublait le premier, est retiré.
+
+
+### 284 · Suivre les coureurs après les sprints · 22 novembre 2026
+
+> « On pourrait aussi suivre les coureurs après les sprints. Cela donnerait des informations à leurs coachs quant à la gestion de l'effort de leurs coureurs. En effet il est important de reprendre son souffle après un sprint en se laissant glisser plus bas dans le peloton et ne pas rester à l'avant avec la contrainte inhérente qui est de donner le tempo. »
+
+La vue des entraîneurs a une seconde moitié, **After the sprint** : les mêmes relevés, dans les
+tours **qui suivent** chaque sprint. Par sprint, elle dit jusqu'où le coureur est descendu, en
+combien de tours, où il en est à la fin de la fenêtre — et, s'il n'est jamais sorti des quatre
+premiers, qu'il **est resté devant, à donner le tempo**. Le même sélecteur 2·3·4·5 sert avant et
+après.
+
+### 285 · Pas de jugement sur ce qu'un coureur fait après un sprint · 22 novembre 2026
+
+> « Alors je n'aime pas trop les textes du genre "stayed at the front — he gave the tempo". Il ne faut pas écrire ça. »
+
+Et la raison :
+
+> « Et d'ailleurs parfois il n'est pas possible de se reposer après un sprint car il y a des attaques. Justement dans ces cas-là les coureurs doivent être assez lucides pour ne pas laisser s'échapper un rival. Ce genre de choses lé est intéressant. Connaitre leur comportement après les sprints, et en plus de cela, selon les différentes situations de course potentielles après les sprints »
+
+**Ce point remplace la dernière phrase du point 284.** La vue **After the sprint** ne juge plus. Par
+sprint elle donne : la place à chaque relevé, la **place la plus basse atteinte** et à quel tour, la
+place **à la fin de la fenêtre**, et — colonne nouvelle — **ce qui se passait dans la course** :
+qui a attaqué, à quel tour, s'il a pris le tour ou s'il a été repris, et si une échappée était
+déjà partie. C'est à l'entraîneur de conclure, pas à l'écran.
+
+
+### 286 · « Lap gained » : des cadres de haut en bas · 22 novembre 2026
+
+> « Ok les infos sont meilleures cette fois mais ce n'est pas clair pour lire. Je préfèrerais des cadres qui vont de haut en bas de la page, et non pas sur la largeur de l page, pour raconter l'effort d'un coureur. »
+
+Un coureur = **une colonne**, lue de haut en bas : les quatre moments avec leur tour et leur temps
+de course, puis les chiffres, puis qui l'a accompagné, le sprint tombé au milieu, et l'attente sur
+la décision. Les colonnes se posent côte à côte.
+
+
+### 287 · Une course plus mouvementée dans les maquettes · 22 novembre 2026
+
+> « Effectivement des données d'une course plus mouvementée seraient intéressantes »
+
+La course illustrative porte maintenant **quatre attaques** : deux qui prennent le tour
+(`61 NAVARRO` au tour 22, `9 KOVAC` au tour 33) et deux reprises (`70 SILVA` et `46 DE WIT` au
+tour 41, `3 MOREAU` au tour 52). Un seul sprint, le premier, n'est suivi d'aucune attaque — il
+fallait que les deux cas existent. Le coureur parti est **devant** dans le relevé tant qu'il est
+échappé, et le peloton se mélange davantage entre deux sprints.
+
+### 288 · Le graphe aussi dans la vue des entraîneurs · 22 novembre 2026
+
+> « Pourquoi dans la vue coachs il n'y pas aussi la vue en "charts" en plus de celle en "tableau" ? »
+
+Aucune raison : la vue des entraîneurs avait été faite en tableaux et n'avait jamais reçu le
+graphe né chez les médias. Elle a maintenant un onglet **Charts**, et c'est celui qui s'ouvre.
+Chaque graphe couvre **les n tours avant ET les n tours après** le sprint, la ligne jaune marque
+le sprint, les attaques sont en pointillé orange, et la bande des quatre places qui donnent des
+points ne couvre que la partie **avant** — après le sprint, être devant ne veut pas dire la même
+chose.
+
+### 289 · Ce que chaque vue présente · 22 novembre 2026
+
+> « il faut aussi dire que la vue média (le graphe) présente :
+> * Tous les coureurs dans 1 sprint horizontalement, sur un nombre de tours ajustable
+>
+> Tandis que la vue coachs présente :
+> * 1 coureur, dans x sprint (s) horizontalement, sur un nombre de tours ajustable
+> et après le dernier sprint du 1er coureur :
+> * 1 autre coureur, dans x sprint (s) horizontalement, sur un nombre de tours ajustable
+> et après le dernier sprint du 2ème coureur :
+> * 1 autre coureur, dans x sprint (s) horizontalement, sur un nombre de tours ajustable »
+
+Et l'autre disposition, qu'il veut essayer :
+
+> « On pourrait aussi faire un essai et présenter le choses comme ceci :
+> * x coureurs, dans 1 sprint horizontalement, sur un nombre de tours ajustable
+> puis plus bas :
+> * les mêmes x coureurs, dans 1 autre sprint horizontalement, sur un nombre de tours ajustable
+> puis plus bas :
+> * les mêmes x coureurs, dans 1 autre sprint horizontalement, sur un nombre de tours ajustable »
+
+L'onglet Charts porte donc un sélecteur **By rider / By sprint**. *By rider* : une bande par
+coureur, ses sprints posés côte à côte. *By sprint* : une bande par sprint, les coureurs choisis
+dedans, les bandes empilées. Les deux restent tant qu'il n'a pas choisi.
+
+### 290 · After the sprint, allégé · 22 novembre 2026
+
+> « After the sprint, c'est pas clair du tout. Pas clair au niveau des données, et pas clair au niveau de la présentation, c'est très difficile de lire. »
+
+Le tableau ne garde que les positions, la **place la plus basse** avec le nombre de tours après le
+sprint, et la **place à la fin** de la fenêtre. La coloration verte et ambre est retirée de la
+partie « après » : elle disait l'inverse de ce qu'elle dit avant le sprint. Les en-têtes de tours
+s'écrivent en toutes lettres — « 2 laps after » et non « +2 ». Et **ce qui se passait dans la
+course** est sorti du tableau : c'est un fait de course, pas un fait de coureur, il s'écrit une
+seule fois en haut du panneau, sprint par sprint.
+
+### 291 · Les deux dispositions du graphe restent · 22 novembre 2026
+
+Sur *By rider* et *By sprint*, proposées au point 289 :
+
+> « j'ai envie de les garder les deux ! »
+
+Le sélecteur reste. Ce n'est plus un essai.
+
+
+### 292 · Ce qui se répète au-dessus des graphes est retiré · 22 novembre 2026
+
+> « dans la vue "By sprint", Supprime les noms des coureurs sélectionnés qui sont affichés au-dessus de chaque graphe […] ils sont redondants »
+
+> « dans la vue "By rider", Supprime les textes "x laps before and after each sprint" qui sont affichés au-dessus de chaque graphe […] ils sont redondants. Affiche le texte une fois en haut de la page ce sera suffisant »
+
+Les noms sont déjà dans la liste de gauche et dans les couleurs des courbes ; le nombre de tours
+est déjà dans la barre. Le nombre de tours s'écrit **une seule fois**, dans l'en-tête du panneau,
+et il suit le sélecteur.
+
+
+### 293 · After the sprint : son rang dans le sprint, et la colonne nommée · 22 novembre 2026
+
+> « Je trouve que tu devrais afficher les rangs des coureurs à côté du nom du sprint […] actuellement tu affiches les points, mais ce sont les positions qui nous intéressent. »
+
+La colonne de gauche porte donc **sa place dans ce sprint**, pour tous les coureurs et pas
+seulement ceux qui ont marqué, et non plus ses points.
+
+Et sur la dernière colonne :
+
+> « Que signifie "At the end" et que veulent dire les valeurs dans cette colonne ? »
+
+C'était sa place au **dernier relevé de la fenêtre**. Le titre ne le disait pas : il s'écrit
+maintenant **« 3 laps later »**, et il suit le sélecteur de tours.
+
+### 294 · After the sprint : les deux colonnes de résumé sont retirées · 22 novembre 2026
+
+Sur « At the end », une fois sa définition donnée — la place au dernier relevé de la fenêtre :
+
+> « Donc non seulement elle est confusante, mais elle est aussi inutile puisque redondante. Supprime la. »
+
+> « Pour être sincère je pense que la colonne "LOWEST" est elle aussi inutile et redondante. Supprime la également. »
+
+Le tableau de **After the sprint** ne garde que **les positions relevées**, plus sa place dans le
+sprint à gauche. Les deux chiffres se lisent dans la ligne elle-même.
+
+**Ce qui n'est pas de lui.** La colonne **Head to head** garde, elle, la place la plus basse
+atteinte — mais en moyenne sur la course, ce qui n'est pas dans le tableau. À lui de dire s'il la
+veut aussi retirée.
+
+### 295 · Plus de fond marron dans les tableaux · 22 novembre 2026
+
+Interrogé sur le fond marron des cases — mon code couleur, 5e à 8e place, qu'il n'avait pas
+demandé :
+
+> « Enlève le marron »
+
+Seul le **vert** reste : les quatre places qui donnent des points. Tout le reste est sans fond.
+
+
+### 296 · « Last lap » se mesure sur le tour entier, pas sur le dernier demi-tour · 22 novembre 2026
+
+> « je pense qu'il y a une erreur de calcul dans la colonne "LAST LAP". En effet il me semble qu'elle indique la fluctuation en position lors du dernier tour. Mais tu utilles la fluctuation en position entre le passage sur le boucle B et le sprint, c'est-à-dire que le dernier demi-tour »
+
+Il avait raison. La colonne comparait le **back straight du tour du sprint** à la ligne — un demi-
+tour. Elle compare maintenant la **ligne du tour précédent** à la **ligne du sprint**, soit le
+dernier tour entier.
+
+
+### 297 · Les colonnes de tour se nomment sur une seule ligne · 22 novembre 2026
+
+> « je pense qu'on pourrait modifier les libellés des colonnes des tableaux. Les libellés "LINE" doivent être remplacés par "2 TO GO", "1 TO GO", "SPRINT". Et la ligne qui indique actuellement "2 TO GO", "1 TO GO", "SPRINT LAP" peut être supprimée »
+
+Et, pour le graphe :
+
+> « Il faut faire la même chose au niveau de la numérotation des tours : les libellés "LINE" doivent être remplacés par "2 TO GO", "1 TO GO", "SPRINT". Et la ligne qui indique actuellement "2 TO GO", "1 TO GO", "SPRINT LAP" peut être supprimée »
+
+Un seul étage d'en-têtes, partout : **Back**, puis **2 to go**, **Back**, **1 to go**, **Back**,
+**Sprint**. Dans la vue After the sprint, la même règle donne **1 lap after**, **2 laps after**…
+
+
+### 298 · Les rangs entre la fin des courbes et les noms · 22 novembre 2026
+
+> « Il faut également indiquer les rang entre la fin des courbes des coureurs et les noms des coureurs »
+
+Une colonne de rangs est posée entre le tracé et la liste **Sprint result** de la vue des médias.
+Elle reprend la couleur du coureur quand il est surligné.
+
+### 299 · Les libellés de tour portent leur unité · 22 novembre 2026
+
+Sur l'axe du graphe des médias, où j'avais écrit « 2 to go » et « 1 to go » :
+
+> « Je parle de l'échelle horizontale en bas du chart. […] on voit bien que c'est indiqué "2 laps" et "1 lap" au lieu de "2 laps to go" et "1lap to go" »
+
+**Ce point précise le point 297.** Les libellés s'écrivent en entier, au singulier ou au pluriel
+selon le nombre : **2 laps to go**, **1 lap to go**, **Sprint**. Même chose dans les tableaux de
+la vue des entraîneurs, et du côté « après » : **1 lap after**, **2 laps after**.
+
+
+### 300 · Le document des sorties ne montre que les sorties · 22 novembre 2026
+
+Je lui avais livré un `MAQUETTES OUTPUTS.pdf` qui contenait les vingt-neuf maquettes du
+prototype, y compris les propositions de dessin et les écrans de la vue Course :
+
+> « mais pourquoi tu mets des maquettes de dessin ? Et les maquettes de la vue course ne nous intéressent pas ici . Je t'ai dit que le doc s'appellerait MAQUETTES OUTPUTS.pdf. Le document présente les maquettes qui concernent les outputs (commentateurs et coachs) »
+
+Le document ne contient que les surfaces qui **sortent** de la console : le fil des commentateurs
+et l'écran des entraîneurs. Les écrans de la vue Course sont les outils de l'opérateur, pas des
+sorties, et les maquettes de dessin n'y ont pas leur place.
+
+### 301 · Les analyses d'approche des médias font partie du fil commentateurs · 22 novembre 2026
+
+> « les analyses d'approches médias, doivent être intégrées au fil commentateurs »
+
+La vue **Approach** et la vue **Lap gained** des médias ne sont pas une surface séparée : elles
+sont dans le fil des commentateurs, avec Start list, Standings, All sprints, Possible scenarios et
+Race log. L'écran des entraîneurs, lui, reste à part.
+
+### 302 · Les bascules sont des vues à montrer · 22 novembre 2026
+
+Le document ne montrait que la face par défaut des onglets Standings et Scenarios :
+
+> « et pour info, l'onglet Standings a deux onglets qu'il faut présenter. Et l'onglet Scénarios a lui aussi deux onglets qu'il faut présenter »
+
+Standings se présente en **Live** et en **Evolution**, Scenarios en **Overview** et en
+**What if…** : quatre vues, pas deux.
+
+### 303 · RACE FACTS prend la place du Race log dans le fil · 22 novembre 2026
+
+Proposé : neuf familles de phrases écrites depuis ce que le moteur mesure déjà — le sprint,
+l'approche, le tour gagné, l'échappée, le coureur décroché, le classement, la ligne de coupe, ce
+qui reste possible, et la chute. Ses deux mots sur la proposition :
+
+> « les chutes »
+
+> « RACE FACTS remplace Race logs dans le fil commentateur. »
+
+Le fil n'a donc pas un onglet de plus : **l'onglet Race log devient RACE FACTS**. Le Race log de
+la vue Course, lui, ne change pas — c'est la boîte noire de l'opérateur, et elle garde son nom.
+Les alertes matériel n'entrent pas dans RACE FACTS, comme elles n'entraient pas dans le Race log
+du fil.
+
+Sa réponse, le même jour : « oui dessine. »
+
+**Maquette proposée le 22 novembre 2026** — `mockups/maquette-racefacts.html`, 28 faits sur la
+course illustrative, une bascule All facts / Headlines et un filtre par famille. Sa réponse : « Ça me va. » L'onglet du fil porte désormais son nom et reçoit la maquette, comme il reçoit déjà Standings et Possible scenarios. **Pas encore codée dans le prototype.**
+
+
+### 304 · Lap by lap, All sprints et les Passings portent déjà tout · 22 novembre 2026
+
+J'avais écrit dans le document des sorties que trois choses manquaient au moteur : les faits pas
+écrits au moment où ils arrivent, le tour pas porté par la lecture, et la chute pas codée. Ses
+trois réponses, mot pour mot :
+
+> « La vue Lap by lap peut t'aider ici ! » (sur les faits)
+
+> « La vue Lap by lap peut t'aider ici ! » (sur le tour)
+
+> « Si ! Ils y sont ! » (sur la chute et la neutralisation)
+
+Et sa consigne :
+
+> « Pour les approches de sprint média et coachs et les tours gagné média, par exemple, sers-toi des vues Lap by lap, All sprints, et Passings sur Pursuit B. Avec cela tu devrais tout le nécessaire pour obtenir les datas de ces pages »
+
+**Il a raison, et mes trois manques étaient faux.** `S.cross` garde, tour par tour, qui a franchi la
+ligne, à quelle heure, son propre compte de tours, la marque du tour gagné ou perdu, et le **bloc**
+dans lequel le coureur roulait, gravé au moment de la lecture — donc le tour où un coureur quitte le
+peloton, celui où il y revient, qui était avec lui, et l'écart du groupe. `S.reads` garde toutes les
+lectures de chaque boucle pour la course entière. `S.sprints` garde l'ordre complet de chaque sprint.
+Et la chute est codée : groupe daté du tour, décompte des tours pour revenir, carte à trois issues.
+
+Rien n'est à enregistrer en plus. Ce qui reste est de lire ces relevés et d'écrire les phrases.

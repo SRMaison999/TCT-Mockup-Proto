@@ -94,22 +94,31 @@ intermédiaires et des tours gagnés ou perdus, jamais à l'ordre d'arrivée seu
 et le nombre de sprints sont libres pour les organisateurs nationaux : ce sont des paramètres
 de course, pas des constantes.
 
-| Règle | Valeur | Conséquence pour le logiciel |
-|---|---|---|
-| Sprint intermédiaire | tous les 10 tours sur les pistes de moins de 333,33 m (3.2.117) | les tours de sprint sont connus d'avance ; la cloche annonce le dernier tour avant chaque sprint |
-| Points par sprint | 5, 3, 2, 1 aux quatre premiers (3.2.118) | l'ordre des quatre premiers suffit en cours de course |
-| Dernier sprint | points doublés : 10, 6, 4, 2 | l'ordre **complet** compte, il départage les égalités |
-| Tour gagné | +20 points (3.2.118) | décision du PCP, souvent connue en retard |
-| Tour perdu | −20 points | décision du PCP ; retrait possible selon un seuil annoncé |
-| Tours gagnés et perdus | **comptés séparément** par coureur | ils servent au départage ; on ne compense jamais l'un par l'autre |
-| Cloche et arrivée | la cloche sonne au passage de la **tête de course** ; les points sont attribués, ou la course se termine, à son passage suivant (3.2.017 ter) | la tête de course est désignée par le président du jury |
-| Coureur à un ou plusieurs tours | ne dispute pas les sprints, peut être retiré par le jury (3.2.127) | voir l'éligibilité, `regles-operateur.md` §6 |
-| Égalité | place au dernier sprint | l'ordre d'arrivée de **tous** les coureurs est nécessaire |
-| Incident reconnu | neutralisation d'environ 1 250 m, 5 tours sur 250 m, reprise à la même place | compte de tours aligné sur le groupe réintégré |
-| Incident dans les 5 derniers tours | pas de retour, classé avec points et tours acquis | statut final sans passage d'arrivée |
-| Course neutralisée | drapeau jaune, groupe compact, relance avec les mêmes écarts de tours | compteur figé, sprint tombé pendant la neutralisation redonné après |
-| Retraits | **ABD** (le coureur se retire), **DNF** (mis hors course), **DSQ** (disqualifié) | statut explicite avec tour d'effet |
-| Distances élite championnats | 40 km hommes, 25 km femmes ; omnium 25 et 20 km ; juniors 25 et 20 km | paramètres de course |
+| Règle            | Valeur                                                                                                                      | Conséquence pour le logiciel                                                  |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Sprint           | tous les 10 tours sur les pistes de moins de 333,33 m (3.2.117)                                                             | les tours de sprint sont connus d'avance ; la cloche annonce le dernier tour  |
+| intermédiaire    |                                                                                                                             | avant chaque sprint                                                           |
+| Points par       | 5, 3, 2, 1 aux quatre premiers (3.2.118)                                                                                    | l'ordre des quatre premiers suffit en cours de course                         |
+| sprint           |                                                                                                                             |                                                                               |
+| Dernier sprint   | points doublés : 10, 6, 4, 2                                                                                                | l'ordre **complet** compte, il départage les égalités                         |
+| Tour gagné       | +20 points (3.2.118)                                                                                                        | décision du PCP, souvent connue en retard                                     |
+| Tour perdu       | −20 points                                                                                                                  | décision du PCP ; retrait possible selon un seuil annoncé                     |
+| Tours gagnés et  | **comptés séparément** par coureur                                                                                          | ils servent au départage ; on ne compense jamais l'un par l'autre             |
+| perdus           |                                                                                                                             |                                                                               |
+| Cloche et        | la cloche sonne au passage de la **tête de course** ; les points sont attribués, ou la course se termine, à son passage     | la tête de course est désignée par le président du jury                       |
+| arrivée          | suivant (3.2.017 ter)                                                                                                       |                                                                               |
+| Coureur à un ou  | ne dispute pas les sprints, peut être retiré par le jury (3.2.127)                                                          | voir l'éligibilité, `regles-operateur.md` §6                                  |
+| plusieurs tours  |                                                                                                                             |                                                                               |
+| Égalité          | place au dernier sprint                                                                                                     | l'ordre d'arrivée de **tous** les coureurs est nécessaire                     |
+| Incident reconnu | neutralisation d'environ 1 250 m, 5 tours sur 250 m, reprise à la même place                                                | compte de tours aligné sur le groupe réintégré                                |
+| Incident dans    | pas de retour, classé avec points et tours acquis                                                                           | statut final sans passage d'arrivée                                           |
+| les 5 derniers   |                                                                                                                             |                                                                               |
+| tours            |                                                                                                                             |                                                                               |
+| Course           | drapeau jaune, groupe compact, relance avec les mêmes écarts de tours                                                       | compteur figé, sprint tombé pendant la neutralisation redonné après           |
+| neutralisée      |                                                                                                                             |                                                                               |
+| Retraits         | **ABD** (le coureur se retire), **DNF** (mis hors course), **DSQ** (disqualifié)                                            | statut explicite avec tour d'effet                                            |
+| Distances élite  | 40 km hommes, 25 km femmes ; omnium 25 et 20 km ; juniors 25 et 20 km                                                       | paramètres de course                                                          |
+| championnats     |                                                                                                                             |                                                                               |
 
 Sources ouvertes : [UCI, About Track cycling](https://www.uci.org/discipline/track/1du7QkAFLchuURUZw3eool),
 [Wikipedia, Points race](https://en.wikipedia.org/wiki/Points_race). **La version en vigueur
@@ -126,25 +135,25 @@ termine quand le compteur atteint zéro.
 Chaque donnée est rangée selon **sa nature**, pas selon le câble par lequel elle arrive. Le
 câble ne dit rien de ce qu'on peut en faire.
 
-| Famille | Donnée | Identifie | Précision | Fiabilité | Latence | Autorité |
-|---|---|---|---|---|---|---|
-| Mesure | Passage transpondeur (boucle, heure, force du signal) | oui | ms | un passage peut manquer | immédiate | indicative |
-| Mesure | Impulsion tape switch (entrée, heure) | non | supérieure | deux roues collées peuvent compter pour une | immédiate | indicative |
-| Mesure | Signal de départ | course | ms | fiable | immédiate | officielle |
-| Mesure | Horodatage et ordre photo-finish | oui, après jugement | 1/1000 s | fiable | 30 s à 3 min | officielle |
-| Décision | Lap counter | course | tour | fiable, mais peut dériver d'un tour | quelques secondes | officielle |
-| Décision | Résultat de sprint confirmé | oui | rang | fiable | 30 s à 3 min | officielle |
-| Décision | Tour gagné ou perdu, avec tour d'effet | oui | tour | fiable | 5 s à plusieurs tours | officielle |
-| Décision | Neutralisation d'un coureur, début et issue | oui | tour | fiable | quelques secondes | officielle |
-| Décision | Course neutralisée, début et relance | course | tour | fiable | quelques secondes | officielle |
-| Décision | Abandon, retrait, disqualification, déclassement, avertissement | oui | tour | fiable | variable | officielle |
-| Décision | Changement de vélo | oui | instant | fiable | quelques secondes | officielle |
-| Décision | Geste de l'opérateur sur la vue | oui | position | fiable | immédiate | correction locale |
-| Décision | Points d'omnium antérieurs | oui | points | fiable | avant départ | officielle |
-| Référentiel | Startlist (dossard, nom, nation ou équipe, couleur) | oui | | | avant départ | officielle |
-| Référentiel | Table des transpondeurs | oui | | peut être fausse pour un vélo | avant départ | officielle, corrigeable |
-| Référentiel | Géométrie de piste | | m | fiable | installation | officielle |
-| Référentiel | Règles de l'épreuve (distance, tours de sprint, barème, seuils) | | | fiable | avant départ | officielle |
+| Famille     | Donnée                                                          | Identifie           | Précision  | Fiabilité                                   | Latence               | Autorité                |
+| ----------- | --------------------------------------------------------------- | ------------------- | ---------- | ------------------------------------------- | --------------------- | ----------------------- |
+| Mesure      | Passage transpondeur (boucle, heure, force du signal)           | oui                 | ms         | un passage peut manquer                     | immédiate             | indicative              |
+| Mesure      | Impulsion tape switch (entrée, heure)                           | non                 | supérieure | deux roues collées peuvent compter pour une | immédiate             | indicative              |
+| Mesure      | Signal de départ                                                | course              | ms         | fiable                                      | immédiate             | officielle              |
+| Mesure      | Horodatage et ordre photo-finish                                | oui, après jugement | 1/1000 s   | fiable                                      | 30 s à 3 min          | officielle              |
+| Décision    | Lap counter                                                     | course              | tour       | fiable, mais peut dériver d'un tour         | quelques secondes     | officielle              |
+| Décision    | Résultat de sprint confirmé                                     | oui                 | rang       | fiable                                      | 30 s à 3 min          | officielle              |
+| Décision    | Tour gagné ou perdu, avec tour d'effet                          | oui                 | tour       | fiable                                      | 5 s à plusieurs tours | officielle              |
+| Décision    | Neutralisation d'un coureur, début et issue                     | oui                 | tour       | fiable                                      | quelques secondes     | officielle              |
+| Décision    | Course neutralisée, début et relance                            | course              | tour       | fiable                                      | quelques secondes     | officielle              |
+| Décision    | Abandon, retrait, disqualification, déclassement, avertissement | oui                 | tour       | fiable                                      | variable              | officielle              |
+| Décision    | Changement de vélo                                              | oui                 | instant    | fiable                                      | quelques secondes     | officielle              |
+| Décision    | Geste de l'opérateur sur la vue                                 | oui                 | position   | fiable                                      | immédiate             | correction locale       |
+| Décision    | Points d'omnium antérieurs                                      | oui                 | points     | fiable                                      | avant départ          | officielle              |
+| Référentiel | Startlist (dossard, nom, nation ou équipe, couleur)             | oui                 |            |                                             | avant départ          | officielle              |
+| Référentiel | Table des transpondeurs                                         | oui                 |            | peut être fausse pour un vélo               | avant départ          | officielle, corrigeable |
+| Référentiel | Géométrie de piste                                              |                     | m          | fiable                                      | installation          | officielle              |
+| Référentiel | Règles de l'épreuve (distance, tours de sprint, barème, seuils) |                     |            | fiable                                      | avant départ          | officielle              |
 
 Trois principes d'exploitation en découlent.
 
@@ -227,13 +236,13 @@ passage, **sans jamais se chevaucher** : la lisibilité prime sur la position au
 
 **L'inférence des positions.**
 
-| Situation | Ce que fait le logiciel | Ce que voit l'opérateur |
-|---|---|---|
-| Passage manqué, coureur vu dans le peloton avant et après | le place dans le peloton pour ce tour, sans alerte bloquante | badge marqué déduit, journal annoté |
-| Passage manqué, pas encore de passage suivant | continue son badge au rythme du groupe où il était | alerte immédiate : transpondeur muet |
-| Passage manqué et le tape switch a compté un vélo de plus que la boucle | confirme la présence dans le groupe | alerte adoucie *(pas codé)* |
-| Passage manqué et le coureur était en train d'attaquer | garde l'écart estimé et le signale comme incertain | badge incertain, demande de confirmation |
-| Deux passages manqués de suite | passe le coureur en transpondeur muet | alerte forte, propositions : chute, changement de vélo, confirmer dans le peloton |
+| Situation                                                               | Ce que fait le logiciel                                      | Ce que voit l'opérateur                                                           |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------------- |
+| Passage manqué, coureur vu dans le peloton avant et après               | le place dans le peloton pour ce tour, sans alerte bloquante | badge marqué déduit, journal annoté                                               |
+| Passage manqué, pas encore de passage suivant                           | continue son badge au rythme du groupe où il était           | alerte immédiate : transpondeur muet                                              |
+| Passage manqué et le tape switch a compté un vélo de plus que la boucle | confirme la présence dans le groupe                          | alerte adoucie *(pas codé)*                                                       |
+| Passage manqué et le coureur était en train d'attaquer                  | garde l'écart estimé et le signale comme incertain           | badge incertain, demande de confirmation                                          |
+| Deux passages manqués de suite                                          | passe le coureur en transpondeur muet                        | alerte forte, propositions : chute, changement de vélo, confirmer dans le peloton |
 
 **L'édition.** L'opérateur prend un badge et le déplace : dans le peloton, 20 m devant, dans
 l'échappée. Le geste devient un événement du journal, l'inférence repart de là. L'affichage et
@@ -383,11 +392,11 @@ tour auquel il doit être de retour.
 
 **Trois issues.**
 
-| Issue | Ce que fait le logiciel |
-|---|---|
+| Issue                          | Ce que fait le logiciel                                                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | Reprend sa place avec son vélo | aligne son compte de tours sur le groupe réintégré, reprend l'attente de ses passages, ignore les sprints tombés pendant la neutralisation |
-| Reprend avec un autre vélo | passe en sans transpondeur, cesse d'attendre ses passages, le suit par inférence ; propose d'attribuer tout transpondeur inconnu détecté |
-| Ne repart pas | statut final avec points et tours acquis, badge retiré de l'ovale, ligne conservée au classement |
+| Reprend avec un autre vélo     | passe en sans transpondeur, cesse d'attendre ses passages, le suit par inférence ; propose d'attribuer tout transpondeur inconnu détecté   |
+| Ne repart pas                  | statut final avec points et tours acquis, badge retiré de l'ovale, ligne conservée au classement                                           |
 
 **Le compte de tours d'un coureur réintégré est celui de son groupe**, même s'il a physiquement
 manqué des passages. Les passages manqués restent dans la couche factuelle du journal.
@@ -444,18 +453,18 @@ effet au tour 49.
 **Chaque entrée porte** son heure, son tour d'effet, son type, le coureur ou le groupe, son
 origine (mesuré, déduit, décidé), son auteur, et pour une déduction les mesures qui la fondent.
 
-| Type d'entrée | Origine | Exemple |
-|---|---|---|
-| Passage | mesuré | tour 48, boucle B, dossard 12, 14:31:52.417, signal fort |
-| Passage manqué | déduit | tour 45, arrivée, dossard 46 absent, placé dans le peloton d'après tours 44 et 46 |
-| Début d'attaque | déduit | tour 47, dossard 12 à 1,2 s devant le peloton, écart en hausse |
-| Échappée établie | déduit | tour 48, dossard 12 à 2,0 s, écart stable sur deux pointages |
-| Jonction | déduit | tour 49, plus de cassure entre le dossard 12 et la queue du peloton |
-| Décrochage | déduit | tour 61, dossards 23, 31, 44 à 3,5 s derrière le peloton |
-| Résultat de sprint | mesuré puis décidé | sprint 5, tour 50, 7-3-15-12, flag photo sur 3 et 15, confirmé 14:33:10 |
-| Décision | décidé | tour gagné dossard 12, effet tour 49, saisi tour 51, validé par l'opérateur |
-| Geste de l'opérateur | décidé | badge 46 déplacé dans le peloton, tour 46 |
-| Anomalie | déduit | tour 62, dossards 23 et 31 absents sur A, attendus depuis 4 s |
+| Type d'entrée        | Origine            | Exemple                                                                           |
+| -------------------- | ------------------ | --------------------------------------------------------------------------------- |
+| Passage              | mesuré             | tour 48, boucle B, dossard 12, 14:31:52.417, signal fort                          |
+| Passage manqué       | déduit             | tour 45, arrivée, dossard 46 absent, placé dans le peloton d'après tours 44 et 46 |
+| Début d'attaque      | déduit             | tour 47, dossard 12 à 1,2 s devant le peloton, écart en hausse                    |
+| Échappée établie     | déduit             | tour 48, dossard 12 à 2,0 s, écart stable sur deux pointages                      |
+| Jonction             | déduit             | tour 49, plus de cassure entre le dossard 12 et la queue du peloton               |
+| Décrochage           | déduit             | tour 61, dossards 23, 31, 44 à 3,5 s derrière le peloton                          |
+| Résultat de sprint   | mesuré puis décidé | sprint 5, tour 50, 7-3-15-12, flag photo sur 3 et 15, confirmé 14:33:10           |
+| Décision             | décidé             | tour gagné dossard 12, effet tour 49, saisi tour 51, validé par l'opérateur       |
+| Geste de l'opérateur | décidé             | badge 46 déplacé dans le peloton, tour 46                                         |
+| Anomalie             | déduit             | tour 62, dossards 23 et 31 absents sur A, attendus depuis 4 s                     |
 
 **Le journal est la preuve.** Face à la réclamation d'un entraîneur sur une éligibilité ou un
 résultat de sprint, l'opérateur répond avec les lignes du journal — dates, tours, écarts
@@ -483,12 +492,12 @@ chercher. Les règles qui gouvernent ce chapitre sont dans `regles-operateur.md`
 **Check-in au tour de reconnaissance.** Dès que les coureurs montent en piste, chaque passage
 sur une boucle est confronté à la liste des transpondeurs attendus.
 
-| Situation | Proposition |
-|---|---|
-| Transpondeur attendu détecté | aucune |
-| Transpondeur attendu absent après un tour complet | vérifier le vélo du dossard concerné |
-| Transpondeur inconnu, attribué à aucun partant | l'attribuer au dossard qui n'a pas de transpondeur détecté ? |
-| Transpondeur d'un autre partant sur un second vélo | désigner lequel est le vrai |
+| Situation                                          | Proposition                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| Transpondeur attendu détecté                       | aucune                                                       |
+| Transpondeur attendu absent après un tour complet  | vérifier le vélo du dossard concerné                         |
+| Transpondeur inconnu, attribué à aucun partant     | l'attribuer au dossard qui n'a pas de transpondeur détecté ? |
+| Transpondeur d'un autre partant sur un second vélo | désigner lequel est le vrai                                  |
 
 L'opérateur regarde la piste, voit que le coureur près de la boucle est bien le bon, et valide
 d'un clic. La table est corrigée **pour cette course**, avec trace dans le journal. Plus de
@@ -540,13 +549,13 @@ TV : écarts en secondes et en mètres entre groupes et entre coureurs, classeme
 ce qu'il manque à chacun, prétendants séparés de peu au classement et ce qui les sépare sur la
 piste.
 
-| Moment | Exemple de ligne |
-|---|---|
-| Avant-dernier tour | 1 coureur en tête, 4,2 s et 55 m devant un groupe de 6, peloton à 9,8 s |
-| Duel au classement | 12 et 7 à 1 point l'un de l'autre, 12 a 30 m d'avance sur 7 à 3 tours de l'arrivée |
-| Avant un sprint | sprint 9 dans 1 tour, 23 a besoin de la 2e place pour passer devant 12 |
-| Échappée | 4 coureurs à un demi-tour du peloton, à 18 s de reprendre un tour à vitesse constante |
-| Fin de course | 7 l'emporte si rien ne change, 12 à 2 points avec le dernier sprint doublé |
+| Moment             | Exemple de ligne                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| Avant-dernier tour | 1 coureur en tête, 4,2 s et 55 m devant un groupe de 6, peloton à 9,8 s               |
+| Duel au classement | 12 et 7 à 1 point l'un de l'autre, 12 a 30 m d'avance sur 7 à 3 tours de l'arrivée    |
+| Avant un sprint    | sprint 9 dans 1 tour, 23 a besoin de la 2e place pour passer devant 12                |
+| Échappée           | 4 coureurs à un demi-tour du peloton, à 18 s de reprendre un tour à vitesse constante |
+| Fin de course      | 7 l'emporte si rien ne change, 12 à 2 points avec le dernier sprint doublé            |
 
 **Les lignes sont des données structurées avant d'être des phrases** : les sorties TV et web
 reçoivent les champs, pas seulement le texte.
@@ -574,11 +583,11 @@ classés. L'en-tête compte en clair : `16 started · 1 ABD · 15 to rank · 13 
 
 **Présentation du classement.**
 
-| Rang | Dossard | Nom | Nation | Points sprints | Tours gagnés | Tours perdus | Points tours | Total | Place au dernier sprint | Statut |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 12 | exemple | SUI | 22 | 1 | 0 | +20 | 42 | 1 | |
-| 2 | 52 | exemple | ITA | 13 | 0 | 0 | 0 | 13 | 3 | |
-| 16 | 23 | exemple | DEN | 0 | 0 | 0 | 0 | 0 | | ABD · Lap 31 |
+| Rang | Dossard | Nom     | Nation | Points sprints | Tours gagnés | Tours perdus | Points tours | Total | Place au dernier sprint | Statut       |
+| ---- | ------- | ------- | ------ | -------------- | ------------ | ------------ | ------------ | ----- | ----------------------- | ------------ |
+| 1    | 12      | exemple | SUI    | 22             | 1            | 0            | +20          | 42    | 1                       |              |
+| 2    | 52      | exemple | ITA    | 13             | 0            | 0            | 0            | 13    | 3                       |              |
+| 16   | 23      | exemple | DEN    | 0              | 0            | 0            | 0            | 0     |                         | ABD · Lap 31 |
 
 **Le nombre de tours gagnés et perdus est affiché même quand les points le disent déjà.**
 Départage par la place au dernier sprint. Le nombre de sprints gagnés est disponible dans
@@ -614,21 +623,40 @@ Les questions posées à la première rédaction ont été tranchées. Celles qu
 **règle de course** sont dans `regles-operateur.md` et ne sont pas répétées ici ; ce tableau ne
 garde que les décisions de produit.
 
-| Question | Décision | Date |
-|---|---|---|
-| Marge d'alerte d'anomalie | mesurée sur la régularité propre du coureur, voir « Incidents et neutralisations » | 21 oct. |
-| Compteur de course | Un lap counter relié est toujours prioritaire. Sans lui, mode auto ou manuel. La sortie peut être masquée dans tous les cas | 21 oct. |
-| Retrait à N tours perdus | Jamais de retrait sans validation de l'opérateur, quel que soit le préréglage | 21 oct. |
-| Coureur sans transpondeur | Rappel de l'absence de transpondeur à chaque sprint où il est éligible à marquer | 21 oct. |
-| Langue de l'interface | Anglais ; toute langue supplémentaire bienvenue. Les documents de travail restent en français | 21 oct. |
-| Madison | Même modèle par équipe de deux, avec le relais comme événement ; second temps | 21 oct. |
-| Tempo race et scratch | Même modèle, autre barème ; troisième temps | 21 oct. |
-| Protocole photo-finish | À voir à l'implémentation | 21 oct. |
-| Carte du sprint | Cinq lignes sans points, liste de départ entière, non éligibles repliés, photo = fond rouge et caméra, glisser pour réordonner. L'ovale masqué pendant le sprint est revenu le 29 oct. : la carte est permanente, en colonne de droite, et l'ovale reste visible (`regles-operateur.md` §17, points 62 et 79) | 24 oct., revu le 29 |
-| Envoi d'un sprint | Deux boutons : *Live*, interrupteur ; *Send*, envoi manuel, vert une fois parti puis « Send correction ». Ni mode contrôle ni retenue | 24 oct. |
-| Places envoyées | Cinq, points aux quatre premières ; tout le monde au dernier sprint | 24 oct. |
-| Saisie manuelle | Une case : dossards séparés d'espaces + Entrée = tout l'ordre ; un dossard + Entrée = place cible ▸. Double-clic et glisser depuis la liste de départ. *Clear and record* en secours | 24 oct. |
-| Armement d'un sprint | Abandonné ; le décalage de la ligne jugée (← Lap L →) le remplace | 24 oct. |
-| Arrivée | Tous classés et envoyés ; un coureur à un tour est classé selon son passage et marque s'il est dans les quatre premiers ; le classement général le place en bas ; retirés non classés | 24 oct. |
+| Question        | Décision                                                                                                                                                                  | Date |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| Marge d'alerte  | mesurée sur la régularité propre du coureur, voir « Incidents et neutralisations »                                                                                        | 21   |
+| d'anomalie      |                                                                                                                                                                           | oct. |
+| Compteurde      | Un lap counter relié est toujours prioritaire. Sans lui, mode auto ou manuel. La sortie peut être masquée dans tous les cas                                               | 21   |
+| course          |                                                                                                                                                                           | oct. |
+| Retrait à N      | Jamais de retrait sans validation de l'opérateur, quel que soit le préréglage                                                                                             | 21   |
+| tours perdus    |                                                                                                                                                                           | oct. |
+| Coureur sans    | Rappel de l'absence de transpondeur à chaque sprint où il est éligible à marquer                                                                                          | 21   |
+| transpon deur   |                                                                                                                                                                           | oct. |
+| Languede        | Anglais ; toute langue supplémentaire bienvenue. Les documents de travail restent en français                                                                             | 21   |
+| l'interf ace    |                                                                                                                                                                           | oct. |
+| Madison         | Même modèle par équipe de deux, avec le relais comme événement ; second temps                                                                                             | 21   |
+|                 |                                                                                                                                                                           | oct. |
+| Tempo race et   | Même modèle, autre barème ; troisième temps                                                                                                                               | 21   |
+| scratch         |                                                                                                                                                                           | oct. |
+| Protocole       | À voir à l'implémentation                                                                                                                                                 | 21   |
+| photo-fi nish   |                                                                                                                                                                           | oct. |
+| Carte du        | Cinq lignes sans points, liste de départ entière, non éligibles repliés, photo = fond rouge et caméra, glisser pour réordonner. L'ovale masqué pendant le sprint est      | 24   |
+|                 | revenu le                                                                                                                                                                 |      |
+| sprint          | 29 oct. : la carte est permanente, en colonne de droite, et l'ovale reste visible (`regles-operateur.md` §17, points 62 et 79)                                            | oct. |
+|                 |                                                                                                                                                                           | ,    |
+|                 |                                                                                                                                                                           | revu |
+|                 |                                                                                                                                                                           | le29 |
+| Envoi d'un      | Deux boutons : *Live*, interrupteur ; *Send*, envoi manuel, vert une fois parti puis « Send correction ». Ni mode contrôle ni retenue                                     | 24   |
+| sprint          |                                                                                                                                                                           | oct. |
+| Places envoyées | Cinq, points aux quatre premières ; tout le monde au dernier sprint                                                                                                       | 24   |
+|                 |                                                                                                                                                                           | oct. |
+| Saisie          | Une case : dossards séparés d'espaces + Entrée = tout l'ordre ; un dossard + Entrée = place cible ▸. Double-clic et glisser depuis la liste de départ. *Clear and record* | 24   |
+|                 | en                                                                                                                                                                        |      |
+| manuelle        | secours                                                                                                                                                                   | oct. |
+| Armement d'un   | Abandonné ; le décalage de la ligne jugée (← Lap L →) le remplace                                                                                                         | 24   |
+| sprint          |                                                                                                                                                                           | oct. |
+| Arrivée         | Tous classés et envoyés ; un coureur à un tour est classé selon son passage et marque s'il est dans les quatre premiers ; le classement général le place en bas ; retirés | 24   |
+|                 | non classés                                                                                                                                                               | oct. |
 
 **Ce qui reste à trancher est dans `regles-operateur.md` §15**, en une seule liste.

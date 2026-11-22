@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mockup · Sprint approach (media)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;box-shadow:0 18px 48px #000a}
+.board-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
+.ro{font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:3px 10px}
+.togo{margin-left:auto;font:600 12px var(--mono);color:var(--fg);border:1px solid var(--line2);border-radius:999px;padding:4px 12px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:5px;overflow:hidden}
+.seg button{font:600 12px var(--sans);color:var(--dim);border:0;padding:5px 13px;background:#23272b;cursor:pointer;border-right:1px solid var(--line2)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--acc);color:#fff}
+.strip{flex:0 0 auto;display:flex;align-items:center;gap:10px;background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:9px 13px;flex-wrap:wrap}
+.strip .k{font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.strip .dur{margin-left:auto;font:600 12px var(--mono);color:var(--fg);display:flex;gap:8px;align-items:center}
+.strip .pill{background:#39311c;border-radius:5px;padding:2px 8px}
+.strip .pill.cold{background:#1c2733;color:#8FB4FF}
+.main{flex:1 1 auto;min-height:0;display:flex;gap:14px}
+.col{display:flex;flex-direction:column;min-height:0;background:#1c1e22;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.ch2{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.ch2 .sub{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.note{flex:0 0 auto;font:500 12px var(--sans);color:var(--dim)}
+.rid{white-space:nowrap;font:600 12.5px var(--sans);color:var(--muted)}
+.rid .bb{font:700 12.5px var(--mono);color:var(--fg);margin-right:4px}
+.rid .flag{width:17px;height:11px;border-radius:2px;display:inline-block;vertical-align:-1px;margin-right:4px;box-shadow:0 0 0 1px #0006}
+.rid .noc{font:700 11px var(--mono);color:var(--dim);margin-right:4px}
+.rid .fn{font-weight:500;color:var(--dim)}
+.rid .sn{font-weight:700}
+.card{border:1px solid var(--line);border-radius:6px;padding:9px 11px;background:#17191c}
+.card .t{display:block;font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.card .bd{font:500 13.5px/1.5 var(--sans);color:var(--dim)}
+.card .num{font:700 13px var(--mono);color:var(--fg)}
+
+.col.chart{flex:2 1 0}
+.col.notes{flex:1 1 0;min-width:340px}
+.chartwrap{flex:1 1 auto;min-height:0;padding:6px 8px}
+.chartwrap svg{width:100%;height:100%;display:block}
+.chartwrap .rrow{cursor:pointer}
+.noteswrap{flex:1 1 auto;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:9px}
+.effwrap{flex:1 1 auto;overflow:auto;padding:12px;display:flex;flex-direction:row;align-items:stretch;gap:14px}
+.story{display:flex;flex-direction:column;gap:0;margin:2px 0 2px}
+.step:last-child{padding-bottom:2px}
+.step::before{content:'';position:absolute;left:-5px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--good)}
+.step{border-left:2px solid var(--good);padding:5px 0 10px 12px;position:relative}
+.step .lp{font:700 13px var(--mono);color:var(--fg)}
+.step .tm{font:600 11px var(--mono);color:var(--dim);margin-left:5px}
+.step .tx{display:block;font:500 12px var(--sans);color:var(--muted);margin-top:2px}
+.effg{display:grid;grid-template-columns:1fr;gap:8px}
+.kv{background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.kv .k2{display:block;font:700 9.5px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.kv .v{font:700 15px var(--mono);color:var(--fg)}
+.kv .v small{font:500 11.5px var(--sans);color:var(--dim)}
+.eff{flex:0 0 430px;display:flex;flex-direction:column;gap:9px;overflow:auto;border:1px solid var(--line);border-radius:7px;background:#17191c;padding:12px 14px}
+.effh{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.effh .pts{margin-left:auto;font:700 13px var(--mono);color:var(--good);border:1px solid #2ED47A66;border-radius:999px;padding:3px 11px}
+</style></head>
+<body>
+<div class="board">
+  <div class="board-h"><b>Sprint approach</b><span class="hint">where the riders were in the laps before the sprint</span>
+    <span class="seg" id="segV"><button class="on" data-v="app">Approach</button><button data-v="eff">Lap gained</button></span>
+    <span class="ro">Read only</span><span class="togo" id="rt"></span>
+  </div>
+  <div class="strip" id="strip">
+    <span class="k">Sprint</span><span class="seg" id="segS"></span>
+    <span class="k">Approach</span><span class="seg" id="segL"></span>
+    <span class="dur" id="dur"></span>
+  </div>
+  <div class="main" id="v-app">
+    <div class="col chart">
+      <div class="ch2">Where they were <span class="sub">two readings a lap — back straight, then the finish line · click a rider in the result to follow him</span></div>
+      <div class="chartwrap"><svg id="svg" preserveAspectRatio="none"></svg></div>
+    </div>
+    <div class="col notes">
+      <div class="ch2">What happened <span class="sub">read from the loop passings</span></div>
+      <div class="noteswrap" id="lines"></div>
+    </div>
+  </div>
+  <div class="col" id="v-eff" hidden style="flex:1 1 auto">
+    <div class="ch2">A lap gained <span class="sub">what it took, from the attack to the credited lap</span></div>
+    <div class="effwrap" id="eff"></div>
+  </div>
+  <div class="note">Positions are read from the transponder loops — back straight and the finish line, two readings a lap — never from metres on the track. The view appears as soon as a sprint is judged.</div>
+</div>
+<script>
+(function(){
+
+var D={"riders":[{"bib":1,"nat":"ESP","name":"RIVERA","first":"Carlos","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"ESP\"><rect y=\"0.000\" width=\"3\" height=\"0.500\" fill=\"#aa151b\"/><rect y=\"0.500\" width=\"3\" height=\"1.000\" fill=\"#f1bf00\"/><rect y=\"1.500\" width=\"3\" height=\"0.500\" fill=\"#aa151b\"/></svg>"},{"bib":3,"nat":"FRA","name":"MOREAU","first":"Julien","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"FRA\"><rect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#0055a4\"/><rect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fff\"/><rect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ef4135\"/></svg>"},{"bib":4,"nat":"GBR","name":"WALSH","first":"Tom","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"GBR\"><rect width=\"3\" height=\"2\" fill=\"#012169\"/><path d=\"M0 0L3 2M3 0L0 2\" stroke=\"#fff\" stroke-width=\".4\"/><path d=\"M0 0L3 2M3 0L0 2\" stroke=\"#c8102e\" stroke-width=\".15\"/><rect x=\"1.25\" width=\".5\" height=\"2\" fill=\"#fff\"/><rect y=\".75\" width=\"3\" height=\".5\" fill=\"#fff\"/><rect x=\"1.35\" width=\".3\" height=\"2\" fill=\"#c8102e\"/><rect y=\".85\" width=\"3\" height=\".3\" fill=\"#c8102e\"/></svg>"},{"bib":7,"nat":"NED","name":"BRAND","first":"Daan","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"NED\"><rect y=\"0.000\" width=\"3\" height=\"0.667\" fill=\"#ae1c28\"/><rect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#fff\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#21468b\"/></svg>"},{"bib":9,"nat":"SLO","name":"KOVAC","first":"Luka","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"SLO\"><rect y=\"0.000\" width=\"3\" height=\"0.667\" fill=\"#fff\"/><rect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#0000ff\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#ff0000\"/></svg>"},{"bib":11,"nat":"JPN","name":"TANAKA","first":"Yuki","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"JPN\"><rect x=\"0.000\" width=\"3.000\" height=\"2\" fill=\"#fff\"/><circle cx=\"1.5\" cy=\"1\" r=\"0.6\" fill=\"#bc002d\"/></svg>"},{"bib":12,"nat":"SUI","name":"HUBER","first":"Marco","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"SUI\"><rect width=\"3\" height=\"2\" fill=\"#d52b1e\"/><rect x=\"1.3\" y=\".45\" width=\".4\" height=\"1.1\" fill=\"#fff\"/><rect x=\".95\" y=\".8\" width=\"1.1\" height=\".4\" fill=\"#fff\"/></svg>"},{"bib":15,"nat":"IRL","name":"O'NEILL","first":"Liam","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"IRL\"><rect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#169b62\"/><rect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fff\"/><rect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ff883e\"/></svg>"},{"bib":18,"nat":"POR","name":"SANTOS","first":"João","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"POR\"><rect width=\"3\" height=\"2\" fill=\"#f00\"/><rect width=\"1.2\" height=\"2\" fill=\"#006600\"/><circle cx=\"1.2\" cy=\"1\" r=\".38\" fill=\"#ffe000\"/></svg>"},{"bib":23,"nat":"DEN","name":"IVERSEN","first":"Mads","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"DEN\"><rect width=\"3\" height=\"2\" fill=\"#c60c30\"/><rect x=\".78\" width=\".45\" height=\"2\" fill=\"#fff\"/><rect y=\".78\" width=\"3\" height=\".45\" fill=\"#fff\"/></svg>"},{"bib":46,"nat":"BEL","name":"DE WIT","first":"Lars","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"BEL\"><rect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#000\"/><rect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fae042\"/><rect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ed2939\"/></svg>"},{"bib":52,"nat":"ITA","name":"ROSSI","first":"Luca","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"ITA\"><rect x=\"0.000\" width=\"1.000\" height=\"2\" fill=\"#009246\"/><rect x=\"1.000\" width=\"1.000\" height=\"2\" fill=\"#fff\"/><rect x=\"2.000\" width=\"1.000\" height=\"2\" fill=\"#ce2b37\"/></svg>"},{"bib":58,"nat":"KAZ","name":"PETROV","first":"Dmitriy","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"KAZ\"><rect x=\"0.000\" width=\"3.000\" height=\"2\" fill=\"#00afca\"/><circle cx=\"1.5\" cy=\"1\" r=\"0.45\" fill=\"#fec50c\"/></svg>"},{"bib":61,"nat":"COL","name":"NAVARRO","first":"Juan","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"COL\"><rect y=\"0.000\" width=\"3\" height=\"1.000\" fill=\"#fcd116\"/><rect y=\"1.000\" width=\"3\" height=\"0.500\" fill=\"#003893\"/><rect y=\"1.500\" width=\"3\" height=\"0.500\" fill=\"#ce1126\"/></svg>"},{"bib":67,"nat":"GER","name":"LEHMANN","first":"Max","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"GER\"><rect y=\"0.000\" width=\"3\" height=\"0.667\" fill=\"#000\"/><rect y=\"0.667\" width=\"3\" height=\"0.667\" fill=\"#dd0000\"/><rect y=\"1.333\" width=\"3\" height=\"0.667\" fill=\"#ffce00\"/></svg>"},{"bib":70,"nat":"BRA","name":"SILVA","first":"Lucas","flag":"<svg class=\"flag\" viewBox=\"0 0 3 2\" aria-label=\"BRA\"><rect width=\"3\" height=\"2\" fill=\"#009c3b\"/><path d=\"M1.5 .2L2.8 1L1.5 1.8L.2 1Z\" fill=\"#ffdf00\"/><circle cx=\"1.5\" cy=\"1\" r=\".45\" fill=\"#002776\"/></svg>"}],"loopnm":{"B":"Back straight","A":"Home straight","F":"Finish line"},"loopsh":{"B":"Back","A":"Home","F":"Line"},"maxspan":5,"appt":[16.4,15.8,14.9,13.9,13.2],"lapt":16.7,"laps":60,"qual":8,"stream":[{"lap":1,"loop":"B","order":[3,1,4,11,7,15,9,12,18,23,52,61,46,58,67,70]},{"lap":1,"loop":"A","order":[1,3,4,7,11,9,15,18,12,23,52,46,58,67,61,70]},{"lap":1,"loop":"F","order":[4,1,3,7,9,12,11,18,15,23,52,46,61,58,67,70]},{"lap":2,"loop":"B","order":[1,4,3,7,9,12,11,15,18,23,46,52,58,61,67,70]},{"lap":2,"loop":"A","order":[1,3,9,4,11,7,15,18,12,23,46,58,52,67,70,61]},{"lap":2,"loop":"F","order":[3,1,7,4,9,12,11,15,23,52,18,58,46,61,67,70]},{"lap":3,"loop":"B","order":[3,1,11,4,7,9,12,18,15,52,23,58,46,70,67,61]},{"lap":3,"loop":"A","order":[1,4,3,7,12,11,9,15,23,18,52,46,67,61,58,70]},{"lap":3,"loop":"F","order":[3,1,4,7,11,9,15,12,18,52,23,46,61,58,70,67]},{"lap":4,"loop":"B","order":[3,1,7,4,11,9,15,18,12,23,46,52,67,58,61,70]},{"lap":4,"loop":"A","order":[1,4,11,7,3,9,12,15,52,18,46,23,67,58,61,70]},{"lap":4,"loop":"F","order":[3,1,7,9,4,11,15,18,46,12,52,61,23,58,67,70]},{"lap":5,"loop":"B","order":[3,1,4,7,11,9,15,18,12,46,52,23,67,61,58,70]},{"lap":5,"loop":"A","order":[3,1,4,11,7,15,9,52,46,23,12,18,67,58,61,70]},{"lap":5,"loop":"F","order":[4,1,11,3,7,18,15,9,12,23,52,46,61,67,58,70]},{"lap":6,"loop":"B","order":[1,4,3,11,7,15,52,9,18,12,23,61,46,67,58,70]},{"lap":6,"loop":"A","order":[1,4,3,15,7,11,52,9,12,46,18,58,61,23,67,70]},{"lap":6,"loop":"F","order":[1,3,4,11,7,9,15,18,52,46,12,61,23,70,67,58]},{"lap":7,"loop":"B","order":[1,4,11,3,15,9,7,52,18,67,12,46,61,23,58,70]},{"lap":7,"loop":"A","order":[3,1,11,4,15,9,52,7,12,18,61,67,46,23,70,58]},{"lap":7,"loop":"F","order":[1,4,11,3,15,9,18,7,52,46,12,61,23,67,70,58]},{"lap":8,"loop":"B","order":[11,3,4,18,15,1,52,9,46,7,61,12,58,70,67,23]},{"lap":8,"loop":"A","order":[4,15,11,3,52,1,18,46,12,9,7,67,61,58,70,23]},{"lap":8,"loop":"F","order":[4,15,1,3,11,52,18,7,9,61,67,12,70,46,58,23]},{"lap":9,"loop":"B","order":[15,4,1,52,11,3,9,18,7,61,67,46,12,70,58,23]},{"lap":9,"loop":"A","order":[4,1,15,52,18,11,3,67,61,46,9,7,12,70,58,23]},{"lap":9,"loop":"F","order":[15,11,3,52,4,1,18,9,67,61,46,12,7,70,58,23]},{"lap":10,"loop":"B","order":[15,4,52,3,11,1,67,18,46,61,9,70,12,58,7,23]},{"lap":10,"loop":"A","order":[15,52,4,11,3,18,67,1,46,61,70,9,7,12,58,23]},{"lap":10,"loop":"F","order":[15,52,4,11,3,18,67,1,61,46,9,70,12,7,58,23]},{"lap":11,"loop":"B","order":[15,3,67,18,52,4,1,9,11,61,70,46,12,7,23,58]},{"lap":11,"loop":"A","order":[3,67,18,61,4,15,1,52,46,11,9,12,70,23,7,58]},{"lap":11,"loop":"F","order":[3,67,18,15,52,1,9,4,46,61,12,70,11,7,23,58]},{"lap":12,"loop":"B","order":[18,3,67,15,61,1,9,11,46,52,12,70,4,7,58,23]},{"lap":12,"loop":"A","order":[18,3,1,67,46,15,61,9,4,52,70,11,12,7,58,23]},{"lap":12,"loop":"F","order":[18,3,1,67,61,46,9,15,52,70,12,4,7,58,11,23]},{"lap":13,"loop":"B","order":[18,3,67,1,46,61,9,15,52,4,70,58,12,11,7,23]},{"lap":13,"loop":"A","order":[3,18,67,1,46,61,15,4,9,52,7,12,11,58,70,23]},{"lap":13,"loop":"F","order":[3,18,67,1,46,61,4,52,12,9,15,11,70,7,23,58]},{"lap":14,"loop":"B","order":[3,18,1,15,67,61,52,12,4,46,9,11,58,23,70,7]},{"lap":14,"loop":"A","order":[3,67,18,9,52,4,15,1,61,46,11,70,12,7,23,58]},{"lap":14,"loop":"F","order":[3,1,18,67,15,61,52,4,46,9,70,12,11,7,58,23]},{"lap":15,"loop":"B","order":[18,52,15,61,3,46,67,1,9,4,12,70,58,11,23,7]},{"lap":15,"loop":"A","order":[3,67,4,9,15,46,52,61,12,18,1,11,70,58,7,23]},{"lap":15,"loop":"F","order":[52,3,15,4,67,1,46,18,9,11,12,61,7,58,70,23]},{"lap":16,"loop":"B","order":[15,67,3,1,9,4,52,12,46,18,61,11,7,70,58,23]},{"lap":16,"loop":"A","order":[15,52,46,67,1,3,18,4,12,9,7,61,11,70,23,58]},{"lap":16,"loop":"F","order":[15,52,3,46,4,67,18,9,61,1,12,11,70,7,58,23]},{"lap":17,"loop":"B","order":[15,52,3,67,46,61,4,9,11,1,18,12,7,23,58,70]},{"lap":17,"loop":"A","order":[52,15,67,3,46,4,9,12,61,7,18,1,11,70,58,23]},{"lap":17,"loop":"F","order":[15,52,67,3,9,46,61,12,4,7,11,1,18,23,70,58]},{"lap":18,"loop":"B","order":[52,3,15,9,12,46,4,67,11,1,18,61,7,58,70,23]},{"lap":18,"loop":"A","order":[52,15,9,67,12,46,1,4,3,61,18,7,11,23,70,58]},{"lap":18,"loop":"F","order":[52,15,9,46,12,67,4,3,1,61,7,18,11,70,58,23]},{"lap":19,"loop":"B","order":[15,12,52,46,9,67,7,3,4,61,18,1,58,11,23,70]},{"lap":19,"loop":"A","order":[52,15,9,12,3,46,4,67,7,1,61,58,18,11,23,70]},{"lap":19,"loop":"F","order":[52,15,12,9,46,3,7,67,1,61,4,18,11,58,23,70]},{"lap":20,"loop":"B","order":[52,9,12,46,7,15,67,4,3,1,61,58,23,18,11,70]},{"lap":20,"loop":"A","order":[12,52,15,9,46,67,3,7,61,1,23,4,11,18,58,70]},{"lap":20,"loop":"F","order":[52,12,15,9,46,7,67,4,3,61,1,23,58,11,18,70]},{"lap":21,"loop":"B","order":[12,52,46,67,4,7,9,15,61,3,23,1,58,18,11,70]},{"lap":21,"loop":"A","order":[7,46,52,4,67,12,61,3,1,9,15,23,58,18,11,70]},{"lap":21,"loop":"F","order":[7,46,67,3,4,52,12,1,9,61,23,15,58,11,18,70]},{"lap":22,"loop":"B","order":[61,7,46,4,67,52,1,15,3,12,9,58,23,18,70,11]},{"lap":22,"loop":"A","order":[61,67,46,7,4,3,1,12,52,23,58,15,11,9,18,70]},{"lap":22,"loop":"F","order":[61,46,7,3,67,4,1,52,58,23,9,15,12,11,18,70]},{"lap":23,"loop":"B","order":[61,7,46,67,4,52,3,9,15,58,12,1,23,18,70,11]},{"lap":23,"loop":"A","order":[61,7,46,67,3,52,4,15,12,23,58,9,1,11,18,70]},{"lap":23,"loop":"F","order":[61,46,67,7,52,4,15,3,12,23,1,9,58,11,18,70]},{"lap":24,"loop":"B","order":[61,46,3,67,7,52,15,4,12,9,23,1,58,18,11,70]},{"lap":24,"loop":"A","order":[61,3,7,46,67,15,9,12,4,52,23,1,58,11,70,18]},{"lap":24,"loop":"F","order":[61,46,7,67,12,3,23,52,4,15,58,9,18,1,11,70]},{"lap":25,"loop":"B","order":[61,7,46,67,52,3,15,12,9,4,1,11,23,58,18,70]},{"lap":25,"loop":"A","order":[61,52,46,4,7,9,67,15,23,3,12,1,58,18,11,70]},{"lap":25,"loop":"F","order":[61,46,52,3,7,23,4,12,67,15,9,58,1,18,11,70]},{"lap":26,"loop":"B","order":[61,46,7,52,9,15,4,3,23,12,67,1,58,11,18,70]},{"lap":26,"loop":"A","order":[61,52,12,46,3,9,15,67,7,23,4,58,11,18,1,70]},{"lap":26,"loop":"F","order":[61,46,3,52,15,12,67,7,23,9,58,11,4,1,18,70]},{"lap":27,"loop":"B","order":[61,52,15,3,12,46,67,7,9,58,23,4,11,1,18,70]},{"lap":27,"loop":"A","order":[61,52,46,15,12,23,9,7,3,67,58,1,4,11,18,70]},{"lap":27,"loop":"F","order":[61,52,15,46,3,12,9,4,58,23,7,67,1,11,18,70]},{"lap":28,"loop":"B","order":[61,52,15,3,12,46,23,7,67,9,58,4,11,1,18,70]},{"lap":28,"loop":"A","order":[61,3,15,52,12,23,9,46,4,7,11,67,58,18,1,70]},{"lap":28,"loop":"F","order":[61,52,15,3,9,23,46,12,67,11,7,58,4,1,18,70]},{"lap":29,"loop":"B","order":[61,23,52,3,46,15,12,58,9,11,7,67,18,4,70,1]},{"lap":29,"loop":"A","order":[61,3,52,23,46,15,9,12,58,7,11,67,4,18,1,70]},{"lap":29,"loop":"F","order":[61,3,23,52,15,9,46,12,7,58,11,67,4,18,70,1]},{"lap":30,"loop":"B","order":[61,3,52,23,9,15,46,12,58,67,7,18,11,4,1,70]},{"lap":30,"loop":"A","order":[61,3,23,52,15,58,9,11,12,46,7,67,4,18,1,70]},{"lap":30,"loop":"F","order":[3,52,23,15,9,12,58,46,11,7,67,18,4,61,1,70]},{"lap":31,"loop":"B","order":[61,9,3,12,52,58,46,23,15,7,11,18,67,1,4,70]},{"lap":31,"loop":"A","order":[61,12,9,3,58,46,11,52,23,15,7,18,4,67,1,70]},{"lap":31,"loop":"F","order":[61,58,9,46,52,12,7,3,11,23,15,4,18,67,1,70]},{"lap":32,"loop":"B","order":[46,58,9,12,7,3,23,11,15,52,61,18,4,67,70,1]},{"lap":32,"loop":"A","order":[9,12,58,7,11,3,46,4,67,52,23,15,18,70,61,1]},{"lap":32,"loop":"F","order":[12,9,11,58,46,67,7,3,23,15,52,18,4,61,1,70]},{"lap":33,"loop":"B","order":[9,12,46,58,11,67,3,23,52,18,7,15,4,61,70,1]},{"lap":33,"loop":"A","order":[9,58,12,7,46,11,15,52,67,4,3,18,61,23,1,70]},{"lap":33,"loop":"F","order":[9,12,46,58,7,11,18,4,52,3,23,15,67,61,1,70]},{"lap":34,"loop":"B","order":[9,46,58,12,11,23,52,7,3,67,15,18,4,61,1,70]},{"lap":34,"loop":"A","order":[9,12,58,46,11,52,7,15,23,67,4,3,61,18,1,70]},{"lap":34,"loop":"F","order":[9,58,12,3,15,46,52,23,7,4,11,18,67,61,1,70]},{"lap":35,"loop":"B","order":[9,12,46,52,58,15,23,11,3,7,18,4,67,61,1,70]},{"lap":35,"loop":"A","order":[9,12,58,23,11,3,52,46,7,67,15,4,18,61,1,70]},{"lap":35,"loop":"F","order":[9,12,46,52,58,15,11,23,3,67,61,7,4,18,70,1]},{"lap":36,"loop":"B","order":[9,52,12,58,3,11,15,46,23,7,4,67,18,61,70,1]},{"lap":36,"loop":"A","order":[9,52,46,58,12,15,3,23,11,4,7,70,67,1,61,18]},{"lap":36,"loop":"F","order":[9,15,52,23,46,11,7,58,3,12,4,67,61,18,70,1]},{"lap":37,"loop":"B","order":[9,52,11,58,12,23,15,7,3,46,4,61,1,67,18,70]},{"lap":37,"loop":"A","order":[9,52,15,58,11,23,46,3,12,4,7,61,70,67,1,18]},{"lap":37,"loop":"F","order":[9,52,58,15,46,7,12,4,3,23,11,67,61,18,1,70]},{"lap":38,"loop":"B","order":[9,52,58,15,46,12,4,3,11,7,23,67,18,61,70,1]},{"lap":38,"loop":"A","order":[9,52,58,15,46,4,12,3,11,23,7,67,61,70,18,1]},{"lap":38,"loop":"F","order":[9,52,15,58,4,46,23,12,11,3,61,7,70,18,1,67]},{"lap":39,"loop":"B","order":[9,15,52,4,58,11,46,23,12,3,7,61,67,1,70,18]},{"lap":39,"loop":"A","order":[9,52,15,58,4,46,11,23,7,61,67,12,3,18,1,70]},{"lap":39,"loop":"F","order":[9,52,15,46,58,23,4,7,11,12,61,67,3,70,1,18]},{"lap":40,"loop":"B","order":[9,52,4,15,46,58,11,7,61,23,12,70,67,3,18,1]},{"lap":40,"loop":"A","order":[9,52,15,58,4,46,23,11,7,61,12,67,1,3,70,18]},{"lap":40,"loop":"F","order":[9,52,15,4,58,46,11,23,7,61,12,3,70,67,1,18]},{"lap":41,"loop":"B","order":[9,46,70,52,58,15,4,23,7,11,61,12,67,1,3,18]},{"lap":41,"loop":"A","order":[46,9,70,58,11,7,52,23,15,4,12,61,3,18,67,1]},{"lap":41,"loop":"F","order":[46,9,70,58,11,23,52,61,12,7,3,15,67,4,18,1]},{"lap":42,"loop":"B","order":[46,9,70,58,11,23,61,7,12,4,15,3,52,67,1,18]},{"lap":42,"loop":"A","order":[46,9,70,58,11,23,52,7,3,61,15,12,4,18,67,1]},{"lap":42,"loop":"F","order":[46,9,70,58,11,7,23,52,61,15,3,12,1,67,4,18]},{"lap":43,"loop":"B","order":[46,9,70,58,11,7,23,12,61,15,3,52,1,4,67,18]},{"lap":43,"loop":"A","order":[46,9,70,58,11,23,61,7,52,12,3,67,15,4,1,18]},{"lap":43,"loop":"F","order":[46,9,70,11,58,23,52,61,12,7,15,3,4,1,67,18]},{"lap":44,"loop":"B","order":[46,9,70,58,23,12,11,7,52,61,15,3,4,1,18,67]},{"lap":44,"loop":"A","order":[46,9,70,58,23,11,61,15,52,3,7,12,4,67,18,1]},{"lap":44,"loop":"F","order":[46,9,70,58,11,7,61,23,52,15,3,4,12,67,1,18]},{"lap":45,"loop":"B","order":[46,9,70,11,23,58,52,7,61,15,12,3,4,67,1,18]},{"lap":45,"loop":"A","order":[46,9,70,52,15,12,58,61,11,23,3,4,7,67,18,1]},{"lap":45,"loop":"F","order":[9,46,70,11,15,12,23,61,52,58,7,4,3,67,18,1]},{"lap":46,"loop":"B","order":[9,11,58,46,52,15,7,4,12,23,3,61,70,67,1,18]},{"lap":46,"loop":"A","order":[9,46,12,52,11,23,61,3,7,58,15,70,4,67,18,1]},{"lap":46,"loop":"F","order":[9,11,23,12,46,52,7,70,15,61,58,3,4,18,1,67]},{"lap":47,"loop":"B","order":[9,52,46,11,58,3,15,12,23,61,7,70,4,67,1,18]},{"lap":47,"loop":"A","order":[9,52,11,3,12,23,15,46,61,58,7,70,4,67,18,1]},{"lap":47,"loop":"F","order":[9,46,3,11,52,12,23,58,15,4,61,7,70,67,1,18]},{"lap":48,"loop":"B","order":[15,52,46,12,23,11,3,70,61,9,58,4,7,67,1,18]},{"lap":48,"loop":"A","order":[52,46,12,3,23,9,11,70,61,7,15,58,67,4,18,1]},{"lap":48,"loop":"F","order":[52,3,46,11,12,15,70,23,9,58,61,7,4,67,18,1]},{"lap":49,"loop":"B","order":[12,46,3,11,52,70,9,15,23,58,61,67,4,7,18,1]},{"lap":49,"loop":"A","order":[52,3,11,12,70,46,15,23,9,7,61,4,67,58,1,18]},{"lap":49,"loop":"F","order":[12,52,3,11,46,15,23,70,61,9,67,58,4,7,18,1]},{"lap":50,"loop":"B","order":[12,3,46,52,11,70,15,23,67,61,9,7,4,18,58,1]},{"lap":50,"loop":"A","order":[12,11,46,52,3,23,70,15,9,61,7,58,67,18,4,1]},{"lap":50,"loop":"F","order":[12,3,52,11,46,70,15,23,61,9,67,7,4,18,58,1]},{"lap":51,"loop":"B","order":[70,3,46,11,12,61,15,52,23,67,9,7,4,18,58,1]},{"lap":51,"loop":"A","order":[46,70,15,23,12,52,3,61,11,9,67,7,4,18,58,1]},{"lap":51,"loop":"F","order":[46,70,15,23,3,12,61,9,11,52,67,18,7,58,4,1]},{"lap":52,"loop":"B","order":[3,70,15,46,23,61,9,67,7,12,11,4,18,52,58,1]},{"lap":52,"loop":"A","order":[3,46,15,23,70,9,61,12,67,52,4,7,11,1,18,58]},{"lap":52,"loop":"F","order":[3,70,46,15,9,12,23,61,7,67,52,4,11,18,58,1]},{"lap":53,"loop":"B","order":[3,70,46,15,23,9,7,4,61,12,67,52,58,18,11,1]},{"lap":53,"loop":"A","order":[3,46,15,70,23,52,61,9,12,7,67,18,11,58,4,1]},{"lap":53,"loop":"F","order":[3,46,15,70,23,61,9,12,7,52,67,18,11,4,58,1]},{"lap":54,"loop":"B","order":[3,70,15,46,23,12,61,52,11,9,7,4,67,58,18,1]},{"lap":54,"loop":"A","order":[3,70,46,15,52,12,23,61,67,7,11,9,4,18,1,58]},{"lap":54,"loop":"F","order":[3,70,46,15,9,12,23,52,67,61,11,4,7,18,58,1]},{"lap":55,"loop":"B","order":[3,46,12,70,15,61,52,4,7,23,18,9,11,67,58,1]},{"lap":55,"loop":"A","order":[3,15,46,70,12,23,11,52,67,61,7,9,4,58,18,1]},{"lap":55,"loop":"F","order":[3,12,52,15,46,70,23,11,9,18,67,61,4,7,58,1]},{"lap":56,"loop":"B","order":[3,15,70,46,12,52,23,11,4,67,9,61,7,18,58,1]},{"lap":56,"loop":"A","order":[3,15,52,46,70,11,4,12,9,23,61,18,7,67,58,1]},{"lap":56,"loop":"F","order":[3,70,46,52,15,12,9,11,4,67,23,61,18,58,1,7]},{"lap":57,"loop":"B","order":[3,52,15,46,70,11,4,12,61,9,67,23,18,7,1,58]},{"lap":57,"loop":"A","order":[70,3,15,46,52,11,9,4,12,18,7,67,23,61,58,1]},{"lap":57,"loop":"F","order":[52,70,12,15,46,3,9,11,18,4,7,61,67,23,1,58]},{"lap":58,"loop":"B","order":[52,15,3,70,4,12,18,46,11,67,9,61,7,58,23,1]},{"lap":58,"loop":"A","order":[15,52,70,12,3,4,9,46,11,18,67,7,58,61,23,1]},{"lap":58,"loop":"F","order":[52,3,70,15,18,12,4,9,46,67,11,61,7,23,58,1]},{"lap":59,"loop":"B","order":[15,52,3,12,4,70,9,18,46,11,67,61,7,23,58,1]},{"lap":59,"loop":"A","order":[15,3,70,52,4,12,9,46,18,67,11,7,61,58,23,1]},{"lap":59,"loop":"F","order":[15,52,70,3,18,4,9,12,67,11,46,1,58,7,23,61]},{"lap":60,"loop":"B","order":[52,15,3,70,4,18,12,9,46,11,67,61,58,7,1,23]},{"lap":60,"loop":"A","order":[52,15,70,3,4,18,12,11,46,9,58,67,7,61,1,23]},{"lap":60,"loop":"F","order":[52,15,3,4,70,18,12,11,9,67,46,58,7,61,1,23]}],"sprints":[{"k":1,"lap":10,"final":false,"res":[15,52,4,11],"pts":[5,3,2,1],"racetime":167,"stand":[{"bib":15,"pts":5},{"bib":52,"pts":3},{"bib":4,"pts":2},{"bib":11,"pts":1},{"bib":1,"pts":0},{"bib":3,"pts":0},{"bib":7,"pts":0},{"bib":9,"pts":0},{"bib":12,"pts":0},{"bib":18,"pts":0},{"bib":23,"pts":0},{"bib":46,"pts":0},{"bib":58,"pts":0},{"bib":61,"pts":0},{"bib":67,"pts":0},{"bib":70,"pts":0}]},{"k":2,"lap":20,"final":false,"res":[52,12,15,9],"pts":[5,3,2,1],"racetime":334,"stand":[{"bib":52,"pts":8},{"bib":15,"pts":7},{"bib":12,"pts":3},{"bib":4,"pts":2},{"bib":9,"pts":1},{"bib":11,"pts":1},{"bib":1,"pts":0},{"bib":3,"pts":0},{"bib":7,"pts":0},{"bib":18,"pts":0},{"bib":23,"pts":0},{"bib":46,"pts":0},{"bib":58,"pts":0},{"bib":61,"pts":0},{"bib":67,"pts":0},{"bib":70,"pts":0}]},{"k":3,"lap":30,"final":false,"res":[3,52,23,15],"pts":[5,3,2,1],"racetime":501,"stand":[{"bib":52,"pts":11},{"bib":15,"pts":8},{"bib":3,"pts":5},{"bib":12,"pts":3},{"bib":4,"pts":2},{"bib":23,"pts":2},{"bib":9,"pts":1},{"bib":11,"pts":1},{"bib":1,"pts":0},{"bib":7,"pts":0},{"bib":18,"pts":0},{"bib":46,"pts":0},{"bib":58,"pts":0},{"bib":61,"pts":0},{"bib":67,"pts":0},{"bib":70,"pts":0}]},{"k":4,"lap":40,"final":false,"res":[9,52,15,4],"pts":[5,3,2,1],"racetime":668,"stand":[{"bib":52,"pts":14},{"bib":15,"pts":10},{"bib":9,"pts":6},{"bib":3,"pts":5},{"bib":4,"pts":3},{"bib":12,"pts":3},{"bib":23,"pts":2},{"bib":11,"pts":1},{"bib":1,"pts":0},{"bib":7,"pts":0},{"bib":18,"pts":0},{"bib":46,"pts":0},{"bib":58,"pts":0},{"bib":61,"pts":0},{"bib":67,"pts":0},{"bib":70,"pts":0}]},{"k":5,"lap":50,"final":false,"res":[12,3,52,11],"pts":[5,3,2,1],"racetime":835,"stand":[{"bib":52,"pts":16},{"bib":15,"pts":10},{"bib":3,"pts":8},{"bib":12,"pts":8},{"bib":9,"pts":6},{"bib":4,"pts":3},{"bib":11,"pts":2},{"bib":23,"pts":2},{"bib":1,"pts":0},{"bib":7,"pts":0},{"bib":18,"pts":0},{"bib":46,"pts":0},{"bib":58,"pts":0},{"bib":61,"pts":0},{"bib":67,"pts":0},{"bib":70,"pts":0}]},{"k":6,"lap":60,"final":true,"res":[52,15,3,4],"pts":[10,6,4,2],"racetime":1002,"stand":[{"bib":52,"pts":26},{"bib":15,"pts":16},{"bib":3,"pts":12},{"bib":12,"pts":8},{"bib":9,"pts":6},{"bib":4,"pts":5},{"bib":11,"pts":2},{"bib":23,"pts":2},{"bib":1,"pts":0},{"bib":7,"pts":0},{"bib":18,"pts":0},{"bib":46,"pts":0},{"bib":58,"pts":0},{"bib":61,"pts":0},{"bib":67,"pts":0},{"bib":70,"pts":0}]}],"efforts":[{"bib":9,"attack":33,"clear":34,"rejoin":46,"credit":47,"afterK":3,"afterLaps":3,"breakLap":14.1,"bunchLap":16.9,"during":[{"k":4,"place":1,"pts":5}],"with":[{"bib":46,"from":33,"to":38,"laps":5},{"bib":23,"from":36,"to":41,"laps":5}],"laps":14,"time":217,"waitLaps":1,"steps":[{"lap":33,"t":"attacked"},{"lap":34,"t":"clear of the bunch"},{"lap":46,"t":"back on the bunch"},{"lap":47,"t":"lap credited"}]},{"bib":61,"attack":22,"clear":23,"rejoin":30,"credit":31,"afterK":2,"afterLaps":2,"breakLap":14.6,"bunchLap":16.8,"during":[{"k":3,"place":5,"pts":0}],"with":[{"bib":18,"from":22,"to":25,"laps":3}],"laps":9,"time":141.29999999999998,"waitLaps":1,"steps":[{"lap":22,"t":"attacked"},{"lap":23,"t":"clear of the bunch"},{"lap":30,"t":"back on the bunch"},{"lap":31,"t":"lap credited"}]}],"attacks":[{"bibs":[61],"from":22,"to":31,"got":true},{"bibs":[9],"from":33,"to":47,"got":true},{"bibs":[70,46],"from":41,"to":45,"got":false},{"bibs":[3],"from":52,"to":56,"got":false}]};
+var VIEWLOOPS=['B','F'];
+var NB=D.riders.length, byBib={};
+D.riders.forEach(function(r){byBib[r.bib]=r;});
+var PAL=['#FFD166','#8FB4FF','#2ED47A','#FF8FA3','#F2A33A','#C9A6FF'];
+function clock(x){var m=Math.floor(x/60),r=x-m*60;return m+':'+(r<10?'0':'')+r.toFixed(1);}
+function ord(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function rid(b,col){var r=byBib[b];
+  return '<span class="rid"'+(col?' style="color:'+col+'"':'')+'><span class="bb"'+(col?' style="color:'+col+'"':'')+'>'+b+'</span>'+r.flag+'<span class="noc">'+r.nat+'</span>'+(r.first?'<span class="fn">'+r.first+'</span> ':'')+'<span class="sn">'+r.name+'</span></span>';}
+function P(r,b){return r.order.indexOf(b)+1;}
+// les relevés d'une fenêtre de tours : approche (avant le sprint) ou retour (après)
+function window_(si,span,after){
+  var L=D.sprints[si].lap, lo=after?L+1:L-span+1, hi=after?L+span:L;
+  return D.stream.filter(function(r){return r.lap>=lo&&r.lap<=hi&&VIEWLOOPS.indexOf(r.loop)>=0;});
+}
+function appTime(span){var t=0;for(var i=D.appt.length-span;i<D.appt.length;i++)t+=D.appt[i];return t;}
+function sprintLabel(s){return s.final?'Final':'Sprint '+s.k;}
+function flagAt(b,x,y,w){return byBib[b].flag.replace('<svg ','<svg x="'+x+'" y="'+y+'" width="'+w+'" height="'+(w*2/3).toFixed(1)+'" ');}
+function card(t,body){return '<div class="card"><span class="t">'+t+'</span><div class="bd">'+body+'</div></div>';}
+
+
+function drawChart(svg,si,span,hi){
+  var rs=window_(si,span,false), n=rs.length;
+  var W=1180,H=440,PL=46,LISTW=282,PR=W-LISTW-16,T=30,B=40;
+  var cw=(PR-PL)/(n-1), rh=(H-T-B)/(NB-1);
+  var x=function(i){return (PL+i*cw).toFixed(1);}, y=function(p){return (T+(p-1)*rh).toFixed(1);};
+  var col=function(b){var k=hi.indexOf(b);return k>=0?PAL[k%PAL.length]:null;};
+  var o='';
+  o+='<rect x="'+PL+'" y="'+(T-rh/2).toFixed(1)+'" width="'+(PR-PL)+'" height="'+(rh*4).toFixed(1)+'" fill="#2ED47A12" stroke="#2ED47A33" stroke-dasharray="3 3"/>';
+  o+='<text x="'+(PL+6)+'" y="'+(T-rh/2-6).toFixed(1)+'" fill="#2ED47A" font-size="10" font-weight="700">the four scoring places</text>';
+  // l'échelle des rangs, à gauche du tracé : d'où il part, où il arrive
+  for(var p=1;p<=NB;p++){
+    o+='<line x1="'+PL+'" y1="'+y(p)+'" x2="'+PR+'" y2="'+y(p)+'" stroke="#ffffff07"/>';
+    o+='<text x="'+(PL-10)+'" y="'+(+y(p)+4)+'" fill="#8d9298" font-size="11" font-weight="700" text-anchor="end" font-family="monospace">'+p+'</text>';
+  }
+  o+='<text x="'+(PL-10)+'" y="'+(T-rh/2-6).toFixed(1)+'" fill="#6c7279" font-size="9.5" text-anchor="end">rank</text>';
+  rs.forEach(function(r,i){
+    var isF=r.loop==='F';
+    o+='<line x1="'+x(i)+'" y1="'+(T-rh/2-2)+'" x2="'+x(i)+'" y2="'+(H-B+4)+'" stroke="'+(isF?'#3a4046':'#262b30')+'"/>';
+    var back=D.sprints[si].lap-r.lap;
+    var lab=isF?(back===0?'Sprint':back+(back===1?' lap':' laps')+' to go'):'Back';
+    o+='<text x="'+x(i)+'" y="'+(H-B+18)+'" fill="'+(isF?'#87a8c9':'#6c7279')+'" font-size="9.5" font-weight="'+(isF?'700':'400')+'" text-anchor="middle">'+lab+'</text>';
+  });
+  D.riders.forEach(function(rd){
+    if(hi.indexOf(rd.bib)>=0)return;
+    o+='<polyline points="'+rs.map(function(r,i){return x(i)+','+y(P(r,rd.bib));}).join(' ')+'" fill="none" stroke="#4d535a" stroke-width="1.1" stroke-linejoin="round"/>';
+  });
+  hi.forEach(function(b,k){
+    var c=PAL[k%PAL.length];
+    o+='<polyline points="'+rs.map(function(r,i){return x(i)+','+y(P(r,b));}).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="2.8" stroke-linejoin="round"/>';
+    rs.forEach(function(r,i){o+='<circle cx="'+x(i)+'" cy="'+y(P(r,b))+'" r="2.8" fill="'+c+'"/>';});
+  });
+  // la liste du résultat du sprint, à droite : chaque ligne à la hauteur où la courbe arrive
+  var LX=PR+34;
+  o+='<text x="'+(PR+6)+'" y="'+(T-rh/2-6).toFixed(1)+'" fill="#c1bdb4" font-size="10" font-weight="700" letter-spacing="0.6">SPRINT RESULT</text>';
+  rs[n-1].order.forEach(function(b,idx){
+    var p=idx+1, c=col(b), yy=+y(p);
+    o+='<text x="'+(PR+24)+'" y="'+(yy+4.5)+'" fill="'+(c||'#8d9298')+'" font-size="11.5" font-weight="700" text-anchor="end" font-family="monospace">'+p+'</text>';
+    o+='<rect class="rrow" data-bib="'+b+'" x="'+LX+'" y="'+(yy-rh/2+1)+'" width="'+(W-LX-4)+'" height="'+(rh-2).toFixed(1)+'" rx="4" fill="'+(c?c+'1f':'#00000000')+'" stroke="'+(c||'#00000000')+'"/>';
+    o+='<text x="'+(LX+28)+'" y="'+(yy+4.5)+'" fill="'+(c||'#ffecb3')+'" font-size="11.5" font-weight="700" text-anchor="end" font-family="monospace" pointer-events="none">'+b+'</text>';
+    o+=flagAt(b,LX+34,yy-6,18);
+    o+='<text x="'+(LX+56)+'" y="'+(yy+4.5)+'" fill="#8d9298" font-size="10.5" font-weight="700" font-family="monospace" pointer-events="none">'+byBib[b].nat+'</text>';
+    o+='<text x="'+(LX+84)+'" y="'+(yy+4.5)+'" font-size="11.5" fill="'+(c||'#c1bdb4')+'" pointer-events="none">'+esc(byBib[b].first)+' <tspan font-weight="700" fill="'+(c||'#fffafa')+'">'+esc(byBib[b].name)+'</tspan></text>';
+  });
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML=o;
+}
+
+var si=D.sprints.length-1, span=3, hi=[], view='app';
+function colOf(b){var k=hi.indexOf(b);return k>=0?PAL[k%PAL.length]:null;}
+function where(rs,b,span){var n=rs.length;
+  return 'was <span class="num">'+ord(P(rs[0],b))+'</span> with '+span+' laps to run, <span class="num">'+ord(P(rs[n-2],b))+'</span> half a lap from the line, <span class="num">'+ord(P(rs[n-1],b))+'</span> at the line';}
+function insights(){
+  var s=D.sprints[si], rs=window_(si,span,false), n=rs.length, out=[];
+  var fin=rs[n-1], pre=rs[n-2];
+  if(hi.length) out.push(card('The riders you are following', hi.map(function(b){
+    var place=s.res.indexOf(b);
+    return '<div style="margin-bottom:6px">'+rid(b,colOf(b))+' '+where(rs,b,span)+(place>=0?' — <span class="num">+'+s.pts[place]+'</span> points.':' — no points.')+'</div>';}).join('')));
+  var TITLES=['The win','Second place','Third place','Fourth place'];
+  for(var k=0;k<4;k++){
+    var a=s.res[k], b=(k<3?s.res[k+1]:fin.order[4]);
+    if(!a||!b)continue;
+    out.push(card(TITLES[k]+' — '+ord(k+1)+' against '+ord(k+2),
+      rid(a,colOf(a))+' was <span class="num">'+ord(P(pre,a))+'</span> at the back straight of the last lap, '+rid(b,colOf(b))+' <span class="num">'+ord(P(pre,b))+'</span>. '+
+      'At the line <span class="num">'+ord(P(fin,a))+'</span> and <span class="num">'+ord(P(fin,b))+'</span> — '+
+      (P(pre,a)>P(pre,b)?'the place changed hands on the last half lap.':'the order held to the line.')));
+  }
+  var st=s.stand, q=D.qual;
+  if(st[q]&&st[q-1]){
+    var inq=st[q-1], outq=st[q];
+    out.push(card('Last qualifying place — '+ord(q),
+      rid(inq.bib,colOf(inq.bib))+' holds it on <span class="num">'+inq.pts+'</span> points, '+rid(outq.bib,colOf(outq.bib))+' is next on <span class="num">'+outq.pts+'</span>. '+
+      'Here they crossed <span class="num">'+ord(P(fin,inq.bib))+'</span> and <span class="num">'+ord(P(fin,outq.bib))+'</span>.'));
+  }
+  var t=appTime(span);
+  out.push(card('How hard the approach was run',
+    'The <span class="num">'+span+'</span> approach laps took <span class="num">'+t.toFixed(1)+' s</span> — <span class="num">'+(t/span).toFixed(1)+' s</span> a lap against a race average of <span class="num">'+D.lapt.toFixed(1)+' s</span>.'));
+  D.efforts.forEach(function(e){
+    if(s.lap>e.attack&&s.lap<=e.credit){
+      var d=e.during.filter(function(x){return x.k===s.k;})[0];
+      out.push(card('A lap being taken',
+        rid(e.bib,colOf(e.bib))+' was off the front, <span class="num">'+(s.lap-e.attack)+' laps</span> into his attempt'+
+        (d?', and crossed <span class="num">'+ord(d.place)+'</span> here for <span class="num">'+(d.pts?'+'+d.pts:'no')+'</span> points':'')+
+        '. The lap was credited on <span class="num">lap '+e.credit+'</span>.'));
+    }
+  });
+  return out.join('');
+}
+
+function lapGained(){
+  return D.efforts.map(function(e){
+    var rt=function(l){return clock(l*D.lapt);};
+    var story=e.steps.map(function(st){
+      return '<div class="step"><span class="lp">lap '+st.lap+'</span><span class="tm">'+rt(st.lap)+'</span><span class="tx">'+st.t+'</span></div>';}).join('');
+    var sprAfter=D.sprints.filter(function(x){return x.k===e.afterK;})[0];
+    var during=e.during.map(function(d){
+      var s=D.sprints.filter(function(x){return x.k===d.k;})[0];
+      return sprintLabel(s)+' fell while he was away — he crossed '+ord(d.place)+(d.pts?' for +'+d.pts:' for no points');}).join('. ');
+    var withs=e.with.length? e.with.map(function(w){
+      return rid(w.bib)+' for <span class="num">'+w.laps+' laps</span> (lap '+w.from+' to '+w.to+')';}).join(', ')+(e.with.length>1?' — neither of them stayed to the end.':' — he did not stay to the end.') : 'Nobody went with him.';
+    return '<div class="eff"><div class="effh">'+rid(e.bib)+'<span class="pts">+20 — a lap gained</span></div>'+
+      '<div class="story">'+story+'</div>'+
+      '<div class="effg">'+
+      '<div class="kv"><span class="k2">The whole move</span><span class="v">'+e.laps+' laps <small>· '+clock(e.time)+'</small></span></div>'+
+      '<div class="kv"><span class="k2">He attacked</span><span class="v">'+e.afterLaps+' laps <small>after '+sprintLabel(sprAfter)+'</small></span></div>'+
+      '<div class="kv"><span class="k2">Faster than the bunch</span><span class="v">'+(e.bunchLap-e.breakLap).toFixed(1)+' s a lap <small>· '+e.breakLap.toFixed(1)+' s against '+e.bunchLap.toFixed(1)+' s</small></span></div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:9px">'+
+      card('Who was with him', withs)+
+      card('A sprint fell in the middle of it', during||'No sprint fell while he was away.')+
+      card('Waiting on the decision','He came back on the bunch on <span class="num">lap '+e.rejoin+'</span> and the lap was credited on <span class="num">lap '+e.credit+'</span> — <span class="num">'+e.waitLaps+' lap'+(e.waitLaps>1?'s':'')+'</span> later.')+
+      '</div></div>';
+  }).join('');
+}
+
+function render(){
+  var s=D.sprints[si];
+  document.getElementById('rt').textContent=sprintLabel(s)+' judged · lap '+s.lap+' of '+D.laps+' · '+clock(s.racetime);
+  var t=appTime(span);
+  document.getElementById('dur').innerHTML='<span class="pill">'+span+' laps</span><span class="pill">'+t.toFixed(1)+' s</span><span class="pill cold">'+(t/span).toFixed(1)+' s a lap</span>';
+  document.getElementById('segS').innerHTML=D.sprints.map(function(x,i){
+    return '<button data-si="'+i+'" class="'+(i===si?'on':'')+'">'+(x.final?'Final':'S'+x.k)+'</button>';}).join('');
+  document.getElementById('segL').innerHTML=[2,3,4,5].map(function(n){
+    return '<button data-span="'+n+'" class="'+(n===span?'on':'')+'">'+n+' laps</button>';}).join('');
+  drawChart(document.getElementById('svg'),si,span,hi);
+  document.getElementById('lines').innerHTML=insights();
+  document.getElementById('eff').innerHTML=lapGained(false);
+  document.getElementById('v-app').hidden=(view!=='app');
+  document.getElementById('v-eff').hidden=(view!=='eff');
+  document.getElementById('strip').hidden=(view!=='app');
+}
+function defaults(){var s=D.sprints[si];hi=[s.res[0],s.res[1]];}
+document.addEventListener('click',function(e){
+  var v=e.target.closest&&e.target.closest('[data-v]');
+  if(v){view=v.dataset.v;document.querySelectorAll('#segV button').forEach(function(x){x.classList.toggle('on',x===v);});render();return;}
+  var b=e.target.closest&&e.target.closest('[data-si]');
+  if(b){si=+b.dataset.si;defaults();render();return;}
+  var l=e.target.closest&&e.target.closest('[data-span]');
+  if(l){span=+l.dataset.span;render();return;}
+  var bib=e.target.getAttribute&&e.target.getAttribute('data-bib');
+  if(bib){bib=+bib;var k=hi.indexOf(bib);if(k>=0)hi.splice(k,1);else hi.push(bib);render();}
+});
+defaults();render();
+})();
+</script>
+</body></html>

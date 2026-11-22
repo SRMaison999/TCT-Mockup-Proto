@@ -6,3 +6,8 @@ desktop.ini
 
 # Maquette de travail sur les couleurs, locale : elle ne fait pas partie du prototype.
 theme-editor.html
+
+# les fichiers de travail du catalogue des maquettes
+mockups/outputs/.tmp/
+mockups/outputs/.doc.html
+mockups/.shot-*.html

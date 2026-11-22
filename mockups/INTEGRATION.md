@@ -4,9 +4,9 @@ Ce document s'adresse à **un autre Claude** chargé d'intégrer les maquettes v
 **vrai prototype**. Il dit quoi lire, comment travailler, où chaque écran se branche, et les
 pièges connus. Il ne remplace aucune des sources ci-dessous : il y renvoie.
 
-Pour **l'ordre et le découpage en sessions** de l'intégration, voir
-**`mockups/PLAN-SESSIONS.md`** : ce document-ci donne le *quoi* et le *comment* par écran, le plan
-donne le *quand* (quelle session fait quoi, dans quel ordre, avec quelles dépendances).
+Pour **voir** les écrans — l'image de chaque maquette, ce qu'elle montre et comment on l'obtient —
+voir **`mockups/MAQUETTES OUTPUTS.pdf`** : ce document-ci donne le *quoi* et le *comment* par
+écran, le catalogue donne le *à quoi ça ressemble*.
 
 ---
 
@@ -221,14 +221,19 @@ sprints restants (Sprint restant = 5, Final = 10 ; un tour gagné = +20). Deux m
   envoi, s'appuyer sur l'existant (`S.outputs`, `S.liveMode`, `spSend`).
 - **Pas d'« abandon pressenti »** — idée explicitement écartée par l'opérateur. Ne pas la coder.
 - **En anglais** (public international).
-- Il **reçoit** six vues, telles quelles : **Start list · Standings (Live + Évolution) · Sprints
-  (complets) · Scénarios · Race log**. Le Race log y est **filtré des alertes matériel**
-  (transpondeur muet, etc. : elles ne regardent que l'opérateur).
+- Il **reçoit** : **Start list · Standings (Live + Évolution) · Sprints (complets) · Scénarios
+  (Overview + What if) · Race facts**, et les **analyses d'approche** des médias (Approach et Lap
+  gained), que l'opérateur y a intégrées le 22 novembre 2026. **Race facts prend la place de Race
+  log** dans le fil (`regles-operateur.md` §303) ; il est **filtré des alertes matériel**
+  (transpondeur muet, etc. : elles ne regardent que l'opérateur). Le Race log de la vue Course, §5.2,
+  ne change pas.
 - En **manche de qualification**, il porte la **ligne de coupe** (voir §6).
 - La maquette `maquette-feed.html` est la **coque** : en-tête (fil, mis à jour tout seul, lecture
   seule, badge de type de course), navigation, et les vues reçues (Évolution et Scénarios y sont
   embarquées en `iframe` des maquettes correspondantes, avec `?embed=1` qui masque les contrôles
   opérateur et le double cadre).
+- **Ce qui alimente chaque vue** — la source dans `S`, ce qui existe déjà et ce qui manque — est
+  dans **`mockups/MAQUETTES OUTPUTS.pdf`**, une page par vue. Ne pas le recopier ici.
 
 ---
 

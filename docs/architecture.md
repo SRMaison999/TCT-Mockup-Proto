@@ -2342,7 +2342,7 @@ ces deux cas retombent sur l'inéligibilité de l'instant, comme avant. Son poin
 
 ## §55 · Le classement au dessin validé, et le type de course (build 211)
 
-Première session d'intégration des maquettes (`mockups/PLAN-SESSIONS.md`, S1). Elle rebranche
+Première session d'intégration des maquettes (l'écran Standings du catalogue `mockups/MAQUETTES OUTPUTS.pdf`). Elle rebranche
 l'onglet `Standings` sur le dessin validé le 16 novembre 2026 et pose le **type de course**. Ses
 règles sont les points **204** et **205** de `regles-operateur.md` ; les mesures, `mesures.md` §66.
 
