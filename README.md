@@ -84,7 +84,7 @@ renvoient. Ne recopiez jamais un fait d'un document dans un autre.
 | `mockups/maquette-design-b.html` | La planche des cinq points de design du 31 octobre 2026, tous tranchés depuis (`docs/architecture.md` §30) |
 | `mockups/maquette-simulateur.html` | Maquette de l'écran de **simulateur de courses de test**. Maquette seule, pas de moteur |
 | `mockups/TCT Points Race - mockups.html` | Les pages 3a à 3d dont la version alternative et les onglets de la version mixte reprennent le dessin |
-| `presentation/` | La présentation du produit, en Markdown et en PDF, avec ses captures |
+| `presentation/` | La présentation du produit, en Markdown et en PDF, avec ses captures. `node presentation/capture.js` refait les captures — il joue une course complète dans un Chrome en arrière-plan, puis photographie chaque vue, prototype et fils compris ; le serveur doit tourner. `node presentation/gen-pdf.js` réécrit le PDF depuis le Markdown |
 | `console-course-aux-points.html` | Première maquette, abandonnée pour son interface, mais dont le **moteur d'inférence** a été validé et doit être repris dans l'implémentation réelle (voir `docs/concept.md`) |
 | `canvas/project/*.dc.html` | Trois écrans statiques (`Main`, `Course`, `Arrivee`) dessinés avant le prototype. Dépassés, conservés pour référence |
 

@@ -184,15 +184,73 @@ Le logiciel connaît le classement à tout instant. À l'approche de la fin, il 
 
 ![Le projecteur « what if »](images/21-scenarios-whatif.png)
 
-### 10.5 · Le fil commentateurs
+### 10.5 · Le fil commentateurs — neuf vues
 
-Ce que la course envoie aux commentateurs : un fil **automatique**, en lecture seule, alimenté tout seul par ce que l'opérateur valide dans l'écran de course. Les commentateurs y naviguent entre les vues — la liste de départ, le classement et son évolution, les sprints en entier, les scénarios, et le journal de course en langage clair (sans les alertes matériel, qui ne regardent que l'opérateur). Il est en anglais, pour un public international ; dans une manche de qualification, il porte la ligne de coupe.
+Ce que la course envoie aux commentateurs : un fil **automatique**, en lecture seule, alimenté tout seul par ce que l'opérateur valide dans l'écran de course. Il s'ouvre d'un bouton, dans une seconde fenêtre du même poste, et se range en six onglets. Il est en anglais, pour un public international ; dans une manche de qualification, il porte la ligne de coupe.
 
-![Le fil commentateurs — le classement](images/30-feed-standings.png)
+Rien n'y est saisi et rien n'y est décidé : le commentateur regarde, il ne touche à rien. Aucune des vues qui suivent n'a demandé d'enregistrer quoi que ce soit de plus pendant la course — toutes se construisent sur trois relevés que le logiciel tient déjà : les passages de ligne tour par tour, les lectures des boucles de transpondeurs, et l'ordre complet de chaque sprint.
 
-![Le fil commentateurs — le journal de course](images/32-feed-racelog.png)
+**La liste de départ.** Qui est au départ, avec le dossard, la nation et le nom. C'est la première chose qu'un commentateur ouvre, et celle qu'il garde à côté de lui pour nommer un coureur sans se tromper.
 
-### 10.6 · Le simulateur
+![Le fil — la liste de départ](images/40-feed-startlist.png)
+
+**Le classement, en direct.** Le classement général à l'instant présent : le total, les points gagnés à chaque sprint, les tours gagnés et perdus avec le tour où c'est arrivé, et l'ordre d'arrivée. C'est la vue de référence, celle qui répond à « qui est en tête, et de combien ».
+
+![Le fil — le classement en direct](images/41-feed-standings.png)
+
+**L'évolution du classement.** La même histoire, mais dans le temps : chaque moment de la course où le classement a bougé — le départ, chaque sprint, chaque tour gagné ou perdu — avec le chemin de quatre coureurs suivis. Elle sert à raconter comment on en est arrivé là, et à montrer le moment où la course a basculé. Un clic sur un moment re-classe le tableau à cet instant.
+
+![Le fil — l'évolution du classement](images/42-feed-evolution.png)
+
+**Les sprints.** Tous les sprints de la course, en entier, de gauche à droite : les quatre places qui marquent, les points, et la finale qui compte double. Elle sert à retrouver d'un coup d'œil qui a marqué où, sans dérouler le classement.
+
+![Le fil — les sprints](images/43-feed-sprints.png)
+
+**L'approche du sprint.** Où étaient les coureurs dans les tours qui précèdent le sprint, et comment le sprint s'est joué. Le graphe donne le rang de chaque coureur à chaque relevé — deux par tour, le back straight puis la ligne d'arrivée. À droite, les phrases prêtes à être lues : qui menait à trois tours, qui a remonté dans le dernier demi-tour, qui a tenu. C'est la vue qui répond à « comment a-t-il gagné ce sprint ».
+
+![Le fil — l'approche du sprint](images/44-feed-approach.png)
+
+**Le tour gagné.** Ce qu'il a fallu pour prendre un tour, de l'attaque au tour crédité : le tour où il est parti, celui où il s'est détaché, celui où il est revenu sur le peloton, celui où le tour lui a été accordé ; combien de temps a duré le mouvement, de combien il tournait plus vite que le peloton, qui est parti avec lui et combien de temps, et le sprint qui est tombé pendant qu'il était devant.
+
+![Le fil — le tour gagné](images/45-feed-lapgained.png)
+
+**Les faits de course.** Tout ce que la course a produit, en phrases, rangé par famille : les sprints, les approches, les tours gagnés et perdus, les échappées, les lâchés, le classement, la ligne de coupe, ce qui reste possible, les chutes. Le commentateur filtre la famille qui l'intéresse, ou ne garde que les faits marquants. C'est la vue où l'on va chercher de quoi parler quand la course est calme.
+
+![Le fil — les faits de course](images/46-feed-racefacts.png)
+
+**Les scénarios.** Ce qui est encore possible : combien de points restent en jeu, la meilleure et la pire place encore atteignable pour chaque coureur, et trois batailles suivies à part — la victoire, le podium, la dernière place qualificative. Elle sert à dire ce qui se joue encore, sans se tromper.
+
+![Le fil — les scénarios](images/47-feed-scenarios.png)
+
+**Le projecteur « what if ».** La même chose, mais jouée : on suppose un résultat pour chaque sprint restant, et le classement se recalcule. C'est la vue qui permet d'annoncer à l'antenne ce qu'il faut à un coureur pour passer devant.
+
+![Le fil — le projecteur « what if »](images/48-feed-whatif.png)
+
+### 10.6 · Le fil entraîneurs — cinq vues
+
+Le même principe, mais pour les entraîneurs, et dans une autre fenêtre : non plus de quoi raconter la course, mais de quoi la décortiquer après coup. Tous les coureurs, tous les sprints, sans choisir. Elle est en lecture seule elle aussi, et lit exactement les mêmes relevés que le fil commentateurs.
+
+**Les graphes, coureur par coureur.** Pour chaque coureur suivi, ses sprints posés côte à côte : la même courbe de rang à chaque sprint de la course. On y lit d'un coup la manière d'un coureur — celui qui remonte toujours dans le dernier tour, celui qui part de loin, celui qui s'use. À l'ouverture, ce sont les quatre premiers du classement qui sont suivis ; on en change d'un clic dans la liste.
+
+![Les entraîneurs — les graphes, coureur par coureur](images/50-coaches-charts-rider.png)
+
+**Les graphes, sprint par sprint.** Les mêmes coureurs, mais un sprint par bande, empilés. On y compare les quatre entre eux à un moment donné, et les attaques tombées dans la fenêtre sont marquées. C'est la disposition qui sert à préparer un sprint : où faut-il être à deux tours de la ligne.
+
+![Les entraîneurs — les graphes, sprint par sprint](images/51-coaches-charts-sprint.png)
+
+**Avant le sprint.** Le même relevé, mais en chiffres : le rang de chaque coureur à chaque passage des tours qui précèdent le sprint, sprint par sprint, et les points marqués. C'est le tableau qu'on emporte, celui où l'on vérifie une impression.
+
+![Les entraîneurs — avant le sprint](images/52-coaches-before.png)
+
+**Après le sprint.** La suite : ce que le coureur a fait dans les tours qui suivent. A-t-il tenu sa place, ou l'effort du sprint lui a-t-il coûté les tours d'après ? C'est la vue de la récupération.
+
+![Les entraîneurs — après le sprint](images/53-coaches-after.png)
+
+**Le tour gagné.** Le même détail que dans le fil commentateurs, mais pour l'entraîneur : le temps du mouvement, l'écart par tour avec le peloton, les compagnons et ce qu'ils ont tenu, et le temps perdu entre le retour sur le peloton et la décision du président. C'est la vue qui sert à juger si l'effort valait ses vingt points.
+
+![Les entraîneurs — le tour gagné](images/54-coaches-lapgained.png)
+
+### 10.7 · Le simulateur
 
 Le produit contient un simulateur, qui rejoue des courses enregistrées ou en crée de nouvelles. C'est l'outil qui permet d'éprouver les automatismes sur des situations choisies, des plus calmes aux plus animées. Il se range dans un panneau à droite de l'écran, à côté de la course.
 
