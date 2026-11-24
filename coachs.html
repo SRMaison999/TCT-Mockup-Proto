@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Approach analysis (coaches)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:12px;overflow:hidden;box-shadow:0 18px 48px #000a}
+.board-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.board-h b{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.board-h .hint{font:500 12px var(--sans);color:var(--dim)}
+.ro{font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line2);border-radius:999px;padding:3px 10px}
+.togo{margin-left:auto;font:600 12px var(--mono);color:var(--fg);border:1px solid var(--line2);border-radius:999px;padding:4px 12px}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:5px;overflow:hidden}
+.seg button{font:600 12px var(--sans);color:var(--dim);border:0;padding:5px 13px;background:#23272b;cursor:pointer;border-right:1px solid var(--line2)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--acc);color:#fff}
+.strip{flex:0 0 auto;display:flex;align-items:center;gap:10px;background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:9px 13px;flex-wrap:wrap}
+.strip .k{font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim)}
+.strip .dur{margin-left:auto;font:600 12px var(--mono);color:var(--fg);display:flex;gap:8px;align-items:center}
+.strip .pill{background:#39311c;border-radius:5px;padding:2px 8px}
+.strip .pill.cold{background:#1c2733;color:#8FB4FF}
+.main{flex:1 1 auto;min-height:0;display:flex;gap:14px}
+.col{display:flex;flex-direction:column;min-height:0;background:#1c1e22;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.ch2{font:600 11px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:9px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.ch2 .sub{font:500 10px var(--sans);letter-spacing:0;text-transform:none;color:var(--dim)}
+.note{flex:0 0 auto;font:500 12px var(--sans);color:var(--dim)}
+.rid{white-space:nowrap;font:600 12.5px var(--sans);color:var(--muted)}
+.rid .bb{font:700 12.5px var(--mono);color:var(--fg);margin-right:4px}
+.rid .flag{width:17px;height:11px;border-radius:2px;display:inline-block;vertical-align:-1px;margin-right:4px;box-shadow:0 0 0 1px #0006}
+.rid .noc{font:700 11px var(--mono);color:var(--dim);margin-right:4px}
+.rid .fn{font-weight:500;color:var(--dim)}
+.rid .sn{font-weight:700}
+.card{border:1px solid var(--line);border-radius:6px;padding:9px 11px;background:#17191c}
+.card .t{display:block;font:700 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+.card .bd{font:500 13.5px/1.5 var(--sans);color:var(--dim)}
+.card .num{font:700 13px var(--mono);color:var(--fg)}
+
+.main.coach{gap:12px}
+.col.pick{flex:0 0 288px}
+.pickwrap{flex:1 1 auto;overflow:auto;padding:6px}
+.pr{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid transparent}
+.pr:nth-child(even){background:#00000022}
+.pr.on{background:#2b3138;border-color:var(--line2)}
+.pr .dot{width:9px;height:9px;border-radius:3px;background:#3a4046;flex:0 0 auto}
+.col.grid{flex:1.8 1 0}
+.gridwrap{flex:1 1 auto;overflow:auto;padding:8px 10px}
+.gblock{margin-bottom:16px}
+.gbh{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.gbh .sum{margin-left:auto;font:600 11px var(--sans);color:var(--dim)}
+table.ap{width:100%;border-collapse:separate;border-spacing:0 2px;font:600 12px var(--mono)}
+table.ap th{font:700 9.5px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:3px 4px 5px;text-align:center;border-bottom:1px solid var(--line)}
+table.ap th.lf{text-align:left}
+table.ap th.grp{color:#87a8c9}
+table.ap td{padding:5px 4px;text-align:center;color:var(--dim);background:#1f2227}
+table.ap td.lf{text-align:left;font:600 12px var(--sans);color:var(--muted);padding-left:8px;border-radius:4px 0 0 4px;white-space:nowrap}
+table.ap td.last{border-radius:0 4px 4px 0}
+table.ap td.p1{color:#0d2b1a;background:#2ED47A;font-weight:700}
+table.ap td.sep{box-shadow:inset 1px 0 0 #3a4046}
+table.ap td.gain{color:var(--good);font-weight:700}
+table.ap td.loss{color:var(--crit);font-weight:700}
+table.ap td.res{color:var(--muted);font-weight:700}
+table.ap td.verdict{font:600 11.5px var(--sans);text-align:left;padding-left:8px}
+table.ap td.ease{color:var(--good)}
+table.ap td.front{color:var(--warn)}
+.col.vs{flex:1 1 0;min-width:330px}
+.col.charts{flex:3 1 0}
+.chartwrap2{flex:1 1 auto;overflow:auto;padding:10px}
+.cblock{margin-bottom:14px}
+.cbh{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.cbh .sp{margin-left:auto;font:600 11px var(--mono);color:var(--dim)}
+.chartsrow{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.mini{flex:0 0 252px;background:#17191c;border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+.mini .cap{font:700 10px var(--sans);color:var(--dim);margin-bottom:3px;display:flex;gap:6px;align-items:center}
+.mini .cap b{color:var(--fg);font-family:var(--mono);font-size:11px}
+.wide{background:#17191c;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin-bottom:10px}
+.wide .sit{font:500 12px/1.4 var(--sans);color:var(--dim);margin:0 0 6px}
+.vswrap{flex:1 1 auto;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:9px}
+.effwrap{flex:1 1 auto;overflow:auto;padding:12px;display:flex;flex-direction:row;align-items:stretch;gap:14px}
+.story{display:flex;flex-direction:column;gap:0;margin:2px 0 2px}
+.step:last-child{padding-bottom:2px}
+.step::before{content:'';position:absolute;left:-5px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--good)}
+.step{border-left:2px solid var(--good);padding:5px 0 10px 12px;position:relative}
+.step .lp{font:700 13px var(--mono);color:var(--fg)}
+.step .tm{font:600 11px var(--mono);color:var(--dim);margin-left:5px}
+.step .tx{display:block;font:500 12px var(--sans);color:var(--muted);margin-top:2px}
+.effg{display:grid;grid-template-columns:1fr;gap:8px}
+.kv{background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.kv .k2{display:block;font:700 9.5px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.kv .v{font:700 15px var(--mono);color:var(--fg)}
+.kv .v small{font:500 11.5px var(--sans);color:var(--dim)}
+.eff{flex:0 0 430px;display:flex;flex-direction:column;gap:9px;overflow:auto;border:1px solid var(--line);border-radius:7px;background:#17191c;padding:12px 14px}
+.effh{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.effh .pts{margin-left:auto;font:700 13px var(--mono);color:var(--good);border:1px solid #2ED47A66;border-radius:999px;padding:3px 11px}
+</style></head>
+<body>
+<script src="flags.js"></script>
+<div class="board">
+  <div class="board-h"><b>Approach analysis</b><span class="hint">for coaches — every rider, every sprint, read from the loops</span>
+    <span class="seg" id="segV"><button class="on" data-v="chart">Charts</button><button data-v="app">Before the sprint</button><button data-v="aft">After the sprint</button><button data-v="eff">Lap gained</button></span>
+    <span class="togo" id="rt"></span>
+  </div>
+  <div class="strip" id="strip">
+    <span class="k">Laps watched</span><span class="seg" id="segL"></span>
+    <span class="k" id="arrk">Laid out</span><span class="seg" id="segA"></span>
+  </div>
+  <div class="main coach" id="v-main">
+    <div class="col pick">
+      <div class="ch2">Riders <span class="sub">click to follow</span></div>
+      <div class="pickwrap" id="pick"></div>
+    </div>
+    <div class="col grid" id="gridcol">
+      <div class="ch2" id="gridh">Position lap by lap <span class="sub">two readings a lap — back straight, then the finish line</span></div>
+      <div class="gridwrap" id="grid"></div>
+    </div>
+    <div class="col vs" id="vscol">
+      <div class="ch2" id="vsh">Head to head <span class="sub">select two riders or more</span></div>
+      <div class="vswrap" id="vs"></div>
+    </div>
+    <div class="col charts" id="chartcol" hidden>
+      <div class="ch2" id="charth">Around the sprint <span class="sub">the laps before and after · the yellow line is the sprint · dotted orange is an attack</span></div>
+      <div class="chartwrap2" id="charts"></div>
+    </div>
+  </div>
+  <div class="col" id="v-eff" hidden style="flex:1 1 auto">
+    <div class="ch2">A lap gained <span class="sub">what it took, from the attack to the credited lap</span></div>
+    <div class="effwrap" id="eff"></div>
+  </div>
+  <div class="note">Positions come from the transponder loops — back straight and the finish line, two readings a lap — never from metres on the track. Every figure is given in laps and in time. How many laps are watched is not settled: 2, 3, 4 and 5 are all shown here.</div>
+</div>
+<script>
+(function(){
+
+
+/* ---- D, construit sur l'instantane du prototype (et non sur la course figee) ---- */
+var D=null, __ready=false, __premiere=true;
+var CH=new BroadcastChannel('tct-feed');
+CH.addEventListener('message',function(ev){ if(!ev.data||!ev.data.riders) return; D=build(ev.data); boot(); });
+CH.postMessage({ask:true});
+
+function build(S){
+  var loops=S.loops||[], iB=null, iA=null, iF=null;
+  loops.forEach(function(l){ if(/Pursuit B/i.test(l.name)) iB=l.i; else if(/Pursuit A/i.test(l.name)) iA=l.i; else iF=l.i; });
+  var riders=S.riders.map(function(r){ return {bib:r.bib,nat:r.nat,name:r.name,first:r.first,flag:flag(r.nat)}; })
+    .sort(function(a,b){ return a.bib-b.bib; });
+  // LE CLASSEMENT GENERAL A CET INSTANT, dans l'ordre : il donne les coureurs suivis a l'ouverture.
+  var standing=S.standings.filter(function(x){ return !x.wd; }).map(function(x){ return x.bib; });
+
+  // LE TOUR D'UNE LECTURE : les passages de ligne de Lap by lap bornent chaque tour.
+  var cross=S.cross||{}, laps=Object.keys(cross).map(Number).sort(function(a,b){return a-b;});
+  var win={};                                   // tour -> [t0,t1] sur la ligne
+  laps.forEach(function(L){ var l=cross[L].map(function(c){return c.t;});
+    win[L]=[Math.min.apply(null,l), Math.max.apply(null,l)]; });
+
+  // LE RELEVE CONTINU : un enregistrement par tour et par boucle, dans l'ORDRE DES LECTURES.
+  //
+  // CE QUI BORNE LE TOUR D'UNE LECTURE, c'est le passage de ligne DU COUREUR, pas une fenetre de
+  // temps commune : entre son passage du tour precedent et celui de ce tour-ci. Une fenetre large
+  // prenait la lecture du tour d'avant et l'ordre sortait faux (le vainqueur du sprint annonce
+  // 14e au back straight du dernier tour).
+  var at={};                                    // tour -> dossard -> t de son passage de ligne
+  laps.forEach(function(L){ var m={}; cross[L].forEach(function(c){ if(m[c.bib]==null||c.t<m[c.bib]) m[c.bib]=c.t; }); at[L]=m; });
+  var stream=[];
+  function push(L, code, idx){
+    if(idx==null) return;
+    var cur=at[L]||{}, prev=at[L-1]||{}, reads=S.reads[idx]||[], out=[];
+    Object.keys(cur).forEach(function(k){
+      var b=+k, t1=cur[b], t0=(prev[b]!=null?prev[b]:-1e9), best=null;
+      reads.forEach(function(x){ if(x.bib===b && x.t>t0 && x.t<=t1+0.001 && (best===null||x.t>best)) best=x.t; });
+      if(best!==null) out.push({bib:b, t:best});
+    });
+    out.sort(function(p,q){ return p.t-q.t; });
+    if(out.length) stream.push({lap:L, loop:code, order:out.map(function(o){return o.bib;})});
+  }
+  laps.forEach(function(L){ push(L,'B',iB); push(L,'A',iA); push(L,'F',iF); });
+
+  // LE SPRINT : All sprints garde l'ordre complet.
+  var sprints=S.sprints.filter(function(s){return s.started && s.order.length;}).map(function(s){
+    var pts = s.final ? [10,6,4,2] : [5,3,2,1];
+    return {k:s.k, lap:s.lap, final:s.final, res:s.order.map(function(e){return e.bib;}), pts:pts,
+            racetime:(win[s.lap]?win[s.lap][1]:0), stand:standAt(S)};
+  });
+
+  // LE TOUR PRIS : la marque est gravee dans Lap by lap ; les compagnons sont ceux du meme bloc.
+  var efforts=[];
+  var open={};
+  laps.forEach(function(L){
+    var bunch=bunchAt(cross[L]);
+    cross[L].forEach(function(c){
+      var away = bunch!==null && c.blkid!==bunch;
+      if(away && !open[c.bib]) open[c.bib]={bib:c.bib, attack:L, clear:L, with:[]};
+      if(away && open[c.bib]){
+        cross[L].forEach(function(o){ if(o.bib!==c.bib && o.blkid===c.blkid){
+          var w=open[c.bib].with.filter(function(x){return x.bib===o.bib;})[0];
+          if(w) w.to=L; else open[c.bib].with.push({bib:o.bib, from:L, to:L}); } });
+      }
+      if(!away && open[c.bib]){ open[c.bib].rejoin=L; }
+      if(c.mark>0 && open[c.bib]){
+        var e=open[c.bib]; e.credit=L; if(e.rejoin==null) e.rejoin=L;
+        var bef=sprints.filter(function(s){return s.lap<=e.attack;});
+        var last=bef.length?bef[bef.length-1]:null;
+        e.afterK=last?last.k:0; e.afterLaps=e.attack-(last?last.lap:0);
+        e.breakLap=lapTime(cross, e.attack, e.credit, c.bib);
+        e.bunchLap=lapTime(cross, e.attack, e.credit, null);
+        e.during=sprints.filter(function(s){return s.lap>=e.attack && s.lap<=e.credit;})
+          .map(function(s){ var pl=s.res.indexOf(c.bib)+1; return {k:s.k, place:pl, pts:pl>0?(s.pts[pl-1]||0):0}; });
+        e.laps=e.credit-e.attack;
+        e.time=e.laps*((e.breakLap+e.bunchLap)/2);
+        e.waitLaps=e.credit-e.rejoin;
+        e.steps=[{lap:e.attack,t:'attacked'},{lap:e.clear,t:'clear of the bunch'},
+                 {lap:e.rejoin,t:'back on the bunch'},{lap:e.credit,t:'lap credited'}];
+        e.with.forEach(function(w){ w.laps=w.to-w.from; });
+        efforts.push(e); delete open[c.bib];
+      }
+    });
+  });
+  var attacks=efforts.map(function(e){ return {from:e.attack, to:e.credit, bibs:[e.bib]}; });
+
+  var lapt = laps.length>1 ? (win[laps[laps.length-1]][1]-win[laps[0]][0])/(laps.length-1) : 16.7;
+
+  // LE TOUR DU PELOTON a un tour donne : l'heure mediane des passages de ligne de ce tour, moins
+  // celle du tour d'avant. Mediane et non premiere, pour que l'echappee ne dicte pas le tour.
+  function mid(L){ var m=at[L]; if(!m) return null;
+    var v=Object.keys(m).map(function(k){ return m[k]; }).sort(function(a,b){ return a-b; });
+    return v.length ? v[Math.floor(v.length/2)] : null; }
+  var applaps={};
+  sprints.forEach(function(sp){ var arr=[];
+    for(var k=4;k>=0;k--){ var L=sp.lap-k, a=mid(L), b=mid(L-1);
+      arr.push((a!=null&&b!=null&&a>b) ? (a-b) : lapt); }
+    applaps[sp.k]=arr; });
+
+  return {riders:riders, standing:standing, applaps:applaps, loopnm:{B:'Back straight',A:'Home straight',F:'Finish line'},
+    loopsh:{B:'Back',A:'Home',F:'Line'}, maxspan:5, appt:[lapt,lapt,lapt,lapt,lapt], lapt:lapt,
+    laps:S.race.laps, qual:(S.cfg&&S.cfg.type==='qualification')?S.cfg.advance:0,
+    started:!!S.started, finished:!!S.finished, lap:S.lap||0, nspr:(S.race&&S.race.sprints)||S.sprints.length,
+    stream:stream, sprints:sprints, efforts:efforts, attacks:attacks};
+
+  function standAt(S){ var r=0; return S.standings.filter(function(x){return !x.wd;})
+    .map(function(x){ return {bib:x.bib, pts:x.total}; }); }
+}
+function lapsIn(rs){ var v={}, n=0; (rs||[]).forEach(function(r){ if(!v[r.lap]){ v[r.lap]=1; n++; } }); return n; }
+function clock3(x){ var m=Math.floor(x/60), r=x-m*60;
+  return (m<10?'0':'')+m+':'+(r<10?'0':'')+r.toFixed(3); }
+function raceState(){
+  var n=D.sprints.length, spr=D.nspr||n;
+  if(!D.started)  return 'Waiting for the start · '+D.laps+' laps · '+spr+' sprints';
+  if(!D.finished) return 'Lap '+D.lap+' of '+D.laps+' · '+n+' sprint'+(n===1?'':'s')+' judged';
+  return 'Race finished · '+D.laps+' laps · '+n+' sprints';
+}
+function bunchAt(list){ var n={}, best=null;
+  (list||[]).forEach(function(c){ n[c.blkid]=(n[c.blkid]||0)+1; if(best===null||n[c.blkid]>n[best]) best=c.blkid; });
+  return best===null?null:(best==='null'?null:+best); }
+function lapTime(cross, a, b, bib){
+  var t0=null,t1=null;
+  [[a,0],[b,1]].forEach(function(p){ var l=cross[p[0]]||[], v=null;
+    l.forEach(function(c){ if(bib==null || c.bib===bib){ if(v===null||c.t<v) v=c.t; } });
+    if(p[1]) t1=v; else t0=v; });
+  return (t0==null||t1==null||b===a) ? 16.7 : (t1-t0)/(b-a);
+}
+
+var NB=0, byBib={};
+function boot(){ NB=D.riders.length; byBib={}; D.riders.forEach(function(r){byBib[r.bib]=r;}); if(typeof si!=="undefined" && (si>=D.sprints.length||si<0)) si=Math.max(0,D.sprints.length-1); __ready=true; try{ var _rt=document.getElementById("rt"); if(_rt) _rt.textContent=raceState(); }catch(e){} if(!D.sprints.length) return; if(typeof hi!=="undefined" && hi && hi.filter) hi=hi.filter(function(b){return byBib[b];}); try{ if(typeof defaults==="function" && (typeof hi==="undefined"||!hi||!hi.length)) defaults(); }catch(e){ console.error("defaults",e); } if(typeof sel!=="undefined" && sel && sel.filter){   if(__premiere) sel=(D.standing||[]).slice(0,4).filter(function(b){return byBib[b];});   else sel=sel.filter(function(b){return byBib[b];});   if(!sel.length) sel=(D.standing||D.riders.map(function(r){return r.bib;})).slice(0,4); } __premiere=false; try{ if(typeof renderPick==="function") renderPick(); }catch(e){ console.error("renderPick",e); } try{ render(); }catch(e){ console.error("render",e); } }
+
+var VIEWLOOPS=['B','F'];
+
+
+var PAL=['#FFD166','#8FB4FF','#2ED47A','#FF8FA3','#F2A33A','#C9A6FF'];
+function clock(x){var m=Math.floor(x/60),r=x-m*60;return m+':'+(r<10?'0':'')+r.toFixed(1);}
+function ord(n){var s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function rid(b,col){var r=byBib[b];
+  return '<span class="rid"'+(col?' style="color:'+col+'"':'')+'><span class="bb"'+(col?' style="color:'+col+'"':'')+'>'+b+'</span>'+r.flag+'<span class="noc">'+r.nat+'</span>'+(r.first?'<span class="fn">'+r.first+'</span> ':'')+'<span class="sn">'+r.name+'</span></span>';}
+function P(r,b){return r.order.indexOf(b)+1;}
+// les relevés d'une fenêtre de tours : approche (avant le sprint) ou retour (après)
+function window_(si,span,after){
+  var L=D.sprints[si].lap, lo=after?L+1:L-span+1, hi=after?L+span:L;
+  return D.stream.filter(function(r){return r.lap>=lo&&r.lap<=hi&&VIEWLOOPS.indexOf(r.loop)>=0;});
+}
+function appTime(span){ var sp=(typeof si!=='undefined'&&D.sprints[si])?D.sprints[si]:D.sprints[0]; var a=(D.applaps&&sp&&D.applaps[sp.k])?D.applaps[sp.k]:D.appt; var t=0; for(var i=a.length-span;i<a.length;i++) t+=a[i]; return t; }
+function sprintLabel(s){return !s?'the start':s.final?'Final':'Sprint '+s.k;}
+function flagAt(b,x,y,w){return byBib[b].flag.replace('<svg ','<svg x="'+x+'" y="'+y+'" width="'+w+'" height="'+(w*2/3).toFixed(1)+'" ');}
+function card(t,body){return '<div class="card"><span class="t">'+t+'</span><div class="bd">'+body+'</div></div>';}
+
+
+function lapGained(){
+  return D.efforts.map(function(e){
+    var rt=function(l){return clock(l*D.lapt);};
+    var story=e.steps.map(function(st){
+      return '<div class="step"><span class="lp">lap '+st.lap+'</span><span class="tm">'+rt(st.lap)+'</span><span class="tx">'+st.t+'</span></div>';}).join('');
+    var sprAfter=D.sprints.filter(function(x){return x.k===e.afterK;})[0];
+    var during=e.during.map(function(d){
+      var s=D.sprints.filter(function(x){return x.k===d.k;})[0];
+      return sprintLabel(s)+' fell while he was away — he crossed '+ord(d.place)+(d.pts?' for +'+d.pts:' for no points');}).join('. ');
+    var withs=e.with.length? e.with.map(function(w){
+      return rid(w.bib)+' for <span class="num">'+w.laps+' laps</span> (lap '+w.from+' to '+w.to+')';}).join(', ')+(e.with.length>1?' — neither of them stayed to the end.':' — he did not stay to the end.') : 'Nobody went with him.';
+    return '<div class="eff"><div class="effh">'+rid(e.bib)+'<span class="pts">+20 — a lap gained</span></div>'+
+      '<div class="story">'+story+'</div>'+
+      '<div class="effg">'+
+      '<div class="kv"><span class="k2">The whole move</span><span class="v">'+e.laps+' laps <small>· '+clock(e.time)+'</small></span></div>'+
+      '<div class="kv"><span class="k2">He attacked</span><span class="v">'+e.afterLaps+' laps <small>after '+sprintLabel(sprAfter)+'</small></span></div>'+
+      '<div class="kv"><span class="k2">Faster than the bunch</span><span class="v">'+clock3(e.bunchLap-e.breakLap)+' a lap <small>· '+clock3(e.breakLap)+' against '+clock3(e.bunchLap)+'</small></span></div>'+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:9px">'+
+      card('Who was with him', withs)+
+      card('A sprint fell in the middle of it', during||'No sprint fell while he was away.')+
+      card('Waiting on the decision','He came back on the bunch on <span class="num">lap '+e.rejoin+'</span> and the lap was credited on <span class="num">lap '+e.credit+'</span> — <span class="num">'+e.waitLaps+' lap'+(e.waitLaps>1?'s':'')+'</span> later.')+
+      '</div></div>';
+  }).join('');
+}
+
+
+function miniChart(si,bibs,span,W,H,cols){
+  cols=cols||PAL;
+  var s=D.sprints[si];
+  var before=window_(si,span,false), after=window_(si,span,true);
+  var rs=before.concat(after), n=rs.length, iS=before.length-1;
+  var L=28,Rr=10,T=16,B=20;
+  var cw=(W-L-Rr)/(n-1), rh=(H-T-B)/(NB-1);
+  var x=function(i){return (L+i*cw).toFixed(1);}, y=function(p){return (T+(p-1)*rh).toFixed(1);};
+  var o='';
+  // la bande des quatre places qui donnent des points : seulement AVANT le sprint
+  o+='<rect x="'+L+'" y="'+(T-rh/2).toFixed(1)+'" width="'+(+x(iS)-L)+'" height="'+(rh*4).toFixed(1)+'" fill="#2ED47A12" stroke="#2ED47A28" stroke-dasharray="3 3"/>';
+  [1,4,8,12,NB].forEach(function(p){
+    o+='<line x1="'+L+'" y1="'+y(p)+'" x2="'+(W-Rr)+'" y2="'+y(p)+'" stroke="#ffffff08"/>';
+    o+='<text x="'+(L-6)+'" y="'+(+y(p)+3.5)+'" fill="#6c7279" font-size="9" text-anchor="end" font-family="monospace">'+p+'</text>';
+  });
+  // la ligne du sprint
+  o+='<line x1="'+x(iS)+'" y1="'+(T-rh/2-4)+'" x2="'+x(iS)+'" y2="'+(H-B+3)+'" stroke="#FFD166" stroke-width="1.6"/>';
+  o+='<text x="'+x(iS)+'" y="'+(H-B+14)+'" fill="#FFD166" font-size="9" text-anchor="middle">sprint</text>';
+  o+='<text x="'+L+'" y="'+(H-B+14)+'" fill="#6c7279" font-size="9">-'+lapsIn(before)+'</text>';
+  if(after.length)o+='<text x="'+(W-Rr)+'" y="'+(H-B+14)+'" fill="#6c7279" font-size="9" text-anchor="end">+'+lapsIn(after)+'</text>';
+  // les attaques qui tombent dans la fenêtre
+  D.attacks.forEach(function(t){
+    var idx=-1;
+    rs.forEach(function(r,i){if(idx<0&&r.lap===t.from&&r.loop==='B')idx=i;});
+    if(idx<0)return;
+    o+='<line x1="'+x(idx)+'" y1="'+(T-rh/2-4)+'" x2="'+x(idx)+'" y2="'+(H-B+3)+'" stroke="#F2A33A" stroke-width="1" stroke-dasharray="2 2"/>';
+    o+='<text x="'+(+x(idx)+3)+'" y="'+(T-rh/2+1)+'" fill="#F2A33A" font-size="8.5">'+t.bibs.join(' ')+' attack</text>';
+  });
+  D.riders.forEach(function(rd){
+    if(bibs.indexOf(rd.bib)>=0)return;
+    o+='<polyline points="'+rs.map(function(r,i){return x(i)+','+y(P(r,rd.bib));}).join(' ')+'" fill="none" stroke="#464c53" stroke-width="1"/>';
+  });
+  bibs.forEach(function(b,k){
+    var c=cols[k%cols.length];
+    o+='<polyline points="'+rs.map(function(r,i){return x(i)+','+y(P(r,b));}).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="2.4" stroke-linejoin="round"/>';
+    o+='<circle cx="'+x(iS)+'" cy="'+y(P(rs[iS],b))+'" r="3" fill="'+c+'"/>';
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="width:100%;height:'+H+'px;display:block">'+o+'</svg>';
+}
+function situationLine(si,span){
+  var L=D.sprints[si].lap, lo=L-span+1, hi=L+span, out=[];
+  D.attacks.forEach(function(t){
+    if(t.from>=lo&&t.from<=hi) out.push(rid(t.bibs[0])+(t.bibs[1]?' and '+rid(t.bibs[1]):'')+' attacked on lap '+t.from+(t.got?' and took the lap':' and was caught on lap '+t.to));
+    else if(t.from<lo&&t.to>=lo) out.push(rid(t.bibs[0])+(t.bibs[1]?' and '+rid(t.bibs[1]):'')+' already away since lap '+t.from);
+  });
+  return out.length?out.join('. '):'<span style="color:#6c7279">no attack in these laps</span>';
+}
+
+var span=3, sel=[], view='chart', arr='rider';
+function colOf(b){var k=sel.indexOf(b);return k>=0?PAL[k%PAL.length]:null;}
+function renderPick(){
+  document.getElementById('pick').innerHTML=D.riders.map(function(r){
+    var c=colOf(r.bib);
+    return '<div class="pr'+(c?' on':'')+'" data-bib="'+r.bib+'">'+
+      '<span class="dot" style="background:'+(c||'#3a4046')+'"></span>'+rid(r.bib,c)+'</div>';}).join('');
+}
+function lapLabel(sl,lap){var d=sl-lap;return d===0?'Sprint':d>0?d+(d===1?' lap':' laps')+' to go':(-d)+(d===-1?' lap':' laps')+' after';}
+function headRow(rs,sl,extra){
+  var h='<tr><th class="lf">Sprint</th>';
+  rs.forEach(function(r){
+    h+=(r.loop==='B')?'<th>Back</th>':'<th class="grp">'+lapLabel(sl,r.lap)+'</th>';
+  });
+  return h+extra+'</tr>';
+}
+function renderBefore(){
+  var o='';
+  sel.forEach(function(bib){
+    var c=colOf(bib);
+    o+='<div class="gblock"><div class="gbh">'+rid(bib,c)+'</div>';
+    o+='<table class="ap">'+headRow(window_(0,span,false),D.sprints[0].lap,'<th>Last lap</th><th>Pts</th>');
+    D.sprints.forEach(function(s){
+      var rs=window_(D.sprints.indexOf(s),span,false), n=rs.length;
+      o+='<tr><td class="lf">'+sprintLabel(s)+' <span style="color:#6c7279">lap '+s.lap+'</span></td>';
+      rs.forEach(function(r,i){
+        var p=P(r,bib), cl=p<=4?'p1':'';
+        o+='<td class="'+cl+(r.loop==='B'&&i?' sep':'')+'">'+p+'</td>';
+      });
+      var g=P(rs[n-3],bib)-P(rs[n-1],bib), place=s.res.indexOf(bib);
+      o+='<td class="sep '+(g>0?'gain':g<0?'loss':'')+'">'+(g>0?'+'+g:g<0?g:'0')+'</td>';
+      o+='<td class="last res" style="color:'+(place>=0?'#2ED47A':'#5a5f66')+'">'+(place>=0?'+'+s.pts[place]:'·')+'</td></tr>';
+    });
+    o+='</table></div>';
+  });
+  document.getElementById('grid').innerHTML=o||card('Nobody selected','Pick a rider on the left.');
+}
+function situation(si){
+  var L=D.sprints[si].lap, lo=L+1, hi=L+span, out=[];
+  D.attacks.forEach(function(t){
+    if(t.from>=lo&&t.from<=hi) out.push(t.bibs.map(function(b){return rid(b);}).join(' and ')+' attacked on lap '+t.from+(t.got?' and took the lap':' and was caught on lap '+t.to));
+    else if(t.from<lo&&t.to>=lo) out.push(t.bibs.map(function(b){return rid(b);}).join(' and ')+' still away, '+(lo-t.from)+' laps into the move');
+  });
+  return out.length?out.join('. '):'<span style="color:#6c7279">no attack in these laps</span>';
+}
+function afterStats(si,bib){
+  var rs=window_(si,span,true);
+  if(!rs.length)return null;
+  var low=0, lowAt=0;
+  rs.forEach(function(r){var p=P(r,bib);if(p>low){low=p;lowAt=r.lap-D.sprints[si].lap;}});
+  var endP=P(rs[rs.length-1],bib);
+  return {rs:rs,low:low,lowAt:lowAt,end:endP,front:low<=4};
+}
+function renderAfter(){
+  var o=card('What was going on after each sprint', D.sprints.map(function(s,si){
+    return '<div style="margin-bottom:4px"><b style="color:#fffafa">'+sprintLabel(s)+'</b> — '+situation(si)+'</div>';}).join(''))+'<div style="height:12px"></div>';
+  sel.forEach(function(bib){
+    var c=colOf(bib), first=null;
+    D.sprints.forEach(function(s,i){if(!first){var a=afterStats(i,bib);if(a)first=a;}});
+    o+='<div class="gblock"><div class="gbh">'+rid(bib,c)+'</div>';
+    if(!first){o+=card('Nothing after','The race ends on the last sprint.')+'</div>';return;}
+    o+='<table class="ap">'+headRow(first.rs,D.sprints[0].lap,'');
+    D.sprints.forEach(function(s,si){
+      var a=afterStats(si,bib);
+      var fr=window_(si,1,false); fr=fr[fr.length-1];
+      o+='<tr><td class="lf">'+sprintLabel(s)+' <span style="color:#6c7279">lap '+s.lap+'</span> <b style="color:#ffecb3">'+ord(P(fr,bib))+'</b></td>';
+      if(!a){o+='<td class="last" colspan="'+first.rs.length+'" style="color:#6c7279">the race ends here</td></tr>';return;}
+      a.rs.forEach(function(r,i){
+        o+='<td class="'+(r.loop==='B'&&i?'sep ':'')+(i===a.rs.length-1?'last':'')+'">'+P(r,bib)+'</td>';
+      });
+      o+='</tr>';
+    });
+    o+='</table></div>';
+  });
+  document.getElementById('grid').innerHTML=o||card('Nobody selected','Pick a rider on the left.');
+}
+function renderVs(){
+  var o='', after=(view==='aft');
+  if(sel.length<2){o=card('Head to head','Select a second rider to compare them.');}
+  else{
+    var a=sel[0],b=sel[1],ca=PAL[0],cb=PAL[1],body='';
+    if(after){
+      var lowA=0,lowB=0,nn=0;
+      D.sprints.forEach(function(s,si){
+        var sa=afterStats(si,a), sb=afterStats(si,b);
+        if(!sa||!sb)return;
+        lowA+=sa.low; lowB+=sb.low; nn++;
+        body+=card(sprintLabel(s)+' — the '+span+' laps after · '+situation(si),
+          rid(a,ca)+' went down to <span class="num">'+ord(sa.low)+'</span> on lap +<span class="num">'+sa.lowAt+'</span>, <span class="num">'+ord(sa.end)+'</span> at the end. '+
+          rid(b,cb)+' down to <span class="num">'+ord(sb.low)+'</span> on lap +<span class="num">'+sb.lowAt+'</span>, <span class="num">'+ord(sb.end)+'</span> at the end.');
+      });
+      o=card('Over the race — where they sit after a sprint',
+        'Lowest place reached in the '+span+' laps after a sprint, on average: '+rid(a,ca)+' <span class="num">'+(lowA/nn).toFixed(1)+'</span>, '+rid(b,cb)+' <span class="num">'+(lowB/nn).toFixed(1)+'</span>.')+body;
+    } else {
+      var aheadH=0,aheadF=0;
+      D.sprints.forEach(function(s,si){
+        var rs=window_(si,span,false),n=rs.length,pre=rs[n-2],fin=rs[n-1];
+        var pa=P(pre,a),pb=P(pre,b),fa=P(fin,a),fb=P(fin,b);
+        if(pa<pb)aheadH++;
+        if(fa<fb)aheadF++;
+        body+=card(sprintLabel(s)+' — lap '+s.lap+' · '+clock(s.racetime),
+          'Half a lap from the line: '+rid(a,ca)+' <span class="num">'+ord(pa)+'</span>, '+rid(b,cb)+' <span class="num">'+ord(pb)+'</span>. '+
+          'At the line <span class="num">'+ord(fa)+'</span> and <span class="num">'+ord(fb)+'</span>.');
+      });
+      o=card('Over the race — '+span+' laps of approach',
+        rid(a,ca)+' was ahead of '+rid(b,cb)+' half a lap from the line in <span class="num">'+aheadH+' of '+D.sprints.length+'</span> sprints, and at the line in <span class="num">'+aheadF+'</span>.')+body;
+    }
+  }
+  document.getElementById('vs').innerHTML=o;
+}
+function renderCharts(){
+  var o='';
+  if(!sel.length){o=card('Nobody selected','Pick a rider on the left.');}
+  else if(arr==='rider'){
+    // un coureur, ses sprints posés horizontalement
+    sel.forEach(function(bib){
+      o+='<div class="cblock"><div class="cbh">'+rid(bib,colOf(bib))+'</div><div class="chartsrow">';
+      D.sprints.forEach(function(s,si){
+        o+='<div class="mini"><div class="cap"><b>'+sprintLabel(s)+'</b> lap '+s.lap+' · '+clock(s.racetime)+'</div>'+miniChart(si,[bib],span,252,170,[colOf(bib)||PAL[0]])+'</div>';
+      });
+      o+='</div></div>';
+    });
+  } else {
+    // les mêmes coureurs, un sprint par bande, les bandes empilées
+    D.sprints.forEach(function(s,si){
+      o+='<div class="wide"><div class="cbh">'+sprintLabel(s)+' <span style="color:#6c7279">lap '+s.lap+' · '+clock(s.racetime)+'</span></div>'+
+         '<div class="sit">'+situationLine(si,span)+'</div>'+miniChart(si,sel,span,1000,190)+'</div>';
+    });
+  }
+  document.getElementById('charts').innerHTML=o;
+}
+function render(){
+  document.getElementById('rt').textContent=raceState();
+  document.getElementById('segL').innerHTML=[2,3,4,5].map(function(n){
+    return '<button data-span="'+n+'" class="'+(n===span?'on':'')+'">'+n+' laps</button>';}).join('');
+  renderPick();
+  document.getElementById('gridh').innerHTML=(view==='aft'
+    ? 'After the sprint <span class="sub">where they sat in the laps that follow, and what was going on in the race</span>'
+    : 'Position lap by lap <span class="sub">two readings a lap — back straight, then the finish line</span>');
+  document.getElementById('vsh').innerHTML=(view==='aft'
+    ? 'Head to head <span class="sub">where each of them sat after the sprint</span>'
+    : 'Head to head <span class="sub">select two riders or more</span>');
+  document.getElementById('segA').innerHTML=[['rider','By rider'],['sprint','By sprint']].map(function(a){
+    return '<button data-a="'+a[0]+'" class="'+(a[0]===arr?'on':'')+'">'+a[1]+'</button>';}).join('');
+  document.getElementById('charth').innerHTML='Around the sprint <span class="sub">'+span+' laps before and after each sprint · the yellow line is the sprint · dotted orange is an attack</span>';
+  if(view==='chart')renderCharts(); else if(view==='aft')renderAfter(); else if(view==='app')renderBefore();
+  if(view!=='chart')renderVs();
+  document.getElementById('eff').innerHTML=lapGained();
+  document.getElementById('v-main').hidden=(view==='eff');
+  document.getElementById('v-eff').hidden=(view!=='eff');
+  document.getElementById('strip').hidden=(view==='eff');
+  document.getElementById('chartcol').hidden=(view!=='chart');
+  document.getElementById('gridcol').hidden=(view==='chart');
+  document.getElementById('vscol').hidden=(view==='chart');
+  document.getElementById('segA').hidden=(view!=='chart');
+  document.getElementById('arrk').hidden=(view!=='chart');
+}
+document.addEventListener('click',function(e){
+  var v=e.target.closest&&e.target.closest('[data-v]');
+  if(v){view=v.dataset.v;document.querySelectorAll('#segV button').forEach(function(x){x.classList.toggle('on',x===v);});render();return;}
+  var l=e.target.closest&&e.target.closest('[data-span]');
+  if(l){span=+l.dataset.span;render();return;}
+  var a=e.target.closest&&e.target.closest('[data-a]');
+  if(a){arr=a.dataset.a;render();return;}
+  var p=e.target.closest&&e.target.closest('.pr');
+  if(p){var b=+p.dataset.bib,k=sel.indexOf(b);if(k>=0)sel.splice(k,1);else sel.push(b);render();}
+});
+})();
+</script>
+</body></html>

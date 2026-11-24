@@ -113,7 +113,7 @@ sprints, Race log, fil commentateurs) ; le reste suit la langue de l'écran où 
 | Maquette | Générateur | Où ça se branche | État |
 |---|---|---|---|
 | `maquette-lapbylap.html` | `gen-lapbylap.js` | onglet `cross` — **Lap by lap** | **intégré, build 217** |
-| `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | validé, §9.2 |
+| `maquette-racelog.html` | `gen-racelog.js` | onglet `dec` — **Race log** (ex-Decisions) | **intégré, build 270** |
 | `maquette-tous-sprints.html` | `gen-tous-sprints.js` | onglet `sprints` — **All sprints** + carte de sprint | **intégré, build 214** |
 | `maquette-standings.html` | `gen-standings.js` | onglet `stand` — **Standings** (Live + Évolution) | **intégré, build 213** (Live et Évolution) |
 | `maquette-passings.html` | `gen-passings.js` | onglet `pass` — **Passings** | validé ; l'onglet actuel a reçu le tri, les filtres et l'arrêt du défilement (build 240, règles 236 à 238), pas le dessin de la maquette |
@@ -152,7 +152,7 @@ passe devant le leader désigné (**225**) ; une carte en attente vaut un tour d
 la timeline (**226**, D45) ; un écart négatif ne s'affiche plus (**227**). `architecture.md` §58 et la
 section des groupes, `mesures.md` §70 à §80, `pitfalls.md` D35 à D45.
 
-### 5.2 Race log (onglet `dec`)
+### 5.2 Race log (onglet `dec`) — **fait, build 270 · ne pas refaire**
 La **boîte noire** de la course, en langage humain. Colonnes **Daytime · Race time · Lap · Type ·
 Rider · Event · Status**. **Source** : `S.log` (`logEvent`). À faire :
 - Enrichir les entrées `logEvent` avec les champs que la maquette affiche (heure du jour, temps de
@@ -163,8 +163,23 @@ Rider · Event · Status**. **Source** : `S.log` (`logEvent`). À faire :
   Pending / Ignored / In progress / Rejoined), filtres par type + recherche.
 - Les **résultats de sprint** y figurent avec dossard · drapeau · NOC · nom · points (**tous les
   coureurs qui marquent**, pas seulement les premiers — demande de l'opérateur).
-- Le **cycle de crash neutralisant** (décompte −5 → 0) dépend de la gestion des chutes, **pas
-  encore dans le proto** (voir §9 de la présentation, « ce qui arrive ensuite »).
+- Le **cycle de crash neutralisant** : l'opérateur a corrigé ce document le 22 novembre 2026 — la
+  chute **est** codée (groupe daté, carte à trois issues, décompte des cinq tours, builds 255 et
+  256). Ce qui manquait était le journal, qui n'en gardait que l'ouverture et la fermeture. Depuis
+  le build 270 le décompte y entre, **une ligne par tour**, dans les mots de la carte (règle 305).
+
+**Ce qui est fait au build 270, et qu'il ne faut pas refaire.** Les sept colonnes, les onze types du
+moteur colorés par famille — `OP` → OPERATOR, `LAPS` → LAP, `UNDO` et `EXPORT` rangés avec les
+gestes de l'opérateur — trois familles au fond teinté, la colonne Rider au format du classement, la
+pastille `Corrected`, les filtres par famille et la recherche. **Aucune phrase du moteur n'a été
+réécrite** : l'heure du jour et le tour sont posés à l'écriture de la ligne, le coureur est lu sur
+le dossard de la phrase. `architecture.md` §82, `mesures.md` §119, `pitfalls.md` D54,
+`cas-de-course.md` ligne 49.
+
+**Ce qui reste, et qui se propose avant d'être codé** : les types ALERT et HARDWARE, que le moteur
+n'écrit nulle part ; et les anomalies au format **Problème → Effet → Action** avec leurs pastilles
+(Resolved · Pending · Ignored · In progress), qui demandent de réécrire des phrases que l'opérateur
+lit déjà à l'écran.
 
 ### 5.3 Sprints (onglet `sprints`) + carte de sprint — **fait, builds 214 et 215 · ne pas refaire**
 **All sprints** : tous les sprints côte à côte, l'ordre **complet** des coureurs, les quatre
@@ -213,7 +228,12 @@ sprints restants (Sprint restant = 5, Final = 10 ; un tour gagné = +20). Deux m
 - **What if** : on pose l'ordre des sprints restants et du final, le **classement projeté** se
   recalcule (montées/descentes).
 
-### 5.7 Fil commentateurs — CIS/MIS (nouvel écran)
+### 5.7 Fil commentateurs — CIS/MIS (nouvel écran) — **coque et trois vues codées, build 278**
+
+**Fait au build 282** : les **quatorze vues** lisent la course. `fil.html`, une seconde fenêtre du même poste nourrie par `BroadcastChannel` (son point 316), en lecture seule et en anglais, porte les **neuf écrans** du fil commentateurs sur six onglets — Start list, Standings (Live et Evolution), Sprints, Scenarios (Overview et What if), Race facts, Sprint approach (Approach et Lap gained). `coachs.html` porte les **cinq écrans** du fil entraîneurs. Ouvertes par les boutons **Feed** et **Coaches** de la barre du haut.
+
+Chaque vue est la **maquette validée telle quelle**, dont on remplace la seule donnée figée par un constructeur qui lit l'instantané (ses points 317 et 318) : rien n'est redessiné, et plus aucune vue ne porte l'étiquette « not fed by the race yet ». `architecture.md` §84 et §85, `mesures.md` §123 et §124, `cas-de-course.md` lignes 51 et 52.
+
 **Cadrage validé avec l'opérateur (16 novembre 2026) — à respecter :**
 - Un **fil automatique**, en **lecture seule** : rien à piloter dessus, ni par l'opérateur ni par
   le commentateur.

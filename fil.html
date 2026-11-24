@@ -1,0 +1,211 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<title>Commentator feed · live</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<!-- LE STYLE EST CELUI DE LA COQUE VALIDEE, repris tel quel de maquette-feed.html. On ne le
+     reecrit pas ici : gen-fil.js le lit dans le fichier genere. -->
+<style>
+:root{color-scheme:dark;--bg:#121416;--panel:#4a4945;--deep:#2c455e;--line:#2d3237;--line2:#87a8c9;
+  --fg:#ffecb3;--muted:#fffafa;--dim:#c1bdb4;--acc:#2265e2;--good:#2ED47A;--warn:#F2A33A;--crit:#FF5C5C;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--muted);font:14px/1.3 var(--sans)}
+.board{position:fixed;inset:16px;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:9px;overflow:hidden;box-shadow:0 18px 48px #000a}
+/* en-tête */
+.hdr{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+.ttl{display:flex;flex-direction:column;line-height:1.15}
+.ttl b{font:700 16px var(--sans);letter-spacing:.02em;color:var(--muted)}
+.ttl .sub{font:600 11px var(--mono);letter-spacing:.04em;color:var(--dim)}
+.live{display:inline-flex;align-items:center;gap:7px;font:600 12px var(--sans);color:var(--good);border:1px solid #2e4e3e;background:#17241d;border-radius:20px;padding:5px 12px}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--good);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #2ED47A66}70%{box-shadow:0 0 0 7px #2ED47A00}100%{box-shadow:0 0 0 0 #2ED47A00}}
+.ro{font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line2);border-radius:4px;padding:4px 9px}
+.rtype{font:600 11px var(--sans);letter-spacing:.02em;color:var(--fg);border:1px solid var(--line2);background:#1b2130;border-radius:4px;padding:4px 10px;white-space:nowrap}
+.vframe{width:100%;height:100%;border:0;display:block;background:var(--bg)}
+.upd{margin-left:auto;font:500 12px var(--mono);color:var(--dim)}.upd b{color:var(--muted);font-weight:600}
+/* navigation */
+.nav{display:flex;gap:4px;flex:0 0 auto;border-bottom:1px solid var(--line2)}
+.nav button{position:relative;font:600 13px var(--sans);color:var(--dim);background:none;border:0;border-bottom:2px solid transparent;padding:8px 16px 10px;cursor:pointer;margin-bottom:-1px}
+.nav button:hover{color:var(--muted)}
+.nav button.on{color:var(--fg);border-bottom-color:var(--acc)}
+/* contenu */
+.panel{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+.sub-h{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.seg{display:inline-flex;border:1px solid var(--line2);border-radius:5px;overflow:hidden}
+.seg button{font:600 12px var(--sans);color:var(--dim);border:0;padding:5px 15px;background:#23272b;cursor:pointer;border-right:1px solid var(--line2)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--acc);color:#fff}
+.sub-h .hint{font:500 12px var(--sans);color:var(--dim)}
+/* classement en direct */
+.lv{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column}
+.lv-hd,.lv-row{display:grid;grid-template-columns:46px 56px 34px 50px 1fr 92px 240px 96px;gap:11px;align-items:center;padding:0 12px}
+.lv-hd{height:30px;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--panel);z-index:1}
+.lv-hd .rr{text-align:right}.lv-hd .c{text-align:center}
+.lv-hd .spr-hd{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;text-align:center;color:var(--dim)}
+.lv-row{min-height:50px;border-bottom:1px solid #23262a;font-size:15px}
+.lv-row:nth-child(even){background:#00000022}
+.lv-row.lead{background:#39311c55}
+.rk{font:700 17px var(--mono);color:var(--muted);text-align:right}
+.lv-row.lead .rk{color:var(--fg)}
+.chip{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:26px;font:600 16px var(--mono);color:var(--fg)}
+.flagw .flag{width:28px;height:18px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.noc{font:600 14px var(--mono);letter-spacing:.03em;color:var(--dim)}
+.nm{font:600 16px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm .fn{color:var(--dim);font-weight:500}.nm b{color:var(--muted);font-weight:700}
+.tot{font:700 24px var(--mono);color:var(--fg);text-align:right;font-variant-numeric:tabular-nums}
+.spr{display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.spr .sp{text-align:center;font:500 15px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums;padding:4px 0;border-radius:4px}
+.spr .sp.on{color:var(--fg);font-weight:700;background:#39311c}
+.laps{text-align:center}
+.lpill{display:inline-block;font:700 14px var(--mono);border-radius:5px;padding:3px 10px;font-variant-numeric:tabular-nums}
+.lpill.up{color:#121416;background:var(--good)}.lpill.down{color:#fff;background:var(--crit)}
+.laps .z{color:#555;font-size:16px}
+/* Start list */
+.sl-head{font:500 13px var(--sans);color:var(--dim);flex:0 0 auto}
+.sl-grid{flex:1 1 auto;min-height:0;overflow:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-content:start}
+.sl-card{display:flex;align-items:center;gap:10px;background:#1c1e22;border:1px solid var(--line);border-radius:6px;padding:9px 12px}
+.sl-id{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.sl-nm{font:600 14px var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sl-nm .fn{color:var(--dim);font-weight:500}.sl-nm b{color:var(--muted)}
+/* Sprints complets (colonnes) */
+.colswrap{position:relative;flex:1 1 auto;min-height:0;display:flex}
+.cols{flex:1 1 auto;min-height:0;display:flex;align-items:flex-start;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;scroll-behavior:smooth;scrollbar-color:var(--line2) transparent}
+.snav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:54px;border-radius:6px;border:1px solid var(--line2);background:#23272bf0;color:var(--muted);font:400 22px var(--sans);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;box-shadow:0 2px 10px #0008}
+.snav.left{left:2px}.snav.right{right:2px}
+.snav:hover{border-color:var(--muted)}
+.snav[disabled]{display:none}
+.spcol{flex:0 0 158px;max-height:100%;display:flex;flex-direction:column;background:#17191c;border:1px solid var(--line2);border-radius:4px;overflow:hidden}
+.spcol.fin{border-color:var(--fg)}
+.spcol-h{padding:6px 9px 7px;border-bottom:1px solid var(--line);background:#1b1d20;flex:0 0 auto}
+.spcol-h.fin{background:#241f14}
+.spcol-t{font:700 12.5px var(--sans);letter-spacing:.03em;color:var(--muted);display:flex;align-items:center;gap:6px}
+.spcol-t .x2{font:700 10px var(--sans);color:#121416;background:var(--fg);border-radius:3px;padding:1px 5px;letter-spacing:.04em}
+.spcol-s{margin-top:3px;font:500 11px var(--mono);color:var(--dim)}
+.spcol-b{flex:1 1 auto;min-height:0;overflow-y:auto}
+.sprk{display:grid;grid-template-columns:16px 32px 22px 1fr 30px;gap:5px;align-items:center;height:26px;padding:0 7px}
+.sprk + .sprk{border-top:1px solid #23262a}
+.sprk.score{background:#1d2a22}
+.sprk.sepline{box-shadow:inset 0 -2px 0 var(--line2)}
+.sprk .pl{font:600 12px var(--mono);color:var(--dim);text-align:right}
+.sprk.score .pl{color:var(--muted)}
+.spcol .chip{min-width:28px;height:21px;padding:0 4px;font:600 13px var(--mono);color:var(--fg)}
+.spcol .flagw .flag{width:20px;height:13px}
+.spcol .noc{font:600 12px var(--mono);color:var(--dim)}
+.sprk.score .noc{color:var(--muted)}
+.sprk .pts{font:700 12px var(--mono);color:var(--good);text-align:right}
+/* Race log */
+.jg-note{font:500 13px var(--sans);color:var(--dim);flex:0 0 auto;padding:4px 0}
+.jg-note b{color:var(--muted)}
+.jg{flex:1 1 auto;min-height:0;overflow:auto;display:flex;flex-direction:column}
+.jg-row{display:grid;grid-template-columns:54px 108px 1fr;gap:12px;align-items:center;min-height:40px;padding:6px 10px;border-bottom:1px solid #23262a;border-left:3px solid var(--line)}
+.jg-row.up{border-left-color:var(--good)}.jg-row.down{border-left-color:var(--crit)}
+.jg-t{font:600 13px var(--mono);color:var(--dim)}
+.jg-k{font:600 12px var(--sans);letter-spacing:.03em;color:var(--muted)}
+.jg-m{font:500 14px var(--sans);color:var(--muted)}.jg-m b{color:var(--fg);font-weight:700}
+.jg-m .jp{color:var(--good);font-weight:700;font-family:var(--mono);margin-right:2px}
+/* vues reçues */
+.rc{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.rc-card{max-width:560px;background:#1c1e22;border:1px solid var(--line);border-radius:10px;padding:22px 26px}
+.rc-tag{display:inline-block;font:600 10px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--good);border:1px solid #2e4e3e;background:#17241d;border-radius:4px;padding:3px 8px;margin-bottom:12px}
+.rc-ttl{font:700 20px var(--sans);color:var(--fg);margin-bottom:6px}
+.rc-desc{font:500 14px var(--sans);color:var(--muted);margin-bottom:12px}
+.rc-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.rc-list li{font:500 13px var(--sans);color:var(--dim)}
+.rc-foot{margin-top:14px;font:500 12px var(--mono);color:var(--dim);border-top:1px solid var(--line);padding-top:10px}
+</style>
+<style>
+/* la seule chose que cette page ajoute : dire quand elle n'a encore rien recu, et marquer les
+   vues qui sont la maquette et non le direct. */
+.waiting{padding:42px 22px;font:500 14px var(--sans,'IBM Plex Sans',sans-serif);color:#9aa3ad}
+.notlive{position:absolute;right:14px;top:10px;z-index:3;font:600 9.5px 'IBM Plex Sans',sans-serif;
+  letter-spacing:.09em;text-transform:uppercase;color:#F2A33A;border:1px solid #F2A33A;
+  border-radius:3px;padding:2px 7px;background:rgba(0,0,0,.55)}
+.panel{position:relative}
+</style></head>
+<body>
+<div class="board">
+  <div class="hdr">
+    <div class="ttl"><b>Commentator feed</b><span class="sub">CIS · Commentator Infosystem</span></div>
+    <span class="live"><i class="dot"></i><span id="fstate">Waiting for the race computer</span></span>
+    <span class="ro">Read only</span>
+    <span class="rtype" id="frtype">—</span>
+    <span class="upd">Received from Race view · <b id="fupd">—</b></span>
+  </div>
+  <nav class="nav">
+    <button class="on" data-tab="start">Start list</button>
+    <button data-tab="stand">Standings</button>
+    <button data-tab="sprints">Sprints</button>
+    <button data-tab="appr">Sprint approach</button>
+    <button data-tab="log">Race facts</button>
+    <button data-tab="scen">Scenarios</button>
+  </nav>
+
+  <div class="panel" data-panel="start"><div id="vstart"><div class="waiting">Nothing received yet.</div></div></div>
+  <div class="panel" data-panel="stand" hidden><iframe class="vframe" src="fil-standings.html" title="Standings"></iframe></div>
+  <div class="panel" data-panel="sprints" hidden><div id="vspr"></div></div>
+  <div class="panel" data-panel="scen" hidden><iframe class="vframe" src="fil-scenarios.html?embed=1" title="Scenarios"></iframe></div>
+  <div class="panel" data-panel="log" hidden><iframe class="vframe" src="fil-racefacts.html?embed=1" title="Race facts"></iframe></div>
+  <div class="panel" data-panel="appr" hidden><iframe class="vframe" src="fil-approche.html?embed=1" title="Sprint approach"></iframe></div>
+</div>
+
+<script src="flags.js"></script>
+<script>
+(function(){
+  var nav=document.querySelectorAll('.nav button'), panels=document.querySelectorAll('.panel');
+  nav.forEach(function(btn){btn.onclick=function(){
+    nav.forEach(function(b){b.classList.toggle('on',b===btn);});
+    panels.forEach(function(p){p.hidden=p.getAttribute('data-panel')!==btn.getAttribute('data-tab');});
+  };});
+
+  // LECTURE SEULE : la seule chose que le fil envoie est « donne-moi tout », a son ouverture.
+  var CH=new BroadcastChannel('tct-feed'), D=null;
+  CH.addEventListener('message',function(e){ if(!e.data||!e.data.riders) return; D=e.data; draw(); });
+  CH.postMessage({ask:true});
+
+  function rid(b){ for(var i=0;i<D.riders.length;i++) if(D.riders[i].bib===b) return D.riders[i]; return null; }
+  function up(s){ return String(s||'').toUpperCase(); }
+  function hhmmss(ms){ var d=new Date(ms); function p(n){return (n<10?'0':'')+n;} return p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds()); }
+
+  // --- Start list : les memes cartes .sl-card que la coque ---
+  function vStart(){
+    var rs=D.riders.slice().sort(function(a,b){return a.bib-b.bib;});
+    var cards=rs.map(function(r){ return '<div class="sl-card">'
+      +'<span class="chip">'+r.bib+'</span><span class="flagw">'+flag(r.nat)+'</span>'
+      +'<span class="sl-id"><span class="noc">'+r.nat+'</span><span class="sl-nm">'
+      +'<span class="fn">'+r.first+'</span> <b>'+up(r.name)+'</b></span></span></div>'; }).join('');
+    return '<div class="sl-head">'+rs.length+' riders on the start list · as sent to commentators</div>'
+      +'<div class="sl-grid">'+cards+'</div>';
+  }
+
+  // --- Sprints COMPLETS : les memes colonnes .spcol que la coque ---
+  function vSpr(){
+    var run=D.sprints.filter(function(s){return s.started && s.order.length;});
+    if(!run.length) return '<div class="waiting">No sprint judged yet.</div>';
+    var cols=run.map(function(s){
+      var head='<div class="spcol-h'+(s.final?' fin':'')+'">'
+        +'<div class="spcol-t">'+(s.final?'FINAL':'SPRINT '+s.k)+(s.final?'<span class="x2">×2</span>':'')+'</div>'
+        +'<div class="spcol-s">LAP '+s.lap+'</div></div>';
+      var body=s.order.map(function(e,i){
+        var r=rid(e.bib)||{nat:''}, place=i+1, score=(e.pts||0)>0;
+        return '<div class="sprk'+(score?' score':'')+(place===4?' sepline':'')+'">'
+          +'<span class="pl">'+place+'</span><span class="chip">'+e.bib+'</span>'
+          +'<span class="flagw">'+flag(r.nat)+'</span><span class="noc">'+r.nat+'</span>'
+          +'<span class="pts">'+(score?'+'+e.pts:'')+'</span></div>'; }).join('');
+      return '<div class="spcol'+(s.final?' fin':'')+'">'+head+'<div class="spcol-b">'+body+'</div></div>';
+    }).join('');
+    return '<div class="sub-h"><span class="hint">every sprint, in full · left to right · top four score · the final counts double</span></div>'
+      +'<div class="colswrap"><div class="cols" id="sprcols">'+cols+'</div></div>';
+  }
+
+  function draw(){
+    if(!D) return;
+    document.getElementById('fstate').textContent = D.started ? 'Live · updates automatically' : 'Race not started';
+    document.getElementById('frtype').textContent = D.cfg && D.cfg.type==='qualification'
+      ? 'Qualification · top '+D.cfg.advance+' advance' : 'Final · no cut';
+    document.getElementById('fupd').textContent = D.wall0==null ? '—' : hhmmss(D.wall0 + D.t*1000);
+    document.getElementById('vstart').innerHTML = vStart();
+    document.getElementById('vspr').innerHTML = vSpr();
+  }
+})();
+</script>
+</body></html>

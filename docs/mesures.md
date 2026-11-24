@@ -5532,3 +5532,254 @@ Un premier essai, les deux transpondeurs coupés **avant le départ**, n'avait d
 lecture, les deux coureurs sont comptés par la bande du Finish comme des vélos sans transpondeur, et ce n'est pas
 le cas du point 253. Entre 1:09 et 2:26, un bloc « 2-Last » est apparu dans la timeline : c'est MISSING_S, 22 s
 sans lecture, qui range un coureur muet à l'arrière — un comportement d'avant ce build, à regarder séparément.
+
+
+## §119 · Le Race log sur une course complète — build 270, 22 novembre 2026
+
+Course de test aux deux échappés et deux lâchés, 60 tours, 6 sprints, jouée du départ à l'arrivée
+(17:39.9 de temps de course), plus **une chute posée à la main au tour 57** sur le BIB 7, pour voir
+le décompte. Relevé sur `S.log` à l'arrivée.
+
+| Ce qui est compté | Valeur |
+|---|---|
+| Lignes au journal | **49** (le plafond de `logEvent` est à 120 : il n'est pas atteint) |
+| Lignes par type | SPRINT **35** · TRANSPONDER **7** · INCIDENT **4** · RACE **3** |
+| Lignes avec une **heure du jour** | **49 sur 49** |
+| Lignes avec un **tour** | **48 sur 49** — la ligne du départ n'en a pas : aucun tour n'est encore commencé |
+| Lignes avec un **coureur** dans sa colonne | **5** — les quatre de la chute et une lecture |
+
+**L'heure du jour suit la course, pas le PC.** La course a démarré à **18:54:23** sur l'horloge du
+PC ; 17:39.9 de course plus tard, la dernière ligne porte **19:12:03**, soit l'heure du départ plus
+le temps de course, alors que l'horloge du PC n'en était qu'à 18:56:20 — la course était rejouée à
+×16. À la vitesse réelle les deux coïncident ; c'est ce qui fait qu'une course rejouée garde une
+heure du jour cohérente avec ses propres secondes.
+
+**Le décompte de la chute.** Chute posée au tour 57, cinq tours pour revenir : le journal écrit la
+ligne de la chute au tour 57 (« Crash · Lap 57 · 5 laps to rejoin »), puis **une ligne par tour** —
+tour 58 « still 4 laps to rejoin », 59 « still 3 », 60 « still 2 ». La course s'arrête avant que le
+compte tombe à zéro ; la ligne « neutralisation over » n'est donc pas sortie sur cette course.
+
+**Ce que cette course ne montre pas**, parce qu'aucune carte n'a été validée pendant la mesure : les
+types GROUP, LAP, OPERATOR, LEADER et WITHDRAW. Ils n'apparaissent au journal que lorsque
+l'opérateur répond à une carte ou agit sur la barre.
+
+
+## §120 · Le filtre par tour du Race log — build 273, 22 novembre 2026
+
+Course de test aux deux échappées et deux lâchés, jouée du départ au tour 12 (×16), journal à
+**9 lignes**. Relevé sur l'écran, pas sur l'état.
+
+| Ce qui est fait | Ce qui sort |
+|---|---|
+| Rien dans le champ | 9 lignes — toutes |
+| `11` dans le champ | **6 lignes**, et la colonne Lap de chacune porte 11 |
+| `11` + bouton **Sprint** | 5 lignes — le tour et le type se cumulent |
+| `11` + Sprint + recherche « sprint 1 » | 5 lignes — les trois se cumulent |
+| `Clear` | 9 lignes, les deux champs vidés |
+
+Le compte du journal pour le tour 11 était de 6 lignes : l'écran en montre 6. Aucune erreur en
+console.
+
+
+## §121 · Les deux champs du Race log, dossard et tour — build 274, 22 novembre 2026
+
+Même course de test, jouée jusqu'au tour 22 (×16), journal à **13 lignes**.
+
+| Ce qui est saisi | Ce qui sort |
+|---|---|
+| Rien | 13 lignes |
+| Bib `12` | **2 lignes** — ses deux victoires de sprint, « 1. 12 » au tour 11 et au tour 21 |
+| Bib `52` | 2 lignes |
+| Bib `999` | 0 ligne, l'écran vide s'affiche |
+| Bib `12` + Lap `11` | 1 ligne |
+| Bib `12` + Lap `9` | 0 ligne |
+| `Clear` | 13 lignes, les deux champs vidés |
+
+**Les deux écritures de dossard du moteur**, vérifiées phrase par phrase :
+
+| Phrase du moteur | Dossards concernés | Dossards nommés |
+|---|---|---|
+| `Crash · BIB 7, 14 and 22 · Lap 11 · 5 laps to rejoin` | 7, 14, 22 | 7, 14, 22 |
+| `BIB 7 · laps gained 0 → 1 · effect Lap 21 · operator` | 7 | 7 |
+| `BIB 12 and 52 DNF · Lap 30 · operator` | 12, 52 | 12, 52 |
+| `Sprint 1 · live → … · 3. 1  4. 3  5. 7` | 1, 3, 7 | aucun |
+| `Sprint 1 · Lap 10 · this lap` | aucun | aucun |
+| `Start · 16 riders · lap counter linked` | aucun | aucun |
+
+Le tour d'une phrase — « Lap 10 » — n'est jamais pris pour un dossard. Aucune erreur en console.
+
+
+## §122 · Les deux onglets après la refonte — build 277, 22 novembre 2026
+
+Course de test aux deux échappées et deux lâchés, jouée jusqu'au tour 16 environ (×16).
+
+**Race log**, journal à 10 lignes d'entrée :
+
+| Ce qui est saisi | Lignes à l'écran |
+|---|---|
+| Rien | 10 |
+| Bib `52` | 1 |
+| Noc `ita` | 1 |
+| Rider `rossi` | 1 |
+| Lap `11` | 7 |
+| Recherche « sprint 1 » | 7 |
+| Recherche « 52 » | **0** — la recherche ne regarde plus le dossard |
+
+Le sprint 1 sort en cinq lignes, une par place servie : « Sprint 1 · 1st 5 points » jusqu'à
+« Sprint 1 · 5th 0 points », chacune avec son dossard, son drapeau, son NOC et son nom.
+
+**Passings**, 300 lignes à l'écran (le plafond) :
+
+| Ce qui est saisi | Lignes |
+|---|---|
+| Rien | 300 |
+| Location `Finish` | 275 |
+| Location `Finish` + Type `Tape switch` | 30 |
+| Bib `52` | 48 |
+| Bib `52` + Noc `ita` | 48 |
+| Rider `rossi` | 48 |
+| Recherche « 52 » | **0** |
+| Recherche « read » | 300 |
+| `Clear` | 300 |
+
+Aucune erreur en console sur l'un ni sur l'autre.
+
+**Ce que cette course ne montre pas** : un passage d'avant le coup de pistolet. Le moteur ne lit
+les boucles qu'une fois la course lancée, donc la règle « Race time et Lap vides avant le départ »
+est codée mais ne peut pas encore se voir.
+
+
+## §123 · Le fil commentateurs en direct — build 278, 22 novembre 2026
+
+Prototype dans une fenêtre, `fil.html` dans une autre, course de test jouée à ×16.
+
+| Ce qui est regardé | Ce qui se voit |
+|---|---|
+| À l'ouverture du fil, course déjà lancée | l'instantané arrive **tout de suite** — le fil demande, le prototype répond |
+| En-tête | *Live*, « Lap 19 / 60 », « Race time 5:33.5 », qui avancent avec la course |
+| Start list | 16 coureurs, dossard · drapeau · NOC · prénom · NOM |
+| Standings | le classement, mis à jour sprint après sprint : 12 SUI HUBER 5 points, 52 ITA ROSSI 3, 1 ESP RIVERA 2, 3 FRA MOREAU 1 |
+| Sprints | le sprint 1 complet, les seize coureurs, écarts et points |
+| Course à l'arrêt | l'en-tête passe à *Race not started* |
+
+Aucune erreur en console, ni dans le prototype ni dans le fil.
+
+## §124 · Les quatorze vues sur une course complète — build 282, 22 novembre 2026
+
+**La course mesurée** : 16 coureurs, 60 tours, 6 sprints, deux échappées et deux lâchés. Course
+jouée en entier, jusqu'au sprint final. À la jonction de l'échappée au tour 30, la proposition de
+tour gagné a été validée pour les dossards 7 et 18 — c'est le seul geste d'opérateur de la mesure.
+
+**Ce que la course a laissé derrière elle**, et qui porte les quatorze vues :
+
+| Relevé | Quantité |
+|---|---|
+| Passages de ligne (Lap by lap) | 61 tours |
+| Marques de tour gagné | 2 — tour 29, dossards 7 et 18 |
+| Lectures de boucle (Passings) | 944 Finish · 929 Pursuit B · 943 Pursuit A |
+| Journal | 42 lignes |
+| Instantané envoyé au fil | 221 Ko, toutes les 1 000 ms |
+
+**Le classement final** : 7 → 31 points (11 de sprints + 20 du tour), 12 → 23, 18 → 23
+(3 de sprints + 20 du tour), 61 → 22.
+
+**L'évolution** compte **8 moments** : Start, S1 L10, S2 L20, S3 L30, +1 L30, S4 L40, S5 L50,
+F L60. Le moment affiché par défaut est le dernier, et les points y sont les mêmes que dans la vue
+Live, coureur par coureur — vérifié sur les quatre premiers.
+
+**L'approche du sprint 1**, sur 3 tours : 52,0 s, soit 17,3 s par tour contre une moyenne de
+course de 17,3 s. Le 12 était 1er à 3 tours du sprint, 1er à un demi-tour de la ligne, 1er à la
+ligne — 5 points ; le 52 deuxième aux trois relevés — 3 points.
+
+**Le tour gagné**, vue Lap gained : le 7 attaqué au tour 13, revenu sur le peloton au tour 29, tour
+crédité au tour 29. L'échappée entière : 16 tours, 4:31.4. Il tournait en 16,8 s contre 17,1 s au
+peloton, soit 0,4 s par tour. Quatre compagnons sur la durée, aucun jusqu'au bout. Le sprint 2 est
+tombé pendant l'échappée : il y a passé 3e pour 2 points.
+
+**Console** : aucune erreur sur les six onglets du fil, sur les deux bascules internes, ni sur les
+cinq vues du fil entraîneurs.
+
+## §125 · Les vues sur une autre liste de départ — build 283, 22 novembre 2026
+
+**Ce qui était en cause** : il fait tourner le fil sur **sa** liste de départ, pas sur celle des
+courses de test. Les dossards n'y sont pas les mêmes.
+
+**La mesure** : la même course à deux échappées et deux lâchés, envoyée au fil **deux fois de
+suite** avec des dossards entièrement renumérotés entre les deux envois — d'abord 101 à 170, puis
+201 à 270. Aucun dossard de la course figée des maquettes (52, 15) n'existe dans l'une ni dans
+l'autre.
+
+**Avant** : Charts by rider, Before the sprint et After the sprint restaient **vides** ; seul Lap
+gained s'affichait. **Après** : les quatre vues du fil entraîneurs s'affichent sur les deux
+numérotations, l'évolution passe de la première à la seconde sans rien perdre, et la console reste
+muette — aucune erreur sur les six onglets du fil ni sur les cinq vues des entraîneurs.
+
+**L'évolution** compte 8 moments (Start, S1 L10, S2 L20, S3 L30, +1 L30, S4 L40, S5 L50, F L60) et
+la ligne de noms au-dessus du graphe ne prend plus **aucune hauteur** (0 px).
+
+## §126 · Les trois phrases de l'en-tête — build 284, 22 novembre 2026
+
+Même course à deux échappées et deux lâchés, suivie du fil entraîneurs ouvert en permanence :
+
+| Moment | Ce que l'en-tête écrit |
+|---|---|
+| Course chargée, pas partie | `Waiting for the start · 60 laps · 6 sprints` |
+| Tour 19, un sprint jugé | `Lap 19 of 60 · 1 sprint judged` |
+| Arrivée | `Race finished · 60 laps · 6 sprints` |
+
+Console muette aux trois moments.
+
+**Relevé en passant** : un second prototype resté ouvert dans le même navigateur publiait lui aussi
+sur le canal du fil. L'en-tête annonçait alors le tour 60 d'une course finie pendant que l'autre
+prototype était à l'arrêt. Un seul prototype à la fois.
+
+## §127 · Le temps des tours d'approche, sprint par sprint — build 285, 22 novembre 2026
+
+Course à deux échappées et deux lâchés, 60 tours, jouée en entier. Trois tours d'approche :
+
+| Sprint | Tour | Temps des 3 tours d'approche |
+|---|---|---|
+| S1 | 10 | 00:55.524 |
+| S2 | 20 | 00:55.629 |
+| S3 | 30 | 00:55.572 |
+| S4 | 40 | 00:55.653 |
+| S5 | 50 | 00:55.573 |
+| Final | 60 | 00:50.336 |
+
+Les six valeurs ont été recalculées à part, sur les passages de ligne de l'instantané, et
+correspondent à la milliseconde. Avant le build 285 les six affichaient la même chose, 51,9 s :
+le tour moyen de la course multiplié par trois.
+
+Sur les quatre fenêtres de l'approche, au sprint 1 : 2 tours 00:34.666 · 3 tours 00:51.999 ·
+4 tours 01:09.332 · 5 tours 01:26.665. Plus aucun `undefined` dans la page.
+
+## §128 · La colonne des coureurs et les durées — build 286, 22 novembre 2026
+
+Course à deux échappées et deux lâchés, arrêtée au tour 12, un sprint jugé.
+
+**La colonne RIDERS** : 1, 3, 4, 7, 9, 11, 12, 15, 18, 23, 46, 52, 58, 61, 67, 70 — l'ordre des
+dossards.
+
+**Les quatre suivis à l'ouverture** : 12, 52, 1 et 3 — les quatre premiers du classement au tour
+12. Un clic retire le 1, un autre ajoute le 70 : deux secondes plus tard, et après deux
+instantanés, les suivis sont toujours 3, 12, 52 et 70.
+
+**Les durées**, sprint 1, trois tours d'approche : pastilles `3 laps · 00:55.524 · 00:18.508 a
+lap` ; phrase « The 3 approach laps took 00:55.524 — 00:18.508 a lap against a race average of
+00:17.782. » Plus aucune durée en secondes dans la page, hormis l'écart entre le tour de l'échappé
+et celui du peloton.
+
+## §129 · Les étiquettes du graphe et le dernier écart — build 287, 22 novembre 2026
+
+Même course, fenêtre de 3 tours autour du sprint 1 (tour 10) :
+
+| État de la course | Étiquette gauche | Étiquette droite | Ligne de sprint |
+|---|---|---|---|
+| Arrêtée au tour 12 | −3 | **+1** | 81 % de la largeur |
+| Terminée | −3 | **+3** | 50 % |
+
+**L'écart** du tour gagné s'écrit `00:00.367 a lap · 00:16.779 against 00:17.145`. Relevé sur les
+deux fils : plus aucune valeur en secondes, ni dans la vue Approach, ni dans Lap gained.
+
+**Les quatre coureurs suivis à l'ouverture**, course terminée : 7, 12, 18 et 52 — les quatre
+premiers du classement général. Console muette.

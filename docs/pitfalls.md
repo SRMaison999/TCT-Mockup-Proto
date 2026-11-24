@@ -1199,3 +1199,190 @@ J'avais lu l'état `S` champ par champ et conclu qu'il ne gardait que l'instant 
 champs de l'image courante, et faux des relevés que les vues construisent au fil de la course.
 **Avant d'écrire qu'une donnée manque, ouvrir l'onglet qui l'affiche** : si un écran la montre, le
 moteur la garde.
+
+
+### D54 · Le tour d'un fait n'est pas celui du moteur, c'est celui du compteur qu'il regarde
+
+La colonne **Lap** du Race log a d'abord été remplie avec `raceLap()` — le tour calculé sur le
+coureur le plus loin sur la piste. À l'écran, la ligne du départ sortait sans tour et les lignes
+suivantes pouvaient annoncer un tour que l'ovale n'affichait pas encore.
+
+`raceLap()` et `dispLap()` ne disent pas la même chose : `dispLap()` se compte sur le **leader
+désigné**, tours crédités déduits, et c'est lui qui écrit `LAP 21 / 60` dans l'ovale, qui date une
+carte de sprint et qui date une annulation. Un journal qui daterait ses lignes autrement ferait
+mentir l'écran que l'opérateur regarde.
+
+**Le tour d'une ligne du journal se prend là où l'opérateur le lit** : `dispLap()`, comme partout
+ailleurs. Avant le premier passage sur la ligne il n'y a pas de tour, et la colonne reste vide —
+c'est la vérité, pas un trou.
+
+
+### D55 · Un contrôle qui existe ailleurs dans le prototype ne se redessine pas
+
+Le filtre par tour du Race log a d'abord été dessiné de zéro : un champ caché qu'un clic sur le
+bouton LAP faisait apparaître. L'opérateur a répondu par une capture de la barre des **Passings**,
+qui porte le même filtre depuis son point 238 — étiquette `Lap`, champ, `all` en attente,
+`Clear` — et la question « pourquoi ne pas réutiliser ? ».
+
+Deux filtres qui font la même chose dans deux onglets du même écran ne doivent pas se manœuvrer
+autrement : l'un visible et l'autre caché derrière un clic, c'est deux gestes à apprendre pour une
+seule idée.
+
+**Avant de dessiner un contrôle, chercher s'il existe déjà** dans un autre onglet du prototype, et
+le reprendre avec son étiquette, sa forme et son mot d'attente. La classe `.pin` et la barre
+`.pfilt` sont faites pour ça.
+
+
+### D56 · Deux onglets du même écran ne se dessinent pas chacun dans son coin
+
+Le Race log a été branché sur sa maquette, et les Passings sur la leur, chacun à son tour et chacun
+avec ses colonnes : `Time · Point · Bib · Noc · Lap · Signal` d'un côté,
+`Daytime · Race time · Lap · Type · Rider · Event` de l'autre. Chaque écran était conforme à sa
+maquette, et pourtant l'ensemble ne tenait pas : même heure écrite de deux façons, même coureur
+montré de deux façons, mêmes filtres manœuvrés de deux façons.
+
+**Une maquette décrit un écran, pas l'application.** Avant de brancher un onglet, regarder ce que
+les onglets voisins montrent déjà des mêmes choses — l'heure, le tour, le coureur, les filtres — et
+tenir la même colonne au même endroit. Ce qui diffère doit être ce que l'onglet a de particulier,
+rien d'autre.
+
+Son point 310, 22 novembre 2026, est la règle : six colonnes communes, la septième propre à
+l'onglet, une seule barre de filtres.
+
+
+### D57 · Une maquette se peint avec les couleurs de l'application, pas avec les siennes
+
+`maquette-coherence.html` a été écrite avec son propre bloc de tokens, recopié de
+`gen-racelog.js` : un gris froid, `--fg:#e8eaed`, `--panel:#131619`. L'application, elle, est
+réglée depuis le 10 novembre 2026 sur une palette chaude — `--fg:#ffecb3` sur `--bg:#121416`,
+`--panel:#4a4945`, `--dim:#c1bdb4` recalculé pour passer 4,5 : 1 sur ses nouveaux fonds
+(`mesures.md` §31). L'opérateur l'a vu du premier coup d'œil.
+
+Une maquette qui propose une mise en page doit se tromper sur la mise en page, pas sur la couleur :
+sinon il juge deux choses à la fois, et la couleur gagne.
+
+**Une maquette charge `styles.css`** et n'ajoute que sa grille. Aucun hexadécimal dans une
+maquette : les tokens, et eux seuls.
+
+
+### D58 · `styles.css` n'a pas de règle `[hidden]` générale, et ne dimensionne `.flag` que sous `.trow`
+
+Deux pièges tombés le même jour, en posant les barres de filtres à deux étages (build 277).
+
+**Un panneau caché qui s'affiche quand même.** `.pfilt.two{display:block}` pèse 0,2,0 ; les seules
+règles `[hidden]` de `styles.css` sont nominatives (`.log[hidden]`, `.rail[hidden]`,
+`.sec>.bd[hidden]`), il n'y en a aucune de générale. Les deux barres, celle du Race log et celle
+des Passings, s'affichaient donc l'une au-dessus de l'autre. **Toute règle qui pose un `display`
+sur un élément qu'on cache par `hidden` doit poser sa paire** : `.pfilt.two[hidden]{display:none}`.
+
+**Un drapeau invisible.** `flag(nat)` rend un `<svg class="flag">` sans dimensions ; `styles.css`
+ne le dimensionne que sous `.trow` et sous `#ifpanel .ifflag`. Posé dans une colonne nouvelle, il
+occupe zéro pixel et ne se voit pas. **Un drapeau se dimensionne là où on le pose.**
+
+
+### D59 · Un document se vérifie contre les règles, jamais l'inverse
+
+`mockups/README.md` disait des deux écrans d'approche : « proposée le 22 novembre 2026, pas
+encore critiquée ». La phrase était vraie le matin ; l'après-midi l'opérateur les avait critiqués
+point par point — ses points 274 à 278 et 301 — et les maquettes avaient été ajustées. La ligne du
+README, elle, n'avait pas bougé. Je l'ai crue, et je lui ai répondu qu'il n'avait rien critiqué.
+
+`docs/regles-operateur.md` est la seule autorité, et le `CLAUDE.md` le dit. **Avant d'affirmer
+à l'opérateur qu'une chose n'a pas été faite, la chercher dans ses règles**, pas dans un document
+qui les résume. Un résumé périmé coûte plus cher qu'un document absent : il a l'air sûr.
+
+
+### D60 · Une maquette validée n'est pas une illustration : c'est le code de l'écran
+
+`fil.html` a d'abord été écrit de zéro — colonnes, style, onglets — alors que
+`maquette-feed.html`, la coque du fil, était validée depuis le 16 novembre et décrite comme telle
+dans `mockups/INTEGRATION.md` §5.7 et dans `mockups/MAQUETTES OUTPUTS.pdf`. L'opérateur a perdu
+une session à faire re-converger un écran qui était déjà dessiné.
+
+**Brancher un écran, c'est remplacer ses données, pas son dessin.** Avant d'écrire une ligne de
+page : ouvrir sa maquette, reprendre son style **en le lisant dans le fichier généré** plutôt
+qu'en le recopiant — un style recopié diverge au premier changement — et garder ses noms de classe.
+Le générateur `gen-fil.js` est le modèle : il lit le `<style>` de `maquette-feed.html`.
+
+Voir aussi D57 (une maquette se peint avec les couleurs de l'application) et D59 (un document se
+vérifie contre les règles).
+
+
+### D61 · Un document envoyé se lit en entier
+
+`mockups/MAQUETTES OUTPUTS.pdf` fait 17 pages et décrit **14 vues** : ce que chacune montre,
+comment on l'obtient, et **ce qui l'alimente dans le moteur**. Je n'en avais lu que la première
+page, et j'ai ensuite branché les vues en inventant leur contenu — jusqu'à poser ma propre table de
+classement là où la maquette Standings devait être.
+
+Le document dit, entre autres, que **rien n'est à enregistrer de plus** pendant la course : trois
+relevés portent les quatorze vues — **Lap by lap** (le tour, le bloc, l'heure de passage), **les
+passings sur la boucle du back straight** (la position : l'ordre des lectures est l'ordre sur la
+piste, jamais la position dessinée dans l'ovale) et **All sprints** (l'ordre complet). Ne pas
+l'avoir lu m'a fait chercher des données qui étaient déjà là.
+
+**Un document que l'opérateur envoie se lit en entier avant d'écrire une ligne.** Un PDF d'images
+se lit avec `pdftotext -layout`, qui est installé sur la machine.
+
+### D62 · Le tour d'une lecture est borné par le passage de ligne du coureur, pas par une fenêtre de temps
+
+**Ce que j'avais fait.** Pour savoir dans quel ordre les coureurs étaient passés sur la boucle du
+back straight au tour 10, j'avais pris toutes les lectures de cette boucle tombées entre
+« le premier passage de ligne du tour moins 40 secondes » et « le dernier passage de ligne du
+tour », et j'avais gardé la **première** lecture de chaque dossard.
+
+**Ce que ça donnait.** Un tour dure environ 17 secondes : la fenêtre de 40 secondes en couvrait
+deux. La première lecture d'un coureur dans cette fenêtre était souvent celle du **tour d'avant**,
+et l'ordre sortait faux — le vainqueur du sprint annoncé **14e au back straight du dernier tour**,
+le quatrième annoncé 1er.
+
+**La règle.** Le tour d'une lecture se borne **par coureur** : entre son passage de ligne du tour
+précédent et son passage de ligne de ce tour-ci. Dans cette borne, c'est sa **dernière** lecture de
+la boucle qui compte. On trie ensuite par l'heure des lectures — et cet ordre est l'ordre sur la
+piste.
+
+### D63 · Un remplacement de texte tombe sur la première occurrence, qui n'est pas celle qu'on vise
+
+**Ce que j'avais fait.** Pour empêcher une maquette branchée de se lancer sur sa donnée figée, je
+retirais `defaults();render();` de la page.
+
+**Ce que ça donnait.** La maquette écrit `defaults();render();` **deux fois** : dans le
+gestionnaire de clic sur un sprint, et à la fin du corps. Le remplacement tombait sur le premier —
+le gestionnaire de clic — et laissait en place celui qui plantait au chargement. Le clic sur un
+sprint ne redessinait plus rien, et la console gardait son erreur.
+
+**La règle.** Un remplacement qui doit toucher **une** occurrence s'ancre sur ce qui la distingue :
+ici le retour à la ligne qui la précède et la fermeture de la fonction qui la suit. Et on vérifie
+après génération qu'il reste bien ce qu'on voulait garder.
+
+### D64 · Une maquette ouvre sur les dossards de sa course figée ; branchée, elle n'en a aucun
+
+**Ce que j'avais fait.** J'ai branché les maquettes d'approche en ne remplaçant que leur bloc de
+données figées. Mais chacune ouvre sur **deux coureurs déjà suivis**, et ces dossards-là sont
+écrits en dur dans son code : `var sel=[52,15]`.
+
+**Ce que ça donnait.** Sur une autre liste de départ, ni le 52 ni le 15 n'existent. Le dessin
+cherchait leur drapeau, ne trouvait pas le coureur, et la vue **ne s'affichait plus du tout** —
+Charts by rider, Before the sprint et After the sprint restaient vides, sans rien à l'écran pour
+le dire. Lap gained, qui ne suit personne, marchait : c'est ce qui rendait la panne illisible.
+
+**La règle.** Brancher une maquette, ce n'est pas seulement remplacer sa donnée : c'est aussi
+**remplacer tout ce qu'elle a retenu de cette donnée** — les coureurs suivis, le sprint choisi, le
+moment affiché. À chaque instantané, on ne garde que ce qui existe dans la course reçue, et à
+défaut on reprend ce que la vue propose à l'ouverture. La liste de départ change d'une course à
+l'autre : rien de ce que la vue a retenu ne survit à ce changement.
+
+### D65 · Un bouton redessiné n'est plus le bouton qu'on tient
+
+**Ce que j'avais fait.** Pour vérifier que chaque sprint affichait bien son propre temps
+d'approche, j'avais relevé les boutons de sprint **une fois**, puis cliqué dessus l'un après
+l'autre dans une boucle.
+
+**Ce que ça donnait.** Chaque clic redessine la barre des sprints : les boutons relevés au départ
+sont détachés de la page dès le premier clic. Les suivants ne cliquaient plus sur rien, l'écran
+restait sur le sprint 1, et j'ai cru à un défaut de la vue — j'ai failli « corriger » quelque
+chose qui marchait.
+
+**La règle.** Dans une vérification, on reprend l'élément **juste avant de cliquer**, jamais une
+liste relevée avant la boucle. Et quand une vue semble ne pas réagir, on vérifie d'abord que le
+clic est bien arrivé : ici, un seul clic passé à la main suffisait à le montrer.

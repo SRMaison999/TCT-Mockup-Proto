@@ -4815,3 +4815,451 @@ lectures de chaque boucle pour la course entière. `S.sprints` garde l'ordre com
 Et la chute est codée : groupe daté du tour, décompte des tours pour revenir, carte à trois issues.
 
 Rien n'est à enregistrer en plus. Ce qui reste est de lire ces relevés et d'écrire les phrases.
+
+
+### 305 · L'heure du jour du journal, et la chute déjà codée · 22 novembre 2026
+
+Devant la proposition de brancher le Race log, où il était écrit que la gestion des chutes et le
+décompte de la neutralisation n'étaient pas dans le prototype, et où l'heure du jour restait à
+décider. Ses mots :
+
+> les CRASH (ou anomalies) sont présents dans le moteur. Je ne sais pas si ils le sont dans Race
+> logs en revanche.
+> Le décompte du crash qui neutralise la course également
+>
+> Oui on prend l'heure du PC pour DAY TIME
+
+**Il a raison sur les deux points, et ma proposition était fausse.** La chute est codée depuis le
+build 255 — groupe daté du tour, carte à trois issues, décompte des cinq tours — et le décompte est
+écrit sur la carte et dans l'en-tête du bloc depuis le build 256. Ce qui manquait est exactement ce
+qu'il soupçonnait : **le journal n'en gardait rien** d'autre que l'ouverture de l'incident et sa
+fermeture.
+
+**Ce qui est codé au build 270** : le décompte entre au journal, une ligne par tour, dans les mots
+de la carte ; et l'heure du jour est lue sur l'horloge du PC **au coup de pistolet**, le temps de
+course s'y ajoutant ligne après ligne. `architecture.md` §82, `mesures.md` §119, `pitfalls.md`
+D54, `cas-de-course.md` ligne 49.
+
+
+### 306 · Le nom de l'onglet, et un filtre par dossard · 22 novembre 2026
+
+Devant le Race log du build 270, à la question « Je renomme l'onglet Decisions en Race log ? », puis
+de lui-même :
+
+> oui
+
+> il faut aussi ajouter un filtre par "BIB"
+
+**Codé au build 271** : l'onglet de la barre du panneau s'appelle **Race log**, comme le bouton qui
+ouvre le panneau. Le filtre par dossard se propose avant d'être codé.
+
+
+### 307 · Pas de filtre par dossard : le nombre tapé devient un tour quand LAP est choisi · 22 novembre 2026
+
+Devant la proposition d'un champ BIB à côté des filtres du Race log, où il était dit que la
+recherche existante sort aussi « Lap 7 » et « 7 laps to rejoin » quand on y tape 7. Ses mots :
+
+> non je vais utiliser le champ déjà existant. En revanche "7" laps doit être lié au bouton de
+> filtre "LAP"
+
+**Le champ BIB est abandonné** : il n'y en aura pas. La recherche déjà en place suffit.
+
+**Ce qui reste à trancher avant de coder** : le bouton LAP ne retient aujourd'hui que les tours
+gagnés et perdus. Lier le nombre tapé au bouton LAP peut vouloir dire deux choses — ne garder du
+tour 7 que les tours gagnés et perdus, ou montrer **tout** ce qui porte le tour 7, le sprint, les
+lectures et la chute comprises. Posé le 22 novembre 2026, sans réponse pour l'instant.
+
+
+### 308 · Le filtre par tour du Race log, et le contrôle qui existait déjà · 22 novembre 2026
+
+Après le point 307, à la question de savoir ce que LAP devait retenir. Ses mots :
+
+> un clic sur LAP doit ouvrir un champ dans lequel on peut saisir par exemple "7". Et suite à ça on
+> doit obtenir toutes les lignes sont marquées "LAP 7".
+
+Codé au build 272 : un clic sur le bouton LAP ouvrait un champ, et le journal gardait toutes les
+lignes portant ce tour. **Puis il a montré la barre des Passings en capture** — `Bib [all]`
+`Lap [all]` `Clear` :
+
+> Mais dans l'onglet PASSINGS, nous avons déjà ceci (voir screenshot). Pourquoi ne pas réutiliser ?
+
+**Il a raison, et mon champ était une invention de plus.** La barre des Passings porte ce filtre
+depuis son point 238 : une étiquette `Lap`, un champ, le mot `all` en attente, et `Clear`.
+
+**Codé au build 273** : le Race log reprend ce contrôle tel quel. Le champ est visible en
+permanence, il ne s'ouvre plus sur un clic, et le bouton LAP redevient ce qu'il était — le filtre
+des tours gagnés et perdus. Le tour, le type et la recherche se cumulent.
+
+**Ce qui n'est pas repris** : le champ `Bib` de la même barre. Il l'avait refusé au point 307 — la
+recherche déjà en place lui suffit — et je ne le remets pas sans lui.
+
+
+### 309 · Les deux champs des Passings, dossard et tour, dans le Race log · 22 novembre 2026
+
+À la question de savoir s'il fallait reprendre aussi le champ `Bib` de la barre des Passings,
+qu'il avait refusé au point 307. Ses mots :
+
+> Oui, les deux
+
+**Codé au build 274** : le Race log porte les deux champs de la barre des Passings, `Bib` puis
+`Lap`, chacun avec `all` en attente, et `Clear` les vide tous les deux. Ils se cumulent entre
+eux, avec le bouton de type et avec la recherche.
+
+
+### 310 · Les onglets d'un même écran se tiennent pareil · 22 novembre 2026
+
+Devant le Race log du build 274, à côté des Passings. Ses mots :
+
+> Ecoute pour être c'est vraiment pas génial. Franchement c'est pas bon !
+>
+> Déjà les deux onglets Race logs, et passings ont un  style graphique différent, pourtant ils font
+> les deux parties de la même application.
+>
+> Ensuite, et je ne vais pas énumérer toute la liste, mais 1 point par exemple :
+>
+> PASSINGS : il y a des colonnes TIME, BIB, NOC, LAP, SIGNAL/COUNT
+> RACE LOGS : il y a des colonnes DAYTIME, RACE TIME, LAP, TYPE, RIDER, EVENT
+>
+> Ce n'est vraiment pas cohérent !
+>
+> Utilises ceci :
+> PASSINGS : DAYTIME, RACE TIME, LAP, BIB, NOC (NOC ET le flag !), RIDER NAME, SIGNAL/COUNT
+> RACE LOGS : DAYTIME, RACE TIME, LAP, BIB, NOC (NOC ET le flag !), RIDER NAME, EVENT
+>
+> Et revois tout le système de filtre pour que l'on utilise le même dans les deux onglets (excepté
+> pour les spécificités de chaque onglet, évidemment).
+>
+> Autre chose :
+> Par exemple dans RACE LOGS, pourquoi tu affiches les sprints comme tu le fais là ? Il y a déjà
+> plusieurs versions de RACE LOGS qui utilisent un affichage clair !
+
+Suivait la capture d'un sprint écrit **une ligne par place** — « Sprint 2 · live → TV, scoreboard,
+web · 5. 5 », puis « · 4. 4 », « · 3. 3 », « · 2. 2 », « · 1. 1 » — et la question « qu'est-ce que
+c'est que ça ».
+
+**Les sept colonnes sont les siennes, mot pour mot**, et les six premières sont communes aux deux
+onglets. La barre de filtres est la même des deux côtés, aux boutons propres à chaque onglet près.
+
+**Ce que la capture montrait** : en mode *live*, chaque place quitte les sorties dès que son coureur
+est lu, et le journal écrit une ligne à chaque envoi. Cinq places font cinq lignes. La maquette
+`maquette-racelog.html`, validée le 16 novembre, écrit le sprint **sur une seule ligne** avec son
+ordre complet.
+
+**Proposé le 22 novembre, pas codé** : `mockups/maquette-coherence.html`.
+
+
+### 311 · Les colonnes TYPE et LOCATION, une ligne par coureur, et l'avant-départ · 22 novembre 2026
+
+Devant `mockups/maquette-coherence.html`. Ses mots, point par point :
+
+> 1. pour RACE LOGS  il faut avoir une colonne TYPE avec les noms que tu as mis en tête de la
+> colonne Event en couleur.
+> pour PASSINGS, il faut une colonne TYPE avec comme possibilités : TRANSPONDEUR, TAPE SWITCH,
+> MANUAL PULSE en couleur
+> 2. pour PASSINGS, il faut une colonne LOCATION avec comme possibilités : PURSUIT A, PURSUIT B,
+> FINISH, 200m, 100m, Push buton,
+> 3. Si il y a 3 coureurs impliqués dans un événement, il faut 3 lignes distinctes.
+> 4. ok
+>
+> Autre chose, as-tu remarqué que les couleurs de ta maquette ne correspondent pas au reste de
+> l'application ?
+
+Puis, sur la ligne sans coureur :
+
+> dans RACE LOGS, tant que la course n'a pas démarré je ne vois pas ce que tu veux afficher
+> dans PASSINGS, il faut traiter les passings comme des passages normaux mais avec les champs RACE
+> TIME et LAP vides
+
+**Ce que cela fixe :**
+
+- **TYPE est une colonne dans les deux onglets.** Race log : les types du moteur. Passings :
+  TRANSPONDER · TAPE SWITCH · MANUAL PULSE, en couleur.
+- **LOCATION est une colonne des Passings** : PURSUIT A · PURSUIT B · FINISH · 200m · 100m ·
+  Push button.
+- **Un événement à trois coureurs s'écrit sur trois lignes**, une par coureur.
+- **Le Race log n'a rien à montrer avant le départ.**
+- **Les Passings montrent les passages d'avant le départ comme les autres**, avec RACE TIME et LAP
+  vides.
+- **Les couleurs sont celles de l'application**, et pas celles d'une maquette : `styles.css` et
+  ses tokens. Ma maquette avait repris les hexadécimaux de `gen-racelog.js` — un gris froid et un
+  `--fg` blanc cassé — là où l'application est en crème chaud `#ffecb3` sur `#121416`.
+  Voir `pitfalls.md` D57.
+
+
+### 312 · Un sprint est un événement qui touche quatre coureurs · 22 novembre 2026
+
+J'avais écrit que sa phrase du point 311 — « Si il y a 3 coureurs impliqués dans un événement, il
+faut 3 lignes distinctes » — était une « règle des trois lignes », et qu'un sprint n'en était pas
+un, étant un ordre d'arrivée. Ses mots :
+
+> Comment ça ma règle des 3 lignes ??
+
+> un sprint c'est un événement qui touche 4 coureurs, non ?
+
+**Il a raison, et j'avais inventé une exception.** Un sprint est un événement comme les autres :
+quatre coureurs servis, quatre lignes, chacune avec son dossard, son drapeau et son nom dans les
+colonnes — et non quatre fois la même phrase d'envoi.
+
+**Ce que j'ai choisi, et qu'il n'a pas dit** : les quatre lignes gardent l'heure et le tour du
+sprint, et sont rangées par place, la première en haut, à l'intérieur de l'événement.
+
+Il faut aussi retenir la forme de son objection : je lui avais attribué une règle qu'il n'avait pas
+énoncée, en lui donnant un nom à moi. Ses règles se citent, elles ne se nomment pas.
+
+
+### 313 · Un champ par chose filtrée, et la recherche ne touche que le texte · 22 novembre 2026
+
+Devant la barre de filtres de la maquette. Ses mots :
+
+> et les filres ça ne va toujours pas :;
+> on a un fikltre BIB, un autre LAP... alors fais en un NOC, et un RIDER
+> ET tu peux garder le champ de recherche "text" mais lui il doit avoir un effet sur les textes, et
+> pas sur les autres éléments qu'on filtre déjà-.
+>
+> Autre chose :
+> Tu as de nouveau inventé  "1st at the line"  +10 points ! Tu mets "1st 10 points"
+
+**Quatre champs, un par chose qu'on filtre** : Bib, Noc, Rider, Lap. Et la **recherche ne travaille
+que sur le texte** de la dernière colonne — Event au Race log, Signal / count aux Passings. Elle ne
+refait pas ce que les quatre champs font déjà. Au build 274 elle cherchait dans tout à la fois : la
+phrase, le libellé du type, le dossard, le NOC, le prénom et le nom.
+
+**Et le texte d'une place de sprint est le sien** : « 1st 10 points ». Pas « 1st at the line », pas
+de « + » devant les points. Deuxième fois dans la même journée que j'invente des mots à l'écran.
+
+
+### 314 · Deux lignes de filtres, et le partage n'est pas laissé au hasard · 22 novembre 2026
+
+La barre débordait et se repliait où elle pouvait. Ses mots :
+
+> si je peux me permettre :
+> Tu places les boutons et filtres sur deux lignes, ok. Mais sois cohérent : place les filtres avec
+> champs de saisie sur la même ligne
+
+**Les boutons sur la première ligne, les champs de saisie sur la seconde.** Les deux onglets
+portent donc la même barre à deux étages : Type (et Location aux Passings) en haut ; Bib, Noc,
+Lap, Bib, Noc, Rider, la recherche et Clear en bas — dans l'ordre des colonnes (point 315).
+
+
+### 315 · Les filtres sont dans l'ordre des colonnes · 22 novembre 2026
+
+Ses mots, avec son agacement :
+
+> si je peux à nouveau me permettre, mais ça commence à m'agacer que tu ne comprennes pas tout
+> seul :
+> place l'ordre de gauche à droite des filtres avec champs de saisie, dans le même ordre de gauche
+> à droite que les colonnes
+
+**La barre se lit comme l'en-tête.** Type (puis Location aux Passings) en haut, dans l'ordre des
+colonnes ; **Lap · Bib · Noc · Rider** en bas, dans l'ordre des colonnes, puis la recherche, qui
+porte sur la dernière colonne et vient donc en dernier.
+
+
+### 316 · Le fil tourne sur le même poste, et les écrans d'approche ont déjà été critiqués · 22 novembre 2026
+
+Je lui avais écrit que les deux écrans d'approche lui avaient été proposés mais jamais critiqués,
+et je lui avais demandé où tournait le fil des commentateurs. Ses mots :
+
+> Mais comment ça ? j'ai passé une session à les commenter pour les ajuster !
+
+> Tout sur le même PC, nous travaillons sur un prototype
+
+**Il a raison sur les deux écrans d'approche**, et je me suis fié à une phrase périmée de
+`mockups/README.md` — « proposée le 22 novembre 2026, pas encore critiquée » — écrite au moment
+de la proposition et jamais reprise après ses points 274 à 278 et 301, du même jour, qui sont
+précisément ses critiques et qui ont toutes été appliquées. Les deux lignes du README sont
+corrigées. `pitfalls.md` D59.
+
+**Le fil tourne sur le même poste** : c'est une seconde fenêtre du navigateur, nourrie par
+`BroadcastChannel` depuis le prototype. Rien à installer, rien à régler. Codé au build 278.
+
+
+### 317 · On se sert des maquettes qu'on a faites · 22 novembre 2026
+
+J'avais écrit `fil.html` de zéro, avec mes propres colonnes et mon propre style, alors que la
+coque du fil était validée depuis le 16 novembre. Il a renvoyé
+`mockups/MAQUETTES OUTPUTS.pdf` et ses mots :
+
+> mais j'en ai marre ! Pourquoi tu réinventes toujours tout ?????????????
+>
+> Utilises les maquettes qu'on a réalisé !
+
+**La règle.** Quand une maquette existe pour un écran, **l'intégration part d'elle** : son style,
+son balisage, ses onglets. Ce qui change au branchement, ce sont **les données**, rien d'autre.
+
+**Codé au build 279** : `mockups/gen-fil.js` écrit `fil.html` en **lisant le style dans
+`maquette-feed.html`** — il n'en recopie pas une ligne — et en reprenant son balisage : l'en-tête
+`.hdr`, les onglets `.nav`, les cartes `.sl-card` de la start list, la table `.lv` du
+classement, les colonnes `.spcol` des sprints. Scenarios et Race facts restent **embarqués en
+iframe** de leurs maquettes avec `?embed=1`, comme la coque le fait, et portent une étiquette qui
+dit que ce n'est pas encore du direct.
+
+
+### 318 · Le classement du fil est la maquette du classement · 22 novembre 2026
+
+Au build 279 j'avais mis dans l'onglet Standings du fil une table à moi, et j'avais écrit que
+c'était « le balisage de la coque ». C'était faux : la coque validée y embarque la maquette
+**Standings**, avec sa barre, sa bascule **Live / Evolution** et sa **ligne de coupe**. Ses mots :
+
+> Là tu te moques de moi !
+
+> Corrige le classement du fil avec la vraie maquette.
+> Et corrige tout ce que tu as fais de faux ! ET respecte les consignes ! C'est inadmissible ce que
+> tu as fait
+
+Et, sur le document des sorties qu'il m'avait envoyé et dont je n'avais lu que la première page :
+
+> je t'ai envoyé le fichier MAQUETTES OUTPUT.pdf !
+> Tu ne vois pas tout ce qu'il y a là-dedans ?
+
+**Corrigé au build 280** : le classement du fil est servi par `fil-standings.html`, écrit par
+`gen-fil.js`, qui **lit le style de `maquette-standings.html`** et garde son balisage — la barre
+`.board-h`, la bascule, la table `.tbl`, les lignes `.row`, les lignes éliminées `.elim` et la
+`.cutrow`. La coque l'embarque en iframe à la place de la maquette : deux documents, donc aucun
+mélange de styles. La ligne de coupe suit `CFG.type` et `CFG.advance`, comme le document le dit.
+
+### 319 · Toutes les vues, dans l'ordre que je veux · 22 novembre 2026
+
+Après avoir énuméré les neuf écrans du fil commentateurs et les cinq écrans du fil entraîneurs,
+je lui ai demandé par lequel commencer. Ses mots :
+
+> tui fais les choses dans l'ordre que tu veux mais tu les fais toutes !
+> Rappelle moi quand tu auras terminé
+
+**Fait au build 282** : les quatorze vues lisent la course. Le fil commentateurs porte six onglets
+— Start list, Standings (Live et Evolution), Sprints, Scenarios (Overview et What if), Race facts,
+Sprint approach (Approach et Lap gained) — et le fil entraîneurs ses cinq vues dans `coachs.html`,
+ouvert par le bouton **Coaches** de la barre du haut, à côté de **Feed**. Aucune vue ne porte plus
+l'étiquette « Mockup · not fed by the race yet ».
+
+### 320 · Trois vues du fil entraîneurs qui ne s'affichent pas, les noms de l'évolution, l'ordre des onglets · 22 novembre 2026
+
+Sur sa propre liste de départ, en qualification. Ses mots :
+
+> beaucoup de bugs !
+>
+> Fil coachs :
+> les vues Charts by riders, Before the sprint, After the sprint ne finctionnent pas. On ne peut
+> même pas les afficher.
+>
+> Fil commentateurs :
+> Standing Evolution : supprime les noms des coureurs que j'ai encadré en rouge dans le screenshot
+> Réordre les onglets comme suit : Start List, Standing, Sprint, Sprint approach, Race facts,
+> Scenarios
+
+Le cadre rouge entourait la ligne de dossards, drapeaux et noms posée **au-dessus du graphe** de
+l'évolution.
+
+**Corrigé au build 283** :
+
+1. Les trois vues du fil entraîneurs s'ouvraient sur **deux dossards écrits en dur**, ceux de la
+   course figée de la maquette. Sur une autre liste de départ ces dossards n'existent pas : la vue
+   cherchait un coureur absent et ne s'affichait plus du tout. Les coureurs suivis sont maintenant
+   filtrés sur la course reçue, et à défaut ce sont les deux premiers de la liste. Même garde
+   posée sur **Sprint approach** et sur **Standings Evolution**, qui ouvraient de la même manière.
+2. La ligne de noms au-dessus du graphe de l'évolution est retirée — de la maquette comme de la
+   vue du fil.
+3. Les onglets du fil sont dans son ordre : Start list, Standings, Sprints, Sprint approach,
+   Race facts, Scenarios.
+
+### 321 · L'en-tête du fil entraîneurs dit où en est la course · 22 novembre 2026
+
+Je lui avais signalé que l'en-tête annonçait « Race finished » pendant que la course tournait, et
+je lui ai demandé ce qu'il fallait faire. Ses mots :
+
+> Ok, code ces trois phrases
+
+Les trois phrases proposées, qu'il a prises telles quelles :
+
+> - pendant la course : **Lap 18 of 60 · 1 sprint judged**
+> - une fois finie : **Race finished · 60 laps · 6 sprints**
+> - avant le départ : **Waiting for the start · 60 laps · 6 sprints**
+
+**Fait au build 284** : la course envoie au fil si elle est partie et si elle est finie, et
+l'en-tête du fil entraîneurs écrit l'une des trois phrases. Celle de l'arrivée est le texte de la
+maquette, gardé mot pour mot.
+
+### 322 · Le temps des tours d'approche en mm:ss.xxx · 22 novembre 2026
+
+Capture d'écran du fil, l'onglet Sprint approach, la pastille `73.7 s` entourée en rouge. Ses
+mots :
+
+> affiche la valeur encadrée en rouge en mm:ss.xxx
+
+**Fait au build 285** : la pastille écrit `00:55.524`. Elle est la seule valeur changée — la même
+durée est reprise plus bas en toutes lettres (« The 3 approach laps took … »), et il n'a pas
+demandé de la changer.
+
+**Deux corrections venues avec** :
+
+- Cette durée n'était pas mesurée : c'était le tour moyen de la course, répété. Affichée à la
+  milliseconde, elle ne pouvait pas rester une moyenne. Elle est maintenant lue sur les passages
+  de ligne, tour par tour et sprint par sprint.
+- Un coureur hors des quatre places qui marquent affichait `+undefined points`. Il affiche
+  `no points`.
+
+### 323 · Toutes les durées en mm:ss.xxx, pas seulement la pastille · 22 novembre 2026
+
+Je n'avais changé que la pastille qu'il avait entourée, et je lui avais dit que la même durée
+restait en secondes plus bas. Ses mots :
+
+> Mais putain mais évidemment qu'il faut aussi afficher la valeur qui est reprise plus bas en
+> toutes lettres !!!
+>
+> Mais voyons ! On comprends une durée quand elle est exprimée normalement, pas en seconde !
+>
+> Corrige la aussi, ainsi que toutes les autres occurrences si il y en a !
+
+**Fait au build 286** : dans les deux fils, toute durée affichée en secondes est écrite en
+`mm:ss.xxx` — le total de l'approche, le tour d'approche, le tour moyen de la course, le tour de
+l'échappé et celui du peloton.
+
+**Ce qui reste en secondes** : l'**écart** entre le tour de l'échappé et celui du peloton
+(« 0.4 s a lap »). Sa règle du 10 novembre 2026 veut les temps à l'horloge et les écarts en
+secondes. Et les temps déjà à l'horloge — le temps de course d'un sprint, `3:08.0` — gardent leur
+dixième, comme il l'avait fixé.
+
+### 324 · La liste des coureurs du fil entraîneurs, et les quatre suivis à l'ouverture · 22 novembre 2026
+
+Capture du fil entraîneurs, la colonne RIDERS entourée en rouge, le 15 entouré en vert. Ses mots :
+
+> Sur quoi tu t'appuies pour définir l'ordre d'affichage de la liste ici encadrée en rouge ? Elle
+> n'a aucune cohérence. Affiche la par ordre des dossards. Et ne t'occupes pas des autres listes.
+>
+> Sur quoi tu t'appuies pour sélectionner le no15 ? Ca n'a aucune cohérence !
+>
+> Sélectionne par défaut les 4 meilleurs coureurs du classement général calculé à l'instant où on
+> consulte la page !
+
+**Fait au build 286** : la colonne RIDERS est dans l'ordre des dossards — elle seule. À
+l'ouverture, les quatre coureurs suivis sont les **quatre premiers du classement général au moment
+où la page est consultée**. Dès qu'il clique, c'est son choix qui tient, et les instantanés
+suivants ne le défont pas.
+
+Le 15 ne venait de nulle part : c'était un des deux dossards d'exemple de la maquette (point 320).
+
+### 325 · Les écarts aussi, et les dossards d'exemple effacés pour de bon · 22 novembre 2026
+
+Je lui avais dit que l'écart entre le tour de l'échappé et celui du peloton restait en secondes,
+et que les dossards d'exemple étaient remplacés à l'ouverture. Ses mots :
+
+> Donc tu as bien effacé les dossards qui étaient en dur dans le code ?
+
+> Toutes les durées, les écarts ou ce que tu veux CA DOIT ETRE AFFICHE DANS UN FORMAT NORMAL QUE
+> LES HUMAINS COMPRENNENT !!!
+
+Et, sur la ligne de sprint décentrée :
+
+> Garder ce qui existe et écrire la vérité à droite : +2 au lieu de +3, puis +3 quand le tour sera
+> couru.
+
+**Fait au build 287** :
+
+1. Les dossards `52` et `15` sont **effacés** du code de la page : la liste des coureurs suivis
+   part vide. Jusqu'ici je ne faisais que les remplacer à l'ouverture, ils restaient écrits.
+2. L'écart entre le tour de l'échappé et celui du peloton s'écrit lui aussi en `mm:ss.xxx` :
+   `00:00.367 a lap · 00:16.779 against 00:17.145`. Plus aucune valeur en secondes dans les deux
+   fils. **Ce point remplace, pour les écrans des fils, sa règle du 10 novembre 2026 qui gardait
+   les écarts en secondes.**
+3. Les étiquettes du graphe disent les tours **réellement courus** de part et d'autre du sprint,
+   et non ceux demandés : `+1` au tour 12, `+3` une fois les trois tours courus.

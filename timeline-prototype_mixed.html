@@ -351,16 +351,29 @@
 
 .rows.pass{gap:1px}
 .rows.pass .ph,.rows.pass .prow{display:grid;
-  grid-template-columns:88px 116px 44px 46px 48px minmax(0,1fr) 124px;gap:10px;align-items:center;padding:0 8px}
+  grid-template-columns:64px 60px 28px 100px 96px 38px 56px 146px minmax(0,1fr);gap:10px;align-items:center;padding:0 8px}
 .rows.pass .ph{position:sticky;top:0;z-index:1;height:24px;background:var(--panel);
   font:600 10px var(--sans);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .rows.pass .prow{min-height:30px;background:#17191c;border-left:3px solid var(--line2);font-size:13px}
 .rows.pass .prow.odd{border-left-color:var(--warn)}
-.rows.pass .t{font:500 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
-.rows.pass .lo{font:600 12px var(--mono);color:#8FB4FF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rows.pass .noc,.rows.pass .lp,.rows.pass .sig,.rows.pass .nobib{font:500 12px var(--mono);color:var(--muted)}
-.rows.pass .r,.rows.pass .mk{text-align:right}
-.rows.pass .mk{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn)}
+.rows.pass .dt,.rows.pass .t{font:500 12px var(--mono);font-variant-numeric:tabular-nums}
+.rows.pass .dt{color:var(--fg)} .rows.pass .t{color:var(--dim)}
+.rows.pass .lo{font:600 11px var(--mono);color:var(--dim);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rows.pass .k{font:600 9.5px var(--sans);letter-spacing:.09em;color:var(--dim)}
+.rows.pass .lp{font:500 12px var(--mono);color:var(--dim);text-align:right}
+.rows.pass .sig{font:400 12px var(--sans);color:var(--fg)}
+.rows.pass .dbib{font:600 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.rows.pass .dbib i{font-style:normal;font-weight:400;color:var(--dim)}
+.rows.pass .dnoc{display:flex;align-items:center;gap:5px;min-width:0}
+.rows.pass .dnoc i{font:500 11px var(--mono);font-style:normal;color:var(--dim)}
+.rows.pass .dnm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.rows.pass .dnm .fn{color:var(--dim)}
+.rows.pass .mk{font:600 10px var(--sans);letter-spacing:.05em;text-transform:uppercase;color:var(--warn);font-style:normal}
+/* le type porte la couleur, comme au Race log : la lecture discrete, le geste de l'operateur en
+   bleu, le ruban en bois. */
+.rows.pass .prow.t-transponder{border-left-color:var(--dim)} .rows.pass .prow.t-transponder .k{color:var(--dim)}
+.rows.pass .prow.t-pulse{border-left-color:var(--acc)} .rows.pass .prow.t-pulse .k{color:var(--acc)}
+.rows.pass .prow.t-tape{border-left-color:var(--wood)} .rows.pass .prow.t-tape .k{color:var(--wood)}
 .rows.pass .none{font:500 12px var(--sans);color:var(--dim);padding:14px 8px}
 .rows.pass .foot{font:500 11px var(--sans);color:var(--dim);padding:10px 8px 2px}
 /* Son point 236 : les titres de colonnes se cliquent. Celui qui range porte la couleur d'accent ;
@@ -711,6 +724,56 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
 #ledgerbox .ledger .lgt b.up{color:var(--good)}
 #ledgerbox .ledger .lgt b.down{color:var(--warn)}
 .lrow{grid-template-columns:62px 118px minmax(0,1fr)} /* build 210 : « READ » renommé « TRANSPONDER » au journal — colonne Type élargie pour le libellé (styles.css partagé inchangé) */
+/* ===== LE RACE LOG · build 270 ====================================================================
+   mockups/maquette-racelog.html, validée le 16 novembre 2026 : sept colonnes — Daytime · Race time ·
+   Lap · Type · Rider · Event · Status — le type coloré et le fond teinté par famille. styles.css est
+   partagé : tout est ici. Les couleurs sont les tokens du design system, aucune valeur en dur. */
+#logrows.rlog .lrow{grid-template-columns:64px 60px 28px 100px 38px 56px 146px minmax(0,1fr);gap:10px;align-items:center;padding:0 8px}
+#logrows.rlog .lrow.lhd{position:sticky;top:0;z-index:2;background:var(--panel);border-left-color:transparent;min-height:26px;font:600 10px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+#logrows.rlog .lhd span:nth-child(3){text-align:right}
+#logrows.rlog .dbib{font:600 12px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+#logrows.rlog .dbib i{font-style:normal;font-weight:400;color:var(--dim)}
+#logrows.rlog .dnoc{display:flex;align-items:center;gap:5px;min-width:0}
+#logrows.rlog .dnoc i{font:500 11px var(--mono);font-style:normal;color:var(--dim)}
+#logrows.rlog .dnm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+#logrows.rlog .dnm .fn{color:var(--dim)}
+#logrows.rlog .dt{font:500 12px var(--mono);color:var(--dim)}
+#logrows.rlog .lp{font:500 12px var(--mono);color:var(--muted);text-align:right}
+#logrows.rlog .rd{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden}
+#logrows.rlog .rd .noc{font:600 11px var(--mono);color:var(--dim);flex:0 0 auto}
+#logrows.rlog .rd .flagw{flex:0 0 auto;display:inline-flex;align-items:center}
+#logrows.rlog .rd .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+#logrows.rlog .rd .nm .fn{color:var(--dim)}
+#logrows.rlog .stt{justify-self:end;flex:0 0 auto}
+#logrows.rlog .k.up{color:var(--good)}
+#logrows.rlog .k.down{color:var(--crit)}
+#logrows.rlog .lnone{padding:16px;color:var(--dim);font:500 13px var(--sans)}
+/* la famille du type porte le bord gauche et la couleur du libellé ; trois familles portent en plus
+   un fond teinté, comme sa maquette : le groupe, le sprint et l'incident. */
+#logrows.rlog .t-race{border-left-color:var(--acc)}        #logrows.rlog .t-race .k{color:var(--acc)}
+#logrows.rlog .t-leader{border-left-color:var(--acc)}      #logrows.rlog .t-leader .k{color:var(--acc)}
+#logrows.rlog .t-operator{border-left-color:var(--acc)}    #logrows.rlog .t-operator .k{color:var(--acc)}
+#logrows.rlog .t-lap{border-left-color:var(--good)}        #logrows.rlog .t-lap .k{color:var(--good)}
+#logrows.rlog .t-transponder{border-left-color:var(--dim)} #logrows.rlog .t-transponder .k{color:var(--dim)}
+#logrows.rlog .t-withdraw{border-left-color:var(--warn)}   #logrows.rlog .t-withdraw .k{color:var(--warn)}
+#logrows.rlog .t-group{border-left-color:var(--good);background:color-mix(in srgb, var(--good) 8%, var(--bg))}
+#logrows.rlog .t-group .k{color:var(--good)}
+#logrows.rlog .t-sprint{border-left-color:var(--acc);background:color-mix(in srgb, var(--acc) 10%, var(--bg))}
+#logrows.rlog .t-sprint .k{color:var(--acc)}
+#logrows.rlog .t-incident{border-left-color:var(--crit);background:color-mix(in srgb, var(--crit) 10%, var(--bg))}
+#logrows.rlog .t-incident .k{color:var(--crit)}
+/* la recherche, dans la barre de filtres : le champ des filtres de Passings, plus large */
+#dfilt .pin.wide{width:190px;text-align:left}
+.pfilt.two{display:block}
+.pfilt.two[hidden]{display:none}
+/* le drapeau de la colonne NOC : styles.css ne le dimensionne que sous .trow */
+#logrows.rlog .dnoc .flag,.rows.pass .dnoc .flag{width:18px;height:12px;border-radius:2px;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+#logrows.rlog .dnoc .flagw,.rows.pass .dnoc .flagw{display:inline-flex;align-items:center;flex:0 0 auto}
+.pfilt.two .frow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pfilt.two .frow + .frow{margin-top:6px}
+.pin.noc3{width:50px;text-transform:uppercase}
+.pin.noc3::placeholder{text-transform:none}
+.pin.rid{width:116px;font-family:var(--sans);text-align:left}
 /* build 237 — l'onglet Start list et ses trois sous-onglets (styles.css partagé inchangé).
    La ligne de coureur prend une colonne de plus : le PRÉNOM, qui était codé en dur (point 230). */
 .rosterrow{grid-template-columns:22px 34px 82px minmax(0,1fr) 40px 24px}
@@ -781,7 +844,7 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
          sont plus — le sous-titre est descendu à l'intérieur de l'ovale, où il porte en plus les
          tours, les sprints et la longueur de piste. Le numéro de build est seul, à droite. -->
     <div class="bar">
-      <span class="logtabs" id="logtabs"><button class="lgtab on" data-tab="race">Race</button><button class="lgtab" data-tab="cross">Lap by lap</button><button class="lgtab" data-tab="dec">Decisions</button><button class="lgtab" data-tab="stand">Standings</button><button class="lgtab" data-tab="pass">Passings</button></span>
+      <span class="logtabs" id="logtabs"><button class="lgtab on" data-tab="race">Race</button><button class="lgtab" data-tab="cross">Lap by lap</button><button class="lgtab" data-tab="dec">Race log</button><button class="lgtab" data-tab="stand">Standings</button><button class="lgtab" data-tab="pass">Passings</button></span>
       <div id="simtransport">
           <div class="sh" style="justify-content:center">
             <button class="btn lg" id="simrewind" title="Go back 30 seconds of race time, and resume from there">&#9198; 30s</button>
@@ -818,6 +881,8 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
       <span class="sp"></span>
       <span class="bld" id="buildno">244</span>
       <button class="btn" id="logshow" title="Crossings · Decisions · Sprints · Standings">Race log</button>
+      <button class="btn" id="feedopen" title="Open the commentators' feed in a second window of this computer">Feed</button>
+      <button class="btn" id="coachopen" title="Open the coaches' analysis in a second window of this computer">Coaches</button>
       <button class="btn" id="railshow" hidden title="Show the simulator" style="color:var(--acc);border-color:var(--acc)">Simulator</button>
     </div>
       <div class="stage">
@@ -934,27 +999,70 @@ body.dragging .zlab,body.cdragging .zlab,body.rszing .zlab{opacity:0;pointer-eve
   <div class="hd"><span class="seg" id="stview" hidden><button class="btn xs on" data-sview="live">Live</button><button class="btn xs quiet" data-sview="evo">Evolution</button></span><span class="loghint" id="loghint">finish-line order of every lap · newest lap on the right · lap time next to each rider</span><span class="xb" id="xbtns"></span><button class="btn xs quiet" id="logclose" title="Back to the race screen">Close</button></div>
   <!-- Les filtres de l'onglet Passings : la page 3d de TCT Points Race - mockups.html. Ils ne paraissent
        que sur cet onglet. -->
-  <div class="pfilt" id="pfilt" hidden>
-    <span class="lbl">Source</span>
-    <button class="pf on" data-psrc="all">All</button>
-    <button class="pf" data-psrc="loop0">Finish</button>
-    <button class="pf" data-psrc="loop2">Pursuit A</button>
-    <button class="pf" data-psrc="loop1">Pursuit B</button>
-    <button class="pf" data-psrc="tape">Tape switches</button>
-    <span class="pfsep"></span>
-    <!-- Son point 238 : deux FILTRES, un par dossard, un par tour. Ils retiennent des lignes ;
-         le tri des titres de colonnes (point 236) continue de travailler sur ce qui reste. -->
-    <span class="lbl">Bib</span>
-    <input class="pin" id="pfbib" inputmode="numeric" placeholder="all" autocomplete="off">
-    <span class="lbl">Lap</span>
-    <input class="pin" id="pflap" inputmode="numeric" placeholder="all" autocomplete="off">
-    <button class="pf" data-pclear="1">Clear</button>
-    <span class="pfsep"></span>
-    <!-- Son point 237 : un bouton qui arrete le defilement des evenements, pour qu'on puisse lire. -->
-    <button class="pf hold" data-phold="1">Hold</button>
-    <button class="pf warn" data-podd="1" title="Les passages ou le ruban et la boucle ne sont pas tombes d'accord">Unmatched only</button>
-    <span class="lbl hint" style="color:var(--dim);text-transform:none;letter-spacing:0;font-weight:500">a contact with no read is a bike without a transponder &middot; a read with no contact is a wheel the tape could not separate</span>
-    <span class="phealth" id="phealth"><b>LOOP HEALTH</b></span>
+  <!-- Ses points 310 a 315 : la MEME barre que le Race log. Les boutons en haut — Type puis
+       Location, dans l'ordre des colonnes —, les champs de saisie en bas, ranges comme les
+       colonnes eux aussi, et la recherche en dernier parce qu'elle porte sur la derniere colonne.
+       Hold (son point 237) et Unmatched only restent des boutons : ils vont en haut. -->
+  <div class="pfilt two" id="pfilt" hidden>
+    <div class="frow">
+      <span class="lbl">Type</span>
+      <button class="pf on" data-ptyp="all">All</button>
+      <button class="pf" data-ptyp="transponder">Transponder</button>
+      <button class="pf" data-ptyp="tape">Tape switch</button>
+      <button class="pf" data-ptyp="pulse">Manual pulse</button>
+      <span class="pfsep"></span>
+      <span class="lbl">Location</span>
+      <button class="pf on" data-ploc="all">All</button>
+      <button class="pf" data-ploc="PURSUIT A">Pursuit A</button>
+      <button class="pf" data-ploc="PURSUIT B">Pursuit B</button>
+      <button class="pf" data-ploc="FINISH">Finish</button>
+      <button class="pf" data-ploc="200m">200m</button>
+      <button class="pf" data-ploc="100m">100m</button>
+      <span class="pfsep"></span>
+      <button class="pf hold" data-phold="1">Hold</button>
+      <button class="pf warn" data-podd="1" title="Les passages ou le ruban et la boucle ne sont pas tombes d'accord">Unmatched only</button>
+    </div>
+    <div class="frow">
+      <span class="lbl">Lap</span><input class="pin" id="pflap" inputmode="numeric" placeholder="all" autocomplete="off">
+      <span class="lbl">Bib</span><input class="pin" id="pfbib" inputmode="numeric" placeholder="all" autocomplete="off">
+      <span class="lbl">Noc</span><input class="pin noc3" id="pfnoc" placeholder="all" autocomplete="off">
+      <span class="lbl">Rider</span><input class="pin rid" id="pfrid" placeholder="all" autocomplete="off">
+      <span class="pfsep"></span>
+      <input class="pin wide" id="pfsrch" placeholder="search the text…" autocomplete="off">
+      <button class="pf" data-pclear="1">Clear</button>
+      <span class="lbl hint" style="color:var(--dim);text-transform:none;letter-spacing:0;font-weight:500">a contact with no read is a bike without a transponder &middot; a read with no contact is a wheel the tape could not separate</span>
+      <span class="phealth" id="phealth"><b>LOOP HEALTH</b></span>
+    </div>
+  </div>
+  <!-- Les filtres du Race log : mockups/maquette-racelog.html, validée le 16 novembre 2026 — un bouton
+       par famille de type, et la recherche. Ils ne paraissent que sur cet onglet. Les familles sont
+       celles que le moteur écrit vraiment : pas de bouton qui ne retiendrait jamais rien. -->
+  <!-- Ses points 313 a 315 : DEUX ETAGES — les boutons en haut, les champs de saisie en bas —
+       et les filtres RANGES COMME LES COLONNES, de gauche a droite. La recherche vient en dernier :
+       elle porte sur la derniere colonne, et sur elle seule. -->
+  <div class="pfilt two" id="dfilt" hidden>
+    <div class="frow">
+      <span class="lbl">Type</span>
+      <button class="pf on" data-dfil="all">All</button>
+      <button class="pf" data-dfil="race">Race</button>
+      <button class="pf" data-dfil="sprint">Sprint</button>
+      <button class="pf" data-dfil="group">Group</button>
+      <button class="pf" data-dfil="lap">Lap</button>
+      <button class="pf" data-dfil="transponder">Transponder</button>
+      <button class="pf" data-dfil="operator">Operator</button>
+      <button class="pf" data-dfil="incident">Incident</button>
+      <button class="pf" data-dfil="withdraw">Withdraw</button>
+      <button class="pf" data-dfil="leader">Leader</button>
+    </div>
+    <div class="frow">
+      <span class="lbl">Lap</span><input class="pin" id="dflap" inputmode="numeric" placeholder="all" autocomplete="off">
+      <span class="lbl">Bib</span><input class="pin" id="dfbib" inputmode="numeric" placeholder="all" autocomplete="off">
+      <span class="lbl">Noc</span><input class="pin noc3" id="dfnoc" placeholder="all" autocomplete="off">
+      <span class="lbl">Rider</span><input class="pin rid" id="dfrid" placeholder="all" autocomplete="off">
+      <span class="pfsep"></span>
+      <input class="pin wide" id="dfsrch" placeholder="search the text…" autocomplete="off">
+      <button class="pf" data-dclear="1">Clear</button>
+    </div>
   </div>
   <div class="rows" id="logrows"></div>
 </div>
@@ -1034,7 +1142,7 @@ function dbg(tag, msg, data) {
   DBG.lines.push(Object.assign({ t: +S.t.toFixed(2), tag, msg }, data || {}));
 }
 function dbgChanged(key, val) { if (DBG.was[key] === val) return false; DBG.was[key] = val; return true; }
-const BUILD = '269';
+const BUILD = '287';
 // LE TYPE DE COURSE. Attribut fixé avant la course, comme le nombre de tours et de sprints : `qualification`, où les
 // `advance` premiers passent au tour suivant, ou `final`, sans coupe ni place qualificative. Le classement en tire sa
 // ligne de coupe ; les scénarios et le fil commentateurs le liront ensuite (mockups/INTEGRATION.md §6). Il naît sur
@@ -1184,6 +1292,8 @@ function reset() {
   const gridRank = {}; gridOrder().forEach((b, k) => { gridRank[b] = k; });
   S = {
     t: 0, factor: 1, finished: false,
+    wall0: null,            // l'heure du PC au coup de pistolet (sa réponse du 22 novembre 2026) : la colonne Daytime du journal
+    crashSaid: {},          // par groupe d'incident et par tour : le décompte déjà écrit au journal, pour ne pas le réécrire à chaque image
     riders: RIDERS.map(([bib, name, nat, color, dk, first], i) => ({
       bib, name, nat, color, dk: !!dk, first: first || '',
       dist: -7 - gridRank[bib] * 2.2,
@@ -2575,6 +2685,7 @@ function detect(G, M) {
   // 3. riders of an incident group read again: back on the track. Un groupe de crash ouvert par la carte du point 253
   //    porte déjà sa propre carte à trois choix : il n'en reçoit pas une seconde.
   for (const g of S.groups.filter(g => g.type !== 'manual')) {
+    crashCount(g);   // les cinq tours comptés au journal, une ligne par tour (build 270)
     if (g.type === 'crash') { carteCrash(g); continue; }
     const back = g.bibs.filter(b => M.get(b) && M.get(b).read).sort(byBib);
     if (!back.length) continue;
@@ -2656,6 +2767,19 @@ function texteCrash(g) {
   const left = NEUTRAL_LAPS - (raceLap() - g.lap);
   return '<b>CRASH</b> · Lap ' + g.lap + ' · ' + (left > 0 ? 'still ' + plural(left, 'lap') + ' to rejoin' : 'neutralisation over');
 }
+// LE DÉCOMPTE DES CINQ TOURS AU JOURNAL (build 270). Le moteur le compte déjà sur le groupe et l'écrit sur la carte
+// de crash et dans l'en-tête du bloc (texteCrash) ; le journal, lui, n'en gardait rien — seules l'ouverture de
+// l'incident et sa fermeture y figuraient. Il en garde maintenant une ligne par tour, dans les mots de la carte, et
+// une ligne quand le compte est fini. Une seule ligne par tour et par groupe : la carte se refait à chaque image.
+function crashCount(g) {
+  if (!S.started || !g.bibs.length) return;
+  const lap = raceLap(), key = g.id + ':' + lap;
+  if (S.crashSaid[key]) return;
+  S.crashSaid[key] = true;
+  const left = NEUTRAL_LAPS - (lap - g.lap);
+  if (left >= NEUTRAL_LAPS || left < 0) return;   // le tour du crash : sa propre ligne le dit déjà · au-delà du compte : plus rien à dire
+  logEvent('INCIDENT', (g.type === 'crash' ? 'CRASH' : 'MECHANICAL') + ' of Lap ' + g.lap + ' · ' + bibList(g.bibs) + ' · ' + (left > 0 ? 'still ' + plural(left, 'lap') + ' to rejoin' : 'neutralisation over'), false);
+}
 function carteCrash(g) {
   const key = 'crash:' + g.id, p = S.proposals.find(x => x.key === key), text = texteCrash(g);
   if (p) {
@@ -2669,7 +2793,17 @@ function carteCrash(g) {
 // ---------- operator actions: facts ----------
 // A decision is a journal entry. It is never erased: a later decision can contradict it (rev), dated now, leaving every
 // decision taken in between untouched. The Undo button is only for the slip of a second ago.
-function logEvent(k, m, op, rev) { S.log.unshift({ id: S.nextId++, t: S.t, k, m, op, rev: rev || null, reversed: false }); if (S.log.length > 120) S.log.pop(); dirty = true; }
+function logEvent(k, m, op, rev, ex) { S.log.unshift(Object.assign({ id: S.nextId++, t: S.t, dt: dayStamp(), lap: logLap(), k, m, op, rev: rev || null, reversed: false }, ex || null)); if (S.log.length > 120) S.log.pop(); dirty = true; }
+// L'HEURE DU JOUR DU JOURNAL (l'opérateur, 22 novembre 2026 : « Oui on prend l'heure du PC pour DAY TIME »). Elle est
+// lue sur l'horloge du PC au coup de pistolet, et le temps de course s'y ajoute : une course rejouée à ×16 garde ainsi
+// une heure du jour qui suit ses propres secondes, et non celles du PC. L'heure et le tour sont posés À L'ÉCRITURE de
+// la ligne, jamais relus au rendu : ce sont ceux de l'instant où le fait s'est produit.
+function dayStamp() { return S.wall0 == null ? Date.now() : S.wall0 + S.t * 1000; }
+const fmtDay = ms => { const d = new Date(ms); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0'); };
+// Le tour d'une ligne est CELUI QUE L'OPÉRATEUR VOIT : le compteur de l'ovale, compté sur le leader
+// désigné (dispLap), le même que la carte de sprint et le registre. Avant le premier passage sur la ligne
+// il n'y a pas encore de tour : la colonne reste vide.
+function logLap() { return S.started ? dispLap() : 0; }
 function groupsCopy() { return S.groups.map(g => ({ ...g, bibs: [...g.bibs] })); }
 // Laps: two counters per rider, laps GAINED and laps LOST, counted apart (they break ties separately). The net is derived.
 // "+1 lap" / "−1 lap" and a validated proposal raise a counter; a correction lowers it, in place. Nothing is compensated.
@@ -3526,7 +3660,7 @@ function renderLog() {
   if (logTab === 'sprints') { logrows.innerHTML = renderSprintsTab(); return; }
   if (logTab === 'stand') { logrows.innerHTML = renderStandingsTab(); return; }
   if (logTab === 'cross') { logrows.innerHTML = renderCrossTab(); return; }   // Lap by lap : une colonne par tour (S4)
-  logrows.innerHTML = S.log.map(e => `<div class="lrow dec${e.op ? ' op' : ''}${e.reversed ? ' rev' : ''}"><span class="t">${fmtT(e.t)}</span><span class="k">${e.k}</span><span class="m"><span class="mt">${e.m}</span>${e.reversed ? '<span class="pill warn">corrected</span>' : ''}</span></div>`).join(''); }
+  logrows.innerHTML = renderRaceLogTab(); }   // Race log : les sept colonnes de sa maquette (build 270)
 
 function render() {
   const M = measured(); let G = computeGroups(M);
@@ -4022,7 +4156,12 @@ function spSend(k, kind, force) {
   s.sentAt = S.t;
   const msg = { t: S.t, k, lap: s.lap, kind: kind === 'live' ? (correction ? 'live · correction' : 'live') : correction ? 'correction' : 'sent', places: out, text: out.map(o => o.place + '. ' + o.bib + (o.photo ? ' [photo]' : '')).join('  ') };
   S.outputs.unshift(msg); if (S.outputs.length > 80) S.outputs.pop();
-  logEvent('SPRINT', spLabel(k) + ' · ' + msg.kind + ' → TV, scoreboard, web · ' + msg.text, kind !== 'live');
+  // SES POINTS 311 ET 312 : un sprint est un evenement qui touche quatre coureurs, donc quatre
+  // lignes au journal, une par place servie. La phrase du moteur ne change pas ; la ligne porte en
+  // plus ses places et leurs points, et le Race log en fait une ligne chacune.
+  const ptsNow = spPoints(k);
+  logEvent('SPRINT', spLabel(k) + ' · ' + msg.kind + ' → TV, scoreboard, web · ' + msg.text, kind !== 'live',
+    null, { places: out.map(o => ({ place: o.place, bib: o.bib, pts: ptsNow[o.bib] || 0 })) });
   dirty = true; return true;
 }
 function spSendState(k) {
@@ -4980,7 +5119,7 @@ $('#simtabs').addEventListener('click', e => {
   railDirty = true; render();   // each tab asks for its own width
 });
 $('#simplay').addEventListener('click', () => {
-  if (!S.started) { S.started = true; logEvent('RACE', 'Start · ' + S.riders.length + ' riders · lap counter linked', false); S.factor = lastFactor > 0 ? lastFactor : 1; if (S.hideOnStart) railHide(true); }
+  if (!S.started) { S.started = true; S.wall0 = Date.now(); logEvent('RACE', 'Start · ' + S.riders.length + ' riders · lap counter linked', false); S.factor = lastFactor > 0 ? lastFactor : 1; if (S.hideOnStart) railHide(true); }
   else if (S.factor <= 0) S.factor = lastFactor > 0 ? lastFactor : 1;
   syncSeg(); railDirty = true; dirty = true; render();
 });
@@ -5014,8 +5153,10 @@ function rewind30() {
   if (!S.started) return;
   const target = Math.max(0, S.t - 30);
   const keep = curActs().filter(a => a.t <= target);
+  const wall = S.wall0;   // le retour en arrière ne redonne pas une autre heure de départ à la course
   reset();
   S.started = true;
+  S.wall0 = wall;
   if (REC) REC.acts = keep;
   S.replay = keep.map(a => ({ ...a })).sort((a, b) => a.t - b.t);
   let guard = 0;
@@ -5726,32 +5867,40 @@ for (const k in ZCSS) syncZone(k);
    (S.tapePass). Le prototype n'a ni horloge murale ni niveau de signal, donc
    la colonne Time porte le TEMPS DE COURSE à la milliseconde et la colonne
    Signal porte ce qui existe vraiment : les comptages. */
-let passSrc = 'all', passOdd = false;
+// SES POINTS 310 A 315, 22 novembre 2026 : les Passings portent les memes colonnes que le Race log
+// — Daytime · Race time · Lap · Type · Location · Bib · Noc (drapeau compris) · Rider name — puis
+// Signal / count, la leur. Meme barre de filtres a deux etages, filtres ranges comme les colonnes.
+let passType = 'all', passLoc = 'all', passOdd = false;
 // SON POINT 236 : la liste se range sur un titre de colonne, et celui d'avant devient le SECOND
-// critère. Ses mots : « En triant par boucle on pourrait voir tous les passages sur cette boucle
-// puis trier par lap pour voir si tout est ok. et pareil par dossard et par lap ». Deux critères,
-// jamais trois : le troisième clic pousse le plus ancien dehors.
+// critere. Deux criteres, jamais trois : le troisieme clic pousse le plus ancien dehors.
 let passK1 = { col: 't', dir: -1 }, passK2 = null;
-// SON POINT 238 : deux FILTRES. « je voulais dire qu'il faudrait des filtres ». Ils retiennent des
-// lignes ; le tri ci-dessus continue de travailler sur ce qui reste.
-let passBib = null, passLap = null;
-// SON POINT 237 : « un bouton qui permet de stopper le défilement des événements pour le bas, cela
-// permet de lire plus facilement la passing list ». Les boucles continuent de lire pendant ce
-// temps — c'est l'AFFICHAGE qui s'arrête, et la liste le dit, avec ce qui attend derrière.
+// SES POINTS 238 ET 313 : un champ par chose filtree, et la recherche ne touche QUE le texte.
+let passBib = null, passLap = null, passNoc = '', passRid = '', passQ = '';
+// SON POINT 237 : un bouton qui arrete le defilement, pour qu'on puisse lire.
 let passHold = false, passHoldAt = 0;
 const pfilt = $('#pfilt'), phealth = $('#phealth');
 const pT3 = s => { s = Math.max(0, s); const m = Math.floor(s / 60), r = s - m * 60; return m + ':' + (r < 10 ? '0' : '') + r.toFixed(3); };
+// Les noms de l'installation, tels qu'ils sont poses dans buildTapes et LOOPNAME, rendus dans les
+// mots de sa liste : FINISH · PURSUIT A · PURSUIT B · 200m · 100m.
+const LOCN = n => ({ 'on Finish': 'FINISH', 'on Pursuit B': 'PURSUIT B', 'on Pursuit A': 'PURSUIT A',
+  '200 m start': '200m', '100 m intermediate': '100m',
+  'Finish': 'FINISH', 'Pursuit A': 'PURSUIT A', 'Pursuit B': 'PURSUIT B' })[n] || String(n).toUpperCase();
+const PTYPE = { transponder: 'TRANSPONDER', tape: 'TAPE SWITCH', pulse: 'MANUAL PULSE' };
 pfilt.addEventListener('click', e => {
-  const b = e.target.closest('[data-psrc],[data-podd],[data-pclear],[data-phold]'); if (!b) return;
-  if (b.dataset.psrc) passSrc = b.dataset.psrc;
+  const b = e.target.closest('[data-ptyp],[data-ploc],[data-podd],[data-pclear],[data-phold]'); if (!b) return;
+  if (b.dataset.ptyp) passType = b.dataset.ptyp;
+  else if (b.dataset.ploc) passLoc = b.dataset.ploc;
   else if (b.dataset.podd) passOdd = !passOdd;
   else if (b.dataset.phold) { passHold = !passHold; if (passHold) passHoldAt = S.t; }
-  else { passBib = passLap = null; for (const id of ['#pfbib', '#pflap']) { $(id).value = ''; $(id).className = 'pin'; } }
+  else {
+    passBib = passLap = null; passNoc = passRid = passQ = ''; passType = passLoc = 'all';
+    for (const id of ['#pfbib', '#pflap', '#pfnoc', '#pfrid', '#pfsrch']) { $(id).value = ''; $(id).className = $(id).className.replace(/ (set|bad)/g, ''); }
+  }
   dirty = true; render();
 });
-// On tape, la liste se resserre : pas de bouton à presser. Un dossard qui n'est pas au départ, ou
-// un tour qui n'existe pas, laisse le champ en orange — l'écran dit alors qu'IL n'a rien, et non
-// qu'il n'y a rien, ce qui n'est pas la même chose devant une liste vide.
+// On tape, la liste se resserre : pas de bouton a presser. Un dossard qui n'est pas au depart, ou
+// un tour qui n'existe pas, laisse le champ en orange — l'ecran dit alors qu'IL n'a rien, et non
+// qu'il n'y a rien, ce qui n'est pas la meme chose devant une liste vide.
 for (const [sel, max] of [['#pfbib', null], ['#pflap', () => LAPS]]) {
   $(sel).addEventListener('input', e => {
     const v = e.target.value.replace(/[^0-9]/g, '');
@@ -5759,98 +5908,91 @@ for (const [sel, max] of [['#pfbib', null], ['#pflap', () => LAPS]]) {
     const n = v === '' ? null : +v;
     if (sel === '#pfbib') passBib = n; else passLap = n;
     const ok = n == null || (sel === '#pfbib' ? S.riders.some(r => r.bib === n) : (n >= 1 && n <= max()));
-    e.target.className = 'pin' + (n == null ? '' : ok ? ' set' : ' bad');
+    e.target.className = 'pin' + (n == null ? '' : ok ? ' set' : ' bad') + (sel === '#pfbib' ? '' : '');
+    dirty = true; render();
+  });
+}
+for (const [sel, set] of [['#pfnoc', v => passNoc = v], ['#pfrid', v => passRid = v], ['#pfsrch', v => passQ = v]]) {
+  $(sel).addEventListener('input', e => {
+    set(e.target.value.trim().toLowerCase());
+    e.target.classList.toggle('set', e.target.value !== '');
     dirty = true; render();
   });
 }
 function renderPassingsTab() {
-  pfilt.querySelectorAll('[data-psrc]').forEach(b => b.classList.toggle('on', b.dataset.psrc === passSrc));
+  pfilt.querySelectorAll('[data-ptyp]').forEach(b => b.classList.toggle('on', b.dataset.ptyp === passType));
+  pfilt.querySelectorAll('[data-ploc]').forEach(b => b.classList.toggle('on', b.dataset.ploc === passLoc));
   pfilt.querySelectorAll('[data-podd]').forEach(b => b.classList.toggle('on', passOdd));
   pfilt.querySelectorAll('[data-phold]').forEach(b => { b.classList.toggle('on', passHold); b.textContent = passHold ? 'Resume' : 'Hold'; });
   phealth.innerHTML = '<b>LOOP HEALTH</b>' + LOOPS.map((L, i) =>
     `<span class="${S.reads[i].length ? '' : 'q'}">${LOOPNAME[L] === 'Finish' ? 'F' : LOOPNAME[L].slice(-1)} ${S.reads[i].length ? '✓ ' + S.reads[i].length : '—'}</span>`).join('');
 
-  // LE TOUR D'UNE DÉTECTION EST CELUI OÙ LE COUREUR ÉTAIT À CET INSTANT-LÀ, et non celui où il en
-  // est maintenant. Il se compte sur ses passages de la boucle d'arrivée AVANT cette heure, plus
-  // un — il roule son tour suivant —, tours validés retranchés : c'est son point 233, « il faut se
-  // méfier du nombre de passages sur la ligne ». Sans cela, les trente détections d'un coureur
-  // portaient toutes le même numéro de tour, et le filtre par tour n'aurait rien filtré.
-  // LES PASSAGES SE COMPTENT SUR LA BOUCLE D'ARRIVÉE ELLE-MÊME, `S.reads[0]`, et non sur `S.passes` :
-  // celui-là laisse déjà le passage du départ dehors (`ka > 0`), et c'est justement ce passage-là
-  // qu'il faut voir ici pour savoir où le tour 1 commence.
+  // LE TOUR D'UNE DETECTION EST CELUI OU LE COUREUR ETAIT A CET INSTANT-LA (son point 233). Le
+  // tour 1 commence apres le passage sur la ligne qui suit le depart : tout ce qui precede ne
+  // porte aucun tour, et la colonne reste vide — comme RACE TIME avant le coup de pistolet.
   const finAt = {};
   for (const x of (S.reads[0] || [])) (finAt[x.bib] = finAt[x.bib] || []).push(x.t);
   for (const l of Object.values(finAt)) l.sort((a, b) => a - b);
-  // LE TOUR 1 COMMENCE APRÈS LE PASSAGE SUR LA LIGNE QUI SUIT LE DÉPART. Ses mots, 18 novembre
-  // 2026 : « le tout premier passage sur les boucles Pursuit A et Finish au moment du départ ne
-  // doit pas compter comme Lap 1. Le lap 1 débute après le passage de la boucle Finish après le
-  // start ». La grille est collée à la ligne et déborde en amont : un coureur placé au-delà de
-  // −10 m roule sur la boucle Pursuit A — qui est à 10 m de la ligne — dès que le starter le
-  // lâche. Cette détection est vraie, la boucle l'a bien lu ; elle n'appartient à aucun tour.
-  //
-  // DONC : le n-ième passage sur la ligne FERME le tour n−1, et les autres boucles portent le tour
-  // ouvert par le dernier passage sur la ligne. Tout ce qui précède le premier passage ne porte
-  // aucun tour, et la colonne reste vide. C'est le même classement que Lap by lap, qui range un
-  // franchissement sur `ka − lapStatus` et laisse le passage du départ dehors (`ka > 0`).
   const lapAt = (bib, t, surLaLigne) => {
     const l = finAt[bib] || [];
-    let lo = 0, hi = l.length;                       // combien de ses passages sont déjà derrière lui
+    let lo = 0, hi = l.length;
     while (lo < hi) { const m = (lo + hi) >> 1; if (l[m] <= t + 1e-9) lo = m + 1; else hi = m; }
     const n = (surLaLigne ? lo - 1 : lo) - (S.lapStatus[bib] | 0);
     return n >= 1 ? n : null;
   };
 
   const out = [];
-  if (passSrc === 'all' || passSrc.startsWith('loop')) {
-    const only = passSrc.startsWith('loop') ? +passSrc.slice(4) : null;
-    S.reads.forEach((list, li) => {
-      if (only != null && li !== only) return;
-      // UN TOUR SE LIT PURSUIT B, PURSUIT A, FINISH. Ses mots, 18 novembre 2026. C'est l'ordre dans
-      // lequel un coureur les rencontre à l'intérieur d'un tour : Pursuit B est à 115 m, Pursuit A
-      // à 240 m, et la ligne FERME le tour — elle vient donc en dernier, et non en premier.
-      const ord = LOOPS[li] === 0 ? TRACK : LOOPS[li];
-      for (const x of list.slice(-400)) out.push({ t: x.t, point: LOOPNAME[LOOPS[li]], ord,
-        bib: x.bib, lap: lapAt(x.bib, x.t, li === 0), sig: x.placed ? 'placed · operator' : 'read', mark: x.placed ? 'not read' : '' });
-    });
-  }
-  if (passSrc === 'all' || passSrc === 'tape') {
-    for (const p of S.tapePass.slice(-200)) out.push({
-      t: p.t0, point: TAPES[p.tape].name, ord: 1000 + TAPES[p.tape].pos, bib: null, lap: p.lap,
-      sig: plural(p.n, 'contact') + ' / ' + plural(p.read.length, 'read'),
-      mark: p.lone ? p.lone + ' with no read' : p.short ? p.short + ' with no contact' : '',
-      odd: !!(p.lone || p.short) });
-  }
-  // L'arrêt coupe à l'heure du clic ; les deux filtres retiennent ce qui reste. Un contact de ruban
-  // ne porte aucun dossard : un filtre par dossard le retient donc forcément dehors.
+  S.reads.forEach((list, li) => {
+    for (const x of list.slice(-400)) out.push({ t: x.t, typ: x.placed ? 'pulse' : 'transponder',
+      loc: LOCN(LOOPNAME[LOOPS[li]]), ord: LOOPS[li] === 0 ? TRACK : LOOPS[li],
+      bib: x.bib, lap: lapAt(x.bib, x.t, li === 0), sig: x.placed ? 'placed · operator' : 'read', mark: x.placed ? 'not read' : '' });
+  });
+  for (const p of S.tapePass.slice(-200)) out.push({
+    t: p.t0, typ: 'tape', loc: LOCN(TAPES[p.tape].name), ord: 1000 + TAPES[p.tape].pos, bib: null, lap: p.lap,
+    sig: plural(p.n, 'contact') + ' / ' + plural(p.read.length, 'read'),
+    mark: p.lone ? p.lone + ' with no read' : p.short ? p.short + ' with no contact' : '',
+    odd: !!(p.lone || p.short) });
+
+  // L'arret coupe a l'heure du clic ; les filtres retiennent ce qui reste. Un contact de ruban ne
+  // porte aucun dossard : un filtre par dossard, par NOC ou par nom le retient donc dehors.
   const coupe = passHold ? passHoldAt : Infinity;
-  const base = out.filter(r => r.t <= coupe && (!passOdd || r.odd)
-    && (passBib == null || r.bib === passBib) && (passLap == null || r.lap === passLap));
-  const VAL = { t: r => r.t, point: r => r.ord, bib: r => (r.bib == null ? 1e9 : r.bib), lap: r => (r.lap == null ? 1e9 : r.lap) };
+  const base = out.filter(r => {
+    if (r.t > coupe) return false;
+    if (passOdd && !r.odd) return false;
+    if (passType !== 'all' && r.typ !== passType) return false;
+    if (passLoc !== 'all' && r.loc !== passLoc) return false;
+    if (passLap != null && r.lap !== passLap) return false;
+    if (passBib != null && r.bib !== passBib) return false;
+    const rd = r.bib != null ? S.riders.find(x => x.bib === r.bib) : null;
+    if (passNoc && !(rd && rd.nat.toLowerCase().startsWith(passNoc))) return false;
+    if (passRid && !(rd && ((rd.first || '') + ' ' + rd.name).toLowerCase().includes(passRid))) return false;
+    // LA RECHERCHE NE TOUCHE QUE LE TEXTE (son point 313) : ici, Signal / count et sa note.
+    if (passQ && !((r.sig + ' ' + r.mark).toLowerCase().includes(passQ))) return false;
+    return true;
+  });
+  const VAL = { t: r => r.t, loc: r => r.ord, bib: r => (r.bib == null ? 1e9 : r.bib), lap: r => (r.lap == null ? 1e9 : r.lap) };
   const rows = base.sort((a, b) => {
     const d1 = (VAL[passK1.col](a) - VAL[passK1.col](b)) * passK1.dir; if (d1) return d1;
     if (passK2) { const d2 = (VAL[passK2.col](a) - VAL[passK2.col](b)) * passK2.dir; if (d2) return d2; }
     return a.t - b.t;
   }).slice(0, 300);
 
-  // le pied de liste : la dernière passage où le ruban et la boucle ne sont pas tombés d'accord
   const odd = S.tapePass.filter(p => p.lone || p.short), last = odd[odd.length - 1];
   const foot = last
-    ? TAPES[last.tape].name + ' · ' + last.n + ' contacts for ' + plural(last.read.length, 'read') + ' on Lap ' + last.lap
+    ? LOCN(TAPES[last.tape].name) + ' · ' + last.n + ' contacts for ' + plural(last.read.length, 'read') + ' on Lap ' + last.lap
       + ' — ' + (last.lone ? plural(last.lone, 'bike') + ' more than the loop named' : plural(last.short, 'read') + ' the tape could not separate')
     : 'every contact answered a read, and every read a contact';
 
-  // L'EN-TÊTE SE CLIQUE. Celle qui range porte la couleur d'accent et sa flèche ; celle d'avant,
-  // devenue le second critère, porte le petit 2 (son point 236).
-  const ph = [['t', 'Time'], ['point', 'Point'], ['bib', 'Bib'], [null, 'Noc'], ['lap', 'Lap'],
-              [null, 'Signal / count'], [null, 'Note']].map(([col, lab], i) => {
-    if (!col) return `<span${i === 6 ? ' class="r"' : ''}>${lab}</span>`;
+  // L'EN-TETE SE CLIQUE (son point 236), sur les colonnes qui se rangent.
+  const ph = [['t', 'Daytime'], [null, 'Race time'], ['lap', 'Lap'], [null, 'Type'], ['loc', 'Location'],
+              ['bib', 'Bib'], [null, 'Noc'], [null, 'Rider name'], [null, 'Signal / count']].map(([col, lab]) => {
+    if (!col) return `<span>${lab}</span>`;
     const un = passK1.col === col, deux = passK2 && passK2.col === col;
     const fl = un ? `<i class="ar">${passK1.dir > 0 ? '▲' : '▼'}</i>`
              : deux ? `<i class="ar">${passK2.dir > 0 ? '▲' : '▼'}</i><i class="n2">2</i>` : '';
     return `<span class="s${un ? ' k1' : deux ? ' k2' : ''}" data-pcol="${col}">${lab}${fl}</span>`;
   }).join('');
 
-  // ARRÊTÉE, LA LISTE LE DIT : l'heure du clic, et ce que les boucles ont lu depuis.
   const retenu = passHold ? out.filter(r => r.t > passHoldAt).length : 0;
   const bandeau = passHold
     ? `<div class="held">Held at <i>${pT3(passHoldAt)}</i> · ${retenu ? plural(retenu, 'reading') + ' since, not shown yet' : 'nothing read since'}</div>`
@@ -5860,18 +6002,21 @@ function renderPassingsTab() {
   return `<div class="ph">${ph}</div>` + bandeau +
     (rows.length ? rows.map(r => {
       const rd = r.bib != null ? S.riders.find(x => x.bib === r.bib) : null;
-      // RIEN DANS LA COLONNE quand la détection ne tombe dans aucun tour — celles du départ. Elle
-      // portait jusqu'ici le tour où le coureur en est MAINTENANT, faute de mieux : un numéro qui
-      // ne disait rien de la ligne qu'on lisait.
-      const lap = r.lap;
-      // un trait à chaque changement du PREMIER critère, pour qu'on voie où une boucle finit et où
-      // la suivante commence — il n'a de sens que s'il y a un second critère pour remplir le bloc
       const g = passK2 ? String(VAL[passK1.col](r)) : null;
       const sep = passK2 && prec !== null && g !== prec ? ' sep' : ''; prec = g;
-      return `<div class="prow${r.odd ? ' odd' : ''}${sep}"><span class="t">${pT3(r.t)}</span><span class="lo">${r.point}</span>` +
-        `${rd ? chip(rd) : '<span class="nobib">—</span>'}<span class="noc">${rd ? rd.nat : ''}</span>` +
-        `<span class="lp">${lap != null ? 'L' + lap : ''}</span><span class="sig">${r.sig}</span>` +
-        `<span class="mk">${r.mark}</span></div>`;
+      // RACE TIME ET LAP RESTENT VIDES tant que la course n'a pas demarre (ses mots du
+      // 22 novembre) : un passage d'avant le coup de pistolet est un passage comme un autre,
+      // mais il n'appartient ni a une course ni a un tour.
+      const avant = !S.started;
+      return `<div class="prow t-${r.typ}${r.odd ? ' odd' : ''}${sep}">` +
+        `<span class="dt">${S.wall0 == null ? '' : fmtDay(S.wall0 + r.t * 1000)}</span>` +
+        `<span class="t">${avant ? '' : pT3(r.t)}</span>` +
+        `<span class="lp">${!avant && r.lap != null ? r.lap : ''}</span>` +
+        `<span class="k">${PTYPE[r.typ]}</span><span class="lo">${r.loc}</span>` +
+        `<span class="dbib">${r.bib == null ? '<i>—</i>' : r.bib}</span>` +
+        `<span class="dnoc">${rd ? '<span class="flagw">' + flag(rd.nat) + '</span><i>' + rd.nat + '</i>' : ''}</span>` +
+        `<span class="dnm">${rd ? '<span class="fn">' + (rd.first || '') + '</span> <b>' + rd.name + '</b>' : ''}</span>` +
+        `<span class="sig">${r.sig}${r.mark ? ' <i class="mk">· ' + r.mark + '</i>' : ''}</span></div>`;
     }).join('') : '<div class="none">Nothing read yet for this filter.</div>') +
     '<div class="foot">' + foot + '</div>';
 }
@@ -5921,8 +6066,129 @@ addEventListener('keydown', e => {
   $('#logtabs [data-tab="race"]').click();
 });
 
+/* ===== LE RACE LOG · onglet dec · build 270 ========================================================
+   mockups/maquette-racelog.html, validée le 16 novembre 2026. Sept colonnes : Daytime · Race time ·
+   Lap · Type · Rider · Event · Status.
+
+   LES LIGNES SONT CELLES DU MOTEUR. Rien n'est écrit ici : le journal reste ce que `logEvent` écrit,
+   et pas une phrase n'a été réécrite. Les quatre colonnes nouvelles se remplissent de ce que la ligne
+   porte déjà — l'heure du jour et le tour posés à l'écriture, le coureur lu sur le dossard de la
+   phrase, le statut sur la ligne qu'une décision plus récente a reprise.
+
+   Ce que la maquette montre et que le moteur n'écrit pas : les types ALERT et HARDWARE, et les
+   anomalies au format Problème → Effet → Action. Les couper en trois veut dire réécrire des phrases
+   qu'il lit déjà à l'écran : cela se propose, cela ne se code pas ici. */
+const LOGTYPE = {
+  RACE:        ['RACE', 'race'],
+  SPRINT:      ['SPRINT', 'sprint'],
+  GROUP:       ['GROUP', 'group'],
+  LAPS:        ['LAP', 'lap'],
+  TRANSPONDER: ['TRANSPONDER', 'transponder'],
+  OP:          ['OPERATOR', 'operator'],
+  INCIDENT:    ['INCIDENT', 'incident'],
+  WITHDRAW:    ['WITHDRAW', 'withdraw'],
+  LEADER:      ['LEADER', 'leader'],
+  UNDO:        ['UNDO', 'operator'],      // une annulation est un geste de l'opérateur ; son libellé reste UNDO
+  EXPORT:      ['EXPORT', 'operator'],    // un export aussi
+};
+// SES POINTS 310 A 315, 22 novembre 2026 : le Race log et les Passings se tiennent pareil.
+// Colonnes communes — Daytime · Race time · Lap · Type · Bib · Noc (drapeau compris) · Rider name —
+// puis celle de l'onglet, Event ici. Un evenement qui touche plusieurs coureurs fait UNE LIGNE PAR
+// COUREUR ; un sprint en fait une par place servie. Les filtres sont dans l'ordre des colonnes, et
+// la recherche ne porte QUE sur le texte de la derniere colonne.
+let decFil = 'all', decQ = '', decLap = '', decBib = '', decNoc = '', decRid = '';
+function decType(e) {
+  const T = LOGTYPE[e.k] || [e.k, 'other'];
+  let label = T[0], tone = '';
+  if (e.k === 'WITHDRAW') { const m = e.m.match(/\b(DNS|DNF|ABD)\b/); if (m) label = m[1]; }
+  if (e.k === 'LAPS') tone = /laps gained/.test(e.m) ? ' up' : /laps lost/.test(e.m) ? ' down' : '';
+  return { label, fam: T[1], tone };
+}
+// Les dossards qu'une ligne NOMME : bibList ecrit « BIB 7 » pour un seul et « BIB 7, 14 and 22 »
+// pour plusieurs — un seul « BIB », puis la liste.
+function decBibsNamed(e) {
+  const out = [];
+  for (const m of e.m.matchAll(/BIB ((?:\d+(?:, | and ))*\d+)/g))
+    for (const x of m[1].split(/, | and /)) out.push(+x);
+  return out;
+}
+const ORDN = n => n + (n % 10 === 1 && n % 100 !== 11 ? 'st' : n % 10 === 2 && n % 100 !== 12 ? 'nd' : n % 10 === 3 && n % 100 !== 13 ? 'rd' : 'th');
+// La liste de dossards sort de la phrase : chaque coureur a sa ligne, le texte n'a plus a les nommer.
+const decStrip = m => m.replace(/BIB (?:\d+(?:, | and ))*\d+\s*·?\s*/, '').trim();
+// UNE LIGNE DU JOURNAL DEVIENT UNE OU PLUSIEURS LIGNES D'ECRAN.
+function decSplit(e) {
+  if (e.places && e.places.length) {
+    const lbl = e.m.split(' · ')[0];          // « Sprint 2 », « Final sprint »
+    return e.places.map(p => ({ e, bib: p.bib, txt: lbl + ' · ' + ORDN(p.place) + ' ' + plural(p.pts, 'point') }));
+  }
+  const bibs = decBibsNamed(e);
+  if (bibs.length > 1) { const t = decStrip(e.m); return bibs.map(b => ({ e, bib: b, txt: t })); }
+  if (bibs.length === 1) return [{ e, bib: bibs[0], txt: e.m.replace('BIB ' + bibs[0] + ' · ', '') }];
+  return [{ e, bib: null, txt: e.m }];
+}
+const decRider = bib => bib == null ? null : (S.riders.find(r => r.bib === bib) || null);
+function decKeepRow(row) {
+  const t = decType(row.e);
+  if (decFil !== 'all' && t.fam !== decFil) return false;
+  if (decLap !== '' && row.e.lap !== +decLap) return false;
+  if (decBib !== '' && row.bib !== +decBib) return false;
+  const r = decRider(row.bib);
+  if (decNoc !== '' && !(r && r.nat.toLowerCase().startsWith(decNoc))) return false;
+  if (decRid !== '' && !(r && ((r.first || '') + ' ' + r.name).toLowerCase().includes(decRid))) return false;
+  // LA RECHERCHE NE TOUCHE QUE LE TEXTE (son point 313) : elle ne refait pas ce que les quatre
+  // champs font deja.
+  if (decQ && !row.txt.toLowerCase().includes(decQ)) return false;
+  return true;
+}
+function decRow(row) {
+  const e = row.e, t = decType(e), r = decRider(row.bib);
+  return '<div class="lrow dec t-' + t.fam + (e.op ? ' op' : '') + (e.reversed ? ' rev' : '') + '">'
+    + '<span class="dt">' + (e.dt ? fmtDay(e.dt) : '') + '</span>'
+    + '<span class="t">' + fmtT(e.t) + '</span>'
+    + '<span class="lp">' + (e.lap ? e.lap : '') + '</span>'
+    + '<span class="k' + t.tone + '">' + t.label + '</span>'
+    + '<span class="dbib">' + (row.bib == null ? '<i>—</i>' : row.bib) + '</span>'
+    + '<span class="dnoc">' + (r ? '<span class="flagw">' + flag(r.nat) + '</span><i>' + r.nat + '</i>' : '') + '</span>'
+    + '<span class="dnm">' + (r ? '<span class="fn">' + (r.first || '') + '</span> <b>' + r.name + '</b>' : '') + '</span>'
+    + '<span class="m"><span class="mt">' + row.txt + '</span>'
+    + (e.reversed ? ' <span class="pill warn">Corrected</span>' : '') + '</span></div>';
+}
+function renderRaceLogTab() {
+  const head = '<div class="lrow lhd"><span>Daytime</span><span>Race time</span><span>Lap</span><span>Type</span>'
+    + '<span>Bib</span><span>Noc</span><span>Rider name</span><span>Event</span></div>';
+  const rows = [];
+  for (const e of S.log) for (const row of decSplit(e)) if (decKeepRow(row)) rows.push(decRow(row));
+  return head + (rows.length ? rows.join('') : '<div class="lnone">Nothing matches this filter.</div>');
+}
+const dfilt = $('#dfilt'), dfsrch = $('#dfsrch');
+dfilt.addEventListener('click', e => {
+  const b = e.target.closest('[data-dfil]');
+  if (b) { decFil = b.dataset.dfil; dfilt.querySelectorAll('[data-dfil]').forEach(x => x.classList.toggle('on', x === b)); dirty = true; render(); return; }
+  if (e.target.closest('[data-dclear]')) {
+    decFil = 'all'; decQ = ''; decLap = ''; decBib = ''; decNoc = ''; decRid = '';
+    for (const el of [dfsrch, dflap, dfbib, dfnoc, dfrid]) { el.value = ''; el.classList.remove('set'); }
+    dfilt.querySelectorAll('[data-dfil]').forEach(x => x.classList.toggle('on', x.dataset.dfil === 'all'));
+    dirty = true; render();
+  }
+});
+// Un champ par chose filtree, dans l'ordre des colonnes (ses points 313 et 315).
+const decField = (el, set, num) => el.addEventListener('input', ev => {
+  let v = ev.target.value;
+  if (num) { v = v.replace(/\D/g, ''); ev.target.value = v; }
+  set(v.trim().toLowerCase());
+  ev.target.classList.toggle('set', v !== '');
+  dirty = true; render();
+});
+decField(dflap, v => decLap = v, true);
+decField(dfbib, v => decBib = v, true);
+decField(dfnoc, v => decNoc = v, false);
+decField(dfrid, v => decRid = v, false);
+decField(dfsrch, v => decQ = v, false);
+
 const baseRenderLog = renderLog;
 renderLog = function () {
+  dfilt.hidden = logTab !== 'dec';                        // la barre de filtres du Race log, sur son onglet seulement
+  logrows.classList.toggle('rlog', logTab === 'dec');     // les sept colonnes du Race log (build 270)
   if (logTab === 'race') { $('#xbtns').innerHTML = ''; logrows.classList.remove('pass'); pfilt.hidden = true; return; }
   if (logTab !== 'pass') { logrows.classList.remove('pass'); pfilt.hidden = true; return baseRenderLog(); }
   $('#xbtns').innerHTML = '';
@@ -6200,5 +6466,51 @@ logTab = 'race';
 const baseRender = render;
 render = function () { syncTabs(); baseRender(); };
 syncTabs(); renderLog();
+
+/* ---- Le fil commentateurs : un DEUXIEME ECRAN, sur le meme poste ----------------------------
+   Ses mots du 22 novembre 2026 : « Tout sur le même PC, nous travaillons sur un prototype ». Le
+   fil est donc une seconde fenetre du navigateur, qui recoit par BroadcastChannel — meme origine,
+   meme machine, rien a installer. Il est en LECTURE SEULE (cadrage du 16 novembre) : il ne
+   renvoie qu'une chose, « donne-moi tout », a son ouverture.
+   Ce qui part est un INSTANTANE de ce que le moteur sait deja ; aucune valeur n'est calculee ici
+   pour le fil. */
+const FEED = ('BroadcastChannel' in window) ? new BroadcastChannel('tct-feed') : null;
+function feedSnap() {
+  const sprints = [];
+  for (let k = 1; k <= NSPRINTS; k++) {
+    const st = spStarted(k); const sdef = sp(k);
+    const O = st ? spOrder(k) : null, pts = st ? spPoints(k) : {};
+    sprints.push({ k, lap: sdef.lap, final: isFinal(k), started: !!st, live: !!sdef.live, sentAt: sdef.sentAt,
+      order: O ? O.seq.filter(e => !e.empty && e.bib != null).map(e => ({ place: e.place, bib: e.bib, t: e.t, gap: e.gap, pts: pts[e.bib] || 0, photo: !!e.photo, held: !!e.held })) : [] });
+  }
+  return {
+    build: BUILD, t: S.t, wall0: S.wall0, started: S.started, finished: !!S.finished, lap: S.started ? dispLap() : 0,
+    race: { laps: LAPS, sprints: NSPRINTS, track: TRACK }, cfg: { type: CFG.type, advance: CFG.advance },
+    riders: S.riders.map(r => ({ bib: r.bib, nat: r.nat, first: r.first || '', name: r.name })),
+    standings: standings().map(x => ({ bib: x.r.bib, spr: x.spr, wins: x.wins, gained: x.gained, lost: x.lost,
+      lapPts: x.lapPts, total: x.total, fin: x.fin, wd: x.wd, status: x.status,
+      gainedLaps: x.gainedLaps, lostLaps: x.lostLaps })),
+    sprints,
+    log: S.log.slice(0, 60).map(e => ({ dt: e.dt, t: e.t, lap: e.lap, k: e.k, m: e.m, places: e.places || null })),
+    // LES TROIS RELEVES QUI PORTENT TOUTES LES VUES DU FIL ET DES ENTRAINEURS
+    // (mockups/MAQUETTES OUTPUTS.pdf, « Brancher au moteur ») : rien n'est enregistre en plus,
+    // ces releves existent deja et sont gardes pour la course entiere.
+    // 1. LAP BY LAP — le tour, l'heure de passage, le compte propre au coureur, la marque du tour
+    //    gagne ou perdu, et le BLOC dans lequel il roulait, grave a la lecture.
+    cross: Object.fromEntries(Object.entries(S.cross).map(([lap, l]) => [lap,
+      l.map(c => ({ bib: c.bib, t: c.t, n: c.n, mark: c.mark || 0, blk: c.blk || null, blkid: c.blkid == null ? null : c.blkid }))])),
+    // 2. LES PASSINGS — l'ordre des lectures de chaque boucle EST l'ordre sur la piste. La position
+    //    se lit la, jamais sur l'ovale.
+    loops: LOOPS.map((L, i) => ({ i, name: LOOPNAME[L] })),
+    reads: S.reads.map(l => l.map(x => ({ bib: x.bib, t: x.t, placed: !!x.placed }))),
+    // 3. Les chutes et les groupes de l'operateur, dates du tour.
+    groups: S.groups.map(g => ({ id: g.id, type: g.type, lap: g.lap, t: g.t, bibs: [...g.bibs] })),
+    lapStatus: Object.assign({}, S.lapStatus),
+  };
+}
+function feedPush() { if (FEED) try { FEED.postMessage(feedSnap()); } catch (_) {} }
+if (FEED) { FEED.addEventListener('message', e => { if (e.data && e.data.ask) feedPush(); }); setInterval(feedPush, 1000); }
+$('#feedopen').addEventListener('click', () => window.open('fil.html', 'tct-feed', 'width=1280,height=860'));
+$('#coachopen').addEventListener('click', () => window.open('coachs.html', 'tct-coachs', 'width=1280,height=860'));
 })();
 </script>

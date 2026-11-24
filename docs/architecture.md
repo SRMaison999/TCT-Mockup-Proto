@@ -3065,3 +3065,349 @@ poignée, data-rsz="ovh", pilote --h-oval : clé ovh dans LAY et CSSVAR, planche
 barre et ses écarts ; sign +1, le double-clic l'efface. Le cran belowDetent() n'a plus d'objet. Une valeur below
 gardée dans tct.layout n'est plus lue. Mesuré en 1920 × 1080 : dessin 668 px, poignée à 738, tirée de 200 px le
 dessin fait 468 et la barre reste à 982–1070 ; double-clic, 668 de nouveau.
+
+
+## §82 · Le Race log : les sept colonnes de sa maquette · build 270
+
+L'onglet `dec` rend `mockups/maquette-racelog.html`, validée le 16 novembre 2026 : **Daytime ·
+Race time · Lap · Type · Rider · Event · Status**.
+
+**Les lignes restent celles du moteur.** `logEvent(k, m, op, rev)` n'a pas changé de signature et
+aucune de ses soixante phrases n'a été réécrite : les onze types qu'il écrit (`SPRINT`,
+`TRANSPONDER`, `OP`, `RACE`, `LEADER`, `GROUP`, `EXPORT`, `WITHDRAW`, `LAPS`, `INCIDENT`,
+`UNDO`) sont la matière de l'écran. Ce qui s'ajoute tient en deux champs posés **à l'écriture** de
+la ligne, et non relus au rendu :
+
+- `e.dt` — l'heure du jour, `dayStamp()` : `S.wall0 + S.t * 1000`, où `S.wall0` est
+  `Date.now()` lu **au coup de pistolet** (sa réponse du 22 novembre 2026). Le retour de 30 s
+  (`rewind30`) garde `S.wall0` à travers le `reset()`, sans quoi la course rejouée partirait d'une
+  autre heure. Avant le départ, `dayStamp()` rend l'heure du PC telle quelle.
+- `e.lap` — le tour, `logLap()` : **`dispLap()`**, le compteur de l'ovale, et non `raceLap()`
+  (`pitfalls.md` D54). Avant le premier passage sur la ligne il vaut 0 et la colonne reste vide.
+
+**Le rendu**, `renderRaceLogTab()` et ses quatre aides, posé dans le bloc du mixed juste avant
+l'override de `renderLog` :
+
+- `LOGTYPE` associe à chaque type du moteur son libellé de la maquette et sa **famille** —
+  `OP` → OPERATOR, `LAPS` → LAP ; `UNDO` et `EXPORT` gardent leur libellé et sont rangés dans la
+  famille `operator`, pour qu'aucune ligne n'échappe aux filtres. La famille porte la couleur du
+  libellé, le bord gauche, et pour trois d'entre elles — groupe, sprint, incident — le fond teinté
+  de la maquette. `decType()` lit en plus le code d'un retrait (DNS · DNF · ABD) dans la phrase, et
+  le sens d'un tour (`laps gained` vert, `laps lost` rouge).
+- `decRider()` : le dossard est déjà dans la phrase. Une ligne qui en porte **un seul** le sort
+  dans la colonne Rider au format du classement — dossard · drapeau · NOC · prénom · NOM — et
+  `decText()` retire le préfixe `BIB n · ` de l'événement. Une ligne qui en porte plusieurs garde
+  sa liste dans l'événement : la colonne ne nommerait qu'un coureur sur trois.
+- `decStatus()` : la pastille `Corrected` sur une ligne qu'une décision plus récente a reprise
+  (`e.reversed`), celle que le journal portait déjà. Les autres pastilles de la maquette
+  (Resolved, Pending, Ignored, In progress) demandent un suivi d'anomalie que le moteur ne tient
+  pas ; la colonne reste vide ailleurs.
+- `decKeep()` : le filtre de famille et la recherche, qui porte sur la phrase, le libellé du type,
+  le dossard, le NOC, le prénom et le nom.
+
+**La barre de filtres** `#dfilt` reprend `.pfilt` / `.pf` / `.pin` de l'onglet Passings : un
+bouton par famille **que le moteur écrit vraiment** — pas de bouton qui ne retiendrait jamais rien
+(son point 266) — la recherche et `Clear`. L'override de `renderLog` la montre sur le seul onglet
+`dec` et pose la classe `rlog` sur `#logrows`, qui commande la grille à sept colonnes.
+
+**Le décompte des cinq tours entre au journal**, `crashCount(g)`, appelé dans `detect()` section 3
+pour chaque groupe d'incident, crash comme ennui mécanique. Le moteur comptait déjà les tours sur le
+groupe et les écrivait sur la carte et dans l'en-tête du bloc (`texteCrash`) ; le journal n'en
+gardait que l'ouverture et la fermeture. Il en garde maintenant **une ligne par tour**, dans les
+mots de la carte — « still 3 laps to rejoin » — et une ligne « neutralisation over » quand le compte
+est fini. `S.crashSaid`, clé `id du groupe : tour`, garantit une seule ligne par tour et par
+groupe, puisque la carte se refait à chaque image. Le tour du crash lui-même n'en reçoit pas : sa
+propre ligne le dit déjà.
+
+**Ce qui n'est pas codé**, et pourquoi : les types ALERT et HARDWARE de la maquette — le moteur
+n'écrit aucune ligne de ce genre ; et les anomalies au format **Problème → Effet → Action** — les
+couper en trois veut dire réécrire des phrases que l'opérateur lit déjà à l'écran, ce qui se propose
+avant d'être codé.
+
+**CSS** : tout est dans le bloc `<style>` du mixed, sous l'override de `.lrow` du build 210 ;
+`styles.css` partagé n'a pas bougé. Les couleurs sont les tokens (`--acc`, `--good`, `--crit`,
+`--warn`, `--dim`), les fonds teintés en `color-mix` sur `--bg`. Les noms de classe nouveaux
+(`rlog`, `lhd`, `dt`, `lp`, `rd`, `lnone`) ont été vérifiés contre `styles.css` (D53) ; `.nm`,
+`.fn` et `.stt` y existent, mais sous `.trow` et `.strow` seulement, donc hors de portée.
+
+
+**Build 271** — l'onglet `dec` de `#logtabs` ne s'appelle plus Decisions mais **Race log**, le nom
+du bouton qui ouvre le panneau (point 306). La clé `dec` et tout le code autour n'ont pas changé.
+L'infobulle du bouton `#logshow` garde son ancienne liste, qui nommait déjà Crossings au lieu de
+Lap by lap : la retoucher n'a pas été demandé.
+
+
+**Build 273** — le **filtre par tour du Race log**. `#dflap`, une `.pin` posée dans `#dfilt`
+entre le séparateur et la recherche, au format exact de `#pflap` de la barre des Passings :
+étiquette `Lap`, `inputmode="numeric"`, `placeholder="all"`, classe `set` quand il porte une
+valeur. La saisie ne garde que les chiffres. `decLap` entre dans `decKeep` **avant** le filtre de
+famille, sur `e.lap` — le tour posé à l'écriture de la ligne (§82) — et se cumule donc avec le
+bouton de type et avec la recherche. `Clear` vide les trois.
+
+Le build 272 avait fait autrement : le bouton LAP ouvrait un champ caché et remplaçait le filtre de
+famille. L'opérateur a demandé la reprise du contrôle des Passings (point 308) ; le bouton LAP
+redevient le filtre des tours gagnés et perdus. `pitfalls.md` D55.
+
+
+**Build 274** — le **filtre par dossard du Race log**, `#dfbib`, posé avant `#dflap` comme dans
+la barre des Passings. `decBibs(e)` rend les dossards qu'une ligne concerne, sous les deux formes
+que le moteur écrit : celle de `bibList` — « BIB 7 », « BIB 7, 14 and 22 » — et celle d'un ordre
+de sprint, « 1. 12  2. 52 », où le dossard suit la place. Sans la seconde, le filtre ne verrait
+aucun sprint, et c'est là que l'opérateur cherche un coureur.
+
+`decBibsNamed(e)` ne rend que les dossards **nommés**, et c'est lui que lit la colonne Rider : un
+ordre de sprint parle d'une ligne d'arrivée entière, pas d'un coureur. Au passage il corrige le
+build 270, dont la colonne Rider lisait `/BIB (\d+)/` et affichait donc le premier dossard d'une
+ligne qui en nommait trois, au lieu de laisser la colonne vide comme §82 le décrit.
+
+
+## §83 · Race log et Passings, la même table et la même barre · build 277
+
+Ses points 310 à 315. Les deux onglets du panneau portent désormais **les mêmes colonnes dans le
+même ordre**, et **la même barre de filtres à deux étages**.
+
+| | Race log | Passings |
+|---|---|---|
+| Colonnes | Daytime · Race time · Lap · Type · Bib · Noc · Rider name · **Event** | Daytime · Race time · Lap · Type · **Location** · Bib · Noc · Rider name · **Signal / count** |
+| Boutons, en haut | Type (les familles du moteur) | Type (Transponder · Tape switch · Manual pulse) puis Location, puis Hold et Unmatched only |
+| Champs, en bas | Lap · Bib · Noc · Rider · recherche · Clear | les mêmes |
+
+**Une ligne par coureur.** `decSplit(e)` transforme une entrée du journal en une ou plusieurs
+lignes d'écran : une par place pour un sprint (`e.places`), une par dossard nommé pour un
+événement qui en touche plusieurs — la liste de dossards sort alors du texte (`decStrip`) puisque
+chaque ligne nomme son coureur dans ses colonnes. Les filtres travaillent sur ces lignes-là, pas
+sur l'entrée : un filtre par dossard retient le coureur, pas l'événement entier.
+
+**Le sprint.** `spSend` passe à `logEvent` un champ en plus, `places`, avec la place, le dossard
+et les points de chacun — `logEvent(k, m, op, rev, ex)` recopie `ex` sur l'entrée. La phrase du
+moteur n'a pas changé : l'onglet Race (`baseRenderLog`) l'affiche toujours telle quelle. Le Race
+log, lui, écrit ses mots à lui : **« Sprint 1 · 3rd 2 points »** (son point 313). En mode *live*
+chaque place part seule, donc chaque place est une entrée et une ligne ; hors *live* un seul envoi
+porte toutes les places et en donne autant de lignes.
+
+**La recherche ne touche que le texte** (son point 313) : `row.txt` au Race log, `sig` et sa note
+aux Passings. Les quatre champs font le reste, chacun sur sa colonne. `Clear` vide les six.
+
+**Passings.** `passType` (transponder · tape · pulse) et `passLoc` remplacent `passSrc` : une
+lecture placée par l'opérateur devient **MANUAL PULSE**, un contact de ruban **TAPE SWITCH**.
+`LOCN()` rend les noms de l'installation dans les mots de sa liste — FINISH · PURSUIT A ·
+PURSUIT B · 200m · 100m. Le tri des titres (son point 236) tient toujours, sur Daytime, Lap,
+Location et Bib ; Race time ne porte pas de flèche, c'est la même clé que Daytime.
+
+**Ce qui n'est pas codé** : *Push button* de sa liste des emplacements — l'installation n'en a pas.
+Et la colonne **Status** du Race log a disparu : sa liste de colonnes n'en porte pas. La pastille
+`Corrected` est passée à la fin de la colonne Event.
+
+**Deux pièges rencontrés** : `styles.css` n'a pas de règle `[hidden]` générale, donc
+`.pfilt.two{display:block}` montrait les deux barres à la fois ; et `.flag` n'y est dimensionné
+que sous `.trow`, donc le drapeau de la colonne Noc ne se voyait pas. Les deux sont corrigés dans
+le bloc du mixed.
+
+
+## §84 · Le fil commentateurs : une seconde fenêtre sur le même poste · build 278
+
+Cadrage du 16 novembre 2026 : un fil **automatique**, en **lecture seule**, **en anglais**. Ses
+mots du 22 novembre : « Tout sur le même PC, nous travaillons sur un prototype ».
+
+**Le branchement.** `BroadcastChannel('tct-feed')` — même origine, même machine, rien à
+installer. Le prototype poste un **instantané** toutes les 500 ms (`feedSnap` / `feedPush`) :
+l'heure de course, le tour affiché, les coureurs, le classement tel que `standings()` le rend,
+les sprints tels que `spOrder` et `spPoints` les rendent, et les soixante dernières lignes du
+journal. **Aucune valeur n'est recalculée pour le fil** : il ne voit que ce que le moteur sait
+déjà. Le fil ne renvoie qu'une chose, `{ask:true}`, à son ouverture, pour recevoir tout de suite
+sans attendre le prochain envoi — c'est tout ce qu'une surface en lecture seule a le droit de dire.
+
+**La fenêtre.** `fil.html`, à la racine, ouverte par le bouton **Feed** de la barre du haut. Elle
+charge `styles.css` et `flags.js` : les couleurs et les drapeaux sont ceux de l'application
+(`pitfalls.md` D57).
+
+**Les vues codées** : **Start list**, **Standings**, **Sprints** (complets, tous les coureurs,
+place · dossard · drapeau · NOC · nom · écart · points). L'en-tête porte le tour, le temps de
+course et l'état — *Live* ou *Race not started*.
+
+**Les vues qui manquent, et pourquoi** : Standings Évolution, Possible scenarios, Race facts et les
+analyses d'approche des médias. Aucune n'est codée dans le prototype ; le fil le dit lui-même, en
+bas de chaque vue, plutôt que de montrer un onglet vide.
+
+
+## §84 bis · Le fil est la coque validée, branchée — correction du §84 · build 279
+
+Le §84 décrivait une page écrite à la main : c'était l'erreur `pitfalls.md` D60. Ce qui tourne
+depuis le build 279 :
+
+**`mockups/gen-fil.js` écrit `fil.html`** à la racine. Il **lit le `<style>` de
+`maquette-feed.html`** et le pose tel quel — rien n'est recopié, donc rien ne peut diverger — et
+reprend le balisage de la coque : `.board`, `.hdr` (titre, pastille *Live*, *Read only*, type de
+course, heure de réception), `.nav` à cinq onglets, puis les vues.
+
+| Onglet | Ce qu'il montre au build 279 |
+|---|---|
+| Start list | les cartes `.sl-card` de la coque, **en direct** |
+| Standings | la table `.lv` de la coque, **en direct**, points par sprint et tours |
+| Sprints | les colonnes `.spcol` de la coque, **en direct**, tous les coureurs |
+| Scenarios | `maquette-scenarios.html?embed=1`, **maquette**, comme la coque |
+| Race facts | `maquette-racefacts.html?embed=1`, **maquette**, comme la coque |
+
+Les deux vues embarquées portent une étiquette *Mockup · not fed by the race yet* : la seule chose
+que cette page ajoute au style de la coque, pour qu'on ne les prenne pas pour du direct.
+
+Le branchement n'a pas changé : `BroadcastChannel('tct-feed')`, un instantané toutes les 500 ms,
+`{ask:true}` à l'ouverture, et `CFG.type` / `CFG.advance` dans l'instantané depuis le
+build 279 — c'est ce qui écrit « Final · no cut » ou « Qualification · top N advance » dans
+l'en-tête, comme la coque le prévoit.
+
+**Refaire** : `node gen-feed.js` puis `node gen-fil.js`.
+
+
+## §84 ter · Le classement du fil, corrigé · build 280
+
+Le §84 bis disait que les trois vues du fil reprenaient le balisage de la coque. C'était vrai pour
+la **start list** (`.sl-card`) et pour les **sprints** (`.spcol`), **faux pour le classement** :
+j'y avais mis une table à moi. Son point 318.
+
+**Ce qui tourne depuis le build 280.** `gen-fil.js` écrit deux pages :
+
+- `fil.html` — la coque, style lu dans `maquette-feed.html`. Onglets : Start list et Sprints
+  rendus en direct avec le balisage de la coque ; **Standings embarqué en iframe** ; Scenarios et
+  Race facts embarqués sur leurs maquettes, étiquetés *Mockup · not fed by the race yet*.
+- `fil-standings.html` — **la maquette du classement, en direct**. Style lu dans
+  `maquette-standings.html`, balisage gardé : barre `.board-h` avec la bascule
+  **Live / Evolution**, table `.tbl`, lignes `.row` et `.elim`, `.cutrow` de la ligne de coupe,
+  points par sprint, tours gagnés et perdus avec leurs numéros, ordre d'arrivée. La bascule
+  **Evolution** montre la maquette embarquée, étiquetée.
+
+L'instantané porte depuis le build 280 `gainedLaps` et `lostLaps` — les numéros de tours que la
+maquette écrit sous les pastilles — et `cfg.type` / `cfg.advance` depuis le 279.
+
+**Un piège du canal** : les deux pages écoutent `tct-feed`, et chacune reçoit donc le
+`{ask:true}` de l'autre. Les deux ignorent tout message qui ne porte pas de coureurs.
+
+## §85 · Les quatorze vues des sorties, branchées · builds 281 et 282
+
+Le document `mockups/MAQUETTES OUTPUTS.pdf` liste **neuf écrans** pour le fil commentateurs et
+**cinq** pour le fil entraîneurs. Les quatorze lisent la course au build 282.
+
+**Le principe, un seul :** aucune vue n'est redessinée. Chaque page livrée est la **maquette
+validée telle quelle**, dont on remplace la **seule donnée figée** — son bloc `var D={…}` ou
+`var DATA={…}` — par un constructeur qui bâtit la même forme de donnée sur l'instantané du
+prototype. Le dessin, le style, les bascules et les gestes sont ceux de la maquette.
+
+**Les pages, et qui les écrit :**
+
+| Page livrée | Écrite par | Maquette reprise |
+|---|---|---|
+| `fil.html` — la coque, six onglets | `mockups/gen-fil.js` | `maquette-feed.html` |
+| `fil-standings.html` — Standings · Live | `mockups/gen-fil.js` | `maquette-standings.html` |
+| `fil-evolution.html` — Standings · Evolution | `mockups/gen-fil-evolution.js` | `maquette-standings.html` |
+| `fil-scenarios.html` — Overview et What if | `mockups/gen-fil-scenarios.js` | `maquette-scenarios.html` |
+| `fil-racefacts.html` — Race facts | `mockups/gen-fil-racefacts.js` | `maquette-racefacts.html` |
+| `fil-approche.html` — Approach et Lap gained | `mockups/gen-fil-approche.js` | `maquette-approches.html` |
+| `coachs.html` — les cinq vues entraîneurs | `mockups/gen-fil-approche.js` | `maquette-approches-coachs.html` |
+
+La coque embarque les quatre dernières **en iframe** : deux documents, donc aucun mélange de
+styles de maquettes. Les Start list et Sprints sont dessinés dans la coque elle-même, avec ses
+classes `.sl-card` et `.spcol`.
+
+**Ce que le constructeur de `fil-approche.html` et de `coachs.html` calcule** (`BUILDER` dans
+`gen-fil-approche.js`) :
+
+- `stream` — un relevé par tour et par boucle, **dans l'ordre des lectures**. Ce qui borne le tour
+  d'une lecture est le **passage de ligne du coureur**, entre celui du tour précédent et celui de
+  ce tour-ci : `at[tour][dossard]`, construit sur `cross`. Pour chaque coureur on garde sa
+  **dernière** lecture de la boucle dans cette borne, puis on trie par l'heure.
+- `sprints` — l'ordre complet vient de `S.sprints[k].order`. Les **points sont un tableau par
+  place** (`[5,3,2,1]`, `[10,6,4,2]` pour la finale), comme la maquette les lit — jamais une table
+  par dossard.
+- `efforts` — un tour gagné par coureur : l'attaque au premier tour passé **hors du bloc du
+  peloton** (`bunchAt` prend le bloc le plus nombreux du tour), le tour crédité là où `cross` porte
+  la **marque**, les compagnons pris dans le même bloc, le sprint tombé pendant l'échappée avec la
+  place et les points, et le sprint **après lequel** il est parti (le dernier sprint à un tour
+  inférieur ou égal au tour de l'attaque ; aucun, et la page dit « the start »).
+
+**Ce que le constructeur de `fil-evolution.html` calcule** : la liste des **moments** — le départ,
+chaque sprint jugé, et chaque tour gagné ou perdu, un moment par tour et par sens, dans l'ordre
+des tours — puis, pour chaque moment, les points courants et le rang de chaque coureur. Le moment
+affiché **suit la course** jusqu'à ce que le commentateur en choisisse un.
+
+**Ce qu'il faut défaire dans une maquette qu'on branche** : elle se lançait au chargement sur sa
+donnée figée. On retire de la queue de page son unique lancement — le `render();` du **corps**, pas
+celui du gestionnaire de clic — et on refait dans un `boot()`, à chaque instantané, ce qu'elle
+faisait une fois : les tables par dossard, le sprint choisi, les coureurs suivis, le rendu.
+
+**Le bouton Coaches** de la barre du haut ouvre `coachs.html` dans une seconde fenêtre du même
+poste, à côté de **Feed** qui ouvre `fil.html`. Les deux lisent le même instantané de
+`BroadcastChannel('tct-feed')`, décrit au §84.
+
+## §85 bis · Ce qu'une maquette branchée doit oublier à chaque instantané · build 283
+
+Une maquette ne porte pas que sa donnée figée : elle porte aussi **ce qu'elle a retenu de cette
+donnée**. Trois choses, et chacune doit se refaire sur la course reçue :
+
+| Ce qu'elle retient | Où | Ce que `boot()` en fait |
+|---|---|---|
+| Les coureurs suivis, écrits en dur | `sel` (entraîneurs), `hi` (médias), `sel` (évolution) | on ne garde que les dossards présents dans la course ; vide, on reprend les deux premiers |
+| Le sprint choisi | `si` | ramené dans les bornes de la course |
+| Le moment affiché | `snapAt` | suit la course tant que le commentateur n'en a pas choisi un |
+
+Sans cette garde, la vue cherche un coureur absent de la liste de départ, le rendu lève, et
+**l'écran reste vide sans rien dire**. C'est `pitfalls.md` D64.
+
+**Deux autres corrections du même build** : la ligne de dossards, drapeaux et noms posée au-dessus
+du graphe de l'évolution est retirée (`renderHead` ne dessine plus rien, `#cmp-head` est `hidden`),
+dans `gen-standings.js` donc dans la maquette **et** dans `fil-evolution.html` ; et les onglets du
+fil suivent son ordre — Start list, Standings, Sprints, Sprint approach, Race facts, Scenarios.
+
+## §85 ter · L'en-tête du fil entraîneurs · build 284
+
+L'instantané porte maintenant `started` et `finished` en plus du tour en cours. Le constructeur des
+vues d'approche les reprend (`D.started`, `D.finished`, `D.lap`, `D.nspr`) et `raceState()` écrit
+l'une des trois phrases de son point 321 — avant le départ, pendant la course, une fois finie.
+
+Elle s'écrit **avant** la sortie anticipée de `boot()` : tant qu'aucun sprint n'est jugé il n'y a
+rien à dessiner, mais l'en-tête doit déjà dire que la course attend le départ. Sans cela la ligne
+restait vide à l'ouverture.
+
+**À savoir** : le canal du fil n'a pas de notion d'émetteur. Deux prototypes ouverts dans le même
+navigateur publient tous les deux, et les vues prennent le dernier instantané arrivé — une course
+finie et une course à l'arrêt se relaient alors dans l'en-tête. Ce n'est pas corrigé : un seul
+prototype à la fois.
+
+## §85 quater · Le temps des tours d'approche · build 285
+
+`D.applaps` donne, **sprint par sprint**, les cinq tours qui le précèdent. Le tour d'un tour
+donné est l'heure **médiane** des passages de ligne de ce tour moins celle du tour d'avant —
+médiane et non première, pour qu'une échappée ne dicte pas le tour du peloton. `appTime(span)` en
+additionne les `span` derniers. La pastille l'écrit en `mm:ss.xxx` (`clock3`), la phrase au-dessous
+garde la seconde, comme il l'a demandé.
+
+Avant le build 285, cette durée était le tour moyen de la course répété cinq fois : une moyenne,
+pas une mesure. Elle ne pouvait pas rester ainsi une fois affichée à la milliseconde.
+
+**La génération dit ce qui n'a pas pris.** Chaque remplacement appliqué à la queue de page porte
+une étiquette, et `gen-fil-approche.js` annonce ceux qui n'ont rien trouvé pour la page en cours.
+Les deux pages n'ayant pas le même contenu, certaines étiquettes ne valent que pour l'une :
+c'est la contre-mesure de `pitfalls.md` D63.
+
+## §85 quinquies · La colonne des coureurs du fil entraîneurs · build 286
+
+`D.riders` est trié par dossard, et `D.standing` porte le classement général de l'instantané, dans
+l'ordre, les abandons retirés. À la **première** réception seulement, les coureurs suivis sont les
+quatre premiers de `D.standing` ; ensuite la liste n'est plus que filtrée sur les coureurs de la
+course, pour que le choix de l'opérateur tienne.
+
+Trier `D.riders` ne touche que cette colonne : les autres listes de l'écran viennent de l'ordre
+d'un sprint ou d'un relevé de boucle, jamais de `D.riders`.
+
+## §85 sexies · Les étiquettes du graphe, et ce qui ne reste plus écrit · build 287
+
+`lapsIn(relevé)` compte les **tours distincts** d'un relevé. Les deux étiquettes du graphe des
+entraîneurs s'en servent : à gauche les tours réellement courus avant le sprint, à droite ceux
+réellement courus après. Le graphe ne dessine que ce qui a eu lieu, donc la ligne de sprint glisse
+vers la droite tant que la course n'a pas couru la fenêtre entière, et revient au milieu quand
+c'est fait — son choix du 22 novembre 2026 (point 325).
+
+`clock3` couvre maintenant **toute** valeur de temps des deux fils, l'écart compris. Plus aucune
+n'est écrite en secondes.
+
+Les deux dossards d'exemple de la maquette ne sont plus seulement remplacés à l'ouverture : ils
+sont **effacés** du code de la page générée (`var span=3, sel=[], …`).
